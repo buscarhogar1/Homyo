@@ -1,412 +1,1273 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Buscar Hogar – Mapa</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Buscar Hogar – Mapa</title>
 
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
 
-    <!-- TODO EL CSS SIN CAMBIOS -->
-    <!-- (idéntico al que tú has enviado) -->
-  </head>
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --panel:#0f1624;
+      --panel2:#121b2c;
+      --text:#e7eefc;
+      --muted:#a9b6d1;
+      --line:rgba(255,255,255,.10);
+      --shadow:0 12px 40px rgba(0,0,0,.35);
+      --r:18px;
+      --r2:14px;
+      --accent:#1a73e8;
+    }
 
-  <body>
-    <!-- TODO EL HTML SIN CAMBIOS -->
-    <!-- header, map, overlays, card, etc. -->
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      overflow:hidden;
+    }
 
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
+    /* header */
+    .topbar{
+      position:fixed;
+      top:0;left:0;right:0;
+      height:62px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:0 14px;
+      z-index:900;
+      background:linear-gradient(to bottom, rgba(11,15,23,.92), rgba(11,15,23,.55));
+      border-bottom:1px solid rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      min-width:180px;
+    }
+    .logo{
+      width:34px;height:34px;border-radius:10px;
+      background:linear-gradient(135deg, rgba(26,115,232,.95), rgba(116,54,231,.85));
+      box-shadow:0 10px 26px rgba(26,115,232,.22);
+    }
+    .brandTxt{display:flex;flex-direction:column}
+    .brandTxt .t1{font-size:14px;letter-spacing:.2px}
+    .brandTxt .t2{font-size:12px;color:var(--muted);margin-top:1px}
 
-    <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+    .searchWrap{
+      flex:1;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      max-width:860px;
+    }
+    .search{
+      flex:1;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .search input{
+      width:100%;
+      background:transparent;
+      border:0;
+      outline:0;
+      color:var(--text);
+      font-size:14px;
+    }
+    .chipBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      height:40px;
+      padding:0 12px;
+      border-radius:14px;
+      cursor:pointer;
+      user-select:none;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--text);
+    }
+    .chipBtn:hover{background:rgba(255,255,255,.08)}
+    .chipBtn:active{transform:translateY(1px)}
+    .chipBtn svg{width:18px;height:18px;opacity:.95}
 
-    <script>
-      /* =========================
-         CONFIG + UTILIDADES
-         ========================= */
+    /* map */
+    #map{
+      position:absolute;
+      top:0;left:0;right:0;bottom:0;
+      z-index:1;
+    }
 
-      const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
-      const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
+    /* bottom card */
+    .cardWrap{
+      position:fixed;
+      left:0;right:0;bottom:0;
+      z-index:800;
+      padding:10px 10px 12px;
+      pointer-events:none;
+    }
+    .card{
+      pointer-events:auto;
+      max-width:980px;
+      margin:0 auto;
+      background:rgba(15,22,36,.92);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:var(--shadow);
+      border-radius:var(--r);
+      overflow:hidden;
+      backdrop-filter: blur(12px);
+    }
+    .cardInner{
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap:0;
+      min-height:260px;
+    }
+    .photos{
+      position:relative;
+      background:rgba(255,255,255,.04);
+    }
+    .grid4{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:1fr 1fr;
+      gap:6px;
+      padding:10px;
+      height:100%;
+    }
+    .ph{
+      border-radius:14px;
+      overflow:hidden;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .ph img{
+      width:100%;height:100%;
+      object-fit:cover;
+      display:block;
+      filter:saturate(1.05);
+    }
+    /* línea imaginaria: entre filas */
+    .photosSep{
+      position:absolute;
+      left:10px;right:10px;
+      top:calc(50% + 3px);
+      height:1px;
+      pointer-events:none;
+      opacity:0;
+    }
 
-      const DEFAULT_CENTER = [37.9838, -1.1280];
-      const DEFAULT_ZOOM = 13;
+    .info{
+      padding:14px 14px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .row1{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .addr{
+      font-size:15px;
+      color:var(--text);
+      letter-spacing:.2px;
+      margin:0;
+    }
+    .meta{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+    .price{
+      font-size:18px;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .sepLine{
+      height:1px;
+      background:rgba(255,255,255,.08);
+      margin:4px 0;
+    }
 
-      /* =========================
-         MAPA
-         ========================= */
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      height:42px;
+      padding:0 14px;
+      border-radius:14px;
+      cursor:pointer;
+      user-select:none;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+    }
+    .btn:hover{background:rgba(255,255,255,.08)}
+    .btn:active{transform:translateY(1px)}
+    .btn svg{width:18px;height:18px}
+    .btn.primary{
+      background:rgba(26,115,232,.22);
+      border-color:rgba(26,115,232,.45);
+    }
+    .btn.primary:hover{background:rgba(26,115,232,.28)}
+    .btn.ghost{
+      background:transparent;
+    }
 
-      let map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+    .statusBar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-top:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.12);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .statusLeft{display:flex;align-items:center;gap:10px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      color:var(--muted);
+    }
+    .dot{
+      width:8px;height:8px;border-radius:50%;
+      background:rgba(26,115,232,.9);
+      box-shadow:0 0 0 4px rgba(26,115,232,.15);
+    }
 
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-        maxZoom: 19,
-        attribution: "&copy; OpenStreetMap &copy; CARTO"
-      }).addTo(map);
+    /* sticky band */
+    .stickyBand{
+      position:fixed;
+      left:0;right:0;
+      top:62px;
+      z-index:890;
+      transform:translateY(-120%);
+      transition:transform .28s ease;
+      padding:10px 10px 0;
+      pointer-events:none;
+    }
+    .stickyBand.show{
+      transform:translateY(0);
+      pointer-events:auto;
+    }
+    .stickyInner{
+      max-width:980px;
+      margin:0 auto;
+      background:rgba(15,22,36,.92);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(12px);
+      overflow:hidden;
+    }
+    .stickyRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 12px;
+    }
+    .stickyLeft{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+    .stickyAddr{
+      font-size:13px;
+      color:var(--text);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:62vw;
+    }
+    .stickyPrice{
+      font-size:14px;
+      white-space:nowrap;
+    }
+    .stickyActions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .sBtn{
+      height:36px;
+      padding:0 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      cursor:pointer;
+      user-select:none;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .sBtn svg{width:16px;height:16px}
+    .sBtn.primary{
+      background:rgba(26,115,232,.22);
+      border-color:rgba(26,115,232,.45);
+    }
 
-      let markersLayer = L.layerGroup().addTo(map);
+    /* leaflet control buttons column */
+    .quickCol{
+      display:grid;
+      gap:10px;
+    }
+    .quickRow{
+      display:grid;
+      grid-template-columns: 44px 54px;
+      gap:10px;
+      align-items:center;
+      justify-items:center;
+    }
+    .qBtn,.qBtnSmall{
+      width:54px;height:54px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+      color:rgba(255,255,255,.95);
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(15,22,36,.86);
+      backdrop-filter: blur(8px);
+      box-shadow:0 10px 26px rgba(0,0,0,.22);
+    }
+    .qBtnSmall{
+      width:44px;height:44px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      box-shadow:none;
+    }
+    .qBtn:hover,.qBtnSmall:hover{background:rgba(255,255,255,.08)}
+    .qBtn.active{
+      border-color:rgba(26,115,232,.55);
+      background:rgba(26,115,232,.20);
+    }
+    .qBtnSmall.disabled{
+      opacity:.35;
+      pointer-events:none;
+    }
+    .qBtn svg,.qBtnSmall svg{width:22px;height:22px}
 
-      /* =========================
-         AREAS – ESTADO Y LOGICA
-         ========================= */
+    /* responsive */
+    @media (max-width: 860px){
+      .cardInner{grid-template-columns:1fr}
+      .photos{height:240px}
+      .stickyAddr{max-width:50vw}
+      .brand{min-width:0}
+      .brandTxt{display:none}
+    }
+  </style>
+</head>
 
-      const MAX_AREAS = 5;
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div class="brandTxt">
+        <div class="t1">Buscar Hogar</div>
+        <div class="t2">Mapa</div>
+      </div>
+    </div>
 
-      const areaState = {
-        pointsActive: false,
-        freehandActive: false,
+    <div class="searchWrap">
+      <div class="search">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.9">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M20 20l-3.2-3.2"></path>
+        </svg>
+        <input id="cityInput" placeholder="Ciudad (ej: Murcia, Valencia, Ámsterdam) y Enter" />
+      </div>
 
-        isDrawing: false,
-        drawingMode: null,
+      <div id="sunToggle" class="chipBtn" title="Sol (solo a zoom alto)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path><path d="M12 20v2"></path>
+          <path d="M2 12h2"></path><path d="M20 12h2"></path>
+          <path d="M4.9 4.9l1.4 1.4"></path><path d="M17.7 17.7l1.4 1.4"></path>
+          <path d="M19.1 4.9l-1.4 1.4"></path><path d="M6.3 17.7l-1.4 1.4"></path>
+        </svg>
+        Sol
+      </div>
+    </div>
+  </div>
 
-        points: [],
-        tempLine: null,
-        tempLivePoly: null,
-        tempFirstMarker: null,
-        tempVertexMarkers: [],
+  <!-- sticky band -->
+  <div id="stickyBand" class="stickyBand">
+    <div class="stickyInner">
+      <div class="stickyRow">
+        <div class="stickyLeft">
+          <div id="stickyAddr" class="stickyAddr">—</div>
+          <div id="stickyMeta" style="font-size:12px;color:var(--muted)">—</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div id="stickyPrice" class="stickyPrice">—</div>
+          <div class="stickyActions">
+            <div id="stickyFav" class="sBtn" title="Guardar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+              Guardar
+            </div>
+            <div id="stickyPhone" class="sBtn" title="Ver teléfono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1A19.5 19.5 0 0 1 3.3 11.8 19.8 19.8 0 0 1 .2 3.2 2 2 0 0 1 2.1 1h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .6 3a2 2 0 0 1-.5 2.1L6 9a16 16 0 0 0 9 9l1.2-1.2a2 2 0 0 1 2.1-.5c1 .3 2 .5 3 .6a2 2 0 0 1 1.7 2z"></path>
+              </svg>
+              Teléfono
+            </div>
+            <div id="stickyContact" class="sBtn primary" title="Contacto">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+              </svg>
+              Contacto
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        polys: [],
-        nextId: 1,
+  <div id="map"></div>
 
-        sunBtnForceOff: null,
-        lastHint: ""
-      };
+  <!-- bottom card -->
+  <div class="cardWrap">
+    <div class="card">
+      <div class="cardInner">
+        <div class="photos">
+          <div class="grid4">
+            <div class="ph"><img id="ph1" alt="" /></div>
+            <div class="ph"><img id="ph2" alt="" /></div>
+            <div class="ph"><img id="ph3" alt="" /></div>
+            <div class="ph"><img id="ph4" alt="" /></div>
+          </div>
+          <div id="photosSep" class="photosSep"></div>
+        </div>
 
-      const areasLayer = L.layerGroup().addTo(map);
+        <div class="info">
+          <div class="row1">
+            <div style="min-width:0">
+              <p id="addr" class="addr">—</p>
+              <div id="meta" class="meta">—</div>
+            </div>
+            <div id="price" class="price">—</div>
+          </div>
 
-      function setMarkersVisible(v){
-        if (v) markersLayer.addTo(map);
-        else map.removeLayer(markersLayer);
-      }
+          <div class="sepLine"></div>
 
-      function clearTempDrawing(){
-        if (areaState.tempLine) areasLayer.removeLayer(areaState.tempLine);
-        if (areaState.tempLivePoly) areasLayer.removeLayer(areaState.tempLivePoly);
-        if (areaState.tempFirstMarker) areasLayer.removeLayer(areaState.tempFirstMarker);
-        areaState.tempVertexMarkers.forEach(m => areasLayer.removeLayer(m));
+          <div class="actions">
+            <div id="btnFav" class="btn ghost">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+              Guardar favoritos
+            </div>
 
-        areaState.tempLine = null;
-        areaState.tempLivePoly = null;
-        areaState.tempFirstMarker = null;
-        areaState.tempVertexMarkers = [];
-        areaState.points = [];
-      }
+            <div id="btnPhone" class="btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1A19.5 19.5 0 0 1 3.3 11.8 19.8 19.8 0 0 1 .2 3.2 2 2 0 0 1 2.1 1h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .6 3a2 2 0 0 1-.5 2.1L6 9a16 16 0 0 0 9 9l1.2-1.2a2 2 0 0 1 2.1-.5c1 .3 2 .5 3 .6a2 2 0 0 1 1.7 2z"></path>
+              </svg>
+              Ver teléfono
+            </div>
 
-      function cancelCurrentDrawing(){
-        areaState.isDrawing = false;
-        areaState.drawingMode = null;
-        clearTempDrawing();
-        setMarkersVisible(true);
-      }
+            <div id="btnContact" class="btn primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+              </svg>
+              Contacto con la inmobiliaria
+            </div>
+          </div>
 
-      function startNewAreaDrawing(mode){
-        if (areaState.polys.length >= MAX_AREAS) return;
-        if (areaState.sunBtnForceOff) areaState.sunBtnForceOff();
+          <div class="statusBar">
+            <div class="statusLeft">
+              <div class="pill"><span class="dot"></span><span id="statusTxt">Listo</span></div>
+              <div class="pill"><span id="areasCount">0</span> áreas</div>
+            </div>
+            <div class="pill" id="zoomTxt">Zoom: —</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        cancelCurrentDrawing();
-        areaState.isDrawing = true;
-        areaState.drawingMode = mode;
-        setMarkersVisible(false);
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
 
-        if (mode === "points") {
-          areaState.tempLine = L.polyline([], {
-            color: "rgba(26,115,232,0.88)",
-            weight: 3
-          }).addTo(areasLayer);
-        }
-      }
+  <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
 
-      function addAreaPolygon(latlngs){
-        if (latlngs.length < 3) return;
+  <script>
+    /* =========================
+       CONFIG + UTILIDADES
+       ========================= */
 
-        const id = areaState.nextId++;
-        const poly = L.polygon(latlngs, {
-          color: "rgba(26,115,232,0.8)",
-          fillOpacity: 0.18
+    const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
+
+    const DEFAULT_CENTER = [37.9838, -1.1280];
+    const DEFAULT_ZOOM = 13;
+
+    const $ = (id) => document.getElementById(id);
+
+    function setStatus(msg){
+      $("statusTxt").textContent = msg;
+    }
+
+    function parseQuery(){
+      const out = {};
+      const qs = new URLSearchParams(location.search);
+      for (const [k,v] of qs.entries()) out[k] = v;
+      return out;
+    }
+
+    const initialParams = parseQuery();
+
+    /* =========================
+       MAPA
+       ========================= */
+
+    let map = L.map("map", { zoomControl: true }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap &copy; CARTO"
+    }).addTo(map);
+
+    let markersLayer = L.layerGroup().addTo(map);
+
+    $("zoomTxt").textContent = `Zoom: ${map.getZoom()}`;
+    map.on("zoomend", () => {
+      $("zoomTxt").textContent = `Zoom: ${map.getZoom()}`;
+      refreshSunIfNeeded();
+    });
+
+    /* =========================
+       DATOS DEMO (para evitar blanco)
+       Sustituye por tu carga real si ya la tienes
+       ========================= */
+    let allPoints = [
+      { id: 1, lat: 37.9872, lng: -1.1305, price: "950 €/mes", addr: "Calle Trapería 12", meta: "2 hab · 1 baño · 75 m²", phone: "+34 600 111 222" },
+      { id: 2, lat: 37.9809, lng: -1.1262, price: "1.150 €/mes", addr: "Av. de la Libertad 4", meta: "3 hab · 2 baños · 98 m²", phone: "+34 600 333 444" },
+      { id: 3, lat: 37.9768, lng: -1.1364, price: "179.000 €", addr: "Plaza Santo Domingo 1", meta: "2 hab · 2 baños · 84 m²", phone: "+34 600 555 666" }
+    ];
+
+    function setListingUI(p){
+      $("addr").textContent = p.addr || "—";
+      $("meta").textContent = p.meta || "—";
+      $("price").textContent = p.price || "—";
+
+      $("stickyAddr").textContent = p.addr || "—";
+      $("stickyMeta").textContent = p.meta || "—";
+      $("stickyPrice").textContent = p.price || "—";
+
+      // imágenes demo (placeholders)
+      const pics = [
+        "https://images.unsplash.com/photo-1505691723518-36a5ac3b2a5b?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1501183638710-841dd1904471?auto=format&fit=crop&w=900&q=80",
+        "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=80"
+      ];
+      $("ph1").src = pics[0];
+      $("ph2").src = pics[1];
+      $("ph3").src = pics[2];
+      $("ph4").src = pics[3];
+
+      // acciones
+      const revealPhone = () => alert(p.phone ? `Teléfono: ${p.phone}` : "Teléfono no disponible");
+      $("btnPhone").onclick = revealPhone;
+      $("stickyPhone").onclick = revealPhone;
+
+      const contact = () => alert("Contacto: aquí abrirías tu modal / formulario / WhatsApp.");
+      $("btnContact").onclick = contact;
+      $("stickyContact").onclick = contact;
+
+      const fav = () => alert("Guardado (demo).");
+      $("btnFav").onclick = fav;
+      $("stickyFav").onclick = fav;
+    }
+
+    function renderMarkers(){
+      markersLayer.clearLayers();
+      const shown = allPoints.filter(isInsideAnyArea);
+      shown.forEach(p => {
+        const m = L.circleMarker([p.lat, p.lng], {
+          radius: 7,
+          weight: 2,
+          color: "rgba(255,255,255,.85)",
+          fillColor: "rgba(26,115,232,.9)",
+          fillOpacity: 0.85
+        }).addTo(markersLayer);
+        m.on("click", () => setListingUI(p));
+      });
+      setStatus(`${shown.length} viviendas en vista (filtradas por áreas)`);
+    }
+
+    async function loadPointsForCurrentView(){
+      // Si ya tienes tu carga real, reemplaza este cuerpo.
+      renderMarkers();
+    }
+
+    /* =========================
+       AREAS – ESTADO Y LOGICA
+       ========================= */
+
+    const MAX_AREAS = 5;
+
+    const areaState = {
+      pointsActive: false,
+      freehandActive: false,
+
+      isDrawing: false,
+      drawingMode: null,
+
+      points: [],
+      tempLine: null,
+      tempLivePoly: null,
+      tempFirstMarker: null,
+      tempVertexMarkers: [],
+
+      polys: [],
+      nextId: 1,
+
+      sunBtnForceOff: null,
+      lastHint: ""
+    };
+
+    const areasLayer = L.layerGroup().addTo(map);
+
+    function setMarkersVisible(v){
+      if (v) markersLayer.addTo(map);
+      else map.removeLayer(markersLayer);
+    }
+
+    function updateAreasCount(){
+      $("areasCount").textContent = String(areaState.polys.length);
+    }
+
+    function clearTempDrawing(){
+      if (areaState.tempLine) areasLayer.removeLayer(areaState.tempLine);
+      if (areaState.tempLivePoly) areasLayer.removeLayer(areaState.tempLivePoly);
+      if (areaState.tempFirstMarker) areasLayer.removeLayer(areaState.tempFirstMarker);
+      areaState.tempVertexMarkers.forEach(m => areasLayer.removeLayer(m));
+
+      areaState.tempLine = null;
+      areaState.tempLivePoly = null;
+      areaState.tempFirstMarker = null;
+      areaState.tempVertexMarkers = [];
+      areaState.points = [];
+    }
+
+    function cancelCurrentDrawing(){
+      areaState.isDrawing = false;
+      areaState.drawingMode = null;
+      clearTempDrawing();
+      setMarkersVisible(true);
+      setStatus("Dibujo cancelado");
+    }
+
+    function startNewAreaDrawing(mode){
+      if (areaState.polys.length >= MAX_AREAS) return;
+      if (areaState.sunBtnForceOff) areaState.sunBtnForceOff();
+
+      cancelCurrentDrawing();
+      areaState.isDrawing = true;
+      areaState.drawingMode = mode;
+      setMarkersVisible(false);
+
+      if (mode === "points") {
+        areaState.tempLine = L.polyline([], {
+          color: "rgba(26,115,232,0.88)",
+          weight: 3
         }).addTo(areasLayer);
-
-        areaState.polys.push({ id, latlngs, poly });
+        setStatus("Área por puntos: click para añadir vértices. Doble click para cerrar.");
+      } else {
+        setStatus("Dibujo libre: mantener pulsado y arrastrar. Soltar para cerrar.");
       }
+    }
 
-      /* =========================
-         FILTRADO
-         ========================= */
+    function addAreaPolygon(latlngs, type){
+      if (!Array.isArray(latlngs) || latlngs.length < 3) return false;
 
-      function pointInPoly(lat, lng, poly){
-        let inside = false;
-        for (let i=0,j=poly.length-1;i<poly.length;j=i++){
-          const xi=poly[i].lng, yi=poly[i].lat;
-          const xj=poly[j].lng, yj=poly[j].lat;
-          const intersect = ((yi>lat)!==(yj>lat)) &&
-            (lng < (xj-xi)*(lat-yi)/((yj-yi)||1e-12)+xi);
-          if (intersect) inside=!inside;
+      const id = areaState.nextId++;
+      const poly = L.polygon(latlngs, {
+        color: "rgba(26,115,232,0.8)",
+        fillOpacity: 0.18
+      }).addTo(areasLayer);
+
+      areaState.polys.push({ id, latlngs, poly, type: type || areaState.drawingMode || "points" });
+      updateAreasCount();
+      return true;
+    }
+
+    function removeAreaById(id){
+      const idx = areaState.polys.findIndex(a => a.id === id);
+      if (idx === -1) return;
+      const a = areaState.polys[idx];
+      if (a && a.poly) areasLayer.removeLayer(a.poly);
+      areaState.polys.splice(idx, 1);
+      updateAreasCount();
+    }
+
+    /* =========================
+       FILTRADO
+       ========================= */
+
+    function pointInPoly(lat, lng, poly){
+      let inside = false;
+      for (let i=0,j=poly.length-1;i<poly.length;j=i++){
+        const xi=poly[i].lng, yi=poly[i].lat;
+        const xj=poly[j].lng, yj=poly[j].lat;
+        const intersect = ((yi>lat)!==(yj>lat)) &&
+          (lng < (xj-xi)*(lat-yi)/((yj-yi)||1e-12)+xi);
+        if (intersect) inside=!inside;
+      }
+      return inside;
+    }
+
+    function isInsideAnyArea(p){
+      if (!areaState.polys.length) return true;
+      return areaState.polys.some(a => pointInPoly(p.lat, p.lng, a.latlngs));
+    }
+
+    let reloadTimer = null;
+    function scheduleReload(){
+      if (reloadTimer) clearTimeout(reloadTimer);
+      reloadTimer = setTimeout(() => {
+        loadPointsForCurrentView();
+      }, 80);
+    }
+
+    /* =========================
+       DIBUJO POR PUNTOS
+       ========================= */
+
+    function addVertexMarker(latlng){
+      const m = L.circleMarker(latlng, {
+        radius: 5,
+        weight: 2,
+        color: "rgba(255,255,255,.85)",
+        fillColor: "rgba(26,115,232,.9)",
+        fillOpacity: 0.9
+      }).addTo(areasLayer);
+      areaState.tempVertexMarkers.push(m);
+    }
+
+    function finalizePointsPolygon(){
+      if (areaState.points.length < 3) return;
+      const ok = addAreaPolygon(areaState.points.slice(), "points");
+      if (!ok) return;
+
+      cancelCurrentDrawing();
+      scheduleReload();
+      setStatus("Área por puntos creada");
+    }
+
+    map.on("click", (e) => {
+      if (!areaState.isDrawing) return;
+      if (areaState.drawingMode !== "points") return;
+
+      areaState.points.push(e.latlng);
+      addVertexMarker(e.latlng);
+
+      if (areaState.tempLine) areaState.tempLine.setLatLngs(areaState.points);
+
+      // preview relleno
+      if (areaState.points.length >= 3) {
+        if (!areaState.tempLivePoly) {
+          areaState.tempLivePoly = L.polygon(areaState.points, {
+            color: "rgba(26,115,232,0.6)",
+            fillOpacity: 0.10,
+            dashArray: "6 6"
+          }).addTo(areasLayer);
+        } else {
+          areaState.tempLivePoly.setLatLngs(areaState.points);
         }
-        return inside;
+      }
+    });
+
+    map.on("dblclick", (e) => {
+      if (!areaState.isDrawing) return;
+      if (areaState.drawingMode !== "points") return;
+      L.DomEvent.stop(e);
+      finalizePointsPolygon();
+    });
+
+    /* =========================
+       DIBUJO LIBRE
+       ========================= */
+
+    let isMouseDown = false;
+
+    function finalizeFreehand(){
+      if (areaState.points.length < 3) return;
+      const ok = addAreaPolygon(areaState.points.slice(), "freehand");
+      if (!ok) return;
+
+      cancelCurrentDrawing();
+      scheduleReload();
+      setStatus("Área libre creada");
+    }
+
+    map.on("mousedown", (e) => {
+      if (!areaState.isDrawing) return;
+      if (areaState.drawingMode !== "freehand") return;
+
+      isMouseDown = true;
+      areaState.points = [e.latlng];
+
+      if (areaState.tempLine) areasLayer.removeLayer(areaState.tempLine);
+      if (areaState.tempLivePoly) areasLayer.removeLayer(areaState.tempLivePoly);
+
+      areaState.tempLine = L.polyline([e.latlng], {
+        color: "rgba(26,115,232,0.88)",
+        weight: 3
+      }).addTo(areasLayer);
+    });
+
+    map.on("mousemove", (e) => {
+      if (!areaState.isDrawing) return;
+      if (areaState.drawingMode !== "freehand") return;
+      if (!isMouseDown) return;
+
+      areaState.points.push(e.latlng);
+      if (areaState.tempLine) areaState.tempLine.addLatLng(e.latlng);
+    });
+
+    map.on("mouseup", (e) => {
+      if (!areaState.isDrawing) return;
+      if (areaState.drawingMode !== "freehand") return;
+      if (!isMouseDown) return;
+
+      isMouseDown = false;
+
+      // suaviza: reduce puntos
+      const reduced = [];
+      const step = Math.max(1, Math.floor(areaState.points.length / 120));
+      for (let i=0;i<areaState.points.length;i+=step) reduced.push(areaState.points[i]);
+
+      // cierra
+      if (reduced.length >= 3) {
+        if (!reduced[0].equals(reduced[reduced.length-1])) reduced.push(reduced[0]);
       }
 
-      function isInsideAnyArea(p){
-        if (!areaState.polys.length) return true;
-        return areaState.polys.some(a => pointInPoly(p.lat, p.lng, a.latlngs));
+      areasLayer.removeLayer(areaState.tempLine);
+      areaState.tempLine = null;
+
+      areaState.points = reduced;
+      areaState.tempLivePoly = L.polygon(reduced, {
+        color: "rgba(26,115,232,0.6)",
+        fillOpacity: 0.10,
+        dashArray: "6 6"
+      }).addTo(areasLayer);
+
+      finalizeFreehand();
+    });
+
+    /* =========================
+       SOL (mínimo funcional)
+       ========================= */
+
+    const ZOOM_SOL_MIN = 16;
+
+    let sunEnabled = false;
+    let sunLayer = L.layerGroup().addTo(map);
+
+    function polarXY(cx, cy, R, bearingDeg, altDeg){
+      const altClamped = Math.max(-24, Math.min(90, altDeg));
+      const r = ((90 - altClamped) / 90) * R;
+      const t = bearingDeg * Math.PI / 180;
+      return { x: cx + r * Math.sin(t), y: cy - r * Math.cos(t) };
+    }
+
+    function clearSun(){
+      sunLayer.clearLayers();
+    }
+
+    function drawSun(){
+      clearSun();
+      if (!sunEnabled) return;
+      if (map.getZoom() < ZOOM_SOL_MIN) return;
+
+      const c = map.getCenter();
+      const date = new Date();
+      const times = SunCalc.getTimes(date, c.lat, c.lng);
+
+      // dibuja azimut salida/puesta como líneas simples
+      const sunrisePos = SunCalc.getPosition(times.sunrise, c.lat, c.lng);
+      const sunsetPos  = SunCalc.getPosition(times.sunset,  c.lat, c.lng);
+
+      function azToBearing(azRad){
+        // SunCalc: azimut desde sur; convertimos a bearing desde norte
+        const azDeg = azRad * 180/Math.PI;
+        const bearing = (azDeg + 180) % 360;
+        return bearing;
       }
 
-      /* =========================
-         SOL
-         ========================= */
+      function lineForBearing(bearing, label){
+        const Rm = 1200; // metros aprox
+        const p1 = c;
+        const p2 = L.GeometryUtil
+          ? null
+          : null;
 
-      const ZOOM_SOL_MIN = 16; // ← CAMBIO CLAVE
+        // fallback: aproximación en grados (simple, suficiente para overlay visual)
+        const dLat = (Rm/111320) * Math.cos(bearing*Math.PI/180);
+        const dLng = (Rm/(111320*Math.cos(c.lat*Math.PI/180))) * Math.sin(bearing*Math.PI/180);
 
-      let sunEnabled = false;
+        const end = L.latLng(c.lat + dLat, c.lng + dLng);
 
-      function polarXY(cx, cy, R, bearingDeg, altDeg){
-        const altClamped = Math.max(-24, Math.min(90, altDeg));
-        const r = ((90 - altClamped) / 90) * R;
-        const t = bearingDeg * Math.PI / 180;
-        return {
-          x: cx + r * Math.sin(t),
-          y: cy - r * Math.cos(t)
-        };
+        const ln = L.polyline([p1, end], { color:"rgba(255,214,64,.95)", weight:2, dashArray:"6 6" }).addTo(sunLayer);
+        ln.bindTooltip(label, { permanent:false, direction:"top" });
       }
 
-      /* resto de lógica solar SIN CAMBIOS */
+      lineForBearing(azToBearing(sunrisePos.azimuth), "Salida");
+      lineForBearing(azToBearing(sunsetPos.azimuth), "Puesta");
+    }
 
-      /* =========================
-         FIN PARTE 1
-         ========================= */
-      /* =========================
-         CONTROLES AREAS
-         (parte 2)
-         ========================= */
+    function refreshSunIfNeeded(){
+      if (!sunEnabled) { clearSun(); return; }
+      if (map.getZoom() < ZOOM_SOL_MIN) { clearSun(); setStatus(`Sol: zoom mínimo ${ZOOM_SOL_MIN}`); return; }
+      drawSun();
+    }
 
-      // Helpers para cumplir reglas de:
-      // - + solo aparece tras el 1er área de ese tipo
-      // - desactivar un modo borra SOLO sus áreas
-      // - ambos modos pueden estar activos a la vez
-      function countAreasByType(type){
-        return areaState.polys.filter(a => a && a.type === type).length;
+    function setSunEnabled(v){
+      sunEnabled = !!v;
+      $("sunToggle").style.opacity = sunEnabled ? "1" : ".75";
+      refreshSunIfNeeded();
+    }
+
+    $("sunToggle").addEventListener("click", () => {
+      setSunEnabled(!sunEnabled);
+      setStatus(sunEnabled ? "Sol activado" : "Sol desactivado");
+    });
+
+    // para que Areas apague el sol al dibujar
+    areaState.sunBtnForceOff = () => setSunEnabled(false);
+
+    /* =========================
+       STICKY BAND (aparece al pasar la línea entre fotos)
+       ========================= */
+
+    (function initSticky(){
+      const sep = $("photosSep");
+      const band = $("stickyBand");
+
+      const obs = new IntersectionObserver((entries) => {
+        const e = entries[0];
+        // Cuando la “línea” deja de estar visible en el viewport (se va hacia abajo),
+        // mostramos la banda. Ajuste simple, estable.
+        if (e.boundingClientRect.top < 62) band.classList.add("show");
+        else band.classList.remove("show");
+      }, { root: null, threshold: [0, 1] });
+
+      // Forzamos la línea a existir y estar donde toca dentro de la card
+      // El observer “ve” su top respecto al viewport.
+      obs.observe(sep);
+    })();
+
+    /* =========================
+       BUSCADOR CIUDAD (geocode mínimo)
+       ========================= */
+    async function geocodeCity(city){
+      // Geocoding simple con Nominatim. Si no quieres llamadas externas, quítalo.
+      const q = encodeURIComponent(city);
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${q}&limit=1`;
+      try{
+        const r = await fetch(url, { headers: { "Accept":"application/json" } });
+        const j = await r.json();
+        if (!j || !j[0]) return null;
+        return [parseFloat(j[0].lat), parseFloat(j[0].lon)];
+      }catch(_){
+        return null;
       }
+    }
 
-      function removeAreasByType(type){
-        const toRemove = areaState.polys.filter(a => a && a.type === type).map(a => a.id);
-        toRemove.forEach(id => removeAreaById(id));
+    $("cityInput").addEventListener("keydown", async (ev) => {
+      if (ev.key !== "Enter") return;
+      const city = ev.target.value.trim();
+      if (!city) return;
+      setStatus("Buscando ciudad…");
+      const center = await geocodeCity(city);
+      if (center) {
+        map.setView(center, 13);
+        setStatus(`Ciudad: ${city}`);
+      } else {
+        setStatus("No se encontró la ciudad");
       }
+    });
 
-      // Wrap: añade type (si no viene, usa drawingMode actual)
-      const _addAreaPolygon_original = addAreaPolygon;
-      addAreaPolygon = function(latlngs, type){
-        const t = type || areaState.drawingMode || "points";
-        const ok = _addAreaPolygon_original(latlngs);
-        if (!ok) return false;
+    /* =========================
+       FIN PARTE 1
+       ========================= */
+  </script>
+  <script>
+    /* =========================
+       CONTROLES AREAS (parte 2)
+       Reglas:
+       - + solo aparece tras el 1er área de ese tipo
+       - desactivar un modo borra SOLO sus áreas
+       - ambos modos pueden estar activos a la vez
+       ========================= */
 
-        // el último insertado es el nuevo
-        const last = areaState.polys[areaState.polys.length - 1];
-        if (last) last.type = t;
+    function countAreasByType(type){
+      return areaState.polys.filter(a => a && a.type === type).length;
+    }
 
-        return true;
-      };
+    function removeAreasByType(type){
+      const toRemove = areaState.polys
+        .filter(a => a && a.type === type)
+        .map(a => a.id);
+      toRemove.forEach(id => removeAreaById(id));
+    }
 
-      const AreasControl = L.Control.extend({
-        options: { position: "topright" },
-        onAdd: function() {
-          const container = L.DomUtil.create("div", "quickCol");
-          L.DomEvent.disableClickPropagation(container);
-          L.DomEvent.disableScrollPropagation(container);
+    const AreasControl = L.Control.extend({
+      options: { position: "topright" },
+      onAdd: function() {
+        const container = L.DomUtil.create("div", "quickCol");
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
 
-          // Fila 1: (+) puntos + botón "puntos"
-          const rowPoints = L.DomUtil.create("div", "quickRow", container);
+        // Fila 1: (+) puntos + botón "puntos"
+        const rowPoints = L.DomUtil.create("div", "quickRow", container);
 
-          const plusPoints = L.DomUtil.create("div", "qBtnSmall", rowPoints);
-          plusPoints.title = "Añadir otro polígono (punto a punto)";
-          plusPoints.style.display = "none";
-          plusPoints.innerHTML = `
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 5v14"></path><path d="M5 12h14"></path>
-            </svg>
-          `;
+        const plusPoints = L.DomUtil.create("div", "qBtnSmall", rowPoints);
+        plusPoints.title = "Añadir otro polígono (punto a punto)";
+        plusPoints.style.display = "none";
+        plusPoints.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14"></path><path d="M5 12h14"></path>
+          </svg>
+        `;
 
-          const btnPoints = L.DomUtil.create("div", "qBtn", rowPoints);
-          btnPoints.title = "Área por puntos";
-          btnPoints.innerHTML = `
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2l4 8-4 12-4-12 4-8z"></path>
-              <path d="M12 10l8 2-8 2-8-2 8-2z"></path>
-            </svg>
-          `;
+        const btnPoints = L.DomUtil.create("div", "qBtn", rowPoints);
+        btnPoints.title = "Área por puntos";
+        btnPoints.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l4 8-4 12-4-12 4-8z"></path>
+            <path d="M12 10l8 2-8 2-8-2 8-2z"></path>
+          </svg>
+        `;
 
-          // Fila 2: (+) libre + botón "libre"
-          const rowFree = L.DomUtil.create("div", "quickRow", container);
+        // Fila 2: (+) libre + botón "libre"
+        const rowFree = L.DomUtil.create("div", "quickRow", container);
 
-          const plusFree = L.DomUtil.create("div", "qBtnSmall", rowFree);
-          plusFree.title = "Añadir otro dibujo libre";
-          plusFree.style.display = "none";
-          plusFree.innerHTML = `
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 5v14"></path><path d="M5 12h14"></path>
-            </svg>
-          `;
+        const plusFree = L.DomUtil.create("div", "qBtnSmall", rowFree);
+        plusFree.title = "Añadir otro dibujo libre";
+        plusFree.style.display = "none";
+        plusFree.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14"></path><path d="M5 12h14"></path>
+          </svg>
+        `;
 
-          const btnFree = L.DomUtil.create("div", "qBtn", rowFree);
-          btnFree.title = "Área dibujo libre";
-          btnFree.innerHTML = `
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 17c3-6 6-6 9 0s6 6 9 0"></path>
-              <path d="M3 7c3 6 6 6 9 0s6-6 9 0"></path>
-            </svg>
-          `;
+        const btnFree = L.DomUtil.create("div", "qBtn", rowFree);
+        btnFree.title = "Área dibujo libre";
+        btnFree.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 17c3-6 6-6 9 0s6 6 9 0"></path>
+            <path d="M3 7c3 6 6 6 9 0s6-6 9 0"></path>
+          </svg>
+        `;
 
-          // refs
-          areaState.btnPointsEl = btnPoints;
-          areaState.btnFreeEl = btnFree;
-          areaState.btnPlusPointsEl = plusPoints;
-          areaState.btnPlusFreeEl = plusFree;
+        function refreshPlusVisibility(){
+          // + solo aparece si:
+          // - modo activo
+          // - ya existe al menos 1 área de ese tipo
+          const hasPts  = countAreasByType("points") >= 1;
+          const hasFree = countAreasByType("freehand") >= 1;
 
-          function refreshPlusVisibility(){
-            // + solo aparece si:
-            // - modo activo
-            // - ya existe al menos 1 área de ese tipo
-            const hasPts = countAreasByType("points") >= 1;
-            const hasFree = countAreasByType("freehand") >= 1;
+          plusPoints.style.display = (areaState.pointsActive && hasPts) ? "grid" : "none";
+          plusFree.style.display   = (areaState.freehandActive && hasFree) ? "grid" : "none";
 
-            plusPoints.style.display = (areaState.pointsActive && hasPts) ? "grid" : "none";
-            plusFree.style.display = (areaState.freehandActive && hasFree) ? "grid" : "none";
+          const full = areaState.polys.length >= MAX_AREAS;
+          plusPoints.classList.toggle("disabled", full);
+          plusFree.classList.toggle("disabled", full);
+        }
 
-            const full = areaState.polys.length >= MAX_AREAS;
-            plusPoints.classList.toggle("disabled", full);
-            plusFree.classList.toggle("disabled", full);
-          }
+        function refreshButtons(){
+          btnPoints.classList.toggle("active", areaState.pointsActive);
+          btnFree.classList.toggle("active", areaState.freehandActive);
+          refreshPlusVisibility();
+        }
 
-          function refreshButtons(){
-            btnPoints.classList.toggle("active", areaState.pointsActive);
-            btnFree.classList.toggle("active", areaState.freehandActive);
-            refreshPlusVisibility();
-          }
+        function activatePoints(){
+          if (areaState.pointsActive) return;
+          areaState.pointsActive = true;
 
-          function activatePoints(){
-            if (areaState.pointsActive) return;
-            areaState.pointsActive = true;
-
-            // Si no hay ningún polígono de puntos aún, empieza el 1º inmediatamente
-            if (countAreasByType("points") === 0) {
-              if (areaState.isDrawing) cancelCurrentDrawing();
-              startNewAreaDrawing("points");
-            }
-            refreshButtons();
-          }
-
-          function deactivatePoints(){
-            if (!areaState.pointsActive) return;
-            areaState.pointsActive = false;
-
-            // Si estabas dibujando puntos, cancela
-            if (areaState.isDrawing && areaState.drawingMode === "points") {
-              cancelCurrentDrawing();
-            }
-
-            // Borra TODOS los polígonos de puntos
-            removeAreasByType("points");
-
-            refreshButtons();
-            scheduleReload();
-          }
-
-          function activateFree(){
-            if (areaState.freehandActive) return;
-            areaState.freehandActive = true;
-
-            // Si no hay ningún libre aún, empieza el 1º inmediatamente
-            if (countAreasByType("freehand") === 0) {
-              if (areaState.isDrawing) cancelCurrentDrawing();
-              startNewAreaDrawing("freehand");
-            }
-            refreshButtons();
-          }
-
-          function deactivateFree(){
-            if (!areaState.freehandActive) return;
-            areaState.freehandActive = false;
-
-            if (areaState.isDrawing && areaState.drawingMode === "freehand") {
-              cancelCurrentDrawing();
-            }
-
-            // Borra TODOS los libres
-            removeAreasByType("freehand");
-
-            refreshButtons();
-            scheduleReload();
-          }
-
-          function startAnotherPoints(){
-            if (!areaState.pointsActive) return;
-            if (areaState.polys.length >= MAX_AREAS) return;
-
-            // No desactiva el otro modo; solo cancela el dibujo actual si lo hay
+          // Si no hay ningún polígono de puntos aún, empieza el 1º inmediatamente
+          if (countAreasByType("points") === 0) {
             if (areaState.isDrawing) cancelCurrentDrawing();
             startNewAreaDrawing("points");
           }
+          refreshButtons();
+        }
 
-          function startAnotherFree(){
-            if (!areaState.freehandActive) return;
-            if (areaState.polys.length >= MAX_AREAS) return;
+        function deactivatePoints(){
+          if (!areaState.pointsActive) return;
+          areaState.pointsActive = false;
 
+          // Si estabas dibujando puntos, cancela
+          if (areaState.isDrawing && areaState.drawingMode === "points") {
+            cancelCurrentDrawing();
+          }
+
+          // Borra TODOS los polígonos de puntos
+          removeAreasByType("points");
+
+          refreshButtons();
+          scheduleReload();
+          setStatus("Modo puntos desactivado (áreas de puntos borradas)");
+        }
+
+        function activateFree(){
+          if (areaState.freehandActive) return;
+          areaState.freehandActive = true;
+
+          // Si no hay ningún libre aún, empieza el 1º inmediatamente
+          if (countAreasByType("freehand") === 0) {
             if (areaState.isDrawing) cancelCurrentDrawing();
             startNewAreaDrawing("freehand");
           }
+          refreshButtons();
+        }
 
-          // Clicks botón principal (activa/desactiva)
-          btnPoints.addEventListener("click", () => {
-            if (areaState.pointsActive) deactivatePoints();
-            else activatePoints();
-          });
+        function deactivateFree(){
+          if (!areaState.freehandActive) return;
+          areaState.freehandActive = false;
 
-          btnFree.addEventListener("click", () => {
-            if (areaState.freehandActive) deactivateFree();
-            else activateFree();
-          });
+          if (areaState.isDrawing && areaState.drawingMode === "freehand") {
+            cancelCurrentDrawing();
+          }
 
-          // Clicks +
-          plusPoints.addEventListener("click", () => {
-            if (plusPoints.classList.contains("disabled")) return;
-            startAnotherPoints();
-          });
-
-          plusFree.addEventListener("click", () => {
-            if (plusFree.classList.contains("disabled")) return;
-            startAnotherFree();
-          });
-
-          // Mantener visibilidad del + sincronizada cuando se añaden/borra áreas:
-          // (hook ligero: cada vez que recargues, recalcula)
-          const _scheduleReload = scheduleReload;
-          scheduleReload = function(){
-            refreshPlusVisibility();
-            return _scheduleReload();
-          };
+          // Borra TODOS los libres
+          removeAreasByType("freehand");
 
           refreshButtons();
-          return container;
+          scheduleReload();
+          setStatus("Modo libre desactivado (áreas libres borradas)");
         }
-      });
 
-      map.addControl(new AreasControl());
+        function startAnotherPoints(){
+          if (!areaState.pointsActive) return;
+          if (areaState.polys.length >= MAX_AREAS) return;
 
-      // carga inicial
-      (async function init(){
-        try {
-          if (initialParams.city) {
-            const center = await geocodeCity(initialParams.city);
-            if (center) map.setView(center, 13);
-          }
-          await loadPointsForCurrentView();
-        } catch (e) {
-          const msg = (e && e.message) ? e.message : String(e);
-          setStatus(`Error: ${msg}`);
-          console.error(e);
+          // No desactiva el otro modo; solo cancela el dibujo actual si lo hay
+          if (areaState.isDrawing) cancelCurrentDrawing();
+          startNewAreaDrawing("points");
         }
-      })();
+
+        function startAnotherFree(){
+          if (!areaState.freehandActive) return;
+          if (areaState.polys.length >= MAX_AREAS) return;
+
+          if (areaState.isDrawing) cancelCurrentDrawing();
+          startNewAreaDrawing("freehand");
+        }
+
+        // Clicks botón principal (activa/desactiva)
+        btnPoints.addEventListener("click", () => {
+          if (areaState.pointsActive) deactivatePoints();
+          else activatePoints();
+        });
+
+        btnFree.addEventListener("click", () => {
+          if (areaState.freehandActive) deactivateFree();
+          else activateFree();
+        });
+
+        // Clicks +
+        plusPoints.addEventListener("click", () => {
+          if (plusPoints.classList.contains("disabled")) return;
+          startAnotherPoints();
+        });
+
+        plusFree.addEventListener("click", () => {
+          if (plusFree.classList.contains("disabled")) return;
+          startAnotherFree();
+        });
+
+        // refresco inicial
+        refreshButtons();
+
+        // Hook: actualiza visibilidad de + tras recargas
+        const _scheduleReload = scheduleReload;
+        scheduleReload = function(){
+          refreshPlusVisibility();
+          return _scheduleReload();
+        };
+
+        // También refresca al añadir/borrar áreas de forma manual
+        const _addAreaPolygon = addAreaPolygon;
+        addAreaPolygon = function(latlngs, type){
+          const ok = _addAreaPolygon(latlngs, type);
+          refreshPlusVisibility();
+          return ok;
+        };
+        const _removeAreaById = removeAreaById;
+        removeAreaById = function(id){
+          _removeAreaById(id);
+          refreshPlusVisibility();
+        };
+
+        return container;
+      }
+    });
+
+    map.addControl(new AreasControl());
+
+    /* =========================
+       INICIALIZACIÓN
+       ========================= */
+    (async function init(){
+      try {
+        // set listing inicial
+        setListingUI(allPoints[0]);
+
+        if (initialParams.city) {
+          const center = await geocodeCity(initialParams.city);
+          if (center) map.setView(center, 13);
+        }
+
+        await loadPointsForCurrentView();
+        updateAreasCount();
+        setStatus("Listo");
+      } catch (e) {
+        const msg = (e && e.message) ? e.message : String(e);
+        setStatus(`Error: ${msg}`);
+        console.error(e);
+      }
+    })();
+
+  </script>
+</body>
+</html>
 
