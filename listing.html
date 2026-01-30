@@ -450,7 +450,7 @@
 
       .stickyBar{
         position:fixed;
-        top:56px;
+        top:0;
         left:0;
         right:0;
         z-index:1000;
@@ -458,7 +458,7 @@
         border-bottom:1px solid var(--border);
         transform: translateY(-110%);
         opacity: 0;
-        transition: transform 220ms ease, opacity 220ms ease;
+        transition: transform 300ms ease, opacity 300ms ease;
       }
       .stickyBar.isVisible{
         transform: translateY(0);
@@ -1285,3 +1285,4 @@
     </script>
   </body>
 </html>
+
