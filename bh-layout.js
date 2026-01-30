@@ -50,10 +50,6 @@ function renderFooter() {
   return `
     <footer class="footer">
       <div class="footerInner">
-        <div class="footerLine1">
-          Inventario limpio, sin duplicados, sin anuncios zombis.
-        </div>
-
         <div class="footerLine2">
           <span>© ${year} Buscar Hogar</span>
           <span class="footerSep">·</span>
@@ -98,64 +94,9 @@ function renderAuthModal() {
             <div class="bh-msg bh-hidden" id="authMsgStart"></div>
           </div>
 
-          <div id="authStepPassword" class="bh-hidden">
-            <div class="bh-msg" id="pwHeader"></div>
-            <input id="pwInput" class="bh-input" type="password" autocomplete="current-password" placeholder="Contraseña" />
-            <button type="button" class="bh-btn bh-primary" id="pwLoginBtn">Entrar</button>
-
-            <div class="bh-msg bh-hidden" id="authMsgPw"></div>
-
-            <div class="bh-msg" style="margin-top:12px;">
-              <button type="button" class="bh-linkbtn" id="goRegisterBtn">No tengo cuenta, registrarme</button>
-              <span> · </span>
-              <button type="button" class="bh-linkbtn" id="backStartFromPwBtn">Volver</button>
-            </div>
-          </div>
-
-          <div id="authStepRegister" class="bh-hidden">
-            <div class="bh-msg" id="regHeader"></div>
-            <input id="regName" class="bh-input" type="text" autocomplete="name" placeholder="Nombre" />
-            <input id="regPassword" class="bh-input" type="password" autocomplete="new-password" placeholder="Contraseña (mín. 8)" />
-            <button type="button" class="bh-btn bh-primary" id="regCreateBtn">Crear cuenta</button>
-
-            <div class="bh-msg bh-hidden" id="authMsgReg"></div>
-
-            <div class="bh-msg" style="margin-top:12px;">
-              <button type="button" class="bh-linkbtn" id="backStartFromRegBtn">Volver</button>
-            </div>
-          </div>
-
           <div class="bh-probox">
             <div class="bh-proline"></div>
             <div class="bh-protext">
               Profesional inmobiliario:
-              <a href="./pro/login.html">accede aquí</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
+              <a href=".
 
-export function initLayout(opts = {}) {
-  const { showMiniSearch = false } = opts;
-
-  const headerMount = document.getElementById("bhHeader");
-  const footerMount = document.getElementById("bhFooter");
-
-  if (!headerMount || !footerMount) {
-    throw new Error("Faltan contenedores bhHeader o bhFooter en la página.");
-  }
-
-  headerMount.innerHTML = renderHeader({ showMiniSearch });
-  footerMount.innerHTML = renderFooter();
-
-  if (!document.getElementById("authOverlay")) {
-    document.body.insertAdjacentHTML("beforeend", renderAuthModal());
-  }
-
-  const BASE_URL = getBaseUrl();
-  window.BH_BASE_URL = BASE_URL;
-  window.BH_CALLBACK_URL = BASE_URL + "auth/callback.html";
-}
