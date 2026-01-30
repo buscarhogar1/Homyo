@@ -448,12 +448,7 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-      }
-
-      .quickRow{
-        display:flex;
-        flex-direction: row;
-        gap: 10px;
+        align-items: flex-end;
       }
 
       .qBtn {
@@ -783,11 +778,7 @@
         }
       }
 
-      /* --- Areas buttons: layout fijo, el + no empuja --- */
-      .quickCol{
-        align-items: flex-end;
-      }
-
+      /* layout fijo: el + nunca empuja */
       .areaBtnWrap{
         position: relative;
         width: 44px;
@@ -1228,10 +1219,6 @@
 
       let debounceTimer = null;
 
-      /* =========================
-         AREAS (puntos + libre)
-         ========================= */
-
       const MAX_AREAS = 5;
 
       const areaState = {
@@ -1248,7 +1235,7 @@
         tempVertexMarkers: [],
         tempLivePoly: null,
 
-        polys: [],               // { id, type, latlngs, poly, delMarker }
+        polys: [],
         nextId: 1,
 
         btnPointsEl: null,
@@ -1803,10 +1790,6 @@
         closeCard();
       });
 
-      /* =========================
-         CAPA SOL (SunCalc-like)
-         ========================= */
-
       const ZOOM_SOL_MIN = 16;
       let sunEnabled = false;
       const sunState = { dateISO: null, minutes: null, sunriseMin: null, sunsetMin: null };
@@ -2256,14 +2239,6 @@
       map.on("zoomend", () => { if (sunEnabled) updateSunOverlay(); });
       window.addEventListener("resize", () => { if (sunEnabled) updateSunOverlay(); });
 
-      /* =========================
-         FIN CAPA SOL
-         ========================= */
-
-      /* =========================
-         CONTROLES AREAS
-         (parte 2) - layout fijo + deselección automática al borrar último
-         ========================= */
       const AreasControl = L.Control.extend({
         options: { position: "topright" },
         onAdd: function() {
@@ -2319,12 +2294,13 @@
           }
 
           function refreshPlusVisibility(){
-            plusPoints.style.display = hasAreasOfType("points") ? "grid" : "none";
-            plusFree.style.display = hasAreasOfType("freehand") ? "grid" : "none";
-
             const full = areaState.polys.length >= MAX_AREAS;
+
             plusPoints.classList.toggle("disabled", full);
             plusFree.classList.toggle("disabled", full);
+
+            plusPoints.style.display = (areaState.pointsActive && hasAreasOfType("points")) ? "grid" : "none";
+            plusFree.style.display = (areaState.freehandActive && hasAreasOfType("freehand")) ? "grid" : "none";
           }
 
           function refreshButtons(){
@@ -2335,36 +2311,9 @@
 
           areaState.refreshAreasUI = refreshButtons;
 
-          function togglePoints(){
-            areaState.pointsActive = !areaState.pointsActive;
-
-            if (!areaState.pointsActive) {
-              if (areaState.isDrawing && areaState.drawingMode === "points") {
-                cancelCurrentDrawing();
-              }
-              removeAreasByType("points");
-            }
-
-            refreshButtons();
-          }
-
-          function toggleFree(){
-            areaState.freehandActive = !areaState.freehandActive;
-
-            if (!areaState.freehandActive) {
-              if (areaState.isDrawing && areaState.drawingMode === "freehand") {
-                cancelCurrentDrawing();
-              }
-              removeAreasByType("freehand");
-            }
-
-            refreshButtons();
-          }
-
           function startPointsArea(){
             if (areaState.polys.length >= MAX_AREAS) return;
             if (!areaState.pointsActive) return;
-
             if (areaState.isDrawing) cancelCurrentDrawing();
             startNewAreaDrawing("points");
           }
@@ -2372,9 +2321,44 @@
           function startFreeArea(){
             if (areaState.polys.length >= MAX_AREAS) return;
             if (!areaState.freehandActive) return;
-
             if (areaState.isDrawing) cancelCurrentDrawing();
             startNewAreaDrawing("freehand");
+          }
+
+          function togglePoints(){
+            const willOn = !areaState.pointsActive;
+            areaState.pointsActive = willOn;
+
+            if (!willOn) {
+              if (areaState.isDrawing && areaState.drawingMode === "points") cancelCurrentDrawing();
+              removeAreasByType("points");
+              refreshButtons();
+              return;
+            }
+
+            areaState.freehandActive = false;
+            if (areaState.isDrawing && areaState.drawingMode === "freehand") cancelCurrentDrawing();
+
+            refreshButtons();
+            startPointsArea();
+          }
+
+          function toggleFree(){
+            const willOn = !areaState.freehandActive;
+            areaState.freehandActive = willOn;
+
+            if (!willOn) {
+              if (areaState.isDrawing && areaState.drawingMode === "freehand") cancelCurrentDrawing();
+              removeAreasByType("freehand");
+              refreshButtons();
+              return;
+            }
+
+            areaState.pointsActive = false;
+            if (areaState.isDrawing && areaState.drawingMode === "points") cancelCurrentDrawing();
+
+            refreshButtons();
+            startFreeArea();
           }
 
           btnPoints.addEventListener("click", togglePoints);
@@ -2410,7 +2394,6 @@
           console.error(e);
         }
       })();
-
     </script>
   </body>
 </html>
