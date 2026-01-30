@@ -98,5 +98,34 @@ function renderAuthModal() {
             <div class="bh-proline"></div>
             <div class="bh-protext">
               Profesional inmobiliario:
-              <a href=".
+              <a href="./pro/login.html">accede aquí</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+export function initLayout(opts = {}) {
+  const { showMiniSearch = false } = opts;
+
+  const headerMount = document.getElementById("bhHeader");
+  const footerMount = document.getElementById("bhFooter");
+
+  if (!headerMount || !footerMount) {
+    throw new Error("Faltan contenedores bhHeader o bhFooter en la página.");
+  }
+
+  headerMount.innerHTML = renderHeader({ showMiniSearch });
+  footerMount.innerHTML = renderFooter();
+
+  if (!document.getElementById("authOverlay")) {
+    document.body.insertAdjacentHTML("beforeend", renderAuthModal());
+  }
+
+  const BASE_URL = getBaseUrl();
+  window.BH_BASE_URL = BASE_URL;
+  window.BH_CALLBACK_URL = BASE_URL + "auth/callback.html";
+}
 
