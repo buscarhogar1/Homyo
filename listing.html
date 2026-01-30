@@ -134,7 +134,7 @@
         grid-template-rows: 1fr 1fr;
         gap: var(--gap);
         height:100%;
-        position:relative; /* para el sentinel */
+        position:relative;
       }
       .mediaSmall{height:100%;}
 
@@ -285,15 +285,9 @@
         border-top:1px solid var(--border);
       }
       .h2{
-        font-size:42px;
-        margin:0 0 10px;
-        letter-spacing:-0.6px;
-        line-height:1.05;
-      }
-      .h2.small{
         font-size:20px;
+        margin:0 0 10px;
         letter-spacing:-0.1px;
-        line-height:1.2;
       }
 
       .p{
@@ -335,7 +329,6 @@
         background:#fff;
         overflow:hidden;
       }
-
       .featHead{
         display:flex;
         align-items:center;
@@ -345,9 +338,7 @@
         font-weight:600;
         border-bottom:1px solid var(--border);
       }
-
       .featList{ padding:0; }
-
       .featLine{
         display:grid;
         grid-template-columns: 260px 1fr;
@@ -355,9 +346,87 @@
         border-bottom:1px solid var(--border);
       }
       .featLine:last-child{ border-bottom:none; }
-
       .featK{ font-size:14px; color:var(--muted); }
       .featV{ font-size:14px; color:#111; }
+
+      /* Popularidad y barrio, módulos tipo funda */
+      .popBox{
+        border:1px solid var(--border);
+        border-radius:12px;
+        overflow:hidden;
+        background:#fff;
+      }
+      .popRow{
+        display:grid;
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .popCell{
+        padding:18px 14px;
+        text-align:center;
+        border-right:1px solid var(--border);
+      }
+      .popCell:last-child{border-right:none;}
+      .popValue{
+        font-size:26px;
+        font-weight:700;
+        line-height:1.1;
+      }
+      .popLabel{
+        margin-top:6px;
+        font-size:14px;
+        color:#111;
+      }
+      .popSub{
+        margin-top:2px;
+        font-size:13px;
+        color:var(--muted);
+      }
+
+      .neighBox{
+        border:1px solid var(--border);
+        border-radius:12px;
+        background:#fff;
+        overflow:hidden;
+      }
+      .neighTop{
+        padding:16px;
+        display:flex;
+        gap:12px;
+        align-items:center;
+      }
+      .neighThumb{
+        width:46px;
+        height:46px;
+        border-radius:10px;
+        background:linear-gradient(135deg,#f0f1f3,#ffffff);
+        border:1px solid var(--border);
+        flex:0 0 auto;
+      }
+      .neighTitle{
+        font-size:18px;
+        font-weight:600;
+        color:var(--link);
+        line-height:1.1;
+      }
+      .neighCity{
+        margin-top:3px;
+        font-size:14px;
+        color:var(--muted);
+      }
+      .neighLines{
+        border-top:1px solid var(--border);
+        padding:0 16px;
+      }
+      .neighLine{
+        display:grid;
+        grid-template-columns: 260px 1fr;
+        padding:10px 0;
+        border-bottom:1px solid var(--border);
+        font-size:14px;
+      }
+      .neighLine:last-child{border-bottom:none;}
+      .neighK{color:var(--muted);}
+      .neighV{color:#111;}
 
       .sideSticky{position:sticky; top:14px; display:grid; gap:12px;}
       .sideCard{
@@ -429,7 +498,7 @@
         cursor:not-allowed;
       }
 
-      /* ===== BOTÓN GOOGLE MAPS ===== */
+      /* Botón Google Maps bajo mapa */
       .gmapsBtn{
         margin-top:12px;
         display:inline-flex;
@@ -447,7 +516,7 @@
       }
       .gmapsBtn:hover{ background:#f6f7f9; }
 
-      /* ===== STICKY BAR (tipo Funda) ===== */
+      /* Sticky bar tipo funda */
       .stickyBar{
         position:fixed;
         top:0;
@@ -518,7 +587,7 @@
         cursor:not-allowed;
       }
 
-      /* Sentinel: línea imaginaria (50% del cuadro de 4 fotos) */
+      /* Sentinel (línea imaginaria) */
       #stickySentinel{
         position:absolute;
         left:0;
@@ -526,7 +595,7 @@
         top: calc(50% - (var(--gap) / 2));
         height:2px;
         pointer-events:none;
-        opacity:0; /* invisible */
+        opacity:0;
       }
 
       @media (max-width: 1200px){
@@ -541,10 +610,13 @@
         .mediaSmall{min-height:150px;}
         .contentGrid{grid-template-columns:1fr;}
         .sideSticky{position:static;}
-        .featLine{grid-template-columns: 1fr; gap:4px;}
 
-        /* En móvil no hay “línea” clara en 2x2 si baja a 1 col.
-           Elegimos un comportamiento estable: sentinel al inicio del bloque de medias */
+        .featLine{grid-template-columns: 1fr; gap:4px;}
+        .popRow{grid-template-columns:1fr;}
+        .popCell{border-right:none; border-bottom:1px solid var(--border); text-align:left;}
+        .popCell:last-child{border-bottom:none;}
+        .neighLine{grid-template-columns:1fr; gap:4px;}
+
         #stickySentinel{ top: 0; }
       }
       @media (max-width: 560px){
@@ -554,7 +626,6 @@
   </head>
 
   <body>
-    <!-- Sticky bar -->
     <div class="stickyBar" id="stickyBar" aria-hidden="true">
       <div class="stickyInner">
         <div class="stickyLeft">
@@ -573,7 +644,7 @@
             Ver teléfono
           </button>
 
-          <button class="sbtn sbtnPrimary" id="stickyContactBtn" type="button" title="Contactar" disabled>
+          <button class="sbtn sbtnPrimary" id="stickyContactBtn" type="button" title="Contacto" disabled>
             Contacto
           </button>
         </div>
@@ -619,7 +690,6 @@
             <div class="mediaGrid">
               <div class="mediaBig" id="mediaBig">Foto principal (pendiente)</div>
               <div class="mediaSmallGrid">
-                <!-- Sentinel en la “línea imaginaria” -->
                 <div id="stickySentinel"></div>
 
                 <div class="mediaSmall" id="mediaS1">Foto</div>
@@ -694,21 +764,28 @@
           </div>
 
           <div class="section" id="descripcion">
-            <h2 class="h2 small">Descripción</h2>
+            <h2 class="h2">Descripción</h2>
             <div id="descWrap" class="p descClamp clamp5"></div>
             <button id="descToggle" class="readMoreBtn" type="button" style="display:none;">Leer más</button>
           </div>
 
           <div class="section" id="caracteristicas">
-            <h2 class="h2 small">Características</h2>
+            <h2 class="h2">Características</h2>
             <div class="featuresGrid" id="featuresGrid"></div>
+
+            <div style="height:16px;"></div>
+
+            <div id="popularityWrap"></div>
+
+            <div style="height:16px;"></div>
+
+            <div id="neighborhoodWrap"></div>
           </div>
 
           <div class="section" id="ubicacion">
-            <h2 class="h2 small">Ubicación</h2>
+            <h2 class="h2">Ubicación</h2>
             <div id="mainMap"></div>
 
-            <!-- Sustituye la frase por botón Google Maps -->
             <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
               Calcular tiempo de viaje con Google Maps
             </a>
@@ -813,6 +890,8 @@
       const descToggleEl = document.getElementById("descToggle");
 
       const featuresGridEl = document.getElementById("featuresGrid");
+      const popularityWrapEl = document.getElementById("popularityWrap");
+      const neighborhoodWrapEl = document.getElementById("neighborhoodWrap");
 
       const callBtn = document.getElementById("callBtn");
       const emailBtn = document.getElementById("emailBtn");
@@ -822,7 +901,6 @@
 
       const backBtnEl = document.getElementById("backBtn");
 
-      // Sticky bar elements
       const stickyBarEl = document.getElementById("stickyBar");
       const stickyAddrEl = document.getElementById("stickyAddr");
       const stickyPriceEl = document.getElementById("stickyPrice");
@@ -908,8 +986,6 @@
             "province",
             "lat",
             "lng"
-            // Si en el futuro añades phone/email a la vista, lo puedes sumar aquí.
-            // Mientras no exista en Supabase, NO lo pongas en el select (daría error).
           ].join(",")
         );
         params.set("listing_id", "eq." + listingId);
@@ -1065,6 +1141,120 @@
         featuresGridEl.appendChild(b2);
       }
 
+      function renderPopularity(row){
+        const dash = "—";
+        popularityWrapEl.innerHTML = "";
+
+        const h = document.createElement("div");
+        h.className = "h2";
+        h.textContent = "Popularidad";
+
+        const box = document.createElement("div");
+        box.className = "popBox";
+
+        const rowEl = document.createElement("div");
+        rowEl.className = "popRow";
+
+        // MVP: no hay datos reales aún
+        const views = dash;
+        const saves = dash;
+        const since = row.listed_at ? fmtDate(row.listed_at) : dash;
+
+        rowEl.appendChild(makePopCell(views, "Vistas", "en Buscar Hogar"));
+        rowEl.appendChild(makePopCell(saves, "Guardados", "en Buscar Hogar"));
+        rowEl.appendChild(makePopCell(since, "En Buscar Hogar", "fecha de alta"));
+
+        box.appendChild(rowEl);
+        popularityWrapEl.appendChild(h);
+        popularityWrapEl.appendChild(box);
+      }
+
+      function makePopCell(value, label, sub){
+        const cell = document.createElement("div");
+        cell.className = "popCell";
+
+        const v = document.createElement("div");
+        v.className = "popValue";
+        v.textContent = value;
+
+        const l = document.createElement("div");
+        l.className = "popLabel";
+        l.textContent = label;
+
+        const s = document.createElement("div");
+        s.className = "popSub";
+        s.textContent = sub;
+
+        cell.appendChild(v);
+        cell.appendChild(l);
+        cell.appendChild(s);
+        return cell;
+      }
+
+      function renderNeighborhood(row){
+        const dash = "—";
+        neighborhoodWrapEl.innerHTML = "";
+
+        const h = document.createElement("div");
+        h.className = "h2";
+        h.textContent = "Barrio";
+
+        const box = document.createElement("div");
+        box.className = "neighBox";
+
+        const top = document.createElement("div");
+        top.className = "neighTop";
+
+        const thumb = document.createElement("div");
+        thumb.className = "neighThumb";
+
+        const meta = document.createElement("div");
+        const t = document.createElement("div");
+        t.className = "neighTitle";
+        t.textContent = row.neighborhood || dash;
+
+        const c = document.createElement("div");
+        c.className = "neighCity";
+        c.textContent = row.city || dash;
+
+        meta.appendChild(t);
+        meta.appendChild(c);
+
+        top.appendChild(thumb);
+        top.appendChild(meta);
+
+        const lines = document.createElement("div");
+        lines.className = "neighLines";
+
+        // MVP: placeholders hasta tener datos reales
+        lines.appendChild(makeNeighLine("Residentes", dash));
+        lines.appendChild(makeNeighLine("Familias con niños", dash));
+        lines.appendChild(makeNeighLine("Precio medio / m²", dash));
+
+        box.appendChild(top);
+        box.appendChild(lines);
+
+        neighborhoodWrapEl.appendChild(h);
+        neighborhoodWrapEl.appendChild(box);
+      }
+
+      function makeNeighLine(k, v){
+        const line = document.createElement("div");
+        line.className = "neighLine";
+
+        const kk = document.createElement("div");
+        kk.className = "neighK";
+        kk.textContent = k;
+
+        const vv = document.createElement("div");
+        vv.className = "neighV";
+        vv.textContent = v;
+
+        line.appendChild(kk);
+        line.appendChild(vv);
+        return line;
+      }
+
       function renderDescription(row) {
         const city = row.city || "la zona";
         const neighborhood = row.neighborhood ? (" en " + row.neighborhood) : "";
@@ -1134,12 +1324,10 @@
       }
 
       function wireSticky(){
-        // Mostrar/ocultar sticky al cruzar el sentinel
         if (!stickySentinelEl) return;
 
         const obs = new IntersectionObserver((entries) => {
           const e = entries[0];
-          // Cuando el sentinel ya ha “subido” y deja de verse, mostramos sticky.
           const show = !e.isIntersecting && e.boundingClientRect.top < 0;
           stickyBarEl.classList.toggle("isVisible", show);
           stickyBarEl.setAttribute("aria-hidden", show ? "false" : "true");
@@ -1152,11 +1340,9 @@
         const hasPhone = !!(phone && String(phone).trim());
         const hasEmail = !!(email && String(email).trim());
 
-        // Side card
         callBtn.disabled = !hasPhone;
         emailBtn.disabled = !hasEmail;
 
-        // Sticky
         stickyPhoneBtnEl.disabled = !hasPhone;
         stickyContactBtnEl.disabled = !hasEmail;
 
@@ -1166,7 +1352,6 @@
           contactMvpNoteEl.style.display = "block";
         }
 
-        // Clicks
         callBtn.onclick = () => {
           if (!hasPhone) return;
           alert("Teléfono: " + String(phone));
@@ -1182,7 +1367,7 @@
         };
         stickyContactBtnEl.onclick = () => {
           if (!hasEmail) return;
-          window.location.href = "mailto:" + String(email);
+          window.location.href = "mailto:" + String(email));
         };
       }
 
@@ -1212,14 +1397,12 @@
         const initialSaved = localStorage.getItem(storageKey(listingId)) === "1";
         setSavedUI(initialSaved);
 
-        // Favoritos (botón original)
         saveBtn.addEventListener("click", () => {
           const nowSaved = !(localStorage.getItem(storageKey(listingId)) === "1");
           localStorage.setItem(storageKey(listingId), nowSaved ? "1" : "0");
           setSavedUI(nowSaved);
         });
 
-        // Favoritos (botón sticky)
         stickySaveBtnEl.addEventListener("click", () => {
           saveBtn.click();
         });
@@ -1269,6 +1452,8 @@
 
           renderDescription(row);
           renderFeatures(row);
+          renderPopularity(row);
+          renderNeighborhood(row);
 
           const lat = (row.lat != null) ? Number(row.lat) : null;
           const lng = (row.lng != null) ? Number(row.lng) : null;
@@ -1277,10 +1462,8 @@
           ensureMainMap(lat, lng);
           updateGoogleMapsLink(lat, lng);
 
-          // Contacto: MVP (sin datos en la vista actual)
-          // Si más adelante añades phone/email a Supabase y al select, aquí se activará automáticamente.
-          const phone = row.phone; // undefined ahora mismo
-          const email = row.email; // undefined ahora mismo
+          const phone = row.phone;
+          const email = row.email;
           setContactButtons(phone, email);
 
         } catch (e) {
