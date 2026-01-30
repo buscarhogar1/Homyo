@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Política de privacidad · Buscar Hogar</title>
+
+    <link rel="stylesheet" href="../bh-shared.css" />
+
+    <style>
+      .legalWrap{
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 40px 16px 64px;
+        line-height: 1.6;
+      }
+
+      .legalWrap h1{
+        font-size: 28px;
+        margin-bottom: 24px;
+      }
+
+      .legalWrap h2{
+        font-size: 18px;
+        margin-top: 32px;
+        margin-bottom: 8px;
+      }
+
+      .legalWrap p{
+        margin: 0 0 12px;
+        color: #333;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="legalWrap">
+      <h1>Política de privacidad</h1>
+
+      <p>
+        En Buscar Hogar nos tomamos en serio la protección de los datos personales.
+        Esta política describe cómo se recopilan y tratan los datos de los usuarios.
+      </p>
+
+      <h2>Datos recopilados</h2>
+      <p>
+        Podemos recopilar datos identificativos como nombre y dirección de correo electrónico
+        cuando el usuario se registra o inicia sesión.
+      </p>
+
+      <h2>Finalidad</h2>
+      <p>
+        Los datos se utilizan únicamente para la gestión de la cuenta de usuario
+        y el correcto funcionamiento de la plataforma.
+      </p>
+
+      <h2>Base legal</h2>
+      <p>
+        El tratamiento de los datos se basa en el consentimiento del usuario
+        y en la ejecución del servicio solicitado.
+      </p>
+
+      <h2>Derechos del usuario</h2>
+      <p>
+        El usuario puede ejercer sus derechos de acceso, rectificación y supresión
+        conforme a la normativa aplicable.
+      </p>
+
+      <h2>Conservación</h2>
+      <p>
+        Los datos se conservarán mientras la cuenta esté activa o exista una obligación legal.
+      </p>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "../bh-layout.js";
+      import { initAuth } from "../bh-auth.js";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+    </script>
+  </body>
+</html>
