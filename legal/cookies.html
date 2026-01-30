@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Política de cookies · Buscar Hogar</title>
+
+    <link rel="stylesheet" href="../bh-shared.css" />
+
+    <style>
+      .legalWrap{
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 40px 16px 64px;
+        line-height: 1.6;
+      }
+
+      .legalWrap h1{
+        font-size: 28px;
+        margin-bottom: 24px;
+      }
+
+      .legalWrap h2{
+        font-size: 18px;
+        margin-top: 32px;
+        margin-bottom: 8px;
+      }
+
+      .legalWrap p{
+        margin: 0 0 12px;
+        color: #333;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="legalWrap">
+      <h1>Política de cookies</h1>
+
+      <p>
+        Buscar Hogar utiliza cookies y tecnologías similares para garantizar
+        el correcto funcionamiento de la plataforma.
+      </p>
+
+      <h2>¿Qué son las cookies?</h2>
+      <p>
+        Las cookies son pequeños archivos que se almacenan en el dispositivo del usuario
+        y permiten recordar información sobre la navegación.
+      </p>
+
+      <h2>Cookies utilizadas</h2>
+      <p>
+        Actualmente solo se utilizan cookies técnicas y de autenticación,
+        necesarias para el inicio de sesión y la seguridad.
+      </p>
+
+      <h2>Cookies de terceros</h2>
+      <p>
+        En el proceso de autenticación pueden intervenir servicios de terceros
+        como Supabase o proveedores de identidad.
+      </p>
+
+      <h2>Gestión de cookies</h2>
+      <p>
+        El usuario puede configurar su navegador para bloquear o eliminar cookies,
+        aunque esto puede afectar al funcionamiento del sitio.
+      </p>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "../bh-layout.js";
+      import { initAuth } from "../bh-auth.js";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+    </script>
+  </body>
+</html>
