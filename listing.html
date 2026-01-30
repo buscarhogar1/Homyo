@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Buscar Hogar – Ficha</title>
 
+    <link rel="stylesheet" href="/buscarhogardemo/bh-shared.css" />
+
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -134,7 +136,7 @@
         grid-template-rows: 1fr 1fr;
         gap: var(--gap);
         height:100%;
-        position:relative; /* para el sentinel */
+        position:relative;
       }
       .mediaSmall{height:100%;}
 
@@ -429,7 +431,6 @@
         cursor:not-allowed;
       }
 
-      /* ===== BOTÓN GOOGLE MAPS ===== */
       .gmapsBtn{
         margin-top:12px;
         display:inline-flex;
@@ -447,10 +448,9 @@
       }
       .gmapsBtn:hover{ background:#f6f7f9; }
 
-      /* ===== STICKY BAR (tipo Funda) ===== */
       .stickyBar{
         position:fixed;
-        top:0;
+        top:56px;
         left:0;
         right:0;
         z-index:1000;
@@ -518,7 +518,6 @@
         cursor:not-allowed;
       }
 
-      /* Sentinel: línea imaginaria (50% del cuadro de 4 fotos) */
       #stickySentinel{
         position:absolute;
         left:0;
@@ -526,7 +525,7 @@
         top: calc(50% - (var(--gap) / 2));
         height:2px;
         pointer-events:none;
-        opacity:0; /* invisible */
+        opacity:0;
       }
 
       @media (max-width: 1200px){
@@ -542,9 +541,6 @@
         .contentGrid{grid-template-columns:1fr;}
         .sideSticky{position:static;}
         .featLine{grid-template-columns: 1fr; gap:4px;}
-
-        /* En móvil no hay “línea” clara en 2x2 si baja a 1 col.
-           Elegimos un comportamiento estable: sentinel al inicio del bloque de medias */
         #stickySentinel{ top: 0; }
       }
       @media (max-width: 560px){
@@ -554,7 +550,8 @@
   </head>
 
   <body>
-    <!-- Sticky bar -->
+    <div id="bhHeader"></div>
+
     <div class="stickyBar" id="stickyBar" aria-hidden="true">
       <div class="stickyInner">
         <div class="stickyLeft">
@@ -581,7 +578,6 @@
     </div>
 
     <div class="wrap">
-
       <div class="topRow">
         <a class="back" id="backBtn" href="./">Volver al mapa</a>
       </div>
@@ -619,7 +615,6 @@
             <div class="mediaGrid">
               <div class="mediaBig" id="mediaBig">Foto principal (pendiente)</div>
               <div class="mediaSmallGrid">
-                <!-- Sentinel en la “línea imaginaria” -->
                 <div id="stickySentinel"></div>
 
                 <div class="mediaSmall" id="mediaS1">Foto</div>
@@ -708,7 +703,6 @@
             <h2 class="h2 small">Ubicación</h2>
             <div id="mainMap"></div>
 
-            <!-- Sustituye la frase por botón Google Maps -->
             <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
               Calcular tiempo de viaje con Google Maps
             </a>
@@ -763,6 +757,16 @@
       </div>
 
     </div>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "/buscarhogardemo/bh-layout.js";
+      import { initAuth } from "/buscarhogardemo/bh-auth.js";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+    </script>
 
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -822,7 +826,6 @@
 
       const backBtnEl = document.getElementById("backBtn");
 
-      // Sticky bar elements
       const stickyBarEl = document.getElementById("stickyBar");
       const stickyAddrEl = document.getElementById("stickyAddr");
       const stickyPriceEl = document.getElementById("stickyPrice");
@@ -908,8 +911,6 @@
             "province",
             "lat",
             "lng"
-            // Si en el futuro añades phone/email a la vista, lo puedes sumar aquí.
-            // Mientras no exista en Supabase, NO lo pongas en el select (daría error).
           ].join(",")
         );
         params.set("listing_id", "eq." + listingId);
@@ -1134,12 +1135,10 @@
       }
 
       function wireSticky(){
-        // Mostrar/ocultar sticky al cruzar el sentinel
         if (!stickySentinelEl) return;
 
         const obs = new IntersectionObserver((entries) => {
           const e = entries[0];
-          // Cuando el sentinel ya ha “subido” y deja de verse, mostramos sticky.
           const show = !e.isIntersecting && e.boundingClientRect.top < 0;
           stickyBarEl.classList.toggle("isVisible", show);
           stickyBarEl.setAttribute("aria-hidden", show ? "false" : "true");
@@ -1152,11 +1151,9 @@
         const hasPhone = !!(phone && String(phone).trim());
         const hasEmail = !!(email && String(email).trim());
 
-        // Side card
         callBtn.disabled = !hasPhone;
         emailBtn.disabled = !hasEmail;
 
-        // Sticky
         stickyPhoneBtnEl.disabled = !hasPhone;
         stickyContactBtnEl.disabled = !hasEmail;
 
@@ -1166,7 +1163,6 @@
           contactMvpNoteEl.style.display = "block";
         }
 
-        // Clicks
         callBtn.onclick = () => {
           if (!hasPhone) return;
           alert("Teléfono: " + String(phone));
@@ -1212,14 +1208,12 @@
         const initialSaved = localStorage.getItem(storageKey(listingId)) === "1";
         setSavedUI(initialSaved);
 
-        // Favoritos (botón original)
         saveBtn.addEventListener("click", () => {
           const nowSaved = !(localStorage.getItem(storageKey(listingId)) === "1");
           localStorage.setItem(storageKey(listingId), nowSaved ? "1" : "0");
           setSavedUI(nowSaved);
         });
 
-        // Favoritos (botón sticky)
         stickySaveBtnEl.addEventListener("click", () => {
           saveBtn.click();
         });
@@ -1277,10 +1271,8 @@
           ensureMainMap(lat, lng);
           updateGoogleMapsLink(lat, lng);
 
-          // Contacto: MVP (sin datos en la vista actual)
-          // Si más adelante añades phone/email a Supabase y al select, aquí se activará automáticamente.
-          const phone = row.phone; // undefined ahora mismo
-          const email = row.email; // undefined ahora mismo
+          const phone = row.phone;
+          const email = row.email;
           setContactButtons(phone, email);
 
         } catch (e) {
