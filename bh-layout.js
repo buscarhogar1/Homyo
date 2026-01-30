@@ -75,6 +75,7 @@ function renderAuthModal() {
         <p class="bh-subtitle">Acceso solo para usuarios.</p>
 
         <div class="bh-actions">
+          <!-- Pantalla 1: opciones -->
           <div id="authStepStart">
             <button type="button" class="bh-btn gBtn" id="googleBtn">
               <svg class="gIcon" viewBox="0 0 48 48" aria-hidden="true">
@@ -91,7 +92,36 @@ function renderAuthModal() {
             <input id="emailInput" class="bh-input" type="email" autocomplete="email" placeholder="Email" />
             <button type="button" class="bh-btn bh-primary" id="emailContinueBtn">Continuar con email</button>
 
-            <div class="bh-msg bh-hidden" id="authMsgStart"></div>
+            <div class="bh-msg bh-hidden" id="authMsgStart" role="status" aria-live="polite"></div>
+          </div>
+
+          <!-- Pantalla 2: contraseña -->
+          <div id="authStepPassword" class="bh-hidden">
+            <div class="bh-msg" id="pwHeader"></div>
+            <input id="pwInput" class="bh-input" type="password" autocomplete="current-password" placeholder="Contraseña" />
+            <button type="button" class="bh-btn bh-primary" id="pwLoginBtn">Entrar</button>
+
+            <div class="bh-msg bh-hidden" id="authMsgPw" role="status" aria-live="polite"></div>
+
+            <div class="bh-msg" style="margin-top:12px;">
+              <button type="button" class="bh-linkbtn" id="goRegisterBtn">No tengo cuenta, registrarme</button>
+              <span> · </span>
+              <button type="button" class="bh-linkbtn" id="backStartFromPwBtn">Volver</button>
+            </div>
+          </div>
+
+          <!-- Pantalla 3: registro -->
+          <div id="authStepRegister" class="bh-hidden">
+            <div class="bh-msg" id="regHeader"></div>
+            <input id="regName" class="bh-input" type="text" autocomplete="name" placeholder="Nombre" />
+            <input id="regPassword" class="bh-input" type="password" autocomplete="new-password" placeholder="Contraseña (mín. 8)" />
+            <button type="button" class="bh-btn bh-primary" id="regCreateBtn">Crear cuenta</button>
+
+            <div class="bh-msg bh-hidden" id="authMsgReg" role="status" aria-live="polite"></div>
+
+            <div class="bh-msg" style="margin-top:12px;">
+              <button type="button" class="bh-linkbtn" id="backStartFromRegBtn">Volver</button>
+            </div>
           </div>
 
           <div class="bh-probox">
@@ -127,5 +157,23 @@ export function initLayout(opts = {}) {
   const BASE_URL = getBaseUrl();
   window.BH_BASE_URL = BASE_URL;
   window.BH_CALLBACK_URL = BASE_URL + "auth/callback.html";
-}
 
+  // Wiring del miniSearch del header (si existe)
+  const miniSearchForm = document.getElementById("miniSearchForm");
+  if (miniSearchForm) {
+    miniSearchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const miniQ = document.getElementById("miniQ");
+      const city = (miniQ?.value || "").trim();
+      if (!city) return;
+
+      if (typeof window.BH_goToMap === "function") {
+        window.BH_goToMap(city);
+        return;
+      }
+
+      const q = document.getElementById("q");
+      if (q) q.value = city;
+    });
+  }
+}
