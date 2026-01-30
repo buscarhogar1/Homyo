@@ -1,17 +1,20 @@
 // bh-layout.js
-// Inserta header, footer y modal de autenticación en todas las páginas
+// Layout común: header + footer + modal auth
 // Uso: initLayout({ showMiniSearch: true|false })
 
-function getBaseUrl() {
-  const origin = window.location.origin;
-  let path = window.location.pathname;
-  if (!path.endsWith("/")) {
-    path = path.replace(/[^\/]*$/, "");
-  }
-  return origin + path;
+function getSiteRoot() {
+  // GitHub Pages: /<repo>/...
+  // Ejemplo: /buscarhogardemo/legal/terminos.html -> "/buscarhogardemo/"
+  const parts = (window.location.pathname || "/").split("/");
+  const repo = parts.length > 1 ? parts[1] : "";
+  return repo ? `/${repo}/` : "/";
 }
 
-function renderHeader({ showMiniSearch }) {
+function getBaseUrlFromRoot(root) {
+  return window.location.origin + root;
+}
+
+function renderHeader({ showMiniSearch, root }) {
   const mini = showMiniSearch ? `
     <form class="miniSearch" id="miniSearchForm" autocomplete="off" aria-label="Búsqueda rápida">
       <input id="miniQ" placeholder="Buscar..." aria-label="Buscar rápido" />
@@ -27,7 +30,7 @@ function renderHeader({ showMiniSearch }) {
   return `
     <header class="topbar">
       <div class="topbarInner">
-        <a class="brand" href="./">
+        <a class="brand" href="${root}">
           <div class="logoMark" aria-label="Logo">
             <span>BH</span>
           </div>
@@ -44,7 +47,7 @@ function renderHeader({ showMiniSearch }) {
   `;
 }
 
-function renderFooter() {
+function renderFooter({ root }) {
   const year = new Date().getFullYear();
 
   return `
@@ -53,18 +56,18 @@ function renderFooter() {
         <div class="footerLine2">
           <span>© ${year} Buscar Hogar</span>
           <span class="footerSep">·</span>
-          <a href="./legal/terminos.html">Términos de uso</a>
+          <a href="${root}legal/terminos.html">Términos de uso</a>
           <span class="footerSep">·</span>
-          <a href="./legal/privacidad.html">Política de privacidad</a>
+          <a href="${root}legal/privacidad.html">Política de privacidad</a>
           <span class="footerSep">·</span>
-          <a href="./legal/cookies.html">Política de cookies</a>
+          <a href="${root}legal/cookies.html">Política de cookies</a>
         </div>
       </div>
     </footer>
   `;
 }
 
-function renderAuthModal() {
+function renderAuthModal({ root }) {
   return `
     <div id="authOverlay" class="overlay" aria-hidden="true">
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bhAuthTitle">
@@ -75,7 +78,6 @@ function renderAuthModal() {
         <p class="bh-subtitle">Acceso solo para usuarios.</p>
 
         <div class="bh-actions">
-          <!-- Pantalla 1: opciones -->
           <div id="authStepStart">
             <button type="button" class="bh-btn gBtn" id="googleBtn">
               <svg class="gIcon" viewBox="0 0 48 48" aria-hidden="true">
@@ -95,7 +97,6 @@ function renderAuthModal() {
             <div class="bh-msg bh-hidden" id="authMsgStart" role="status" aria-live="polite"></div>
           </div>
 
-          <!-- Pantalla 2: contraseña -->
           <div id="authStepPassword" class="bh-hidden">
             <div class="bh-msg" id="pwHeader"></div>
             <input id="pwInput" class="bh-input" type="password" autocomplete="current-password" placeholder="Contraseña" />
@@ -110,7 +111,6 @@ function renderAuthModal() {
             </div>
           </div>
 
-          <!-- Pantalla 3: registro -->
           <div id="authStepRegister" class="bh-hidden">
             <div class="bh-msg" id="regHeader"></div>
             <input id="regName" class="bh-input" type="text" autocomplete="name" placeholder="Nombre" />
@@ -128,7 +128,7 @@ function renderAuthModal() {
             <div class="bh-proline"></div>
             <div class="bh-protext">
               Profesional inmobiliario:
-              <a href="./pro/login.html">accede aquí</a>
+              <a href="${root}pro/login.html">accede aquí</a>
             </div>
           </div>
         </div>
@@ -140,6 +140,7 @@ function renderAuthModal() {
 export function initLayout(opts = {}) {
   const { showMiniSearch = false } = opts;
 
+  const root = getSiteRoot();
   const headerMount = document.getElementById("bhHeader");
   const footerMount = document.getElementById("bhFooter");
 
@@ -147,18 +148,18 @@ export function initLayout(opts = {}) {
     throw new Error("Faltan contenedores bhHeader o bhFooter en la página.");
   }
 
-  headerMount.innerHTML = renderHeader({ showMiniSearch });
-  footerMount.innerHTML = renderFooter();
+  headerMount.innerHTML = renderHeader({ showMiniSearch, root });
+  footerMount.innerHTML = renderFooter({ root });
 
   if (!document.getElementById("authOverlay")) {
-    document.body.insertAdjacentHTML("beforeend", renderAuthModal());
+    document.body.insertAdjacentHTML("beforeend", renderAuthModal({ root }));
   }
 
-  const BASE_URL = getBaseUrl();
+  const BASE_URL = getBaseUrlFromRoot(root);
+  window.BH_SITE_ROOT = root;
   window.BH_BASE_URL = BASE_URL;
   window.BH_CALLBACK_URL = BASE_URL + "auth/callback.html";
 
-  // Wiring del miniSearch del header (si existe)
   const miniSearchForm = document.getElementById("miniSearchForm");
   if (miniSearchForm) {
     miniSearchForm.addEventListener("submit", (e) => {
