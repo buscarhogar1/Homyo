@@ -782,6 +782,29 @@
           font-size: 10px;
         }
       }
+
+      /* --- Areas buttons: layout fijo, el + no empuja --- */
+      .quickCol{
+        align-items: flex-end;
+      }
+
+      .areaBtnWrap{
+        position: relative;
+        width: 44px;
+        height: 44px;
+      }
+
+      .areaBtnWrap .qBtn{
+        position: absolute;
+        inset: 0;
+      }
+
+      .areaBtnWrap .qBtnSmall{
+        position: absolute;
+        left: -50px;
+        top: 2px;
+        display: none;
+      }
     </style>
   </head>
 
@@ -1206,7 +1229,7 @@
       let debounceTimer = null;
 
       /* =========================
-         AREAS (puntos + libre) - actualizado
+         AREAS (puntos + libre)
          ========================= */
 
       const MAX_AREAS = 5;
@@ -1225,13 +1248,15 @@
         tempVertexMarkers: [],
         tempLivePoly: null,
 
-        polys: [],               // { id, latlngs, poly, delMarker, source }
+        polys: [],               // { id, type, latlngs, poly, delMarker }
         nextId: 1,
 
         btnPointsEl: null,
         btnFreeEl: null,
         btnPlusPointsEl: null,
         btnPlusFreeEl: null,
+
+        refreshAreasUI: null,
 
         sunBtnForceOff: null,
         lastHint: ""
@@ -1340,42 +1365,51 @@
         return m;
       }
 
-      function removeAreaById(id){
+      function removeAreaById(id, opts){
+        const options = opts || {};
         const idx = areaState.polys.findIndex(x => x.id === id);
         if (idx < 0) return;
-        const a = areaState.polys[idx];
 
-        if (a.poly) areasLayer.removeLayer(a.poly);
-        if (a.delMarker) areasLayer.removeLayer(a.delMarker);
+        const removed = areaState.polys[idx];
+
+        if (removed.poly) areasLayer.removeLayer(removed.poly);
+        if (removed.delMarker) areasLayer.removeLayer(removed.delMarker);
 
         areaState.polys.splice(idx, 1);
 
-        if (typeof areaState._refreshAreasUI === "function") areaState._refreshAreasUI();
+        if (removed && removed.type) {
+          const stillAny = areaState.polys.some(a => a.type === removed.type);
+          if (!stillAny) {
+            if (removed.type === "points") {
+              areaState.pointsActive = false;
+              if (areaState.isDrawing && areaState.drawingMode === "points") cancelCurrentDrawing();
+            }
+            if (removed.type === "freehand") {
+              areaState.freehandActive = false;
+              if (areaState.isDrawing && areaState.drawingMode === "freehand") cancelCurrentDrawing();
+            }
+          }
+        }
+
+        if (!options.silentUI && areaState.refreshAreasUI) {
+          areaState.refreshAreasUI();
+        }
+
         scheduleReload();
       }
 
-      function clearAreasBySource(source){
-        const keep = [];
-        for (const a of areaState.polys) {
-          if (a.source === source) {
-            if (a.poly) areasLayer.removeLayer(a.poly);
-            if (a.delMarker) areasLayer.removeLayer(a.delMarker);
-          } else {
-            keep.push(a);
-          }
-        }
-        areaState.polys = keep;
+      function removeAreasByType(type){
+        const ids = areaState.polys.filter(a => a.type === type).map(a => a.id);
+        ids.forEach(id => removeAreaById(id, { silentUI: true }));
+        if (areaState.refreshAreasUI) areaState.refreshAreasUI();
+        scheduleReload();
       }
 
-      function countAreasBySource(source){
-        return areaState.polys.reduce((acc, a) => acc + (a.source === source ? 1 : 0), 0);
-      }
-
-      function addAreaPolygon(latlngs, source){
+      function addAreaPolygon(latlngs, type){
         if (!latlngs || latlngs.length < 3) return false;
         if (areaState.polys.length >= MAX_AREAS) return false;
 
-        if (source !== "points" && source !== "freehand") return false;
+        const t = (type === "freehand") ? "freehand" : "points";
 
         const id = areaState.nextId++;
         const poly = L.polygon(latlngs, {
@@ -1391,13 +1425,13 @@
 
         areaState.polys.push({
           id,
+          type: t,
           latlngs: latlngsToSimple(latlngs),
           poly,
-          delMarker,
-          source
+          delMarker
         });
 
-        if (typeof areaState._refreshAreasUI === "function") areaState._refreshAreasUI();
+        if (areaState.refreshAreasUI) areaState.refreshAreasUI();
         return true;
       }
 
@@ -1773,7 +1807,7 @@
          CAPA SOL (SunCalc-like)
          ========================= */
 
-      const ZOOM_SOL_MIN = 16;  // actualizado: antes 15
+      const ZOOM_SOL_MIN = 16;
       let sunEnabled = false;
       const sunState = { dateISO: null, minutes: null, sunriseMin: null, sunsetMin: null };
 
@@ -2227,9 +2261,9 @@
          ========================= */
 
       /* =========================
-         CONTROLES AREAS - actualizado según tu especificación
+         CONTROLES AREAS
+         (parte 2) - layout fijo + deselección automática al borrar último
          ========================= */
-
       const AreasControl = L.Control.extend({
         options: { position: "topright" },
         onAdd: function() {
@@ -2237,19 +2271,18 @@
           L.DomEvent.disableClickPropagation(container);
           L.DomEvent.disableScrollPropagation(container);
 
-          const rowPoints = L.DomUtil.create("div", "quickRow", container);
+          const wrapPoints = L.DomUtil.create("div", "areaBtnWrap", container);
 
-          const plusPoints = L.DomUtil.create("div", "qBtnSmall", rowPoints);
-          plusPoints.title = "Añadir otro polígono";
-          plusPoints.style.display = "none";
+          const plusPoints = L.DomUtil.create("div", "qBtnSmall", wrapPoints);
+          plusPoints.title = "Añadir área (punto a punto)";
           plusPoints.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 5v14"></path><path d="M5 12h14"></path>
             </svg>
           `;
 
-          const btnPoints = L.DomUtil.create("div", "qBtn", rowPoints);
-          btnPoints.title = "Dibujar polígonos";
+          const btnPoints = L.DomUtil.create("div", "qBtn", wrapPoints);
+          btnPoints.title = "Área por puntos";
           btnPoints.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 2l4 8-4 12-4-12 4-8z"></path>
@@ -2257,19 +2290,18 @@
             </svg>
           `;
 
-          const rowFree = L.DomUtil.create("div", "quickRow", container);
+          const wrapFree = L.DomUtil.create("div", "areaBtnWrap", container);
 
-          const plusFree = L.DomUtil.create("div", "qBtnSmall", rowFree);
-          plusFree.title = "Añadir otro dibujo libre";
-          plusFree.style.display = "none";
+          const plusFree = L.DomUtil.create("div", "qBtnSmall", wrapFree);
+          plusFree.title = "Añadir área (dibujo libre)";
           plusFree.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 5v14"></path><path d="M5 12h14"></path>
             </svg>
           `;
 
-          const btnFree = L.DomUtil.create("div", "qBtn", rowFree);
-          btnFree.title = "Dibujo libre";
+          const btnFree = L.DomUtil.create("div", "qBtn", wrapFree);
+          btnFree.title = "Área dibujo libre";
           btnFree.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 17c3-6 6-6 9 0s6 6 9 0"></path>
@@ -2282,105 +2314,89 @@
           areaState.btnPlusPointsEl = plusPoints;
           areaState.btnPlusFreeEl = plusFree;
 
-          function refreshUI(){
-            const pointsCount = countAreasBySource("points");
-            const freeCount = countAreasBySource("freehand");
-            const full = areaState.polys.length >= MAX_AREAS;
-
-            btnPoints.classList.toggle("active", areaState.pointsActive);
-            btnFree.classList.toggle("active", areaState.freehandActive);
-
-            // El + aparece solo cuando ya existe el primer dibujo de ese modo y el modo está activo
-            plusPoints.style.display = (areaState.pointsActive && pointsCount >= 1) ? "grid" : "none";
-            plusFree.style.display = (areaState.freehandActive && freeCount >= 1) ? "grid" : "none";
-
-            plusPoints.classList.toggle("disabled", full);
-            plusFree.classList.toggle("disabled", full);
-
-            btnPoints.classList.toggle("disabled", false);
-            btnFree.classList.toggle("disabled", false);
+          function hasAreasOfType(t){
+            return areaState.polys.some(a => a.type === t);
           }
 
-          areaState._refreshAreasUI = refreshUI;
+          function refreshPlusVisibility(){
+            plusPoints.style.display = hasAreasOfType("points") ? "grid" : "none";
+            plusFree.style.display = hasAreasOfType("freehand") ? "grid" : "none";
 
-          function startPointsDrawing(){
-            if (!areaState.pointsActive) return;
+            const full = areaState.polys.length >= MAX_AREAS;
+            plusPoints.classList.toggle("disabled", full);
+            plusFree.classList.toggle("disabled", full);
+          }
+
+          function refreshButtons(){
+            btnPoints.classList.toggle("active", areaState.pointsActive);
+            btnFree.classList.toggle("active", areaState.freehandActive);
+            refreshPlusVisibility();
+          }
+
+          areaState.refreshAreasUI = refreshButtons;
+
+          function togglePoints(){
+            areaState.pointsActive = !areaState.pointsActive;
+
+            if (!areaState.pointsActive) {
+              if (areaState.isDrawing && areaState.drawingMode === "points") {
+                cancelCurrentDrawing();
+              }
+              removeAreasByType("points");
+            }
+
+            refreshButtons();
+          }
+
+          function toggleFree(){
+            areaState.freehandActive = !areaState.freehandActive;
+
+            if (!areaState.freehandActive) {
+              if (areaState.isDrawing && areaState.drawingMode === "freehand") {
+                cancelCurrentDrawing();
+              }
+              removeAreasByType("freehand");
+            }
+
+            refreshButtons();
+          }
+
+          function startPointsArea(){
             if (areaState.polys.length >= MAX_AREAS) return;
+            if (!areaState.pointsActive) return;
 
             if (areaState.isDrawing) cancelCurrentDrawing();
             startNewAreaDrawing("points");
           }
 
-          function startFreeDrawing(){
-            if (!areaState.freehandActive) return;
+          function startFreeArea(){
             if (areaState.polys.length >= MAX_AREAS) return;
+            if (!areaState.freehandActive) return;
 
             if (areaState.isDrawing) cancelCurrentDrawing();
             startNewAreaDrawing("freehand");
           }
 
-          // Botón polígonos: fijo, activa/desactiva, y al activar permite dibujar el primero directamente
-          btnPoints.addEventListener("click", () => {
-            const next = !areaState.pointsActive;
+          btnPoints.addEventListener("click", togglePoints);
+          btnFree.addEventListener("click", toggleFree);
 
-            if (!next) {
-              // desactivar: cancela si está dibujando puntos y borra todos los polígonos de puntos
-              if (areaState.isDrawing && areaState.drawingMode === "points") cancelCurrentDrawing();
-              areaState.pointsActive = false;
-              clearAreasBySource("points");
-              refreshUI();
-              scheduleReload();
-              return;
-            }
-
-            // activar
-            areaState.pointsActive = true;
-            refreshUI();
-            startPointsDrawing();
-          });
-
-          // Botón dibujo libre: fijo, activa/desactiva, y al activar permite dibujar el primero directamente
-          btnFree.addEventListener("click", () => {
-            const next = !areaState.freehandActive;
-
-            if (!next) {
-              if (areaState.isDrawing && areaState.drawingMode === "freehand") cancelCurrentDrawing();
-              areaState.freehandActive = false;
-              clearAreasBySource("freehand");
-              refreshUI();
-              scheduleReload();
-              return;
-            }
-
-            areaState.freehandActive = true;
-            refreshUI();
-            startFreeDrawing();
-          });
-
-          // + polígonos: solo añade más a partir del primero
           plusPoints.addEventListener("click", () => {
             if (plusPoints.classList.contains("disabled")) return;
-            if (!areaState.pointsActive) return;
-            if (countAreasBySource("points") < 1) return; // solo si ya existe el primero
-            startPointsDrawing();
+            startPointsArea();
           });
 
-          // + libre: solo añade más a partir del primero
           plusFree.addEventListener("click", () => {
             if (plusFree.classList.contains("disabled")) return;
-            if (!areaState.freehandActive) return;
-            if (countAreasBySource("freehand") < 1) return; // solo si ya existe el primero
-            startFreeDrawing();
+            startFreeArea();
           });
 
-          refreshUI();
+          refreshButtons();
           return container;
         }
       });
 
       map.addControl(new AreasControl());
 
-      // carga inicial
       (async function init(){
         try {
           if (initialParams.city) {
