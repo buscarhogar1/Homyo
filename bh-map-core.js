@@ -1,6 +1,3 @@
-// bh-map-core.js
-import { initFiltersBar } from "./bh-map-filters.js";
-
 export function initMap(){
   const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
@@ -1491,16 +1488,6 @@ export function initMap(){
       wireHeaderMiniSearch();
       wireHeaderNav();
 
-      // INICIO: filtros (barra horizontal)
-      // Busca un contenedor existente. Si no existe, no hace nada.
-      const filtersContainer =
-        document.getElementById("filtersInner") ||
-        document.getElementById("bhFiltersInner") ||
-        document.getElementById("filtersBar");
-
-      initFiltersBar({ container: filtersContainer });
-      // FIN: filtros
-
       if (initialParams.city) {
         const center = await geocodeCity(initialParams.city);
         if (center) map.setView(center, 13);
@@ -1513,3 +1500,4 @@ export function initMap(){
     }
   })();
 }
+
