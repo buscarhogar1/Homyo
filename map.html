@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Buscar Hogar – Mapa</title>
 
+    <link rel="stylesheet" href="/buscarhogardemo/bh-shared.css" />
+
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -26,6 +28,8 @@
         --sunbar-inner-h: 52px;
         --sunbar-outer-pad: 14px;
         --sunbar-gap: 12px;
+
+        --headerH: 56px;
       }
 
       html, body {
@@ -36,119 +40,9 @@
         color: var(--text);
       }
 
-      .topbar{
-        height:56px;
-        background:var(--terra);
-        color:#fff;
-        display:flex;
-        align-items:center;
-        padding:0 16px;
-        box-sizing:border-box;
-      }
-
-      .topbarInner{
-        width: min(1120px, 100%);
-        margin: 0 auto;
-        display:flex;
-        align-items:center;
-        gap: 12px;
-      }
-
-      .brand{
-        display:flex;
-        align-items:center;
-        gap: 10px;
-        text-decoration:none;
-        color:#fff;
-        font-weight:800;
-        letter-spacing:-0.2px;
-        flex: 0 0 auto;
-      }
-
-      .logoMark{
-        width: 34px;
-        height: 28px;
-        border-radius: 6px;
-        background: rgba(255,255,255,0.18);
-        border: 1px solid rgba(255,255,255,0.25);
-        display:grid;
-        place-items:center;
-        overflow:hidden;
-      }
-
-      .logoMark span{
-        font-size: 12px;
-        font-weight: 900;
-        letter-spacing: -0.2px;
-      }
-
-      .miniSearch{
-        display:flex;
-        align-items:center;
-        gap:10px;
-        border: 1px solid rgba(255,255,255,0.30);
-        background: rgba(255,255,255,0.10);
-        border-radius: 999px;
-        padding: 6px 10px;
-        min-width: 280px;
-        max-width: 460px;
-        margin-left: 34px;
-        flex: 1 1 auto;
-      }
-
-      .miniSearch input{
-        border:0;
-        outline:0;
-        background: transparent;
-        color: #fff;
-        font-size: 13.5px;
-        width: 100%;
-      }
-
-      .miniSearch input::placeholder{
-        color: rgba(255,255,255,0.80);
-      }
-
-      .miniSearch button{
-        border:0;
-        background: transparent;
-        color: #fff;
-        cursor: pointer;
-        padding: 0 2px;
-        display:grid;
-        place-items:center;
-      }
-
-      .miniIcon{
-        width: 22px;
-        height: 22px;
-        display:block;
-      }
-
-      .rightGroup{
-        margin-left: auto;
-        display:flex;
-        align-items:center;
-        gap: 10px;
-        flex: 0 0 auto;
-      }
-
-      .rightGroup a{
-        color: #fff;
-        text-decoration:none;
-        font-size:14px;
-        font-weight:650;
-        padding: 8px 10px;
-        border-radius: 999px;
-        white-space: nowrap;
-      }
-
-      .rightGroup a:hover{
-        background: rgba(255,255,255,0.14);
-      }
-
+      /* antes: topbar local; ahora el header viene de bh-layout.js */
       .page{
-        height: calc(100% - 56px);
+        height: calc(100% - var(--headerH));
         padding: 14px 16px 16px;
         box-sizing: border-box;
       }
@@ -407,7 +301,6 @@
       }
 
       @media (max-width: 720px) {
-        .miniSearch{ display:none; }
         .page{ padding: 10px 10px 10px; }
         .mapShell{ width: 100%; }
 
@@ -778,7 +671,6 @@
         }
       }
 
-      /* layout fijo: el + nunca empuja */
       .areaBtnWrap{
         position: relative;
         width: 44px;
@@ -800,30 +692,7 @@
   </head>
 
   <body>
-    <header class="topbar">
-      <div class="topbarInner">
-        <a class="brand" href="./">
-          <div class="logoMark" aria-label="Logo">
-            <span>BH</span>
-          </div>
-        </a>
-
-        <form class="miniSearch" id="miniSearchForm" autocomplete="off" aria-label="Búsqueda rápida">
-          <input id="miniQ" placeholder="Buscar..." aria-label="Buscar rápido" />
-          <button type="submit" title="Buscar" aria-label="Buscar">
-            <svg class="miniIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path d="M21 21l-4.3-4.3"></path>
-            </svg>
-          </button>
-        </form>
-
-        <div class="rightGroup" aria-label="Acciones">
-          <a href="#" id="navFavoritos">Favoritos</a>
-          <a href="#" id="navLogin">Iniciar sesión</a>
-        </div>
-      </div>
-    </header>
+    <div id="bhHeader"></div>
 
     <div class="page">
       <div class="mapShell">
@@ -902,6 +771,25 @@
       </div>
     </div>
 
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "/buscarhogardemo/bh-layout.js";
+      import { initAuth } from "/buscarhogardemo/bh-auth.js";
+      initLayout({ showMiniSearch: true });
+      initAuth();
+
+      const h = document.documentElement.style;
+      const applyHeaderH = () => {
+        const header = document.querySelector(".bh-topbar, #bhTopbar, header");
+        const px = header ? Math.round(header.getBoundingClientRect().height) : 56;
+        h.setProperty("--headerH", px + "px");
+      };
+      window.addEventListener("load", applyHeaderH);
+      window.addEventListener("resize", applyHeaderH);
+      setTimeout(applyHeaderH, 0);
+    </script>
+
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -918,8 +806,6 @@
       const DEFAULT_ZOOM = 13;
 
       const statusEl = document.getElementById("status");
-      const miniSearchForm = document.getElementById("miniSearchForm");
-      const miniQ = document.getElementById("miniQ");
 
       const cardEl = document.getElementById("card");
       const cardCloseBtn = document.getElementById("cardClose");
@@ -1759,27 +1645,39 @@
         scheduleReload();
       }
 
-      miniSearchForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const city = (miniQ.value || "").trim();
-        if (!city) return;
+      function wireHeaderMiniSearch(){
+        const form = document.getElementById("miniSearchForm");
+        const input = document.getElementById("miniQ");
 
-        const u = new URL(window.location.href);
-        u.searchParams.set("city", city);
-        history.replaceState(null, "", u.toString());
+        if (!form || !input) return;
 
-        await goToCity(city);
-      });
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const city = (input.value || "").trim();
+          if (!city) return;
 
-      document.getElementById("navFavoritos").addEventListener("click", (e) => {
-        e.preventDefault();
-        alert("MVP: Favoritos (requiere registro).");
-      });
+          const u = new URL(window.location.href);
+          u.searchParams.set("city", city);
+          history.replaceState(null, "", u.toString());
 
-      document.getElementById("navLogin").addEventListener("click", (e) => {
-        e.preventDefault();
-        alert("MVP: Iniciar sesión.");
-      });
+          await goToCity(city);
+        });
+      }
+
+      function wireHeaderNav(){
+        const fav = document.getElementById("navFavoritos");
+        const login = document.getElementById("navLogin");
+
+        if (fav) fav.addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("MVP: Favoritos (requiere registro).");
+        });
+
+        if (login) login.addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("MVP: Iniciar sesión.");
+        });
+      }
 
       map.on("moveend", scheduleReload);
       map.on("zoomend", scheduleReload);
@@ -2383,6 +2281,9 @@
 
       (async function init(){
         try {
+          wireHeaderMiniSearch();
+          wireHeaderNav();
+
           if (initialParams.city) {
             const center = await geocodeCity(initialParams.city);
             if (center) map.setView(center, 13);
