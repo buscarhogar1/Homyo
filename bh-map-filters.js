@@ -1,253 +1,205 @@
-function toInt(v) {
-  if (v == null || v === "") return null;
-  const n = parseInt(String(v), 10);
+function el(tag, attrs, children) {
+  const n = document.createElement(tag);
+  if (attrs) {
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else n.setAttribute(k, v);
+    }
+  }
+  if (children) {
+    for (const c of children) {
+      if (c == null) continue;
+      n.appendChild(c);
+    }
+  }
+  return n;
+}
+
+function group(labelText, ...controls) {
+  return el("div", { class: "fGroup" }, [
+    el("div", { class: "fLabel", text: labelText }),
+    ...controls
+  ]);
+}
+
+function intOrNull(v) {
+  const s = String(v ?? "").trim();
+  if (!s) return null;
+  const n = parseInt(s, 10);
   return Number.isFinite(n) ? n : null;
 }
 
-function readParamsFromURL() {
-  const u = new URL(window.location.href);
+function makeDatalist(id, options) {
+  const dl = el("datalist", { id });
+  (options || []).forEach((v) => {
+    dl.appendChild(el("option", { value: String(v) }));
+  });
+  return dl;
+}
 
-  let mode = (u.searchParams.get("mode") || "").trim().toLowerCase();
-  if (!mode) mode = "buy";
-  const allowed = ["buy","rent","room","new_build","all"];
-  if (!allowed.includes(mode)) mode = "buy";
+export function initFiltersBar({ container, getInitial, onApply, onClear }) {
+  const initial = getInitial ? getInitial() : {};
+
+  // Sugerencias (ajústalas cuando tengas la definición final)
+  const SUGGEST = {
+    price: [300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 1800, 2000, 2500, 3000, 3500, 4000, 5000, 7500, 10000, 15000, 20000, 30000, 50000, 100000, 150000, 200000, 250000, 300000, 350000, 400000, 450000, 500000, 600000, 750000, 1000000],
+    useful: [30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 250, 300],
+    year: [1950, 1960, 1970, 1980, 1990, 2000, 2005, 2010, 2015, 2020, 2022, 2023, 2024, 2025],
+    beds: [0, 1, 2, 3, 4, 5, 6],
+    baths: [1, 2, 3, 4]
+  };
+
+  const dlPrice = makeDatalist("dlPrice", SUGGEST.price);
+  const dlUseful = makeDatalist("dlUseful", SUGGEST.useful);
+  const dlYear = makeDatalist("dlYear", SUGGEST.year);
+  const dlBeds = makeDatalist("dlBeds", SUGGEST.beds);
+  const dlBaths = makeDatalist("dlBaths", SUGGEST.baths);
+
+  // Inputs
+  const cityInp = el("input", {
+    type: "text",
+    placeholder: "Murcia",
+    value: initial.city || ""
+  });
+
+  const priceMin = el("input", {
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "€ min",
+    value: initial.priceMin ?? "",
+    list: "dlPrice"
+  });
+  const priceMax = el("input", {
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "€ max",
+    value: initial.priceMax ?? "",
+    list: "dlPrice"
+  });
+
+  const usefulMin = el("input", {
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "m² min",
+    value: initial.usefulMin ?? "",
+    list: "dlUseful"
+  });
+  const usefulMax = el("input", {
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "m² max",
+    value: initial.usefulMax ?? "",
+    list: "dlUseful"
+  });
+
+  const builtMin = el("input", {
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "Año min",
+    value: initial.builtMin ?? "",
+    list: "dlYear"
+  });
+  const builtMax = el("input", {
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "Año max",
+    value: initial.builtMax ?? "",
+    list: "dlYear"
+  });
+
+  const bedMin = el("input", {
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "Hab. min",
+    value: initial.bedroomsMin ?? "",
+    list: "dlBeds"
+  });
+
+  const bathMin = el("input", {
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "Baños min",
+    value: initial.bathroomsMin ?? "",
+    list: "dlBaths"
+  });
+
+  const energySel = el("select");
+  [
+    ["", "Energía: cualquiera"],
+    ["A", "A"],
+    ["B", "B"],
+    ["C", "C"],
+    ["D", "D"],
+    ["E", "E"],
+    ["F", "F"],
+    ["G", "G"],
+    ["pending", "Pendiente"]
+  ].forEach(([v, t]) => energySel.appendChild(el("option", { value: v, text: t })));
+  energySel.value = initial.energyChoice || "";
+
+  const applyBtn = el("button", { class: "fBtn fBtnPrimary", type: "button", text: "Aplicar" });
+  const clearBtn = el("button", { class: "fBtn", type: "button", text: "Limpiar" });
+
+  function read() {
+    return {
+      // no tocamos mode aquí: viene de la URL y map-main.js lo preserva
+      city: cityInp.value.trim(),
+
+      priceMin: intOrNull(priceMin.value),
+      priceMax: intOrNull(priceMax.value),
+
+      usefulMin: intOrNull(usefulMin.value),
+      usefulMax: intOrNull(usefulMax.value),
+
+      builtMin: intOrNull(builtMin.value),
+      builtMax: intOrNull(builtMax.value),
+
+      bedroomsMin: intOrNull(bedMin.value),
+      bathroomsMin: intOrNull(bathMin.value),
+
+      energyChoice: energySel.value || null
+    };
+  }
+
+  applyBtn.addEventListener("click", async () => {
+    const next = read();
+    if (onApply) await onApply(next);
+  });
+
+  clearBtn.addEventListener("click", async () => {
+    // No resetea city ni mode (city puede venir de URL y mode es intocable)
+    priceMin.value = "";
+    priceMax.value = "";
+    usefulMin.value = "";
+    usefulMax.value = "";
+    builtMin.value = "";
+    builtMax.value = "";
+    bedMin.value = "";
+    bathMin.value = "";
+    energySel.value = "";
+
+    if (onClear) await onClear();
+  });
+
+  container.innerHTML = "";
+
+  // Datlists deben estar en el DOM para que funcionen
+  container.appendChild(dlPrice);
+  container.appendChild(dlUseful);
+  container.appendChild(dlYear);
+  container.appendChild(dlBeds);
+  container.appendChild(dlBaths);
+
+  container.appendChild(group("Ciudad", cityInp));
+  container.appendChild(group("Precio", priceMin, priceMax));
+  container.appendChild(group("Útiles", usefulMin, usefulMax));
+  container.appendChild(group("Año", builtMin, builtMax));
+  container.appendChild(group("Hab/Baños", bedMin, bathMin));
+  container.appendChild(group("Energía", energySel));
+  container.appendChild(el("div", { class: "fBtns" }, [applyBtn, clearBtn]));
 
   return {
-    mode,
-    priceMin: toInt(u.searchParams.get("price_min")),
-    priceMax: toInt(u.searchParams.get("price_max")),
-    usefulMin: toInt(u.searchParams.get("useful_min")),
-    usefulMax: toInt(u.searchParams.get("useful_max")),
-    builtMin: toInt(u.searchParams.get("built_min")),
-    builtMax: toInt(u.searchParams.get("built_max")),
-    bedroomsMin: toInt(u.searchParams.get("bedrooms_min")),
-    listedSinceDays: toInt(u.searchParams.get("since_days"))
+    readNow: read
   };
-}
-
-function writeParamsToURL(patch) {
-  const u = new URL(window.location.href);
-
-  const setInt = (key, val) => {
-    if (val == null || val === "") u.searchParams.delete(key);
-    else u.searchParams.set(key, String(val));
-  };
-
-  const setText = (key, val) => {
-    if (!val) u.searchParams.delete(key);
-    else u.searchParams.set(key, String(val));
-  };
-
-  if ("mode" in patch) setText("mode", patch.mode);
-
-  if ("priceMin" in patch) setInt("price_min", patch.priceMin);
-  if ("priceMax" in patch) setInt("price_max", patch.priceMax);
-
-  if ("usefulMin" in patch) setInt("useful_min", patch.usefulMin);
-  if ("usefulMax" in patch) setInt("useful_max", patch.usefulMax);
-
-  if ("builtMin" in patch) setInt("built_min", patch.builtMin);
-  if ("builtMax" in patch) setInt("built_max", patch.builtMax);
-
-  if ("bedroomsMin" in patch) setInt("bedrooms_min", patch.bedroomsMin);
-
-  if ("listedSinceDays" in patch) setInt("since_days", patch.listedSinceDays);
-
-  history.replaceState(null, "", u.toString());
-}
-
-function emitChanged() {
-  window.dispatchEvent(new CustomEvent("bh:filters-changed"));
-}
-
-function clampMinMax(minVal, maxVal) {
-  const a = (minVal == null) ? null : minVal;
-  const b = (maxVal == null) ? null : maxVal;
-  if (a == null || b == null) return { min: a, max: b };
-  if (a <= b) return { min: a, max: b };
-  return { min: b, max: a };
-}
-
-export function initFiltersBar(opts) {
-  const mountId = (opts && opts.mountId) ? String(opts.mountId) : "filtersBarMount";
-  const mount = document.getElementById(mountId);
-  if (!mount) return;
-
-  mount.innerHTML = `
-    <div class="bhFiltersBar">
-      <div class="bhFiltersInner">
-        <div class="bhFiltersRow" id="bhFiltersRow">
-          <div class="bhChipGroup" id="modeChips" aria-label="Operación">
-            <div class="bhChip" data-mode="buy">Comprar</div>
-            <div class="bhChip" data-mode="rent">Alquilar</div>
-            <div class="bhChip" data-mode="room">Habitación</div>
-            <div class="bhChip" data-mode="new_build">Obra nueva</div>
-            <div class="bhChip" data-mode="all">Todo</div>
-          </div>
-
-          <div class="bhField" title="Precio">
-            <div class="bhFieldLabel">Precio</div>
-            <input class="bhInput" id="fPriceMin" inputmode="numeric" placeholder="min" />
-            <input class="bhInput" id="fPriceMax" inputmode="numeric" placeholder="max" />
-          </div>
-
-          <div class="bhField" title="m² útiles interior">
-            <div class="bhFieldLabel">Útiles</div>
-            <input class="bhInput small" id="fUsefulMin" inputmode="numeric" placeholder="min" />
-            <input class="bhInput small" id="fUsefulMax" inputmode="numeric" placeholder="max" />
-          </div>
-
-          <div class="bhField" title="Dormitorios mínimo">
-            <div class="bhFieldLabel">Hab.</div>
-            <input class="bhInput small" id="fBedsMin" inputmode="numeric" placeholder="mín" />
-          </div>
-
-          <div class="bhField" title="Año de construcción">
-            <div class="bhFieldLabel">Año</div>
-            <input class="bhInput small" id="fBuiltMin" inputmode="numeric" placeholder="min" />
-            <input class="bhInput small" id="fBuiltMax" inputmode="numeric" placeholder="max" />
-          </div>
-
-          <div class="bhField" title="Publicado en los últimos X días">
-            <div class="bhFieldLabel">Publicado</div>
-            <input class="bhInput small" id="fSinceDays" inputmode="numeric" placeholder="días" />
-          </div>
-
-          <button class="bhBtn primary" id="btnMoreFilters" type="button">Más filtros</button>
-          <button class="bhBtn" id="btnClearFilters" type="button">Limpiar</button>
-        </div>
-
-        <div class="bhPanel" id="morePanel">
-          <div class="bhPanelNote">
-            MVP: aquí meteremos los filtros secundarios (orientación, energía, exterior, parking, trastero, accesibilidad, etc.).
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  const chips = Array.from(mount.querySelectorAll("#modeChips .bhChip"));
-  const priceMinEl = mount.querySelector("#fPriceMin");
-  const priceMaxEl = mount.querySelector("#fPriceMax");
-  const usefulMinEl = mount.querySelector("#fUsefulMin");
-  const usefulMaxEl = mount.querySelector("#fUsefulMax");
-  const bedsMinEl = mount.querySelector("#fBedsMin");
-  const builtMinEl = mount.querySelector("#fBuiltMin");
-  const builtMaxEl = mount.querySelector("#fBuiltMax");
-  const sinceDaysEl = mount.querySelector("#fSinceDays");
-  const btnMore = mount.querySelector("#btnMoreFilters");
-  const btnClear = mount.querySelector("#btnClearFilters");
-  const panel = mount.querySelector("#morePanel");
-
-  const applyToUI = () => {
-    const p = readParamsFromURL();
-
-    chips.forEach(ch => ch.classList.toggle("active", ch.dataset.mode === p.mode));
-
-    priceMinEl.value = (p.priceMin == null) ? "" : String(p.priceMin);
-    priceMaxEl.value = (p.priceMax == null) ? "" : String(p.priceMax);
-
-    usefulMinEl.value = (p.usefulMin == null) ? "" : String(p.usefulMin);
-    usefulMaxEl.value = (p.usefulMax == null) ? "" : String(p.usefulMax);
-
-    bedsMinEl.value = (p.bedroomsMin == null) ? "" : String(p.bedroomsMin);
-
-    builtMinEl.value = (p.builtMin == null) ? "" : String(p.builtMin);
-    builtMaxEl.value = (p.builtMax == null) ? "" : String(p.builtMax);
-
-    sinceDaysEl.value = (p.listedSinceDays == null) ? "" : String(p.listedSinceDays);
-  };
-
-  let t = null;
-  const debouncedCommit = (patchBuilder) => {
-    if (t) clearTimeout(t);
-    t = setTimeout(() => {
-      const patch = patchBuilder();
-      writeParamsToURL(patch);
-      emitChanged();
-    }, 250);
-  };
-
-  chips.forEach(ch => {
-    ch.addEventListener("click", () => {
-      const mode = ch.dataset.mode || "buy";
-      writeParamsToURL({ mode });
-      applyToUI();
-      emitChanged();
-    });
-  });
-
-  const wireNum = (el, key) => {
-    el.addEventListener("input", () => {
-      debouncedCommit(() => {
-        const v = toInt(el.value);
-        return { [key]: v };
-      });
-    });
-  };
-
-  wireNum(priceMinEl, "priceMin");
-  wireNum(priceMaxEl, "priceMax");
-  wireNum(usefulMinEl, "usefulMin");
-  wireNum(usefulMaxEl, "usefulMax");
-  wireNum(bedsMinEl, "bedroomsMin");
-  wireNum(builtMinEl, "builtMin");
-  wireNum(builtMaxEl, "builtMax");
-  wireNum(sinceDaysEl, "listedSinceDays");
-
-  const normalizeMinMaxPairs = () => {
-    const pMin = toInt(priceMinEl.value);
-    const pMax = toInt(priceMaxEl.value);
-    const uMin = toInt(usefulMinEl.value);
-    const uMax = toInt(usefulMaxEl.value);
-    const bMin = toInt(builtMinEl.value);
-    const bMax = toInt(builtMaxEl.value);
-
-    const pr = clampMinMax(pMin, pMax);
-    const ur = clampMinMax(uMin, uMax);
-    const br = clampMinMax(bMin, bMax);
-
-    writeParamsToURL({
-      priceMin: pr.min, priceMax: pr.max,
-      usefulMin: ur.min, usefulMax: ur.max,
-      builtMin: br.min, builtMax: br.max
-    });
-
-    applyToUI();
-    emitChanged();
-  };
-
-  [priceMinEl, priceMaxEl, usefulMinEl, usefulMaxEl, builtMinEl, builtMaxEl].forEach(el => {
-    el.addEventListener("blur", normalizeMinMaxPairs);
-  });
-
-  btnMore.addEventListener("click", () => {
-    const open = panel.classList.toggle("open");
-    btnMore.textContent = open ? "Menos filtros" : "Más filtros";
-  });
-
-  btnClear.addEventListener("click", () => {
-    const u = new URL(window.location.href);
-    const city = u.searchParams.get("city");
-
-    u.searchParams.delete("mode");
-    u.searchParams.delete("price_min");
-    u.searchParams.delete("price_max");
-    u.searchParams.delete("useful_min");
-    u.searchParams.delete("useful_max");
-    u.searchParams.delete("built_min");
-    u.searchParams.delete("built_max");
-    u.searchParams.delete("bedrooms_min");
-    u.searchParams.delete("since_days");
-
-    if (city) u.searchParams.set("city", city);
-
-    history.replaceState(null, "", u.toString());
-    applyToUI();
-    emitChanged();
-  });
-
-  window.addEventListener("popstate", applyToUI);
-
-  applyToUI();
 }
