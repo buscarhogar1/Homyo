@@ -1,0 +1,674 @@
+/* bh-map.css */
+:root{
+  --bg:#ffffff;
+  --text:#111;
+  --muted:#6b7280;
+  --terra:#a3472f;
+  --btn:#1a73e8;
+  --btnText:#fff;
+  --border:#111;
+  --softBorder:#e6e7eb;
+
+  --sunbar-inner-h: 52px;
+  --sunbar-outer-pad: 14px;
+  --sunbar-gap: 12px;
+
+  --headerH: 56px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* antes: topbar local; ahora el header viene de bh-layout.js */
+.page{
+  height: calc(100% - var(--headerH));
+  padding: 14px 16px 16px;
+  box-sizing: border-box;
+}
+
+.mapShell{
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+#map{
+  height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #f0f1f3;
+}
+
+#status{
+  position: absolute;
+  left: 50%;
+  top: 72px;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #111;
+  z-index: 500;
+  max-width: min(980px, calc(100% - 28px));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #ffb100;
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+.dot:hover { transform: scale(1.15); }
+.dot.active {
+  background: #1a73e8;
+  border-color: #0b3d91;
+  transform: scale(1.15);
+}
+
+.card {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  width: min(720px, calc(100% - 28px));
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.14);
+  border-radius: 12px;
+  box-shadow: 0 14px 38px rgba(0,0,0,0.18);
+  z-index: 9999;
+  overflow: hidden;
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(10px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.card.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  height: 143px;
+}
+
+.mediaSide {
+  position: relative;
+  background: #f1f2f4;
+  overflow: hidden;
+  height: 100%;
+}
+
+.mediaImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mediaPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #9aa1aa;
+  font-size: 13px;
+}
+
+.badgeNew {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #f7a300;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  display: none;
+}
+
+.mediaMiniIcon {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.94);
+  border: 1px solid rgba(0,0,0,0.10);
+  display: grid;
+  place-items: center;
+}
+.mediaMiniIcon svg {
+  width: 16px;
+  height: 16px;
+  color: rgba(0,0,0,0.75);
+}
+
+.textSide {
+  position: relative;
+  padding: 12px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.topActions {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.heartBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.18);
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.heartBtn svg {
+  width: 18px;
+  height: 18px;
+  color: #1a73e8;
+}
+
+.closeBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 0;
+  background: #1a73e8;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.closeBtn svg {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}
+
+.addrTop {
+  color: #1a73e8;
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1.08;
+  font-weight: 650;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  padding-right: 112px;
+  max-height: calc(1.08em * 2);
+}
+.addrTop:hover { text-decoration: underline; }
+
+.addrBottom {
+  margin-top: 5px;
+  font-size: 16px;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 900;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.facts {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  color: rgba(0,0,0,0.85);
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.fact svg {
+  width: 18px;
+  height: 18px;
+  color: rgba(0,0,0,0.75);
+}
+
+.agency {
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1a73e8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 720px) {
+  .page{ padding: 10px 10px 10px; }
+  .mapShell{ width: 100%; }
+
+  #status{
+    top: 66px;
+    max-width: calc(100% - 20px);
+  }
+
+  .card { width: calc(100% - 22px); bottom: 14px; }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+    height: 320px;
+  }
+
+  .mediaSide { height: 210px; }
+  .textSide { height: calc(320px - 210px); }
+
+  .addrTop { padding-right: 0; font-size: 18px; }
+  .addrBottom { font-size: 16px; }
+  .price { font-size: 16px; }
+  .facts { font-size: 13px; }
+  .agency { font-size: 14px; }
+  .topActions { right: 10px; top: 10px; }
+}
+
+.leaflet-control-zoom a {
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  border-radius: 10px;
+}
+.leaflet-bar a, .leaflet-bar a:hover {
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.quickCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.qBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.96);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  user-select: none;
+}
+.qBtn:hover { background: #fff; }
+.qBtn svg { width: 20px; height: 20px; color: rgba(0,0,0,0.80); }
+
+.qBtn.active {
+  border-color: rgba(26,115,232,0.55);
+  box-shadow: 0 12px 28px rgba(26,115,232,0.16);
+}
+
+.qBtn.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.qBtnSmall{
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  border: 1px solid rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.96);
+  cursor: pointer;
+  display: grid;
+  place-items:center;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.10);
+  user-select: none;
+}
+.qBtnSmall:hover{ background:#fff; }
+.qBtnSmall svg{ width: 18px; height: 18px; color: rgba(0,0,0,0.78); }
+
+.qBtnSmall.active{
+  border-color: rgba(26,115,232,0.55);
+  box-shadow: 0 12px 26px rgba(26,115,232,0.16);
+}
+
+.qBtnSmall.disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.areaHint{
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 760;
+  display: none;
+  pointer-events: none;
+  max-width: calc(100% - 28px);
+}
+.areaHintInner{
+  height: 44px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(0,0,0,0.10);
+  backdrop-filter: blur(6px);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.areaHintDot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(26,115,232,0.85);
+  flex: 0 0 auto;
+}
+.areaHintText{
+  font-size: 13px;
+  color: rgba(0,0,0,0.78);
+  white-space: nowrap;
+  text-align: center;
+}
+
+.areaDel{
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(0,0,0,0.18);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+  display: grid;
+  place-items: center;
+  user-select: none;
+  cursor: pointer;
+}
+.areaDel span{
+  font-size: 14px;
+  line-height: 1;
+  color: rgba(0,0,0,0.62);
+  transform: translateY(-0.5px);
+}
+
+@media (max-width: 720px) {
+  .areaHint{
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    max-width: calc(100% - 20px);
+  }
+  .areaHintInner{
+    height: 42px;
+  }
+  .qBtnSmall{
+    width: 38px;
+    height: 38px;
+  }
+}
+
+.sunOverlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 650;
+  width: min(72vmin, 760px);
+  height: min(72vmin, 760px);
+  display: none;
+  pointer-events: none;
+}
+
+.sunOverlay svg{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sunOverlayLabel{
+  position: absolute;
+  left: 50%;
+  top: -38px;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.62);
+  color: rgba(255,255,255,0.92);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .sunOverlay{
+    width: min(78vmin, 520px);
+    height: min(78vmin, 520px);
+  }
+  .sunOverlayLabel{
+    top: -34px;
+    font-size: 12.5px;
+  }
+}
+
+.sunTimebar {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 700;
+  display: none;
+  pointer-events: auto;
+}
+
+.sunTimebarInner{
+  position: relative;
+  height: var(--sunbar-inner-h);
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(0,0,0,0.10);
+  backdrop-filter: blur(6px);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: 14px 1fr;
+  gap: 8px;
+}
+
+.sunHoursRow{
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 0;
+  font-size: 10.5px;
+  color: rgba(0,0,0,0.58);
+  user-select: none;
+  line-height: 14px;
+}
+
+.sunHoursRow span{
+  text-align: center;
+  transform: translateY(-1px);
+}
+
+.sunTrack {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background:
+    linear-gradient(to right,
+      rgba(255,176,0,0.0) 0%,
+      rgba(255,176,0,0.0) var(--sr, 0%),
+      rgba(255,176,0,0.16) var(--sr, 0%),
+      rgba(255,176,0,0.16) var(--ss, 0%),
+      rgba(255,176,0,0.0) var(--ss, 0%),
+      rgba(255,176,0,0.0) 100%
+    );
+  border: 1px solid rgba(0,0,0,0.10);
+  overflow: hidden;
+}
+
+.sunTrack:before{
+  content:"";
+  position:absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.06), rgba(0,0,0,0.03));
+  opacity: 0.28;
+  pointer-events:none;
+}
+
+.sunRange {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  outline: none;
+}
+
+.sunRange::-webkit-slider-thumb{
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255,176,0,0.96);
+  border: 3px solid rgba(255,255,255,0.96);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+  cursor: pointer;
+}
+.sunRange::-moz-range-thumb{
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255,176,0,0.96);
+  border: 3px solid rgba(255,255,255,0.96);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+  cursor: pointer;
+}
+
+.sunDateDock{
+  position: absolute;
+  right: 14px;
+  bottom: calc(var(--sunbar-outer-pad) + var(--sunbar-inner-h) + var(--sunbar-gap));
+  z-index: 720;
+  display: none;
+  pointer-events: auto;
+}
+
+.sunDateDockInner{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(0,0,0,0.10);
+  backdrop-filter: blur(6px);
+}
+
+.sunDateDock input[type="date"]{
+  font-size: 12.5px;
+  padding: 7px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(255,255,255,0.92);
+  outline: none;
+}
+
+.sunDateDock button{
+  border: 0;
+  background: rgba(0,0,0,0.70);
+  color: rgba(255,255,255,0.92);
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 650;
+}
+
+.sunDateDock button:hover{
+  background: rgba(0,0,0,0.78);
+}
+
+@media (max-width: 720px) {
+  :root{
+    --sunbar-inner-h: 50px;
+    --sunbar-outer-pad: 10px;
+    --sunbar-gap: 10px;
+  }
+
+  .sunTimebar{
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+  .sunDateDock{
+    right: 10px;
+  }
+  .sunHoursRow{
+    font-size: 10px;
+  }
+}
+
+.areaBtnWrap{
+  position: relative;
+  width: 44px;
+  height: 44px;
+}
+
+.areaBtnWrap .qBtn{
+  position: absolute;
+  inset: 0;
+}
+
+.areaBtnWrap .qBtnSmall{
+  position: absolute;
+  left: -50px;
+  top: 2px;
+  display: none;
+}
