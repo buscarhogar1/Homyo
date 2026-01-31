@@ -81,14 +81,18 @@
     return el;
   }
 
-  function polarXY(cx, cy, R, bearingDeg, altDeg){
-    const altClamped = Math.max(-24, Math.min(90, altDeg));
-    const r = ((90 - altClamped) / 90) * R;
-    const t = bearingDeg * Math.PI / 180;
-    const x = cx + r * Math.sin(t);
-    const y = cy - r * Math.cos(t);
-    return { x, y };
-  }
+function polarXY(cx, cy, R, bearingDeg, altDeg){
+  // Proyección polar continua día/noche.
+  // Usamos |alt| para que la órbita nocturna sea la continuación "real" de la diurna,
+  // evitando el efecto de circunferencia artificial por clamping.
+  const a = Math.max(0, Math.min(90, Math.abs(altDeg))); // 0..90
+  const r = ((90 - a) / 90) * R;
+
+  const t = bearingDeg * Math.PI / 180;
+  const x = cx + r * Math.sin(t);
+  const y = cy - r * Math.cos(t);
+  return { x, y };
+}
 
   function arcPath(cx, cy, r, a0Deg, a1Deg){
     const a0 = (a0Deg - 90) * Math.PI/180;
