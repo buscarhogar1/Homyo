@@ -21,8 +21,12 @@
     <div id="bhHeader"></div>
 
     <div class="page">
-      <div class="mapLayout">
-        <div class="mapShell">
+      <div class="mapShell">
+        <!-- Columna de filtros (izquierda) -->
+        <aside id="filtersCol" class="bhFiltersCol" aria-label="Filtros"></aside>
+
+        <!-- Panel mapa (derecha) -->
+        <div class="mapPane">
           <div id="map"></div>
 
           <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
@@ -52,15 +56,11 @@
               <div id="areaHintText" class="areaHintText">—</div>
             </div>
           </div>
-        </div>
 
-        <aside class="filtersSide" aria-label="Filtros">
-          <div id="filtersBarMount"></div>
-        </aside>
+          <div id="status"></div>
+        </div>
       </div>
     </div>
-
-    <div id="status"></div>
 
     <div id="card" class="card">
       <div class="cardGrid">
@@ -122,23 +122,9 @@
       initLayout({ showMiniSearch: true });
       initAuth();
 
-      const rootStyle = document.documentElement.style;
+      // Monta filtros en la columna izquierda
+      initFiltersBar({ mountId: "filtersCol" });
 
-      function applyHeaderH(){
-        const header = document.querySelector(".bh-topbar, #bhTopbar, header");
-        const px = header ? Math.round(header.getBoundingClientRect().height) : 56;
-        rootStyle.setProperty("--headerH", px + "px");
-      }
-
-      function applyAllHeights(){
-        applyHeaderH();
-      }
-
-      window.addEventListener("load", applyAllHeights);
-      window.addEventListener("resize", applyAllHeights);
-      setTimeout(applyAllHeights, 0);
-
-      initFiltersBar({ mountId: "filtersBarMount" });
       initMap();
     </script>
   </body>
