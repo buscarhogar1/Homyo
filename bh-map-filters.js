@@ -1,6 +1,10 @@
 // bh-map-filters.js
-// Barra horizontal de filtros (scroll-x) + aplica filtros escribiendo en la URL
-// y emitiendo el evento "bh:filters-changed" que bh-map-core.js ya escucha.
+// Barra de filtros minimalista (scroll-x) en tarjetas 2 líneas:
+//  - Línea 1: título
+//  - Línea 2: control(es)
+// Sin filtro ciudad
+// Sin botones Aplicar / Limpiar
+// Actualiza URL + emite "bh:filters-changed" al cambiar cualquier filtro
 
 function el(tag, attrs, children) {
   const n = document.createElement(tag);
@@ -9,10 +13,7 @@ function el(tag, attrs, children) {
       if (v == null) continue;
       if (k === "class") n.className = v;
       else if (k === "text") n.textContent = v;
-      else if (k === "html") n.innerHTML = v;
-      else if (k === "on") {
-        for (const [evt, fn] of Object.entries(v || {})) n.addEventListener(evt, fn);
-      } else n.setAttribute(k, String(v));
+      else n.setAttribute(k, String(v));
     }
   }
   (children || []).forEach((c) => {
@@ -31,7 +32,7 @@ function injectStylesOnce() {
     top: var(--headerH, 56px);
     z-index: 800;
     background: #fff;
-    border-bottom: 1px solid rgba(0,0,0,0.10);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
   }
 
   .bhFiltersBarInner{
@@ -45,25 +46,25 @@ function injectStylesOnce() {
   }
 
   .bhFiltersBarInner::-webkit-scrollbar{ height: 8px; }
-  .bhFiltersBarInner::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.18); border-radius: 99px; }
-  .bhFiltersBarInner::-webkit-scrollbar-track{ background: rgba(0,0,0,0.06); }
+  .bhFiltersBarInner::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.16); border-radius: 99px; }
+  .bhFiltersBarInner::-webkit-scrollbar-track{ background: rgba(0,0,0,0.05); }
 
   .fPill{
     flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid rgba(0,0,0,0.14);
-    border-radius: 999px;
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 6px;
     padding: 8px 10px;
+    border: 1px solid rgba(0,0,0,0.10);
+    border-radius: 12px;
     background: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    min-height: 40px;
+    min-height: 56px;
   }
 
   .fPillLabel{
     font-size: 12px;
-    color: rgba(0,0,0,0.65);
+    color: rgba(0,0,0,0.60);
+    line-height: 1.1;
     white-space: nowrap;
   }
 
@@ -75,36 +76,25 @@ function injectStylesOnce() {
   }
 
   .fInp, .fSel{
-    height: 30px;
+    height: 32px;
     border-radius: 10px;
-    border: 1px solid rgba(0,0,0,0.14);
+    border: 1px solid rgba(0,0,0,0.10);
     padding: 0 10px;
     font-size: 13px;
     outline: none;
     background: #fff;
-    min-width: 88px;
+    min-width: 92px;
   }
 
-  .fInpSmall{ min-width: 72px; }
+  .fInpSmall{ min-width: 76px; }
   .fInpWide{ min-width: 140px; }
 
-  .fBtn{
-    height: 32px;
-    border-radius: 999px;
-    border: 1px solid rgba(0,0,0,0.18);
-    padding: 0 12px;
-    background: #fff;
-    cursor: pointer;
-    font-size: 13px;
-    white-space: nowrap;
+  .fSep{
+    width: 1px;
+    height: 18px;
+    background: rgba(0,0,0,0.10);
+    margin: 0 2px;
   }
-
-  .fBtnPrimary{
-    border-color: rgba(26,115,232,0.40);
-    background: rgba(26,115,232,0.08);
-  }
-
-  .fBtn:active{ transform: translateY(1px); }
 
   details.fMulti{
     position: relative;
@@ -117,17 +107,28 @@ function injectStylesOnce() {
   }
   details.fMulti > summary::-webkit-details-marker{ display:none; }
 
+  .fMultiBtn{
+    height: 32px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.10);
+    background: #fff;
+    padding: 0 10px;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
   .fMultiMenu{
     position: absolute;
-    top: 42px;
+    top: 38px;
     left: 0;
     width: 260px;
     max-height: 280px;
     overflow: auto;
     background: #fff;
-    border: 1px solid rgba(0,0,0,0.14);
-    border-radius: 14px;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.16);
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.12);
     padding: 10px;
     z-index: 1200;
   }
@@ -139,14 +140,7 @@ function injectStylesOnce() {
     padding: 6px 6px;
     border-radius: 10px;
   }
-  .fMultiItem:hover{ background: rgba(0,0,0,0.04); }
-
-  .fSep{
-    width: 1px;
-    height: 22px;
-    background: rgba(0,0,0,0.10);
-    margin: 0 2px;
-  }
+  .fMultiItem:hover{ background: rgba(0,0,0,0.03); }
 
   @media (max-width: 520px){
     .fMultiMenu{ width: 240px; }
@@ -167,14 +161,14 @@ function intOrNull(v) {
   return Number.isFinite(n) ? n : null;
 }
 
-function csvOrNull(arr) {
-  const a = (arr || []).map(String).map((s) => s.trim()).filter(Boolean);
-  return a.length ? a.join(",") : null;
-}
-
 function toText(v) {
   const s = String(v ?? "").trim();
   return s ? s : null;
+}
+
+function csvOrNull(arr) {
+  const a = (arr || []).map(String).map((s) => s.trim()).filter(Boolean);
+  return a.length ? a.join(",") : null;
 }
 
 function makeDatalist(id, options) {
@@ -191,9 +185,8 @@ function getModeFromUrl() {
 
 function getInitialFromUrl() {
   const u = new URL(window.location.href);
-
   return {
-    city: (u.searchParams.get("city") || "").trim(),
+    // city intencionadamente fuera
 
     priceMin: intOrNull(u.searchParams.get("price_min")),
     priceMax: intOrNull(u.searchParams.get("price_max")),
@@ -207,7 +200,8 @@ function getInitialFromUrl() {
     builtMin: intOrNull(u.searchParams.get("built_min")),
     builtMax: intOrNull(u.searchParams.get("built_max")),
 
-    bedrooms: toText(u.searchParams.get("bedrooms")), // "1","2","3","4","1+","2+","3+","4+"
+    bedrooms: toText(u.searchParams.get("bedrooms")), // si lo usas en algún sitio futuro
+    bedroomsMin: intOrNull(u.searchParams.get("bedrooms_min")),
     bathroomsMin: intOrNull(u.searchParams.get("bathrooms_min")),
 
     outdoorType: toText(u.searchParams.get("outdoor_type")),
@@ -226,13 +220,12 @@ function getInitialFromUrl() {
 function setUrlParams(patch) {
   const u = new URL(window.location.href);
 
-  // Nunca tocamos mode aquí.
-  // City sí la mantenemos porque la URL manda en el mapa.
   function setOrDel(key, value) {
     if (value == null || value === "") u.searchParams.delete(key);
     else u.searchParams.set(key, String(value));
   }
 
+  // Nunca tocamos mode ni city aquí.
   for (const [k, v] of Object.entries(patch || {})) setOrDel(k, v);
 
   history.replaceState(null, "", u.toString());
@@ -251,7 +244,7 @@ function swapIfNeeded(minVal, maxVal) {
 }
 
 function multiDetails(label, options, initialCsv, onAnyChange) {
-  const initial = new Set(
+  const selected = new Set(
     String(initialCsv || "")
       .split(",")
       .map((s) => s.trim())
@@ -259,42 +252,36 @@ function multiDetails(label, options, initialCsv, onAnyChange) {
   );
 
   const sumText = () => {
-    if (!initial.size) return `${label}: cualquiera`;
-    const arr = Array.from(initial);
-    return `${label}: ${arr.join(",")}`;
+    if (!selected.size) return "Cualquiera";
+    const arr = Array.from(selected);
+    return arr.join(",");
   };
 
-  const summaryBtn = el("button", { type: "button", class: "fBtn", text: sumText() });
+  const btn = el("button", { type: "button", class: "fMultiBtn", text: sumText() });
 
   const items = options.map((opt) => {
     const id = `chk_${label}_${opt}`.replace(/\s+/g, "_");
     const chk = el("input", { type: "checkbox", id });
-    chk.checked = initial.has(opt);
+    chk.checked = selected.has(opt);
 
     chk.addEventListener("change", () => {
-      if (chk.checked) initial.add(opt);
-      else initial.delete(opt);
+      if (chk.checked) selected.add(opt);
+      else selected.delete(opt);
 
-      summaryBtn.textContent = sumText();
+      btn.textContent = sumText();
       if (onAnyChange) onAnyChange();
     });
 
-    const lab = el("label", { class: "fMultiItem", for: id }, [
-      chk,
-      el("span", { text: opt })
-    ]);
-
-    return lab;
+    return el("label", { class: "fMultiItem", for: id }, [chk, el("span", { text: opt })]);
   });
 
   const menu = el("div", { class: "fMultiMenu" }, items);
 
   const details = el("details", { class: "fMulti" }, [
-    el("summary", {}, [summaryBtn]),
+    el("summary", {}, [btn]),
     menu
   ]);
 
-  // cerrar si clic fuera
   document.addEventListener("click", (e) => {
     if (!details.open) return;
     if (details.contains(e.target)) return;
@@ -303,19 +290,22 @@ function multiDetails(label, options, initialCsv, onAnyChange) {
 
   return {
     node: details,
-    getCsv: () => csvOrNull(Array.from(initial)),
+    getCsv: () => csvOrNull(Array.from(selected)),
     setEnabled: (on) => {
-      summaryBtn.disabled = !on;
-      summaryBtn.style.opacity = on ? "1" : "0.45";
-      summaryBtn.style.pointerEvents = on ? "auto" : "none";
+      btn.disabled = !on;
+      btn.style.opacity = on ? "1" : "0.45";
+      btn.style.pointerEvents = on ? "auto" : "none";
+      if (!on) details.open = false;
+    },
+    reset: () => {
+      selected.clear();
+      btn.textContent = sumText();
+      // no actualizamos checks uno a uno; se reconstruye barra si lo necesitas más adelante
     }
   };
 }
 
 export function initFiltersBar(opts = {}) {
-  // Compatibilidad:
-  // - map.html actual: initFiltersBar({ mountId: "filtersBarMount" })
-  // - versión antigua: initFiltersBar({ container, getInitial, onApply, onClear })
   injectStylesOnce();
 
   const container =
@@ -327,9 +317,7 @@ export function initFiltersBar(opts = {}) {
   const mode = getModeFromUrl();
   const initial = (opts.getInitial ? opts.getInitial() : getInitialFromUrl()) || {};
 
-  // Sugerencias (según tu definición)
-  // Precio depende del tipo de oferta, que viene de mode en URL y NO es editable aquí.
-  // buy/new_build: hasta 2.000.000; rent/room: hasta 3.000 (aprox).
+  // Datalists / sugerencias (según mode)
   const priceSuggest =
     (mode === "rent" || mode === "room")
       ? [300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 1800, 2000, 2500, 3000]
@@ -342,15 +330,27 @@ export function initFiltersBar(opts = {}) {
   const dlUseful = makeDatalist("dlUseful", usefulSuggest);
   const dlBuilt = makeDatalist("dlBuilt", builtSuggest);
 
-  // Inputs base
-  const cityInp = el("input", { class: "fInp fInpWide", type: "text", placeholder: "Ciudad", value: initial.city || "" });
-
-  const priceMin = el("input", { class: "fInp", type: "number", inputmode: "numeric", placeholder: "€ min", value: initial.priceMin ?? "", list: "dlPrice" });
-  const priceMax = el("input", { class: "fInp", type: "number", inputmode: "numeric", placeholder: "€ max", value: initial.priceMax ?? "", list: "dlPrice" });
+  // Controles
+  const priceMin = el("input", {
+    class: "fInp",
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "€ min",
+    value: initial.priceMin ?? "",
+    list: "dlPrice"
+  });
+  const priceMax = el("input", {
+    class: "fInp",
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "€ max",
+    value: initial.priceMax ?? "",
+    list: "dlPrice"
+  });
 
   const sinceSel = el("select", { class: "fSel" });
   [
-    ["", "Ofertado desde: cualquiera"],
+    ["", "Cualquiera"],
     ["1", "24h"],
     ["5", "5 días"],
     ["10", "10 días"],
@@ -361,9 +361,7 @@ export function initFiltersBar(opts = {}) {
 
   const availSel = el("select", { class: "fSel" });
   [
-    ["", "Disponibilidad: cualquiera"],
-    // MVP: en el mapa solo publicados. Mantengo el selector para respetar tu definición,
-    // pero la opción principal que quieres ahora es "Publicados (MVP)".
+    ["", "Cualquiera"],
     ["published", "Publicados (MVP)"],
     ["available", "Disponible"],
     ["negotiating", "Ofertado / negociación"],
@@ -371,15 +369,43 @@ export function initFiltersBar(opts = {}) {
   ].forEach(([v, t]) => availSel.appendChild(el("option", { value: v, text: t })));
   availSel.value = initial.availability || "";
 
-  const usefulMin = el("input", { class: "fInp", type: "number", inputmode: "numeric", placeholder: "m² útiles min", value: initial.usefulMin ?? "", list: "dlUseful" });
-  const usefulMax = el("input", { class: "fInp", type: "number", inputmode: "numeric", placeholder: "m² útiles max", value: initial.usefulMax ?? "", list: "dlUseful" });
+  const usefulMin = el("input", {
+    class: "fInp",
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "m² min",
+    value: initial.usefulMin ?? "",
+    list: "dlUseful"
+  });
+  const usefulMax = el("input", {
+    class: "fInp",
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "m² max",
+    value: initial.usefulMax ?? "",
+    list: "dlUseful"
+  });
 
-  const builtMin = el("input", { class: "fInp", type: "number", inputmode: "numeric", placeholder: "m² const. min", value: initial.builtMin ?? "", list: "dlBuilt" });
-  const builtMax = el("input", { class: "fInp", type: "number", inputmode: "numeric", placeholder: "m² const. max", value: initial.builtMax ?? "", list: "dlBuilt" });
+  const builtMin = el("input", {
+    class: "fInp",
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "m² min",
+    value: initial.builtMin ?? "",
+    list: "dlBuilt"
+  });
+  const builtMax = el("input", {
+    class: "fInp",
+    type: "number",
+    inputmode: "numeric",
+    placeholder: "m² max",
+    value: initial.builtMax ?? "",
+    list: "dlBuilt"
+  });
 
   const bedsSel = el("select", { class: "fSel" });
   [
-    ["", "Dormitorios: cualquiera"],
+    ["", "Cualquiera"],
     ["1", "1"],
     ["2", "2"],
     ["3", "3"],
@@ -389,11 +415,11 @@ export function initFiltersBar(opts = {}) {
     ["3+", "3+"],
     ["4+", "4+"]
   ].forEach(([v, t]) => bedsSel.appendChild(el("option", { value: v, text: t })));
-  bedsSel.value = initial.bedrooms || "";
+  bedsSel.value = ""; // preferimos partir sin forzar; si ya hay bedrooms_min en URL lo respetamos abajo
 
   const bathSel = el("select", { class: "fSel" });
   [
-    ["", "Baños: cualquiera"],
+    ["", "Cualquiera"],
     ["1", "1+"],
     ["2", "2+"],
     ["3", "3+"],
@@ -404,7 +430,7 @@ export function initFiltersBar(opts = {}) {
 
   const outdoorSel = el("select", { class: "fSel" });
   [
-    ["", "Exterior: cualquiera"],
+    ["", "Cualquiera"],
     ["balcon", "Balcón"],
     ["terraza", "Terraza"],
     ["jardin", "Jardín"],
@@ -412,10 +438,9 @@ export function initFiltersBar(opts = {}) {
   ].forEach(([v, t]) => outdoorSel.appendChild(el("option", { value: v, text: t })));
   outdoorSel.value = initial.outdoorType || "";
 
-  // Energy label: pendiente + letras exactas (tu lista completa)
   const energySel = el("select", { class: "fSel" });
   [
-    ["", "Energía: cualquiera"],
+    ["", "Cualquiera"],
     ["pending", "Pendiente"],
     ["A+++++", "A+++++"],
     ["A++++", "A++++"],
@@ -432,7 +457,6 @@ export function initFiltersBar(opts = {}) {
   ].forEach(([v, t]) => energySel.appendChild(el("option", { value: v, text: t })));
   energySel.value = initial.energy || "";
 
-  // Multi: orientación (solo si hay exterior)
   const orientationsMulti = multiDetails(
     "Orientación",
     ["N","NE","E","SE","S","SW","W","NW"],
@@ -440,7 +464,6 @@ export function initFiltersBar(opts = {}) {
     null
   );
 
-  // Multi: periodo de construcción
   const buildPeriodsMulti = multiDetails(
     "Periodo",
     ["<1950", "1950-1999", "2000+"],
@@ -448,7 +471,6 @@ export function initFiltersBar(opts = {}) {
     null
   );
 
-  // Multi: parking
   const parkingMulti = multiDetails(
     "Parking",
     ["incluido", "opcional", "no_disponible"],
@@ -456,7 +478,6 @@ export function initFiltersBar(opts = {}) {
     null
   );
 
-  // Multi: trastero
   const storageMulti = multiDetails(
     "Trastero",
     ["incluido", "no_incluido"],
@@ -464,8 +485,6 @@ export function initFiltersBar(opts = {}) {
     null
   );
 
-  // Multi: accesibilidad (aquí tu regla dice: si selecciona varias, debe cumplir todas.
-  // Eso es lógica de backend; en UI lo recogemos como CSV.
   const accessibilityMulti = multiDetails(
     "Accesibilidad",
     ["ascensor", "pmr"],
@@ -473,25 +492,26 @@ export function initFiltersBar(opts = {}) {
     null
   );
 
-  // Botones
-  const applyBtn = el("button", { class: "fBtn fBtnPrimary", type: "button", text: "Aplicar" });
-  const clearBtn = el("button", { class: "fBtn", type: "button", text: "Limpiar" });
+  // Si ya venía bedrooms_min por URL, reflejamos lo mejor posible en el selector:
+  // - si es 1..4, ponemos "X+"
+  if (initial.bedroomsMin != null) {
+    const v = String(initial.bedroomsMin);
+    if (["1","2","3","4"].includes(v)) bedsSel.value = v + "+";
+  }
 
   function isRoomMode() {
     return mode === "room";
   }
 
   function refreshConditionalVisibility() {
-    // Construidos no aparece en habitación
     const builtPill = container.querySelector('[data-pill="built"]');
-    if (builtPill) builtPill.style.display = isRoomMode() ? "none" : "inline-flex";
+    if (builtPill) builtPill.style.display = isRoomMode() ? "none" : "grid";
 
-    // Orientación solo si hay outdoor space
     const hasOutdoor = !!(outdoorSel.value || "").trim();
     orientationsMulti.setEnabled(hasOutdoor);
   }
 
-  function read() {
+  function readNormalized() {
     // Reglas min/max: si min > max, intercambiar
     const pr = swapIfNeeded(priceMin.value, priceMax.value);
     if (pr.swapped) {
@@ -511,9 +531,8 @@ export function initFiltersBar(opts = {}) {
       builtMax.value = bu.max ?? "";
     }
 
-    // Dormitorios: exact vs plus
-    // - "X+" -> bedrooms_min = X
-    // - "X"  -> aplicamos también como min X (en backend será >=X). Exacto lo afinaremos luego.
+    // Dormitorios: en el mapa solo tenemos bedrooms_min.
+    // "X" y "X+" se traducen a bedrooms_min = X (>= X).
     const beds = (bedsSel.value || "").trim();
     let bedroomsMin = null;
     if (beds) {
@@ -523,8 +542,6 @@ export function initFiltersBar(opts = {}) {
     }
 
     return {
-      city: cityInp.value.trim(),
-
       priceMin: pr.min,
       priceMax: pr.max,
 
@@ -553,98 +570,67 @@ export function initFiltersBar(opts = {}) {
     };
   }
 
-  async function applyNow() {
-    const v = read();
+  // Auto-apply con debounce
+  let autoTimer = null;
+  function scheduleAutoApply() {
+    if (autoTimer) clearTimeout(autoTimer);
+    autoTimer = setTimeout(() => {
+      const v = readNormalized();
 
-    // Escribimos a la URL con los nombres que bh-map-core.js ya lee
-    setUrlParams({
-      city: v.city || null,
+      setUrlParams({
+        // city intencionadamente fuera
+        price_min: v.priceMin,
+        price_max: v.priceMax,
 
-      price_min: v.priceMin,
-      price_max: v.priceMax,
+        since_days: v.sinceDays,
+        availability: v.availability,
 
-      since_days: v.sinceDays,
-      availability: v.availability,
+        useful_min: v.usefulMin,
+        useful_max: v.usefulMax,
 
-      useful_min: v.usefulMin,
-      useful_max: v.usefulMax,
+        built_min: v.builtMin,
+        built_max: v.builtMax,
 
-      built_min: v.builtMin,
-      built_max: v.builtMax,
+        bedrooms_min: v.bedroomsMin,
+        bathrooms_min: v.bathroomsMin,
 
-      bedrooms_min: v.bedroomsMin,
-      bathrooms_min: v.bathroomsMin,
+        outdoor_type: v.outdoorType,
+        orientations: v.orientations,
 
-      outdoor_type: v.outdoorType,
-      orientations: v.orientations,
+        energy: v.energy,
 
-      energy: v.energy,
+        build_periods: v.buildPeriods,
 
-      build_periods: v.buildPeriods,
+        parking: v.parking,
+        storage: v.storage,
+        accessibility: v.accessibility
+      });
 
-      parking: v.parking,
-      storage: v.storage,
-      accessibility: v.accessibility
-    });
-
-    if (opts.onApply) await opts.onApply(v);
-
-    emitChanged();
+      emitChanged();
+    }, 220);
   }
 
-  async function clearNow() {
-    // No reseteamos mode. City: la dejo tal cual esté en input (si quieres que tampoco cambie, no la toco).
-    priceMin.value = "";
-    priceMax.value = "";
+  // Bind auto-apply
+  const autoOn = (node) => {
+    node.addEventListener("change", scheduleAutoApply);
+    node.addEventListener("input", scheduleAutoApply);
+  };
 
-    sinceSel.value = "";
-    availSel.value = "";
+  [priceMin, priceMax, sinceSel, availSel, usefulMin, usefulMax, builtMin, builtMax, bedsSel, bathSel, outdoorSel, energySel]
+    .forEach(autoOn);
 
-    usefulMin.value = "";
-    usefulMax.value = "";
-
-    builtMin.value = "";
-    builtMax.value = "";
-
-    bedsSel.value = "";
-    bathSel.value = "";
-
-    outdoorSel.value = "";
-    energySel.value = "";
-
-    // Multi: reset cerrando y reconstruyendo estado (más simple: recargar página no; aquí borramos URL y emitimos)
-    setUrlParams({
-      price_min: null,
-      price_max: null,
-      since_days: null,
-      availability: null,
-      useful_min: null,
-      useful_max: null,
-      built_min: null,
-      built_max: null,
-      bedrooms_min: null,
-      bathrooms_min: null,
-      outdoor_type: null,
-      orientations: null,
-      energy: null,
-      build_periods: null,
-      parking: null,
-      storage: null,
-      accessibility: null
+  // multi: al cambiar, llamamos a scheduleAutoApply
+  const wrapMultiAuto = (multi) => {
+    // Cuando el checkbox cambia, multiDetails ya actualiza; enganchamos click/change en el details
+    multi.node.addEventListener("change", scheduleAutoApply);
+    multi.node.addEventListener("click", () => {
+      // click también por si el navegador no dispara change al marcar rápido
+      setTimeout(scheduleAutoApply, 0);
     });
+  };
 
-    if (opts.onClear) await opts.onClear();
+  [orientationsMulti, buildPeriodsMulti, parkingMulti, storageMulti, accessibilityMulti].forEach(wrapMultiAuto);
 
-    // Para que el UI de multi refleje el reset sin complicarnos,
-    // volvemos a inicializar la barra completa.
-    initFiltersBar({ ...opts, container });
-    emitChanged();
-  }
-
-  applyBtn.addEventListener("click", applyNow);
-  clearBtn.addEventListener("click", clearNow);
-
-  // Auto-apply opcional por cambios en selects (mantenemos conservador: solo refresco de visibilidad)
   outdoorSel.addEventListener("change", refreshConditionalVisibility);
 
   // Render
@@ -656,20 +642,17 @@ export function initFiltersBar(opts = {}) {
 
   const inner = wrap.firstChild;
 
-  // Datalists tienen que estar en DOM
+  // Datalists
   inner.appendChild(dlPrice);
   inner.appendChild(dlUseful);
   inner.appendChild(dlBuilt);
 
   function pill(label, contentNode, dataKey) {
-    const node = el("div", { class: "fPill", "data-pill": dataKey || "" }, [
+    return el("div", { class: "fPill", "data-pill": dataKey || "" }, [
       el("div", { class: "fPillLabel", text: label }),
       contentNode
     ]);
-    return node;
   }
-
-  inner.appendChild(pill("Ciudad", cityInp, "city"));
 
   inner.appendChild(pill("Precio", el("div", { class: "fRow" }, [
     priceMin, el("span", { class: "fSep" }), priceMax
@@ -699,15 +682,16 @@ export function initFiltersBar(opts = {}) {
   inner.appendChild(pill("Trastero", storageMulti.node, "storage"));
   inner.appendChild(pill("Accesibilidad", accessibilityMulti.node, "accessibility"));
 
-  inner.appendChild(el("div", { class: "fPill" }, [applyBtn, clearBtn]));
-
   container.appendChild(wrap);
 
   refreshConditionalVisibility();
 
-  // API mínima por si la usas luego
+  // Aplicar al cargar si hay filtros ya en URL (para sincronizar mapa si el usuario vuelve atrás/adelante)
+  // No tocamos nada, solo emitimos cambio si detectamos parámetros relevantes.
+  // Esto evita que el mapa se quede sin refrescar en algunos navegadores.
+  setTimeout(() => emitChanged(), 0);
+
   return {
-    readNow: read,
-    applyNow
+    readNow: readNormalized
   };
 }
