@@ -1,10 +1,8 @@
 // bh-map-filters.js
-// Barra de filtros minimalista (scroll-x) en tarjetas 2 líneas:
-//  - Línea 1: título
-//  - Línea 2: control(es)
-// Sin filtro ciudad
-// Sin botones Aplicar / Limpiar
-// Actualiza URL + emite "bh:filters-changed" al cambiar cualquier filtro
+// Sidebar derecha, estilo lista. Cada sección tiene:
+// - indicador activo (punto)
+// - X para resetear solo esa sección
+// - auto-apply: escribe en URL y dispara bh:filters-changed
 
 function el(tag, attrs, children) {
   const n = document.createElement(tag);
@@ -16,682 +14,264 @@ function el(tag, attrs, children) {
       else n.setAttribute(k, String(v));
     }
   }
-  (children || []).forEach((c) => {
-    if (c == null) return;
-    n.appendChild(c);
-  });
+  if (children) {
+    for (const c of children) {
+      if (c == null) continue;
+      n.appendChild(c);
+    }
+  }
   return n;
 }
 
-function injectStylesOnce() {
-  if (document.getElementById("bhFiltersBarStyles")) return;
-
-  const css = `
-  .bhFiltersBar{
-    position: sticky;
-    top: var(--headerH, 56px);
-    z-index: 800;
-    background: #fff;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-  }
-
-  .bhFiltersBarInner{
-    display: flex;
-    gap: 10px;
-    padding: 10px 12px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-  }
-
-  .bhFiltersBarInner::-webkit-scrollbar{ height: 8px; }
-  .bhFiltersBarInner::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.16); border-radius: 99px; }
-  .bhFiltersBarInner::-webkit-scrollbar-track{ background: rgba(0,0,0,0.05); }
-
-  .fPill{
-    flex: 0 0 auto;
-    display: grid;
-    grid-template-rows: auto auto;
-    gap: 6px;
-    padding: 8px 10px;
-    border: 1px solid rgba(0,0,0,0.10);
-    border-radius: 12px;
-    background: #fff;
-    min-height: 56px;
-  }
-
-  .fPillLabel{
-    font-size: 12px;
-    color: rgba(0,0,0,0.60);
-    line-height: 1.1;
-    white-space: nowrap;
-  }
-
-  .fRow{
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-  }
-
-  .fInp, .fSel{
-    height: 32px;
-    border-radius: 10px;
-    border: 1px solid rgba(0,0,0,0.10);
-    padding: 0 10px;
-    font-size: 13px;
-    outline: none;
-    background: #fff;
-    min-width: 92px;
-  }
-
-  .fInpSmall{ min-width: 76px; }
-  .fInpWide{ min-width: 140px; }
-
-  .fSep{
-    width: 1px;
-    height: 18px;
-    background: rgba(0,0,0,0.10);
-    margin: 0 2px;
-  }
-
-  details.fMulti{
-    position: relative;
-  }
-
-  details.fMulti > summary{
-    list-style: none;
-    cursor: pointer;
-    outline: none;
-  }
-  details.fMulti > summary::-webkit-details-marker{ display:none; }
-
-  .fMultiBtn{
-    height: 32px;
-    border-radius: 10px;
-    border: 1px solid rgba(0,0,0,0.10);
-    background: #fff;
-    padding: 0 10px;
-    font-size: 13px;
-    white-space: nowrap;
-    cursor: pointer;
-  }
-
-  .fMultiMenu{
-    position: absolute;
-    top: 38px;
-    left: 0;
-    width: 260px;
-    max-height: 280px;
-    overflow: auto;
-    background: #fff;
-    border: 1px solid rgba(0,0,0,0.12);
-    border-radius: 12px;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.12);
-    padding: 10px;
-    z-index: 1200;
-  }
-
-  .fMultiItem{
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 6px;
-    border-radius: 10px;
-  }
-  .fMultiItem:hover{ background: rgba(0,0,0,0.03); }
-
-  @media (max-width: 520px){
-    .fMultiMenu{ width: 240px; }
-    .fInpWide{ min-width: 120px; }
-  }
-  `;
-
-  const style = document.createElement("style");
-  style.id = "bhFiltersBarStyles";
-  style.textContent = css;
-  document.head.appendChild(style);
+function debounce(fn, ms) {
+  let t = null;
+  return (...args) => {
+    if (t) clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
 }
 
-function intOrNull(v) {
+function toIntOrNull(v) {
   const s = String(v ?? "").trim();
   if (!s) return null;
   const n = parseInt(s, 10);
   return Number.isFinite(n) ? n : null;
 }
 
-function toText(v) {
-  const s = String(v ?? "").trim();
-  return s ? s : null;
+function setFromCsv(csv) {
+  const s = String(csv ?? "").trim();
+  if (!s) return new Set();
+  return new Set(s.split(",").map(x => x.trim()).filter(Boolean));
 }
 
-function csvOrNull(arr) {
-  const a = (arr || []).map(String).map((s) => s.trim()).filter(Boolean);
-  return a.length ? a.join(",") : null;
+function csvFromSet(set) {
+  const arr = Array.from(set || []).filter(Boolean);
+  return arr.length ? arr.join(",") : "";
 }
 
-function makeDatalist(id, options) {
-  const dl = el("datalist", { id });
-  (options || []).forEach((v) => dl.appendChild(el("option", { value: String(v) })));
-  return dl;
+function fireChanged() {
+  window.dispatchEvent(new CustomEvent("bh:filters-changed"));
 }
 
-function getModeFromUrl() {
+function writeParams(patch) {
   const u = new URL(window.location.href);
-  const m = (u.searchParams.get("mode") || "buy").trim().toLowerCase();
-  return m || "buy";
-}
+  const keep = new Set(["city", "mode"]);
 
-function getInitialFromUrl() {
-  const u = new URL(window.location.href);
-  return {
-    // city intencionadamente fuera
-
-    priceMin: intOrNull(u.searchParams.get("price_min")),
-    priceMax: intOrNull(u.searchParams.get("price_max")),
-
-    sinceDays: intOrNull(u.searchParams.get("since_days")),
-    availability: toText(u.searchParams.get("availability")),
-
-    usefulMin: intOrNull(u.searchParams.get("useful_min")),
-    usefulMax: intOrNull(u.searchParams.get("useful_max")),
-
-    builtMin: intOrNull(u.searchParams.get("built_min")),
-    builtMax: intOrNull(u.searchParams.get("built_max")),
-
-    bedrooms: toText(u.searchParams.get("bedrooms")), // si lo usas en algún sitio futuro
-    bedroomsMin: intOrNull(u.searchParams.get("bedrooms_min")),
-    bathroomsMin: intOrNull(u.searchParams.get("bathrooms_min")),
-
-    outdoorType: toText(u.searchParams.get("outdoor_type")),
-    orientations: toText(u.searchParams.get("orientations")),
-
-    energy: toText(u.searchParams.get("energy")),
-
-    buildPeriods: toText(u.searchParams.get("build_periods")),
-
-    parking: toText(u.searchParams.get("parking")),
-    storage: toText(u.searchParams.get("storage")),
-    accessibility: toText(u.searchParams.get("accessibility")),
-  };
-}
-
-function setUrlParams(patch) {
-  const u = new URL(window.location.href);
-
-  function setOrDel(key, value) {
-    if (value == null || value === "") u.searchParams.delete(key);
-    else u.searchParams.set(key, String(value));
+  function setParam(key, val) {
+    if (keep.has(key)) return;
+    if (val == null || val === "") u.searchParams.delete(key);
+    else u.searchParams.set(key, String(val));
   }
 
-  // Nunca tocamos mode ni city aquí.
-  for (const [k, v] of Object.entries(patch || {})) setOrDel(k, v);
+  for (const [k, v] of Object.entries(patch || {})) setParam(k, v);
 
   history.replaceState(null, "", u.toString());
 }
 
-function emitChanged() {
-  window.dispatchEvent(new CustomEvent("bh:filters-changed"));
-}
-
-function swapIfNeeded(minVal, maxVal) {
-  const a = intOrNull(minVal);
-  const b = intOrNull(maxVal);
-  if (a == null || b == null) return { min: a, max: b, swapped: false };
-  if (a <= b) return { min: a, max: b, swapped: false };
-  return { min: b, max: a, swapped: true };
-}
-
-function multiDetails(label, options, initialCsv, onAnyChange) {
-  const selected = new Set(
-    String(initialCsv || "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean)
-  );
-
-  const sumText = () => {
-    if (!selected.size) return "Cualquiera";
-    const arr = Array.from(selected);
-    return arr.join(",");
+function readInitial() {
+  const u = new URL(window.location.href);
+  return {
+    sinceDays: toIntOrNull(u.searchParams.get("since_days")),
+    availabilitySet: setFromCsv(u.searchParams.get("availability")), // multi
+    usefulMin: toIntOrNull(u.searchParams.get("useful_min")),
+    usefulMax: toIntOrNull(u.searchParams.get("useful_max"))
   };
+}
 
-  const btn = el("button", { type: "button", class: "fMultiBtn", text: sumText() });
+function makeBlock(titleText) {
+  const block = el("section", { class: "bhFilterBlock" });
 
-  const items = options.map((opt) => {
-    const id = `chk_${label}_${opt}`.replace(/\s+/g, "_");
-    const chk = el("input", { type: "checkbox", id });
-    chk.checked = selected.has(opt);
+  const xBtn = el("button", { class: "bhFilterX", type: "button", text: "×" });
+  const head = el("div", { class: "bhFilterHead" });
+  const dot = el("div", { class: "bhFilterDot", "aria-hidden": "true" });
+  const title = el("h3", { class: "bhFilterTitle", text: titleText });
 
-    chk.addEventListener("change", () => {
-      if (chk.checked) selected.add(opt);
-      else selected.delete(opt);
+  head.appendChild(dot);
+  head.appendChild(title);
 
-      btn.textContent = sumText();
-      if (onAnyChange) onAnyChange();
+  const body = el("div", { class: "bhFilterBody" });
+
+  block.appendChild(xBtn);
+  block.appendChild(head);
+  block.appendChild(body);
+
+  function setActive(isActive) {
+    block.classList.toggle("isActive", !!isActive);
+  }
+
+  return { block, body, xBtn, setActive };
+}
+
+function makeRadio(name, value, checked) {
+  const i = el("input", { type: "radio", name, value });
+  if (checked) i.checked = true;
+  return i;
+}
+
+function makeCheckbox(value, checked) {
+  const i = el("input", { type: "checkbox", value });
+  if (checked) i.checked = true;
+  return i;
+}
+
+function makeOptRow(inputEl, labelText) {
+  const txt = el("div", { class: "bhOptText", text: labelText });
+  const row = el("label", { class: "bhOpt" }, [inputEl, txt]);
+  return row;
+}
+
+export function initFiltersBar({ mountId = "filtersBarMount" } = {}) {
+  const mount = document.getElementById(mountId);
+  if (!mount) return;
+
+  const initial = readInitial();
+
+  const panel = el("div", { class: "bhFiltersPanel" });
+
+  // Auto apply (debounced)
+  const applyNow = () => {
+    // sinceDays
+    const chosenSince = panel.querySelector('input[name="since_days"]:checked');
+    const sinceVal = chosenSince ? chosenSince.value : "";
+    const sinceDays = sinceVal ? parseInt(sinceVal, 10) : null;
+
+    // availability multi
+    const availChecks = panel.querySelectorAll('input[data-k="availability"]:checked');
+    const availSet = new Set(Array.from(availChecks).map(i => i.value));
+
+    // living area
+    const usefulMin = toIntOrNull(panel.querySelector('input[data-k="useful_min"]')?.value);
+    const usefulMax = toIntOrNull(panel.querySelector('input[data-k="useful_max"]')?.value);
+
+    // swaps
+    let uMin = usefulMin, uMax = usefulMax;
+    if (uMin != null && uMax != null && uMin > uMax) {
+      const t = uMin; uMin = uMax; uMax = t;
+    }
+
+    // escribir URL
+    writeParams({
+      since_days: sinceDays ?? "",
+      availability: csvFromSet(availSet),
+      useful_min: uMin ?? "",
+      useful_max: uMax ?? ""
     });
 
-    return el("label", { class: "fMultiItem", for: id }, [chk, el("span", { text: opt })]);
-  });
+    // activar marcadores
+    blocks.offered.setActive(sinceDays != null);
+    blocks.availability.setActive(availSet.size > 0);
+    blocks.living.setActive((uMin != null) || (uMax != null));
 
-  const menu = el("div", { class: "fMultiMenu" }, items);
-
-  const details = el("details", { class: "fMulti" }, [
-    el("summary", {}, [btn]),
-    menu
-  ]);
-
-  document.addEventListener("click", (e) => {
-    if (!details.open) return;
-    if (details.contains(e.target)) return;
-    details.open = false;
-  });
-
-  return {
-    node: details,
-    getCsv: () => csvOrNull(Array.from(selected)),
-    setEnabled: (on) => {
-      btn.disabled = !on;
-      btn.style.opacity = on ? "1" : "0.45";
-      btn.style.pointerEvents = on ? "auto" : "none";
-      if (!on) details.open = false;
-    },
-    reset: () => {
-      selected.clear();
-      btn.textContent = sumText();
-      // no actualizamos checks uno a uno; se reconstruye barra si lo necesitas más adelante
-    }
-  };
-}
-
-export function initFiltersBar(opts = {}) {
-  injectStylesOnce();
-
-  const container =
-    opts.container ||
-    (opts.mountId ? document.getElementById(opts.mountId) : null);
-
-  if (!container) return;
-
-  const mode = getModeFromUrl();
-  const initial = (opts.getInitial ? opts.getInitial() : getInitialFromUrl()) || {};
-
-  // Datalists / sugerencias (según mode)
-  const priceSuggest =
-    (mode === "rent" || mode === "room")
-      ? [300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 1800, 2000, 2500, 3000]
-      : [50000, 75000, 100000, 125000, 150000, 175000, 200000, 250000, 300000, 350000, 400000, 450000, 500000, 600000, 750000, 1000000, 1250000, 1500000, 1750000, 2000000];
-
-  const usefulSuggest = [30, 40, 50, 60, 75, 90, 100, 110, 130, 150, 200];
-  const builtSuggest = [40, 50, 60, 75, 90, 100, 120, 140, 160, 180, 200, 250, 300, 400];
-
-  const dlPrice = makeDatalist("dlPrice", priceSuggest);
-  const dlUseful = makeDatalist("dlUseful", usefulSuggest);
-  const dlBuilt = makeDatalist("dlBuilt", builtSuggest);
-
-  // Controles
-  const priceMin = el("input", {
-    class: "fInp",
-    type: "number",
-    inputmode: "numeric",
-    placeholder: "€ min",
-    value: initial.priceMin ?? "",
-    list: "dlPrice"
-  });
-  const priceMax = el("input", {
-    class: "fInp",
-    type: "number",
-    inputmode: "numeric",
-    placeholder: "€ max",
-    value: initial.priceMax ?? "",
-    list: "dlPrice"
-  });
-
-  const sinceSel = el("select", { class: "fSel" });
-  [
-    ["", "Cualquiera"],
-    ["1", "24h"],
-    ["5", "5 días"],
-    ["10", "10 días"],
-    ["30", "30 días"],
-    ["60", "60 días"]
-  ].forEach(([v, t]) => sinceSel.appendChild(el("option", { value: v, text: t })));
-  sinceSel.value = (initial.sinceDays != null) ? String(initial.sinceDays) : "";
-
-  const availSel = el("select", { class: "fSel" });
-  [
-    ["", "Cualquiera"],
-    ["published", "Publicados (MVP)"],
-    ["available", "Disponible"],
-    ["negotiating", "Ofertado / negociación"],
-    ["closed", "Alquilado / vendido"]
-  ].forEach(([v, t]) => availSel.appendChild(el("option", { value: v, text: t })));
-  availSel.value = initial.availability || "";
-
-  const usefulMin = el("input", {
-    class: "fInp",
-    type: "number",
-    inputmode: "numeric",
-    placeholder: "m² min",
-    value: initial.usefulMin ?? "",
-    list: "dlUseful"
-  });
-  const usefulMax = el("input", {
-    class: "fInp",
-    type: "number",
-    inputmode: "numeric",
-    placeholder: "m² max",
-    value: initial.usefulMax ?? "",
-    list: "dlUseful"
-  });
-
-  const builtMin = el("input", {
-    class: "fInp",
-    type: "number",
-    inputmode: "numeric",
-    placeholder: "m² min",
-    value: initial.builtMin ?? "",
-    list: "dlBuilt"
-  });
-  const builtMax = el("input", {
-    class: "fInp",
-    type: "number",
-    inputmode: "numeric",
-    placeholder: "m² max",
-    value: initial.builtMax ?? "",
-    list: "dlBuilt"
-  });
-
-  const bedsSel = el("select", { class: "fSel" });
-  [
-    ["", "Cualquiera"],
-    ["1", "1"],
-    ["2", "2"],
-    ["3", "3"],
-    ["4", "4"],
-    ["1+", "1+"],
-    ["2+", "2+"],
-    ["3+", "3+"],
-    ["4+", "4+"]
-  ].forEach(([v, t]) => bedsSel.appendChild(el("option", { value: v, text: t })));
-  bedsSel.value = ""; // preferimos partir sin forzar; si ya hay bedrooms_min en URL lo respetamos abajo
-
-  const bathSel = el("select", { class: "fSel" });
-  [
-    ["", "Cualquiera"],
-    ["1", "1+"],
-    ["2", "2+"],
-    ["3", "3+"],
-    ["4", "4+"],
-    ["5", "5+"]
-  ].forEach(([v, t]) => bathSel.appendChild(el("option", { value: v, text: t })));
-  bathSel.value = (initial.bathroomsMin != null) ? String(initial.bathroomsMin) : "";
-
-  const outdoorSel = el("select", { class: "fSel" });
-  [
-    ["", "Cualquiera"],
-    ["balcon", "Balcón"],
-    ["terraza", "Terraza"],
-    ["jardin", "Jardín"],
-    ["patio", "Patio"]
-  ].forEach(([v, t]) => outdoorSel.appendChild(el("option", { value: v, text: t })));
-  outdoorSel.value = initial.outdoorType || "";
-
-  const energySel = el("select", { class: "fSel" });
-  [
-    ["", "Cualquiera"],
-    ["pending", "Pendiente"],
-    ["A+++++", "A+++++"],
-    ["A++++", "A++++"],
-    ["A+++", "A+++"],
-    ["A++", "A++"],
-    ["A+", "A+"],
-    ["A", "A"],
-    ["B", "B"],
-    ["C", "C"],
-    ["D", "D"],
-    ["E", "E"],
-    ["F", "F"],
-    ["G", "G"]
-  ].forEach(([v, t]) => energySel.appendChild(el("option", { value: v, text: t })));
-  energySel.value = initial.energy || "";
-
-  const orientationsMulti = multiDetails(
-    "Orientación",
-    ["N","NE","E","SE","S","SW","W","NW"],
-    initial.orientations,
-    null
-  );
-
-  const buildPeriodsMulti = multiDetails(
-    "Periodo",
-    ["<1950", "1950-1999", "2000+"],
-    initial.buildPeriods,
-    null
-  );
-
-  const parkingMulti = multiDetails(
-    "Parking",
-    ["incluido", "opcional", "no_disponible"],
-    initial.parking,
-    null
-  );
-
-  const storageMulti = multiDetails(
-    "Trastero",
-    ["incluido", "no_incluido"],
-    initial.storage,
-    null
-  );
-
-  const accessibilityMulti = multiDetails(
-    "Accesibilidad",
-    ["ascensor", "pmr"],
-    initial.accessibility,
-    null
-  );
-
-  // Si ya venía bedrooms_min por URL, reflejamos lo mejor posible en el selector:
-  // - si es 1..4, ponemos "X+"
-  if (initial.bedroomsMin != null) {
-    const v = String(initial.bedroomsMin);
-    if (["1","2","3","4"].includes(v)) bedsSel.value = v + "+";
-  }
-
-  function isRoomMode() {
-    return mode === "room";
-  }
-
-  function refreshConditionalVisibility() {
-    const builtPill = container.querySelector('[data-pill="built"]');
-    if (builtPill) builtPill.style.display = isRoomMode() ? "none" : "grid";
-
-    const hasOutdoor = !!(outdoorSel.value || "").trim();
-    orientationsMulti.setEnabled(hasOutdoor);
-  }
-
-  function readNormalized() {
-    // Reglas min/max: si min > max, intercambiar
-    const pr = swapIfNeeded(priceMin.value, priceMax.value);
-    if (pr.swapped) {
-      priceMin.value = pr.min ?? "";
-      priceMax.value = pr.max ?? "";
-    }
-
-    const uf = swapIfNeeded(usefulMin.value, usefulMax.value);
-    if (uf.swapped) {
-      usefulMin.value = uf.min ?? "";
-      usefulMax.value = uf.max ?? "";
-    }
-
-    const bu = swapIfNeeded(builtMin.value, builtMax.value);
-    if (bu.swapped) {
-      builtMin.value = bu.min ?? "";
-      builtMax.value = bu.max ?? "";
-    }
-
-    // Dormitorios: en el mapa solo tenemos bedrooms_min.
-    // "X" y "X+" se traducen a bedrooms_min = X (>= X).
-    const beds = (bedsSel.value || "").trim();
-    let bedroomsMin = null;
-    if (beds) {
-      const isPlus = beds.endsWith("+");
-      const num = parseInt(isPlus ? beds.slice(0, -1) : beds, 10);
-      if (Number.isFinite(num)) bedroomsMin = num;
-    }
-
-    return {
-      priceMin: pr.min,
-      priceMax: pr.max,
-
-      sinceDays: intOrNull(sinceSel.value),
-      availability: toText(availSel.value),
-
-      usefulMin: uf.min,
-      usefulMax: uf.max,
-
-      builtMin: isRoomMode() ? null : bu.min,
-      builtMax: isRoomMode() ? null : bu.max,
-
-      bedroomsMin,
-      bathroomsMin: intOrNull(bathSel.value),
-
-      outdoorType: toText(outdoorSel.value),
-      orientations: orientationsMulti.getCsv(),
-
-      energy: toText(energySel.value),
-
-      buildPeriods: buildPeriodsMulti.getCsv(),
-
-      parking: parkingMulti.getCsv(),
-      storage: storageMulti.getCsv(),
-      accessibility: accessibilityMulti.getCsv()
-    };
-  }
-
-  // Auto-apply con debounce
-  let autoTimer = null;
-  function scheduleAutoApply() {
-    if (autoTimer) clearTimeout(autoTimer);
-    autoTimer = setTimeout(() => {
-      const v = readNormalized();
-
-      setUrlParams({
-        // city intencionadamente fuera
-        price_min: v.priceMin,
-        price_max: v.priceMax,
-
-        since_days: v.sinceDays,
-        availability: v.availability,
-
-        useful_min: v.usefulMin,
-        useful_max: v.usefulMax,
-
-        built_min: v.builtMin,
-        built_max: v.builtMax,
-
-        bedrooms_min: v.bedroomsMin,
-        bathrooms_min: v.bathroomsMin,
-
-        outdoor_type: v.outdoorType,
-        orientations: v.orientations,
-
-        energy: v.energy,
-
-        build_periods: v.buildPeriods,
-
-        parking: v.parking,
-        storage: v.storage,
-        accessibility: v.accessibility
-      });
-
-      emitChanged();
-    }, 220);
-  }
-
-  // Bind auto-apply
-  const autoOn = (node) => {
-    node.addEventListener("change", scheduleAutoApply);
-    node.addEventListener("input", scheduleAutoApply);
+    fireChanged();
   };
 
-  [priceMin, priceMax, sinceSel, availSel, usefulMin, usefulMax, builtMin, builtMax, bedsSel, bathSel, outdoorSel, energySel]
-    .forEach(autoOn);
+  const queueApply = debounce(applyNow, 150);
 
-  // multi: al cambiar, llamamos a scheduleAutoApply
-  const wrapMultiAuto = (multi) => {
-    // Cuando el checkbox cambia, multiDetails ya actualiza; enganchamos click/change en el details
-    multi.node.addEventListener("change", scheduleAutoApply);
-    multi.node.addEventListener("click", () => {
-      // click también por si el navegador no dispara change al marcar rápido
-      setTimeout(scheduleAutoApply, 0);
+  const blocks = {
+    offered: makeBlock("Offered since"),
+    availability: makeBlock("Availability"),
+    living: makeBlock("Living area")
+  };
+
+  // Offered since (radio)
+  {
+    const name = "since_days";
+    const opts = [
+      ["", "No preference"],
+      ["1", "Today"],
+      ["3", "3 days"],
+      ["5", "5 days"],
+      ["10", "10 days"],
+      ["30", "30 days"]
+    ];
+
+    opts.forEach(([v, t]) => {
+      const checked = (initial.sinceDays == null && v === "") || (initial.sinceDays != null && String(initial.sinceDays) === v);
+      const inp = makeRadio(name, v, checked);
+      const row = makeOptRow(inp, t);
+      blocks.offered.body.appendChild(row);
+      inp.addEventListener("change", queueApply);
     });
-  };
 
-  [orientationsMulti, buildPeriodsMulti, parkingMulti, storageMulti, accessibilityMulti].forEach(wrapMultiAuto);
-
-  outdoorSel.addEventListener("change", refreshConditionalVisibility);
-
-  // Render
-  container.innerHTML = "";
-
-  const wrap = el("div", { class: "bhFiltersBar" }, [
-    el("div", { class: "bhFiltersBarInner" }, [])
-  ]);
-
-  const inner = wrap.firstChild;
-
-  // Datalists
-  inner.appendChild(dlPrice);
-  inner.appendChild(dlUseful);
-  inner.appendChild(dlBuilt);
-
-  function pill(label, contentNode, dataKey) {
-    return el("div", { class: "fPill", "data-pill": dataKey || "" }, [
-      el("div", { class: "fPillLabel", text: label }),
-      contentNode
-    ]);
+    blocks.offered.xBtn.addEventListener("click", () => {
+      // reset a "No preference"
+      const first = blocks.offered.body.querySelector(`input[name="${name}"][value=""]`);
+      if (first) first.checked = true;
+      queueApply();
+    });
   }
 
-  inner.appendChild(pill("Precio", el("div", { class: "fRow" }, [
-    priceMin, el("span", { class: "fSep" }), priceMax
-  ]), "price"));
+  // Availability (checkbox multi)
+  {
+    const opts = [
+      ["available", "Available"],
+      ["negotiation", "In negotiation"],
+      ["closed", "Sold"]
+    ];
 
-  inner.appendChild(pill("Ofertado desde", sinceSel, "since"));
-  inner.appendChild(pill("Disponibilidad", availSel, "availability"));
+    opts.forEach(([v, t]) => {
+      const checked = initial.availabilitySet.has(v);
+      const inp = makeCheckbox(v, checked);
+      inp.dataset.k = "availability";
+      const row = makeOptRow(inp, t);
+      blocks.availability.body.appendChild(row);
+      inp.addEventListener("change", queueApply);
+    });
 
-  inner.appendChild(pill("Útiles", el("div", { class: "fRow" }, [
-    usefulMin, el("span", { class: "fSep" }), usefulMax
-  ]), "useful"));
+    blocks.availability.xBtn.addEventListener("click", () => {
+      blocks.availability.body.querySelectorAll('input[data-k="availability"]').forEach(i => { i.checked = false; });
+      queueApply();
+    });
+  }
 
-  inner.appendChild(pill("Construidos", el("div", { class: "fRow" }, [
-    builtMin, el("span", { class: "fSep" }), builtMax
-  ]), "built"));
+  // Living area (range)
+  {
+    const wrap = el("div", { class: "bhRange" });
 
-  inner.appendChild(pill("Dormitorios", bedsSel, "beds"));
-  inner.appendChild(pill("Baños", bathSel, "baths"));
+    const minInp = el("input", {
+      class: "bhInp",
+      type: "number",
+      inputmode: "numeric",
+      placeholder: "By 0 m²",
+      value: initial.usefulMin ?? ""
+    });
+    minInp.dataset.k = "useful_min";
 
-  inner.appendChild(pill("Exterior", outdoorSel, "outdoor"));
-  inner.appendChild(pill("Orientación", orientationsMulti.node, "orientations"));
+    const maxInp = el("input", {
+      class: "bhInp",
+      type: "number",
+      inputmode: "numeric",
+      placeholder: "To No max m²",
+      value: initial.usefulMax ?? ""
+    });
+    maxInp.dataset.k = "useful_max";
 
-  inner.appendChild(pill("Energía", energySel, "energy"));
+    wrap.appendChild(minInp);
+    wrap.appendChild(maxInp);
+    blocks.living.body.appendChild(wrap);
 
-  inner.appendChild(pill("Periodo", buildPeriodsMulti.node, "period"));
-  inner.appendChild(pill("Parking", parkingMulti.node, "parking"));
-  inner.appendChild(pill("Trastero", storageMulti.node, "storage"));
-  inner.appendChild(pill("Accesibilidad", accessibilityMulti.node, "accessibility"));
+    minInp.addEventListener("input", queueApply);
+    minInp.addEventListener("change", queueApply);
+    maxInp.addEventListener("input", queueApply);
+    maxInp.addEventListener("change", queueApply);
 
-  container.appendChild(wrap);
+    blocks.living.xBtn.addEventListener("click", () => {
+      minInp.value = "";
+      maxInp.value = "";
+      queueApply();
+    });
+  }
 
-  refreshConditionalVisibility();
+  panel.appendChild(blocks.offered.block);
+  panel.appendChild(blocks.availability.block);
+  panel.appendChild(blocks.living.block);
 
-  // Aplicar al cargar si hay filtros ya en URL (para sincronizar mapa si el usuario vuelve atrás/adelante)
-  // No tocamos nada, solo emitimos cambio si detectamos parámetros relevantes.
-  // Esto evita que el mapa se quede sin refrescar en algunos navegadores.
-  setTimeout(() => emitChanged(), 0);
+  mount.innerHTML = "";
+  mount.appendChild(panel);
 
-  return {
-    readNow: readNormalized
-  };
+  // estado inicial + URL normalizada
+  applyNow();
+
+  return { };
 }
+
