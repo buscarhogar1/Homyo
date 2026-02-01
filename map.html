@@ -115,10 +115,6 @@
       import { initFiltersBar } from "/buscarhogardemo/bh-map-filters.js";
       import { initMap } from "/buscarhogardemo/bh-map-core.js";
 
-      initLayout({ showMiniSearch: true });
-      initAuth();
-      initFiltersBar({ mountId: "filtersBarMount" });
-
       const rootStyle = document.documentElement.style;
 
       function applyHeaderH(){
@@ -133,16 +129,41 @@
         rootStyle.setProperty("--filtersH", px + "px");
       }
 
+      function notifyLayoutResize(){
+        window.dispatchEvent(new Event("bh:layout-resize"));
+      }
+
       function applyAllHeights(){
         applyHeaderH();
         applyFiltersH();
+        notifyLayoutResize();
       }
 
-      window.addEventListener("load", applyAllHeights);
-      window.addEventListener("resize", applyAllHeights);
-      setTimeout(applyAllHeights, 0);
+      (async function boot(){
+        // 1) Layout + Auth + Filters
+        // Si initLayout es async, lo esperamos. Si no lo es, await no rompe.
+        await initLayout({ showMiniSearch: true });
+        initAuth();
+        initFiltersBar({ mountId: "filtersBarMount" });
 
-      initMap();
+        // 2) Medir alturas cuando ya existe todo
+        // - load (cuando están fuentes/estilos)
+        // - microtask/raf para el primer render
+        window.addEventListener("load", applyAllHeights);
+        window.addEventListener("resize", applyAllHeights);
+
+        // Forzar varias pasadas, porque header/footer/filtros pueden inyectarse con fetch
+        setTimeout(applyAllHeights, 0);
+        requestAnimationFrame(() => applyAllHeights());
+        setTimeout(applyAllHeights, 120);
+        setTimeout(applyAllHeights, 350);
+
+        // 3) Mapa al final (así Leaflet nace con el DOM ya montado)
+        initMap();
+
+        // 4) Una última notificación por si el mapa se inicializó antes de la última medida
+        setTimeout(() => notifyLayoutResize(), 500);
+      })();
     </script>
   </body>
 </html>
