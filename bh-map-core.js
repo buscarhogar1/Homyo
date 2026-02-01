@@ -197,6 +197,9 @@ export function initMap(){
 
   let map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
 
+  // Exponer referencia para debug rápido (opcional)
+  window.__bhMap = map;
+
   L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap &copy; CARTO"
@@ -1341,6 +1344,22 @@ export function initMap(){
   map.on("zoomend", () => { if (sunEnabled) updateSunOverlay(); });
   window.addEventListener("resize", () => { if (sunEnabled) updateSunOverlay(); });
 
+  // NUEVO: cuando cambia el layout (header/filtros), Leaflet necesita invalidateSize
+  function safeInvalidate(){
+    try {
+      map.invalidateSize(true);
+    } catch {}
+    if (sunEnabled) {
+      // rehacer overlay si está activo
+      try { updateSunOverlay(); } catch {}
+    }
+  }
+
+  window.addEventListener("bh:layout-resize", () => {
+    // suele llegar en ráfaga; lo llevamos a RAF para evitar invalidates repetidos
+    requestAnimationFrame(() => safeInvalidate());
+  });
+
   const AreasControl = L.Control.extend({
     options: { position: "topright" },
     onAdd: function() {
@@ -1492,7 +1511,15 @@ export function initMap(){
         const center = await geocodeCity(initialParams.city);
         if (center) map.setView(center, 13);
       }
+
+      // Asegurar que Leaflet pinta bien tras el primer layout
+      safeInvalidate();
+
       await loadPointsForCurrentView();
+
+      // Otra pasada por si header/filtros terminaron justo después
+      setTimeout(() => safeInvalidate(), 250);
+      setTimeout(() => safeInvalidate(), 600);
     } catch (e) {
       const msg = (e && e.message) ? e.message : String(e);
       setStatus(`Error: ${msg}`);
