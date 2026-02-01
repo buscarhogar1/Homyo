@@ -24,18 +24,47 @@ html, body {
   color: var(--text);
 }
 
+/* Page + layout nuevo (mapa + sidebar derecha) */
 .page{
   height: calc(100% - var(--headerH) - var(--filtersH));
   padding: 14px 16px 16px;
   box-sizing: border-box;
 }
 
+.mapLayout{
+  height: 100%;
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
 .mapShell{
-  width: min(1120px, 100%);
-  margin: 0 auto;
+  flex: 1 1 auto;
+  min-width: 0;
   height: 100%;
   box-sizing: border-box;
   position: relative;
+}
+
+/* Sidebar derecha */
+.filtersSide{
+  width: 360px;
+  flex: 0 0 360px;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 14px;
+  background: #fff;
+  height: 100%;
+  overflow: auto;
+}
+
+@media (max-width: 980px){
+  .page{ padding: 10px 10px 10px; }
+  .mapLayout{ flex-direction: column; gap: 10px; }
+  .filtersSide{
+    width: auto;
+    flex: 0 0 auto;
+    height: auto;
+  }
 }
 
 #map{
@@ -45,10 +74,11 @@ html, body {
   border: 1px solid #f0f1f3;
 }
 
+/* Status: mejor fixed para que no “dependa” de dónde esté en el DOM */
 #status{
-  position: absolute;
+  position: fixed;
   left: 50%;
-  top: 72px;
+  top: calc(var(--headerH, 56px) + 14px);
   transform: translateX(-50%);
   background: rgba(255,255,255,0.92);
   border: 1px solid rgba(0,0,0,0.10);
@@ -62,6 +92,13 @@ html, body {
   overflow: hidden;
   text-overflow: ellipsis;
   pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  #status{
+    top: calc(var(--headerH, 56px) + 10px);
+    max-width: calc(100% - 20px);
+  }
 }
 
 .dot {
@@ -284,14 +321,6 @@ html, body {
 }
 
 @media (max-width: 720px) {
-  .page{ padding: 10px 10px 10px; }
-  .mapShell{ width: 100%; }
-
-  #status{
-    top: 66px;
-    max-width: calc(100% - 20px);
-  }
-
   .card { width: calc(100% - 22px); bottom: 14px; }
 
   .cardGrid {
@@ -672,7 +701,114 @@ html, body {
   display: none;
 }
 
-/* Barra de filtros (MVP) */
+/* ===== Panel de filtros (nuevo, vertical a la derecha) ===== */
+.bhFiltersPanel{
+  padding: 14px 14px 24px;
+}
+
+.bhFilterBlock{
+  position: relative;
+  padding: 14px 10px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.bhFilterHead{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.bhFilterDot{
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid rgba(0,0,0,0.25);
+  flex: 0 0 auto;
+}
+
+.bhFilterBlock.isActive .bhFilterDot{
+  border-color: rgba(26,115,232,1);
+  box-shadow: 0 0 0 3px rgba(26,115,232,0.10);
+}
+
+.bhFilterTitle{
+  font-size: 18px;
+  line-height: 1.2;
+  color: rgba(0,0,0,0.78);
+  margin: 0;
+  flex: 1 1 auto;
+}
+
+.bhFilterX{
+  position: absolute;
+  top: 10px;
+  left: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #fff;
+  color: rgba(0,0,0,0.55);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.bhFilterX:hover{
+  border-color: rgba(0,0,0,0.20);
+}
+
+.bhFilterBody{
+  padding-left: 22px;
+}
+
+/* Filas radio / checkbox */
+.bhOpt{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 2px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.bhOpt + .bhOpt{
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.bhOpt input{
+  width: 18px;
+  height: 18px;
+}
+
+.bhOptText{
+  font-size: 18px;
+  color: rgba(0,0,0,0.80);
+}
+
+/* Rango (2 inputs) */
+.bhRange{
+  display: grid;
+  gap: 10px;
+}
+
+.bhInp{
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.18);
+  padding: 0 14px;
+  font-size: 18px;
+  outline: none;
+}
+
+.bhInp:focus{
+  border-color: rgba(26,115,232,0.70);
+  box-shadow: 0 0 0 4px rgba(26,115,232,0.12);
+}
+
+/* ===== (Opcional) estilos antiguos de barra horizontal (ya no se usan en map.html) ===== */
+/* Los dejo por compatibilidad si reutilizas clases en otras páginas, pero no afecta al sidebar. */
 
 .bhFiltersBar{
   position: sticky;
