@@ -20,39 +20,43 @@
   <body>
     <div id="bhHeader"></div>
 
-    <div id="filtersBarMount"></div>
-
     <div class="page">
-      <div class="mapShell">
-        <div id="map"></div>
+      <div class="mapLayout">
+        <div class="mapShell">
+          <div id="map"></div>
 
-        <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
-          <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
-          <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
-        </div>
-
-        <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
-          <div class="sunDateDockInner">
-            <input type="date" id="sunDate" />
-            <button type="button" id="sunNowBtn">Ahora</button>
+          <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
+            <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
+            <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
           </div>
-        </div>
 
-        <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
-          <div class="sunTimebarInner">
-            <div class="sunHoursRow" id="sunHoursRow"></div>
-            <div class="sunTrack" id="sunTrack">
-              <input id="sunRange" class="sunRange" type="range" min="0" max="1439" step="10" />
+          <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
+            <div class="sunDateDockInner">
+              <input type="date" id="sunDate" />
+              <button type="button" id="sunNowBtn">Ahora</button>
+            </div>
+          </div>
+
+          <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
+            <div class="sunTimebarInner">
+              <div class="sunHoursRow" id="sunHoursRow"></div>
+              <div class="sunTrack" id="sunTrack">
+                <input id="sunRange" class="sunRange" type="range" min="0" max="1439" step="10" />
+              </div>
+            </div>
+          </div>
+
+          <div id="areaHint" class="areaHint" aria-hidden="true">
+            <div class="areaHintInner">
+              <div class="areaHintDot" aria-hidden="true"></div>
+              <div id="areaHintText" class="areaHintText">—</div>
             </div>
           </div>
         </div>
 
-        <div id="areaHint" class="areaHint" aria-hidden="true">
-          <div class="areaHintInner">
-            <div class="areaHintDot" aria-hidden="true"></div>
-            <div id="areaHintText" class="areaHintText">—</div>
-          </div>
-        </div>
+        <aside class="filtersSide" aria-label="Filtros">
+          <div id="filtersBarMount"></div>
+        </aside>
       </div>
     </div>
 
@@ -115,6 +119,9 @@
       import { initFiltersBar } from "/buscarhogardemo/bh-map-filters.js";
       import { initMap } from "/buscarhogardemo/bh-map-core.js";
 
+      initLayout({ showMiniSearch: true });
+      initAuth();
+
       const rootStyle = document.documentElement.style;
 
       function applyHeaderH(){
@@ -123,47 +130,17 @@
         rootStyle.setProperty("--headerH", px + "px");
       }
 
-      function applyFiltersH(){
-        const bar = document.querySelector(".bhFiltersBar");
-        const px = bar ? Math.round(bar.getBoundingClientRect().height) : 0;
-        rootStyle.setProperty("--filtersH", px + "px");
-      }
-
-      function notifyLayoutResize(){
-        window.dispatchEvent(new Event("bh:layout-resize"));
-      }
-
       function applyAllHeights(){
         applyHeaderH();
-        applyFiltersH();
-        notifyLayoutResize();
       }
 
-      (async function boot(){
-        // 1) Layout + Auth + Filters
-        // Si initLayout es async, lo esperamos. Si no lo es, await no rompe.
-        await initLayout({ showMiniSearch: true });
-        initAuth();
-        initFiltersBar({ mountId: "filtersBarMount" });
+      window.addEventListener("load", applyAllHeights);
+      window.addEventListener("resize", applyAllHeights);
+      setTimeout(applyAllHeights, 0);
 
-        // 2) Medir alturas cuando ya existe todo
-        // - load (cuando están fuentes/estilos)
-        // - microtask/raf para el primer render
-        window.addEventListener("load", applyAllHeights);
-        window.addEventListener("resize", applyAllHeights);
-
-        // Forzar varias pasadas, porque header/footer/filtros pueden inyectarse con fetch
-        setTimeout(applyAllHeights, 0);
-        requestAnimationFrame(() => applyAllHeights());
-        setTimeout(applyAllHeights, 120);
-        setTimeout(applyAllHeights, 350);
-
-        // 3) Mapa al final (así Leaflet nace con el DOM ya montado)
-        initMap();
-
-        // 4) Una última notificación por si el mapa se inicializó antes de la última medida
-        setTimeout(() => notifyLayoutResize(), 500);
-      })();
+      initFiltersBar({ mountId: "filtersBarMount" });
+      initMap();
     </script>
   </body>
 </html>
+
