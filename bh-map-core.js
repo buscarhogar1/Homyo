@@ -36,7 +36,7 @@ export function initMap(){
   const areaHintEl = document.getElementById("areaHint");
   const areaHintTextEl = document.getElementById("areaHintText");
 
-  function setStatus(msg) { statusEl.textContent = msg || ""; }
+  function setStatus(msg) { if (statusEl) statusEl.textContent = msg || ""; }
 
   function euro(n) {
     try {
@@ -197,7 +197,6 @@ export function initMap(){
 
   let map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
 
-  // Exponer referencia para debug rápido (opcional)
   window.__bhMap = map;
 
   L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
@@ -1344,19 +1343,12 @@ export function initMap(){
   map.on("zoomend", () => { if (sunEnabled) updateSunOverlay(); });
   window.addEventListener("resize", () => { if (sunEnabled) updateSunOverlay(); });
 
-  // NUEVO: cuando cambia el layout (header/filtros), Leaflet necesita invalidateSize
   function safeInvalidate(){
-    try {
-      map.invalidateSize(true);
-    } catch {}
-    if (sunEnabled) {
-      // rehacer overlay si está activo
-      try { updateSunOverlay(); } catch {}
-    }
+    try { map.invalidateSize(true); } catch {}
+    if (sunEnabled) { try { updateSunOverlay(); } catch {} }
   }
 
   window.addEventListener("bh:layout-resize", () => {
-    // suele llegar en ráfaga; lo llevamos a RAF para evitar invalidates repetidos
     requestAnimationFrame(() => safeInvalidate());
   });
 
@@ -1512,12 +1504,10 @@ export function initMap(){
         if (center) map.setView(center, 13);
       }
 
-      // Asegurar que Leaflet pinta bien tras el primer layout
       safeInvalidate();
 
       await loadPointsForCurrentView();
 
-      // Otra pasada por si header/filtros terminaron justo después
       setTimeout(() => safeInvalidate(), 250);
       setTimeout(() => safeInvalidate(), 600);
     } catch (e) {
@@ -1527,4 +1517,3 @@ export function initMap(){
     }
   })();
 }
-
