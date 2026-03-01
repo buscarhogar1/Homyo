@@ -5,8 +5,23 @@ export function initMap(){
   const DEFAULT_CENTER = [37.9838, -1.1280];
   const DEFAULT_ZOOM = 13;
 
+  // Elementos nuevos de layout
+  const mapShellEl = document.getElementById("mapShell");
+  const toggleFiltersBtn = document.getElementById("toggleFiltersBtn");
+  const toggleListBtn = document.getElementById("toggleListBtn");
+  const cityBarEl = document.getElementById("cityBar");
+
+  // Listado (columna derecha)
+  const listMountEl = document.getElementById("listMount");
+
+  // Estado
+  let filtersHidden = false;
+  let listHidden = false;
+
+  // Status (píldora arriba del mapa)
   const statusEl = document.getElementById("status");
 
+  // Card (ahora vive dentro del contenedor del mapa, pero el JS es igual)
   const cardEl = document.getElementById("card");
   const cardCloseBtn = document.getElementById("cardClose");
   const heartBtn = document.getElementById("heartBtn");
@@ -21,6 +36,7 @@ export function initMap(){
   const cardFactsEl = document.getElementById("cardFacts");
   const cardAgencyEl = document.getElementById("cardAgency");
 
+  // Sun overlay
   const sunOverlayEl = document.getElementById("sunOverlay");
   const sunOverlayLabelEl = document.getElementById("sunOverlayLabel");
   const sunPolarOverlaySvg = document.getElementById("sunPolarOverlay");
@@ -33,10 +49,11 @@ export function initMap(){
   const sunDateEl = document.getElementById("sunDate");
   const sunNowBtn = document.getElementById("sunNowBtn");
 
+  // Area hint
   const areaHintEl = document.getElementById("areaHint");
   const areaHintTextEl = document.getElementById("areaHintText");
 
-  function setStatus(msg) { if (statusEl) statusEl.textContent = msg || ""; }
+  function setStatus(msg) { statusEl.textContent = msg || ""; }
 
   function euro(n) {
     try {
@@ -151,6 +168,7 @@ export function initMap(){
     return arr.length ? arr : null;
   }
 
+  // Leer parámetros (URL) y actualizar la barrita de ciudad
   function getParams() {
     const u = new URL(window.location.href);
 
@@ -193,10 +211,41 @@ export function initMap(){
     };
   }
 
+  function updateCityBar(){
+    const p = getParams();
+    const city = p.city ? p.city : "—";
+    cityBarEl.textContent = city;
+  }
+
+  // Botones mostrar/ocultar columnas
+  function applyLayoutState(){
+    mapShellEl.classList.toggle("hideFilters", filtersHidden);
+    mapShellEl.classList.toggle("hideList", listHidden);
+
+    toggleFiltersBtn.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
+    toggleListBtn.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
+
+    // Avisamos a Leaflet para que recalcule tamaños
+    window.dispatchEvent(new CustomEvent("bh:layout-resize"));
+  }
+
+  toggleFiltersBtn.addEventListener("click", () => {
+    filtersHidden = !filtersHidden;
+    applyLayoutState();
+  });
+
+  toggleListBtn.addEventListener("click", () => {
+    listHidden = !listHidden;
+    applyLayoutState();
+  });
+
+  // Inicial
+  updateCityBar();
+  applyLayoutState();
+
   const initialParams = getParams();
 
   let map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
-
   window.__bhMap = map;
 
   L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
@@ -207,9 +256,25 @@ export function initMap(){
   let markersLayer = L.layerGroup().addTo(map);
   let activeMarker = null;
 
+  // Para poder seleccionar desde el listado
+  const markerByListingId = new Map();
+  const pointByListingId = new Map();
+
   function clearMarkers() {
     markersLayer.clearLayers();
     activeMarker = null;
+    markerByListingId.clear();
+    pointByListingId.clear();
+  }
+
+  function setActiveMarker(m){
+    if (activeMarker && activeMarker._icon) {
+      activeMarker._icon.querySelector(".dot")?.classList.remove("active");
+    }
+    activeMarker = m;
+    if (activeMarker && activeMarker._icon) {
+      activeMarker._icon.querySelector(".dot")?.classList.add("active");
+    }
   }
 
   function addPoint(p) {
@@ -227,13 +292,15 @@ export function initMap(){
 
     const m = L.marker([p.lat, p.lng], { icon }).addTo(markersLayer);
 
+    // Guardamos referencias para interacción listado <-> mapa
+    if (p.listing_id != null) {
+      markerByListingId.set(String(p.listing_id), m);
+      pointByListingId.set(String(p.listing_id), p);
+    }
+
     m.on("click", () => {
       if (areaState.isDrawing) return;
-      if (activeMarker && activeMarker._icon) {
-        activeMarker._icon.querySelector(".dot")?.classList.remove("active");
-      }
-      activeMarker = m;
-      m._icon.querySelector(".dot")?.classList.add("active");
+      setActiveMarker(m);
       openCardForPoint(p);
     });
   }
@@ -797,23 +864,108 @@ export function initMap(){
     }
   });
 
+  // Render listado (columna derecha)
+  function renderList(points){
+    if (!listMountEl) return;
+
+    // Si el listado está oculto, no hace falta renderizar (pero no hace daño)
+    listMountEl.innerHTML = "";
+
+    if (!points || points.length === 0) {
+      const empty = document.createElement("div");
+      empty.style.padding = "10px";
+      empty.style.color = "rgba(0,0,0,0.65)";
+      empty.style.fontSize = "13px";
+      empty.textContent = "No hay viviendas en esta zona con estos filtros.";
+      listMountEl.appendChild(empty);
+      return;
+    }
+
+    for (const p of points) {
+      const listingId = (p.listing_id != null) ? String(p.listing_id) : null;
+
+      const item = document.createElement("div");
+      item.className = "listItem";
+
+      const imgUrl = p.main_photo_url || null;
+
+      const top = buildAddressTop(p);
+      const bottom = buildAddressBottom(p);
+      const price = (p.price_eur != null) ? euro(p.price_eur) : "—";
+      const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
+      const type = p.property_type ? String(p.property_type) : "—";
+      const agency = p.agency_name || "—";
+
+      item.innerHTML = `
+        <div class="listItemGrid">
+          <div class="listMedia">
+            ${imgUrl ? `<img src="${imgUrl}" alt="">` : `<div class="listMediaPh">Foto</div>`}
+          </div>
+          <div class="listText">
+            <div class="listAddrTop">${escapeHtml(top)}</div>
+            <div class="listAddrBottom">${escapeHtml(bottom)}</div>
+            <div class="listPrice">${escapeHtml(price)}</div>
+            <div class="listFacts">
+              <span>${escapeHtml(m2)}</span>
+              <span>${escapeHtml(type)}</span>
+            </div>
+            <div class="listAgency">${escapeHtml(agency)}</div>
+          </div>
+        </div>
+      `;
+
+      item.addEventListener("click", () => {
+        if (!listingId) return;
+
+        const marker = markerByListingId.get(listingId);
+        const point = pointByListingId.get(listingId);
+
+        if (marker && marker.getLatLng) {
+          map.panTo(marker.getLatLng());
+          setActiveMarker(marker);
+        }
+        if (point) {
+          openCardForPoint(point);
+        }
+      });
+
+      listMountEl.appendChild(item);
+    }
+  }
+
+  function escapeHtml(s){
+    const str = String(s ?? "");
+    return str
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
   async function loadPointsForCurrentView() {
     const b = getCurrentBounds();
     const z = map.getZoom();
     const f = getParams();
+
+    // Mantener actualizada la barra de ciudad
+    updateCityBar();
 
     if (areaState.isDrawing) {
       setStatus(areaState.lastHint || "Dibujando área...");
       return;
     }
 
-    setStatus(`Cargando...`);
+    setStatus("Cargando...");
     const rows = await rpcSearchMapPoints(b, f);
 
     const filtered = rows.filter(isInsideAnyArea);
 
     clearMarkers();
     filtered.forEach(addPoint);
+
+    // Render del listado
+    renderList(filtered);
 
     setStatus(`Anuncios: ${filtered.length} | zoom ${z} | modo=${f.mode}`);
   }
@@ -862,6 +1014,7 @@ export function initMap(){
       u.searchParams.set("city", city);
       history.replaceState(null, "", u.toString());
 
+      updateCityBar();
       await goToCity(city);
     });
   }
@@ -890,10 +1043,13 @@ export function initMap(){
     closeCard();
   });
 
+  // Cuando cambian filtros, recargamos puntos
   window.addEventListener("bh:filters-changed", () => {
+    updateCityBar();
     scheduleReload();
   });
 
+  // Sol (sin cambios funcionales)
   const ZOOM_SOL_MIN = 14;
   let sunEnabled = false;
   const sunState = { dateISO: null, minutes: null, sunriseMin: null, sunsetMin: null };
@@ -1343,15 +1499,21 @@ export function initMap(){
   map.on("zoomend", () => { if (sunEnabled) updateSunOverlay(); });
   window.addEventListener("resize", () => { if (sunEnabled) updateSunOverlay(); });
 
+  // Cuando cambia el layout (ocultar/mostrar columnas), Leaflet necesita invalidateSize
   function safeInvalidate(){
-    try { map.invalidateSize(true); } catch {}
-    if (sunEnabled) { try { updateSunOverlay(); } catch {} }
+    try {
+      map.invalidateSize(true);
+    } catch {}
+    if (sunEnabled) {
+      try { updateSunOverlay(); } catch {}
+    }
   }
 
   window.addEventListener("bh:layout-resize", () => {
     requestAnimationFrame(() => safeInvalidate());
   });
 
+  // Áreas (sin cambios funcionales)
   const AreasControl = L.Control.extend({
     options: { position: "topright" },
     onAdd: function() {
@@ -1504,10 +1666,12 @@ export function initMap(){
         if (center) map.setView(center, 13);
       }
 
+      // Asegurar que Leaflet pinta bien tras el primer layout
       safeInvalidate();
 
       await loadPointsForCurrentView();
 
+      // Otra pasada por si el layout terminó de asentarse justo después
       setTimeout(() => safeInvalidate(), 250);
       setTimeout(() => safeInvalidate(), 600);
     } catch (e) {
