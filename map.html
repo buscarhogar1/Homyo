@@ -21,44 +21,40 @@
     <div id="bhHeader"></div>
 
     <div class="page">
+      <aside id="filtersColMount" class="bhFiltersCol" aria-label="Filtros"></aside>
+
       <div class="mapShell">
-        <!-- Columna de filtros (izquierda) -->
-        <aside id="filtersCol" class="bhFiltersCol" aria-label="Filtros"></aside>
+        <div id="map"></div>
 
-        <!-- Panel mapa (derecha) -->
-        <div class="mapPane">
-          <div id="map"></div>
-
-          <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
-            <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
-            <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
-          </div>
-
-          <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
-            <div class="sunDateDockInner">
-              <input type="date" id="sunDate" />
-              <button type="button" id="sunNowBtn">Ahora</button>
-            </div>
-          </div>
-
-          <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
-            <div class="sunTimebarInner">
-              <div class="sunHoursRow" id="sunHoursRow"></div>
-              <div class="sunTrack" id="sunTrack">
-                <input id="sunRange" class="sunRange" type="range" min="0" max="1439" step="10" />
-              </div>
-            </div>
-          </div>
-
-          <div id="areaHint" class="areaHint" aria-hidden="true">
-            <div class="areaHintInner">
-              <div class="areaHintDot" aria-hidden="true"></div>
-              <div id="areaHintText" class="areaHintText">—</div>
-            </div>
-          </div>
-
-          <div id="status"></div>
+        <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
+          <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
+          <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
         </div>
+
+        <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
+          <div class="sunDateDockInner">
+            <input type="date" id="sunDate" />
+            <button type="button" id="sunNowBtn">Ahora</button>
+          </div>
+        </div>
+
+        <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
+          <div class="sunTimebarInner">
+            <div class="sunHoursRow" id="sunHoursRow"></div>
+            <div class="sunTrack" id="sunTrack">
+              <input id="sunRange" class="sunRange" type="range" min="0" max="1439" step="10" />
+            </div>
+          </div>
+        </div>
+
+        <div id="areaHint" class="areaHint" aria-hidden="true">
+          <div class="areaHintInner">
+            <div class="areaHintDot" aria-hidden="true"></div>
+            <div id="areaHintText" class="areaHintText">—</div>
+          </div>
+        </div>
+
+        <div id="status"></div>
       </div>
     </div>
 
@@ -122,8 +118,20 @@
       initLayout({ showMiniSearch: true });
       initAuth();
 
-      // Monta filtros en la columna izquierda
-      initFiltersBar({ mountId: "filtersCol" });
+      initFiltersBar({ mountId: "filtersColMount" });
+
+      const rootStyle = document.documentElement.style;
+
+      function applyHeaderH(){
+        const header = document.querySelector(".bh-topbar, #bhTopbar, header");
+        const px = header ? Math.round(header.getBoundingClientRect().height) : 56;
+        rootStyle.setProperty("--headerH", px + "px");
+        window.dispatchEvent(new CustomEvent("bh:layout-resize"));
+      }
+
+      window.addEventListener("load", applyHeaderH);
+      window.addEventListener("resize", applyHeaderH);
+      setTimeout(applyHeaderH, 0);
 
       initMap();
     </script>
