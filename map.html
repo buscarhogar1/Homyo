@@ -21,80 +21,122 @@
     <div id="bhHeader"></div>
 
     <div class="page">
-      <aside id="filtersColMount" class="bhFiltersCol" aria-label="Filtros"></aside>
+      <!--
+        Layout nuevo:
+        - Fila superior independiente (fuera de columnas):
+          [botón filtros] [ciudad centrada sobre el mapa] [botón listado]
+        - Debajo: 3 columnas
+          filtros | mapa | listado
+      -->
+      <div class="mapShell" id="mapShell">
+        <div class="mapTopRow" id="mapTopRow">
+          <div class="topLeft">
+            <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
+          </div>
 
-      <div class="mapShell">
-        <div id="map"></div>
+          <div class="topCenter">
+            <div id="cityBar" class="cityBar">—</div>
+          </div>
 
-        <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
-          <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
-          <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
-        </div>
-
-        <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
-          <div class="sunDateDockInner">
-            <input type="date" id="sunDate" />
-            <button type="button" id="sunNowBtn">Ahora</button>
+          <div class="topRight">
+            <button id="toggleListBtn" class="topToggleBtn" type="button">Ocultar listado</button>
           </div>
         </div>
 
-        <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
-          <div class="sunTimebarInner">
-            <div class="sunHoursRow" id="sunHoursRow"></div>
-            <div class="sunTrack" id="sunTrack">
-              <input id="sunRange" class="sunRange" type="range" min="0" max="1439" step="10" />
+        <div class="mapGrid" id="mapGrid">
+          <!-- Columna filtros (izquierda) -->
+          <aside class="filtersCol" id="filtersCol">
+            <div id="filtersColMount"></div>
+          </aside>
+
+          <!-- Columna mapa (centro) -->
+          <main class="mapCol" id="mapCol">
+            <div class="mapFrame" id="mapFrame">
+              <div id="map"></div>
+
+              <!-- Overlays (sol, etc.) se quedan sobre el mapa -->
+              <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
+                <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
+                <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
+              </div>
+
+              <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
+                <div class="sunDateDockInner">
+                  <input type="date" id="sunDate" />
+                  <button type="button" id="sunNowBtn">Ahora</button>
+                </div>
+              </div>
+
+              <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
+                <div class="sunTimebarInner">
+                  <div class="sunHoursRow" id="sunHoursRow"></div>
+                  <div class="sunTrack" id="sunTrack">
+                    <input id="sunRange" class="sunRange" type="range" min="0" max="1439" step="10" />
+                  </div>
+                </div>
+              </div>
+
+              <div id="areaHint" class="areaHint" aria-hidden="true">
+                <div class="areaHintInner">
+                  <div class="areaHintDot" aria-hidden="true"></div>
+                  <div id="areaHintText" class="areaHintText">—</div>
+                </div>
+              </div>
+
+              <!--
+                IMPORTANTE:
+                La tarjeta (card) ahora vive dentro del contenedor del mapa (mapFrame),
+                para que se centre respecto al mapa y quede pegada abajo del mapa.
+              -->
+              <div id="card" class="card">
+                <div class="cardGrid">
+                  <div class="mediaSide">
+                    <span id="badgeNew" class="badgeNew">Nuevo</span>
+                    <img id="mediaImg" class="mediaImg" alt="" style="display:none;" />
+                    <div id="mediaPlaceholder" class="mediaPlaceholder">Foto</div>
+
+                    <div class="mediaMiniIcon" title="Fotos">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-2h4l2 2h3a2 2 0 0 1 2 2z"/>
+                        <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="textSide">
+                    <div class="topActions">
+                      <button class="heartBtn" id="heartBtn" type="button" aria-label="Guardar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+                        </svg>
+                      </button>
+
+                      <button class="closeBtn" id="cardClose" type="button" aria-label="Cerrar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M18 6L6 18"/><path d="M6 6l12 12"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <a id="cardAddrTop" class="addrTop" href="#">Dirección</a>
+                    <div id="cardAddrBottom" class="addrBottom">—</div>
+
+                    <div id="cardPrice" class="price">—</div>
+                    <div id="cardFacts" class="facts"></div>
+
+                    <div id="cardAgency" class="agency">—</div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <div id="areaHint" class="areaHint" aria-hidden="true">
-          <div class="areaHintInner">
-            <div class="areaHintDot" aria-hidden="true"></div>
-            <div id="areaHintText" class="areaHintText">—</div>
-          </div>
-        </div>
+            <div id="status"></div>
+          </main>
 
-        <div id="status"></div>
-      </div>
-    </div>
-
-    <div id="card" class="card">
-      <div class="cardGrid">
-        <div class="mediaSide">
-          <span id="badgeNew" class="badgeNew">Nuevo</span>
-          <img id="mediaImg" class="mediaImg" alt="" style="display:none;" />
-          <div id="mediaPlaceholder" class="mediaPlaceholder">Foto</div>
-
-          <div class="mediaMiniIcon" title="Fotos">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-2h4l2 2h3a2 2 0 0 1 2 2z"/>
-              <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
-            </svg>
-          </div>
-        </div>
-
-        <div class="textSide">
-          <div class="topActions">
-            <button class="heartBtn" id="heartBtn" type="button" aria-label="Guardar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
-              </svg>
-            </button>
-
-            <button class="closeBtn" id="cardClose" type="button" aria-label="Cerrar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6L6 18"/><path d="M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-
-          <a id="cardAddrTop" class="addrTop" href="#">Dirección</a>
-          <div id="cardAddrBottom" class="addrBottom">—</div>
-
-          <div id="cardPrice" class="price">—</div>
-          <div id="cardFacts" class="facts"></div>
-
-          <div id="cardAgency" class="agency">—</div>
+          <!-- Columna listado (derecha) -->
+          <aside class="listCol" id="listCol">
+            <div id="listMount" class="listMount"></div>
+          </aside>
         </div>
       </div>
     </div>
@@ -118,23 +160,10 @@
       initLayout({ showMiniSearch: true });
       initAuth();
 
+      // Antes montabas filtros arriba; ahora se montan en la columna izquierda
       initFiltersBar({ mountId: "filtersColMount" });
-
-      const rootStyle = document.documentElement.style;
-
-      function applyHeaderH(){
-        const header = document.querySelector(".bh-topbar, #bhTopbar, header");
-        const px = header ? Math.round(header.getBoundingClientRect().height) : 56;
-        rootStyle.setProperty("--headerH", px + "px");
-        window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-      }
-
-      window.addEventListener("load", applyHeaderH);
-      window.addEventListener("resize", applyHeaderH);
-      setTimeout(applyHeaderH, 0);
 
       initMap();
     </script>
   </body>
 </html>
-
