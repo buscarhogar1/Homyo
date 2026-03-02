@@ -1,3 +1,17 @@
+/*
+  bh-map-core.js
+
+  Cambios implementados aquí:
+  - Tarjeta del anuncio: ahora está dentro del mapa (posicionada respecto a #mapWrap).
+  - Cerrar tarjeta deselecciona marcador.
+  - Marcadores “vistos”: blanco con borde naranja (persistido en localStorage).
+  - Hover en listado resalta marcador.
+  - Click en listado abre directamente listing.html?id=...
+  - Listado ordenable (fecha desc por defecto + tamaño asc/desc).
+  - Botón de geolocalización (zoom 14) encima del botón “Sol”.
+  - Etiqueta “Comunidad / Ciudad / Zona” se actualiza automáticamente al mover el mapa (reverse geocoding con Nominatim).
+*/
+
 export function initMap(){
   const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
@@ -5,23 +19,12 @@ export function initMap(){
   const DEFAULT_CENTER = [37.9838, -1.1280];
   const DEFAULT_ZOOM = 13;
 
-  // Elementos nuevos de layout
-  const mapShellEl = document.getElementById("mapShell");
-  const toggleFiltersBtn = document.getElementById("toggleFiltersBtn");
-  const toggleListBtn = document.getElementById("toggleListBtn");
-  const cityBarEl = document.getElementById("cityBar");
-
-  // Listado (columna derecha)
-  const listMountEl = document.getElementById("listMount");
-
-  // Estado
-  let filtersHidden = false;
-  let listHidden = false;
-
-  // Status (píldora arriba del mapa)
   const statusEl = document.getElementById("status");
+  const placeLabelEl = document.getElementById("placeLabel");
 
-  // Card (ahora vive dentro del contenedor del mapa, pero el JS es igual)
+  const listItemsEl = document.getElementById("listItems");
+
+  // Tarjeta dentro del mapa
   const cardEl = document.getElementById("card");
   const cardCloseBtn = document.getElementById("cardClose");
   const heartBtn = document.getElementById("heartBtn");
@@ -36,7 +39,7 @@ export function initMap(){
   const cardFactsEl = document.getElementById("cardFacts");
   const cardAgencyEl = document.getElementById("cardAgency");
 
-  // Sun overlay
+  // Sol overlay
   const sunOverlayEl = document.getElementById("sunOverlay");
   const sunOverlayLabelEl = document.getElementById("sunOverlayLabel");
   const sunPolarOverlaySvg = document.getElementById("sunPolarOverlay");
@@ -49,7 +52,7 @@ export function initMap(){
   const sunDateEl = document.getElementById("sunDate");
   const sunNowBtn = document.getElementById("sunNowBtn");
 
-  // Area hint
+  // Áreas
   const areaHintEl = document.getElementById("areaHint");
   const areaHintTextEl = document.getElementById("areaHintText");
 
@@ -64,7 +67,11 @@ export function initMap(){
   }
 
   function openCard() { cardEl.classList.add("visible"); }
-  function closeCard() { cardEl.classList.remove("visible"); }
+  function closeCard() {
+    cardEl.classList.remove("visible");
+    // Pedido: cerrar tarjeta también deselecciona marcador
+    deselectActiveMarker();
+  }
   cardCloseBtn.addEventListener("click", closeCard);
 
   let heartOn = false;
@@ -126,7 +133,47 @@ export function initMap(){
     return line || "—";
   }
 
+  // Persistencia “visto”
+  const SEEN_KEY = "bh_seen_ids_v1";
+
+  function loadSeenSet(){
+    try {
+      const raw = localStorage.getItem(SEEN_KEY);
+      if (!raw) return new Set();
+      const arr = JSON.parse(raw);
+      if (!Array.isArray(arr)) return new Set();
+      return new Set(arr.map(String));
+    } catch {
+      return new Set();
+    }
+  }
+
+  function saveSeenSet(set){
+    try {
+      localStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(set)));
+    } catch {}
+  }
+
+  const seenSet = loadSeenSet();
+
+  function markSeen(listingId){
+    if (!listingId) return;
+    const id = String(listingId);
+    if (seenSet.has(id)) return;
+    seenSet.add(id);
+    saveSeenSet(seenSet);
+    // Actualiza marcador si existe
+    const m = markerById.get(id);
+    if (m && m._icon) {
+      const dot = m._icon.querySelector(".dot");
+      if (dot && !dot.classList.contains("active")) dot.classList.add("seen");
+    }
+  }
+
   function openCardForPoint(p) {
+    // Marcar visto al abrir card (pedido)
+    markSeen(p.listing_id);
+
     cardAddrTopEl.textContent = buildAddressTop(p);
     cardAddrBottomEl.textContent = buildAddressBottom(p);
 
@@ -168,13 +215,11 @@ export function initMap(){
     return arr.length ? arr : null;
   }
 
-  // Leer parámetros (URL) y actualizar la barrita de ciudad
   function getParams() {
     const u = new URL(window.location.href);
 
     let mode = (u.searchParams.get("mode") || "").trim().toLowerCase();
     if (!mode) mode = "buy";
-
     const allowed = ["buy","rent","room","new_build","all"];
     if (!allowed.includes(mode)) mode = "buy";
 
@@ -203,45 +248,11 @@ export function initMap(){
       energyChoice: toText(u.searchParams.get("energy")),
 
       buildPeriods: toTextArray(u.searchParams.get("build_periods")),
-
       parkingTypes: toTextArray(u.searchParams.get("parking")),
       storageTypes: toTextArray(u.searchParams.get("storage")),
-
       accessibility: toTextArray(u.searchParams.get("accessibility"))
     };
   }
-
-  function updateCityBar(){
-    const p = getParams();
-    const city = p.city ? p.city : "—";
-    cityBarEl.textContent = city;
-  }
-
-  // Botones mostrar/ocultar columnas
-  function applyLayoutState(){
-    mapShellEl.classList.toggle("hideFilters", filtersHidden);
-    mapShellEl.classList.toggle("hideList", listHidden);
-
-    toggleFiltersBtn.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
-    toggleListBtn.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
-
-    // Avisamos a Leaflet para que recalcule tamaños
-    window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-  }
-
-  toggleFiltersBtn.addEventListener("click", () => {
-    filtersHidden = !filtersHidden;
-    applyLayoutState();
-  });
-
-  toggleListBtn.addEventListener("click", () => {
-    listHidden = !listHidden;
-    applyLayoutState();
-  });
-
-  // Inicial
-  updateCityBar();
-  applyLayoutState();
 
   const initialParams = getParams();
 
@@ -256,25 +267,24 @@ export function initMap(){
   let markersLayer = L.layerGroup().addTo(map);
   let activeMarker = null;
 
-  // Para poder seleccionar desde el listado
-  const markerByListingId = new Map();
-  const pointByListingId = new Map();
+  // Relación listing_id -> marcador (para hover/selección)
+  const markerById = new Map();
+
+  function deselectActiveMarker(){
+    if (activeMarker && activeMarker._icon) {
+      const dot = activeMarker._icon.querySelector(".dot");
+      dot?.classList.remove("active");
+      // Si era visto, se queda en modo visto
+      const id = activeMarker.options?.__listingId;
+      if (id && seenSet.has(String(id))) dot?.classList.add("seen");
+    }
+    activeMarker = null;
+  }
 
   function clearMarkers() {
     markersLayer.clearLayers();
+    markerById.clear();
     activeMarker = null;
-    markerByListingId.clear();
-    pointByListingId.clear();
-  }
-
-  function setActiveMarker(m){
-    if (activeMarker && activeMarker._icon) {
-      activeMarker._icon.querySelector(".dot")?.classList.remove("active");
-    }
-    activeMarker = m;
-    if (activeMarker && activeMarker._icon) {
-      activeMarker._icon.querySelector(".dot")?.classList.add("active");
-    }
   }
 
   function addPoint(p) {
@@ -282,6 +292,9 @@ export function initMap(){
 
     const el = document.createElement("div");
     el.className = "dot";
+
+    const idStr = String(p.listing_id || "");
+    if (idStr && seenSet.has(idStr)) el.classList.add("seen");
 
     const icon = L.divIcon({
       className: "",
@@ -291,16 +304,21 @@ export function initMap(){
     });
 
     const m = L.marker([p.lat, p.lng], { icon }).addTo(markersLayer);
+    m.options.__listingId = idStr;
 
-    // Guardamos referencias para interacción listado <-> mapa
-    if (p.listing_id != null) {
-      markerByListingId.set(String(p.listing_id), m);
-      pointByListingId.set(String(p.listing_id), p);
-    }
+    if (idStr) markerById.set(idStr, m);
 
     m.on("click", () => {
       if (areaState.isDrawing) return;
-      setActiveMarker(m);
+
+      // Selección visual
+      deselectActiveMarker();
+      activeMarker = m;
+
+      const dot = m._icon?.querySelector(".dot");
+      dot?.classList.add("active");
+      dot?.classList.remove("seen"); // activo manda
+
       openCardForPoint(p);
     });
   }
@@ -864,83 +882,126 @@ export function initMap(){
     }
   });
 
-  // Render listado (columna derecha)
-  function renderList(points){
-    if (!listMountEl) return;
+  // Estado de resultados actuales (para listado)
+  let currentRows = [];
 
-    // Si el listado está oculto, no hace falta renderizar (pero no hace daño)
-    listMountEl.innerHTML = "";
+  function getListOrder(){
+    return window.__bhListOrder || "date_desc";
+  }
 
-    if (!points || points.length === 0) {
-      const empty = document.createElement("div");
-      empty.style.padding = "10px";
-      empty.style.color = "rgba(0,0,0,0.65)";
-      empty.style.fontSize = "13px";
-      empty.textContent = "No hay viviendas en esta zona con estos filtros.";
-      listMountEl.appendChild(empty);
-      return;
+  function sortRows(rows){
+    const order = getListOrder();
+    const arr = rows.slice();
+
+    function dateVal(r){
+      const d = r.listed_at ? new Date(r.listed_at) : null;
+      const t = d && !isNaN(d.getTime()) ? d.getTime() : 0;
+      return t;
+    }
+    function sizeVal(r){
+      const n = (r.useful_area_m2 != null) ? Number(r.useful_area_m2) : 0;
+      return Number.isFinite(n) ? n : 0;
     }
 
-    for (const p of points) {
-      const listingId = (p.listing_id != null) ? String(p.listing_id) : null;
+    if (order === "size_asc") arr.sort((a,b)=> sizeVal(a) - sizeVal(b));
+    else if (order === "size_desc") arr.sort((a,b)=> sizeVal(b) - sizeVal(a));
+    else arr.sort((a,b)=> dateVal(b) - dateVal(a)); // date_desc por defecto
 
-      const item = document.createElement("div");
-      item.className = "listItem";
+    return arr;
+  }
 
-      const imgUrl = p.main_photo_url || null;
+  function renderList(){
+    if (!listItemsEl) return;
 
-      const top = buildAddressTop(p);
-      const bottom = buildAddressBottom(p);
-      const price = (p.price_eur != null) ? euro(p.price_eur) : "—";
+    const rows = sortRows(currentRows);
+
+    const frag = document.createDocumentFragment();
+    listItemsEl.innerHTML = "";
+
+    rows.forEach((p) => {
+      const id = String(p.listing_id || "");
+
+      const img = (p.main_photo_url)
+        ? (() => {
+            const i = document.createElement("img");
+            i.className = "listImg";
+            i.src = p.main_photo_url;
+            i.alt = "";
+            i.onerror = () => {
+              i.replaceWith(ph);
+            };
+            return i;
+          })()
+        : null;
+
+      const ph = document.createElement("div");
+      ph.className = "listImgPh";
+      ph.textContent = "Foto";
+
+      const left = document.createElement("div");
+      if (img) left.appendChild(img);
+      else left.appendChild(ph);
+
+      const title = document.createElement("div");
+      title.className = "listTitle";
+      title.textContent = buildAddressTop(p);
+
+      const sub = document.createElement("div");
+      sub.className = "listSub";
+      sub.textContent = buildAddressBottom(p);
+
+      const price = document.createElement("div");
+      price.className = "listPrice";
+      price.textContent = (p.price_eur != null) ? euro(p.price_eur) : "—";
+
+      const meta = document.createElement("div");
+      meta.className = "listMeta";
       const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
       const type = p.property_type ? String(p.property_type) : "—";
-      const agency = p.agency_name || "—";
+      meta.textContent = `${m2} · ${type}`;
 
-      item.innerHTML = `
-        <div class="listItemGrid">
-          <div class="listMedia">
-            ${imgUrl ? `<img src="${imgUrl}" alt="">` : `<div class="listMediaPh">Foto</div>`}
-          </div>
-          <div class="listText">
-            <div class="listAddrTop">${escapeHtml(top)}</div>
-            <div class="listAddrBottom">${escapeHtml(bottom)}</div>
-            <div class="listPrice">${escapeHtml(price)}</div>
-            <div class="listFacts">
-              <span>${escapeHtml(m2)}</span>
-              <span>${escapeHtml(type)}</span>
-            </div>
-            <div class="listAgency">${escapeHtml(agency)}</div>
-          </div>
-        </div>
-      `;
+      const agency = document.createElement("div");
+      agency.className = "listAgency";
+      agency.textContent = p.agency_name || "—";
 
-      item.addEventListener("click", () => {
-        if (!listingId) return;
+      const right = document.createElement("div");
+      right.appendChild(title);
+      right.appendChild(sub);
+      right.appendChild(price);
+      right.appendChild(meta);
+      right.appendChild(agency);
 
-        const marker = markerByListingId.get(listingId);
-        const point = pointByListingId.get(listingId);
+      const card = document.createElement("div");
+      card.className = "listCard";
+      card.appendChild(left);
+      card.appendChild(right);
 
-        if (marker && marker.getLatLng) {
-          map.panTo(marker.getLatLng());
-          setActiveMarker(marker);
+      // Hover: resalta marcador sin hacer click (pedido)
+      card.addEventListener("mouseenter", () => {
+        const m = markerById.get(id);
+        if (m && m._icon) {
+          const dot = m._icon.querySelector(".dot");
+          dot?.classList.add("hover");
         }
-        if (point) {
-          openCardForPoint(point);
+      });
+      card.addEventListener("mouseleave", () => {
+        const m = markerById.get(id);
+        if (m && m._icon) {
+          const dot = m._icon.querySelector(".dot");
+          dot?.classList.remove("hover");
         }
       });
 
-      listMountEl.appendChild(item);
-    }
-  }
+      // Click: abrir ficha directamente (pedido)
+      card.addEventListener("click", () => {
+        markSeen(id);
+        window.location.href = `listing.html?id=${encodeURIComponent(id)}`;
+      });
 
-  function escapeHtml(s){
-    const str = String(s ?? "");
-    return str
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+      frag.appendChild(card);
+    });
+
+    listItemsEl.appendChild(frag);
   }
 
   async function loadPointsForCurrentView() {
@@ -948,24 +1009,21 @@ export function initMap(){
     const z = map.getZoom();
     const f = getParams();
 
-    // Mantener actualizada la barra de ciudad
-    updateCityBar();
-
     if (areaState.isDrawing) {
       setStatus(areaState.lastHint || "Dibujando área...");
       return;
     }
 
-    setStatus("Cargando...");
+    setStatus(`Cargando...`);
     const rows = await rpcSearchMapPoints(b, f);
-
     const filtered = rows.filter(isInsideAnyArea);
+
+    currentRows = filtered;
 
     clearMarkers();
     filtered.forEach(addPoint);
 
-    // Render del listado
-    renderList(filtered);
+    renderList();
 
     setStatus(`Anuncios: ${filtered.length} | zoom ${z} | modo=${f.mode}`);
   }
@@ -1002,7 +1060,6 @@ export function initMap(){
   function wireHeaderMiniSearch(){
     const form = document.getElementById("miniSearchForm");
     const input = document.getElementById("miniQ");
-
     if (!form || !input) return;
 
     form.addEventListener("submit", async (e) => {
@@ -1014,7 +1071,6 @@ export function initMap(){
       u.searchParams.set("city", city);
       history.replaceState(null, "", u.toString());
 
-      updateCityBar();
       await goToCity(city);
     });
   }
@@ -1043,13 +1099,18 @@ export function initMap(){
     closeCard();
   });
 
-  // Cuando cambian filtros, recargamos puntos
   window.addEventListener("bh:filters-changed", () => {
-    updateCityBar();
+    // cerrar tarjeta al cambiar filtros para evitar incoherencias visuales
+    closeCard();
     scheduleReload();
   });
 
-  // Sol (sin cambios funcionales)
+  // Si cambia el orden del listado: re-render (sin refetch)
+  window.addEventListener("bh:list-order-changed", () => {
+    renderList();
+  });
+
+  // Sol (tu implementación original, casi intacta)
   const ZOOM_SOL_MIN = 14;
   let sunEnabled = false;
   const sunState = { dateISO: null, minutes: null, sunriseMin: null, sunsetMin: null };
@@ -1185,18 +1246,14 @@ export function initMap(){
     const sunset = times.sunset;
 
     let haveSunTimes = false;
-    let sunriseBearing = null;
-    let sunsetBearing = null;
 
     if (sunrise instanceof Date && !isNaN(sunrise.getTime()) && sunset instanceof Date && !isNaN(sunset.getTime())) {
       const sr = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, sunrise);
       const ss = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, sunset);
 
-      sunriseBearing = sr.bearingDeg;
-      sunsetBearing = ss.bearingDeg;
       haveSunTimes = true;
 
-      const d1 = arcPath(cx, cy, R, sunriseBearing, sunsetBearing);
+      const d1 = arcPath(cx, cy, R, sr.bearingDeg, ss.bearingDeg);
 
       svg.appendChild(svgEl("path", {
         d: `${d1} L ${cx} ${cy} Z`,
@@ -1211,37 +1268,10 @@ export function initMap(){
         "stroke-width": "6",
         "stroke-linecap": "round"
       }));
-
-      const srPt = polarXY(cx, cy, R, sunriseBearing, 0);
-      const ssPt = polarXY(cx, cy, R, sunsetBearing, 0);
-
-      const riseSetStroke = "rgba(255, 140, 0, 0.85)";
-
-      svg.appendChild(svgEl("line", {
-        x1: cx, y1: cy, x2: srPt.x, y2: srPt.y,
-        stroke: riseSetStroke,
-        "stroke-width": "6",
-        "stroke-linecap": "round"
-      }));
-
-      svg.appendChild(svgEl("line", {
-        x1: cx, y1: cy, x2: ssPt.x, y2: ssPt.y,
-        stroke: riseSetStroke,
-        "stroke-width": "6",
-        "stroke-linecap": "round"
-      }));
-
-      [srPt, ssPt].forEach(pt=>{
-        svg.appendChild(svgEl("circle", {
-          cx: pt.x, cy: pt.y, r: 12,
-          fill: "rgba(0,0,0,0.22)"
-        }));
-      });
     }
 
     const curDate = buildDateObj(dateISO, minutes);
     const cur = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, curDate);
-
     const meta = { isDay: cur.altDeg > 0, bearingDeg: cur.bearingDeg, altDeg: cur.altDeg };
 
     const sunR = Math.round(18 * 1.15);
@@ -1249,36 +1279,6 @@ export function initMap(){
 
     const sunRingYellow = "rgba(255, 196, 50, 0.98)";
     const sunLineYellow = "rgba(255, 196, 50, 0.86)";
-
-    if (!meta.isDay && haveSunTimes) {
-      const nextISO = addDaysISO(dateISO, 1);
-      const nextNoon = buildDateObj(nextISO, 12*60);
-      const timesNext = SunCalc.getTimes(nextNoon, centerLatLng.lat, centerLatLng.lng);
-      const sunriseNext = timesNext.sunrise;
-
-      if (sunset instanceof Date && sunriseNext instanceof Date && !isNaN(sunriseNext.getTime())) {
-        const ptsN = [];
-        const stepMin = 10;
-
-        for (let tt = sunset.getTime(); tt <= sunriseNext.getTime(); tt += stepMin*60*1000) {
-          const d = new Date(tt);
-          const pa = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, d);
-          if (pa.altDeg <= 0) ptsN.push(polarXY(cx, cy, R, pa.bearingDeg, pa.altDeg));
-        }
-
-        if (ptsN.length >= 2) {
-          const dAttrN = ptsN.map((p,i)=> `${i===0?"M":"L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" ");
-          svg.appendChild(svgEl("path", {
-            d: dAttrN,
-            fill: "none",
-            stroke: "rgba(140,140,140,0.55)",
-            "stroke-width": "6",
-            "stroke-linecap": "round",
-            "stroke-linejoin": "round"
-          }));
-        }
-      }
-    }
 
     if (meta.isDay) {
       if (haveSunTimes) {
@@ -1433,6 +1433,53 @@ export function initMap(){
     updateSunOverlay();
   });
 
+  // NUEVO: botón geolocalización (encima del sol)
+  const LocateControl = L.Control.extend({
+    options: { position: "topright" },
+    onAdd: function() {
+      const container = L.DomUtil.create("div", "quickCol");
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+
+      const btn = L.DomUtil.create("div", "qBtn", container);
+      btn.title = "Mi ubicación";
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 2v3"></path><path d="M12 19v3"></path>
+          <path d="M2 12h3"></path><path d="M19 12h3"></path>
+        </svg>
+      `;
+
+      btn.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          alert("Tu navegador no permite geolocalización.");
+          return;
+        }
+        setStatus("Obteniendo ubicación...");
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            map.setView([lat, lng], 14);
+            setStatus("Ubicación encontrada");
+            scheduleReload();
+          },
+          (err) => {
+            setStatus("No se pudo obtener la ubicación");
+            console.error(err);
+            alert("No se pudo obtener la ubicación. Revisa permisos del navegador.");
+          },
+          { enableHighAccuracy: true, timeout: 8000 }
+        );
+      });
+
+      return container;
+    }
+  });
+
+  map.addControl(new LocateControl());
+
   const SunControl = L.Control.extend({
     options: { position: "topright" },
     onAdd: function() {
@@ -1499,11 +1546,9 @@ export function initMap(){
   map.on("zoomend", () => { if (sunEnabled) updateSunOverlay(); });
   window.addEventListener("resize", () => { if (sunEnabled) updateSunOverlay(); });
 
-  // Cuando cambia el layout (ocultar/mostrar columnas), Leaflet necesita invalidateSize
+  // Cuando cambia layout (ocultar/mostrar columnas) Leaflet necesita invalidateSize
   function safeInvalidate(){
-    try {
-      map.invalidateSize(true);
-    } catch {}
+    try { map.invalidateSize(true); } catch {}
     if (sunEnabled) {
       try { updateSunOverlay(); } catch {}
     }
@@ -1513,7 +1558,6 @@ export function initMap(){
     requestAnimationFrame(() => safeInvalidate());
   });
 
-  // Áreas (sin cambios funcionales)
   const AreasControl = L.Control.extend({
     options: { position: "topright" },
     onAdd: function() {
@@ -1656,6 +1700,49 @@ export function initMap(){
 
   map.addControl(new AreasControl());
 
+  // Etiqueta dinámica “Comunidad / Ciudad / Zona” según centro del mapa
+  // (cache + throttle para no spamear Nominatim)
+  const placeCache = new Map();
+  let placeTimer = null;
+
+  function formatPlace(address){
+    const comunidad = address.state || address.region || address.county || "—";
+    const ciudad = address.city || address.town || address.village || address.municipality || "—";
+    const zona = address.suburb || address.neighbourhood || address.quarter || address.city_district || "—";
+    return `${comunidad} / ${ciudad} / ${zona}`;
+  }
+
+  async function reverseGeocode(lat, lng){
+    const key = `${lat.toFixed(3)},${lng.toFixed(3)}`;
+    if (placeCache.has(key)) return placeCache.get(key);
+
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&zoom=14&addressdetails=1`;
+    const res = await fetch(url, { headers: { "Accept": "application/json" } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const txt = data && data.address ? formatPlace(data.address) : null;
+    if (txt) placeCache.set(key, txt);
+    return txt;
+  }
+
+  function schedulePlaceUpdate(){
+    if (!placeLabelEl) return;
+    if (placeTimer) clearTimeout(placeTimer);
+    placeTimer = setTimeout(async () => {
+      try{
+        const c = map.getCenter();
+        const txt = await reverseGeocode(c.lat, c.lng);
+        if (txt) placeLabelEl.textContent = txt;
+      } catch (e){
+        // si falla, no rompemos nada
+        console.warn("reverse geocode error", e);
+      }
+    }, 650);
+  }
+
+  map.on("moveend", schedulePlaceUpdate);
+  map.on("zoomend", schedulePlaceUpdate);
+
   (async function init(){
     try {
       wireHeaderMiniSearch();
@@ -1666,12 +1753,14 @@ export function initMap(){
         if (center) map.setView(center, 13);
       }
 
-      // Asegurar que Leaflet pinta bien tras el primer layout
       safeInvalidate();
 
       await loadPointsForCurrentView();
 
-      // Otra pasada por si el layout terminó de asentarse justo después
+      // etiqueta inicial
+      schedulePlaceUpdate();
+
+      // Segunda pasada por si el layout termina de ajustar
       setTimeout(() => safeInvalidate(), 250);
       setTimeout(() => safeInvalidate(), 600);
     } catch (e) {
