@@ -20,41 +20,49 @@
   <body>
     <div id="bhHeader"></div>
 
+    <!-- Contenedor general de la página del mapa -->
     <div class="page">
-      <!--
-        Layout nuevo:
-        - Fila superior independiente (fuera de columnas):
-          [botón filtros] [ciudad centrada sobre el mapa] [botón listado]
-        - Debajo: 3 columnas
-          filtros | mapa | listado
-      -->
-      <div class="mapShell" id="mapShell">
-        <div class="mapTopRow" id="mapTopRow">
-          <div class="topLeft">
+      <div class="mapShell">
+
+        <!-- Fila superior independiente (NO dentro de columnas) -->
+        <div class="topRow">
+          <div class="topCell topCellLeft">
             <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
           </div>
 
-          <div class="topCenter">
-            <div id="cityBar" class="cityBar">—</div>
+          <div class="topCell topCellCenter">
+            <!-- Etiqueta dinámica “Comunidad / Ciudad / Zona” -->
+            <div id="placeLabel" class="placeLabel">—</div>
           </div>
 
-          <div class="topRight">
-            <button id="toggleListBtn" class="topToggleBtn" type="button">Ocultar listado</button>
+          <div class="topCell topCellRight">
+            <div class="topRightTools">
+              <button id="orderBtn" class="topToggleBtn" type="button">Ordenar por</button>
+              <button id="toggleListBtn" class="topToggleBtn" type="button">Ocultar listado</button>
+
+              <!-- Menú desplegable de orden -->
+              <div id="orderMenu" class="orderMenu" aria-hidden="true">
+                <button class="orderItem" type="button" data-order="date_desc">Por fecha de publicación</button>
+                <button class="orderItem" type="button" data-order="size_asc">Tamaño: menor a mayor</button>
+                <button class="orderItem" type="button" data-order="size_desc">Tamaño: mayor a menor</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="mapGrid" id="mapGrid">
-          <!-- Columna filtros (izquierda) -->
-          <aside class="filtersCol" id="filtersCol">
-            <div id="filtersColMount"></div>
+        <!-- Layout 3 columnas: filtros | mapa | listado -->
+        <div class="grid3" id="grid3">
+          <!-- Columna filtros (scroll interno) -->
+          <aside class="col colFilters" id="filtersCol">
+            <div id="filtersBarMount"></div>
           </aside>
 
-          <!-- Columna mapa (centro) -->
-          <main class="mapCol" id="mapCol">
-            <div class="mapFrame" id="mapFrame">
+          <!-- Columna mapa -->
+          <main class="col colMap" id="mapCol">
+            <div id="mapWrap" class="mapWrap">
               <div id="map"></div>
 
-              <!-- Overlays (sol, etc.) se quedan sobre el mapa -->
+              <!-- Overlay / UI existente -->
               <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
                 <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
                 <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
@@ -83,11 +91,7 @@
                 </div>
               </div>
 
-              <!--
-                IMPORTANTE:
-                La tarjeta (card) ahora vive dentro del contenedor del mapa (mapFrame),
-                para que se centre respecto al mapa y quede pegada abajo del mapa.
-              -->
+              <!-- Tarjeta “flotante” de selección (ahora se posiciona respecto al mapa, no al viewport) -->
               <div id="card" class="card">
                 <div class="cardGrid">
                   <div class="mediaSide">
@@ -128,14 +132,17 @@
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div id="status"></div>
+              <!-- Status “pill” dentro del mapa (referencia visual) -->
+              <div id="status"></div>
+            </div>
           </main>
 
-          <!-- Columna listado (derecha) -->
-          <aside class="listCol" id="listCol">
-            <div id="listMount" class="listMount"></div>
+          <!-- Columna listado (scroll interno) -->
+          <aside class="col colList" id="listCol">
+            <div id="listMount" class="listMount">
+              <div id="listItems" class="listItems"></div>
+            </div>
           </aside>
         </div>
       </div>
@@ -157,12 +164,78 @@
       import { initFiltersBar } from "/buscarhogardemo/bh-map-filters.js";
       import { initMap } from "/buscarhogardemo/bh-map-core.js";
 
+      // Header / auth
       initLayout({ showMiniSearch: true });
       initAuth();
 
-      // Antes montabas filtros arriba; ahora se montan en la columna izquierda
-      initFiltersBar({ mountId: "filtersColMount" });
+      // Inicializamos filtros dentro de su columna
+      initFiltersBar({ mountId: "filtersBarMount" });
 
+      // Toggle columnas (arreglo del bug: el de filtros ahora alterna bien siempre)
+      const grid = document.getElementById("grid3");
+      const btnFilters = document.getElementById("toggleFiltersBtn");
+      const btnList = document.getElementById("toggleListBtn");
+
+      function applyToggleTexts() {
+        const filtersHidden = grid.classList.contains("hideFilters");
+        const listHidden = grid.classList.contains("hideList");
+        btnFilters.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
+        btnList.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
+      }
+
+      function notifyLayoutResize() {
+        // Leaflet necesita invalidateSize; bh-map-core.js escucha este evento
+        window.dispatchEvent(new CustomEvent("bh:layout-resize"));
+      }
+
+      btnFilters.addEventListener("click", () => {
+        grid.classList.toggle("hideFilters");
+        applyToggleTexts();
+        notifyLayoutResize();
+      });
+
+      btnList.addEventListener("click", () => {
+        grid.classList.toggle("hideList");
+        applyToggleTexts();
+        notifyLayoutResize();
+      });
+
+      applyToggleTexts();
+
+      // Orden: abre/cierra menú. El core lee window.__bhListOrder
+      const orderBtn = document.getElementById("orderBtn");
+      const orderMenu = document.getElementById("orderMenu");
+
+      function closeOrderMenu() {
+        orderMenu.style.display = "none";
+        orderMenu.setAttribute("aria-hidden", "true");
+      }
+      function openOrderMenu() {
+        orderMenu.style.display = "block";
+        orderMenu.setAttribute("aria-hidden", "false");
+      }
+
+      closeOrderMenu();
+
+      orderBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = orderMenu.getAttribute("aria-hidden") === "false";
+        if (open) closeOrderMenu();
+        else openOrderMenu();
+      });
+
+      document.addEventListener("click", () => closeOrderMenu());
+
+      orderMenu.querySelectorAll(".orderItem").forEach((b) => {
+        b.addEventListener("click", () => {
+          const v = b.getAttribute("data-order");
+          window.__bhListOrder = v || "date_desc";
+          closeOrderMenu();
+          window.dispatchEvent(new CustomEvent("bh:list-order-changed"));
+        });
+      });
+
+      // Inicializar mapa
       initMap();
     </script>
   </body>
