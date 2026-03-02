@@ -2,121 +2,236 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Buscar Hogar — Mapa</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Buscar Hogar · Mapa</title>
 
   <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
 
-  <!-- Estilos del proyecto -->
+  <!-- Tu CSS -->
   <link rel="stylesheet" href="./bh-map.css" />
 </head>
 
-<body>
-  <!-- Topbar -->
-  <header class="topbar">
-    <div class="topbarInner">
-      <a class="brand" href="./">BH</a>
+<body class="bh-body">
+  <!-- TOPBAR (igual estilo general que index: 56px, terra) -->
+  <header class="bh-topbar">
+    <div class="bh-topbar-inner">
+      <a class="bh-brand" href="./">BH</a>
 
-      <form id="miniSearchForm" class="miniSearch" autocomplete="off">
+      <form id="miniSearchForm" class="bh-miniSearch" autocomplete="off">
         <input id="miniQ" type="text" placeholder="Buscar..." />
         <button type="submit" aria-label="Buscar">
           <!-- lupa -->
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/>
-            <path d="M16.3 16.3 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path fill="currentColor"
+              d="M10 18a8 8 0 1 1 0-16a8 8 0 0 1 0 16Zm11 3l-6-6a10 10 0 1 0-2 2l6 6l2-2Z"/>
           </svg>
         </button>
       </form>
 
-      <nav class="rightGroup">
-        <a id="favLink" href="#" class="toplink">Favoritos</a>
-        <a id="loginLink" href="#" class="toplink">Iniciar sesión</a>
+      <nav class="bh-rightGroup">
+        <a href="#" id="favLink">Favoritos</a>
+        <a href="#" id="loginLink">Iniciar sesión</a>
       </nav>
     </div>
   </header>
 
-  <!-- Layout principal (sin scroll en body en desktop; el scroll va dentro de columnas) -->
-  <main class="page">
-    <section id="mapShell" class="mapShell">
-      <!-- Fila superior: botones + breadcrumb -->
-      <div class="topRow">
-        <div class="topCell topCellLeft">
-          <div class="topBtnRow">
-            <button id="toggleFiltersBtn" class="pillBtn" type="button">Ocultar filtros</button>
-            <button id="clearFiltersBtn" class="pillBtn ghost" type="button">Limpiar filtros</button>
+  <!-- LAYOUT: contenido + footer fijo -->
+  <div class="bh-page">
+    <main class="bh-main">
+      <!-- Fila superior (botones encima de columnas + “zona” encima del mapa) -->
+      <div id="topRow" class="bh-topRow">
+        <div class="bh-topRow-left">
+          <button id="toggleFiltersBtn" class="bh-chipBtn" type="button">Ocultar filtros</button>
+          <button id="clearFiltersBtn" class="bh-chipBtn" type="button">Limpiar filtros</button>
+        </div>
+
+        <div class="bh-topRow-center">
+          <div id="areaText" class="bh-areaText">—</div>
+        </div>
+
+        <div class="bh-topRow-right">
+          <div id="sortWrap" class="bh-sortWrap">
+            <button id="sortBtn" class="bh-chipBtn" type="button">Ordenar por</button>
+            <div id="sortMenu" class="bh-sortMenu bh-hidden">
+              <button type="button" data-sort="date_desc">Fecha: más reciente</button>
+              <button type="button" data-sort="date_asc">Fecha: más antigua</button>
+              <button type="button" data-sort="price_desc">Precio: mayor a menor</button>
+              <button type="button" data-sort="price_asc">Precio: menor a mayor</button>
+              <button type="button" data-sort="size_asc">Tamaño: menor a mayor</button>
+              <button type="button" data-sort="size_desc">Tamaño: mayor a menor</button>
+            </div>
           </div>
-        </div>
 
-        <div class="topCell topCellCenter">
-          <div id="crumbText" class="crumbText">—</div>
+          <button id="toggleListBtn" class="bh-chipBtn" type="button">Ocultar listado</button>
         </div>
+      </div>
 
-        <div class="topCell topCellRight">
-          <div class="topBtnRow right">
-            <div id="sortWrap" class="sortWrap">
-              <button id="sortBtn" class="pillBtn" type="button">Ordenar por</button>
-              <div id="sortMenu" class="sortMenu bh-hidden" role="menu" aria-label="Ordenar por">
-                <button class="sortItem" data-sort="date_desc" type="button">Fecha publicación: más reciente</button>
-                <button class="sortItem" data-sort="date_asc" type="button">Fecha publicación: más antigua</button>
-                <div class="sortSep"></div>
-                <button class="sortItem" data-sort="price_desc" type="button">Precio: mayor a menor</button>
-                <button class="sortItem" data-sort="price_asc" type="button">Precio: menor a mayor</button>
-                <div class="sortSep"></div>
-                <button class="sortItem" data-sort="size_asc" type="button">Tamaño: menor a mayor</button>
-                <button class="sortItem" data-sort="size_desc" type="button">Tamaño: mayor a menor</button>
+      <!-- Tres columnas: filtros | mapa | listado -->
+      <section id="mapShell" class="bh-mapShell">
+        <!-- FILTROS -->
+        <aside id="filtersCol" class="bh-side bh-filters" aria-label="Filtros">
+          <div class="bh-filtersInner" id="filtersInner">
+
+            <!-- NOTA: Las X se ponen rojas automáticamente cuando el filtro está aplicado (JS pone .is-applied) -->
+
+            <div class="bh-filterCard" data-filter="price">
+              <div class="bh-filterHead">
+                <div class="bh-filterTitle">Precio</div>
+                <button class="bh-clearOne" type="button" data-clear="price" aria-label="Limpiar filtro">×</button>
+              </div>
+
+              <div class="bh-row2">
+                <div class="bh-field">
+                  <input id="priceMin" inputmode="numeric" pattern="[0-9]*" type="text" placeholder="Min €" />
+                  <datalist id="dlPriceMin"></datalist>
+                </div>
+                <div class="bh-field">
+                  <input id="priceMax" inputmode="numeric" pattern="[0-9]*" type="text" placeholder="Max €" />
+                  <datalist id="dlPriceMax"></datalist>
+                </div>
+              </div>
+              <div class="bh-hint">Sugerencias al escribir.</div>
+            </div>
+
+            <div class="bh-filterCard" data-filter="listed">
+              <div class="bh-filterHead">
+                <div class="bh-filterTitle">Ofertado desde</div>
+                <button class="bh-clearOne" type="button" data-clear="listed" aria-label="Limpiar filtro">×</button>
+              </div>
+
+              <div class="bh-radioList" id="listedFrom">
+                <label><input type="radio" name="listedFrom" value="" checked /> Sin preferencia</label>
+                <label><input type="radio" name="listedFrom" value="1" /> Últimas 24 horas</label>
+                <label><input type="radio" name="listedFrom" value="5" /> Últimos 5 días</label>
+                <label><input type="radio" name="listedFrom" value="10" /> Últimos 10 días</label>
+                <label><input type="radio" name="listedFrom" value="30" /> Últimos 30 días</label>
+                <label><input type="radio" name="listedFrom" value="60" /> Últimos 60 días</label>
               </div>
             </div>
 
-            <button id="toggleListBtn" class="pillBtn" type="button">Ocultar listado</button>
-          </div>
-        </div>
-      </div>
+            <!-- Periodo de construcción (multi) -->
+            <div class="bh-filterCard" data-filter="builtPeriod">
+              <div class="bh-filterHead">
+                <div class="bh-filterTitle">Periodo de construcción</div>
+                <button class="bh-clearOne" type="button" data-clear="builtPeriod" aria-label="Limpiar filtro">×</button>
+              </div>
+              <div class="bh-checkList" id="builtPeriodList"></div>
+            </div>
 
-      <!-- Grid principal -->
-      <div class="mainGrid">
-        <!-- Columna filtros -->
-        <aside id="filtersCol" class="sideCol">
-          <div class="sideInner">
-            <div id="filtersRoot"></div>
+            <div class="bh-filterCard" data-filter="availability">
+              <div class="bh-filterHead">
+                <div class="bh-filterTitle">Disponibilidad</div>
+                <button class="bh-clearOne" type="button" data-clear="availability" aria-label="Limpiar filtro">×</button>
+              </div>
+
+              <select id="availability">
+                <option value="available">Disponible</option>
+                <option value="negotiation">Ofertado / en negociación</option>
+                <option value="sold_rented">Alquilado / vendido</option>
+              </select>
+            </div>
+
+            <div class="bh-filterCard" data-filter="useful">
+              <div class="bh-filterHead">
+                <div class="bh-filterTitle">Superficie útil</div>
+                <button class="bh-clearOne" type="button" data-clear="useful" aria-label="Limpiar filtro">×</button>
+              </div>
+              <div class="bh-row2">
+                <div class="bh-field">
+                  <input id="usefulMin" inputmode="numeric" pattern="[0-9]*" type="text" placeholder="Desde (m²)" />
+                  <datalist id="dlUsefulMin"></datalist>
+                </div>
+                <div class="bh-field">
+                  <input id="usefulMax" inputmode="numeric" pattern="[0-9]*" type="text" placeholder="Hasta (m²)" />
+                  <datalist id="dlUsefulMax"></datalist>
+                </div>
+              </div>
+              <div class="bh-hint">Prioritario del proyecto.</div>
+            </div>
+
+            <div class="bh-filterCard" data-filter="built">
+              <div class="bh-filterHead">
+                <div class="bh-filterTitle">Superficie construida</div>
+                <button class="bh-clearOne" type="button" data-clear="built" aria-label="Limpiar filtro">×</button>
+              </div>
+              <div class="bh-row2">
+                <div class="bh-field">
+                  <input id="builtMin" inputmode="numeric" pattern="[0-9]*" type="text" placeholder="Desde (m²)" />
+                  <datalist id="dlBuiltMin"></datalist>
+                </div>
+                <div class="bh-field">
+                  <input id="builtMax" inputmode="numeric" pattern="[0-9]*" type="text" placeholder="Hasta (m²)" />
+                  <datalist id="dlBuiltMax"></datalist>
+                </div>
+              </div>
+            </div>
+
+            <div class="bh-filterCard" data-filter="outdoor">
+              <div class="bh-filterHead">
+                <div class="bh-filterTitle">Espacio exterior</div>
+                <button class="bh-clearOne" type="button" data-clear="outdoor" aria-label="Limpiar filtro">×</button>
+              </div>
+
+              <div class="bh-radioList" id="outdoorSpace">
+                <label><input type="radio" name="outdoorSpace" value="" checked /> Sin preferencia</label>
+                <label><input type="radio" name="outdoorSpace" value="balcony" /> Balcón</label>
+                <label><input type="radio" name="outdoorSpace" value="terrace" /> Terraza</label>
+                <label><input type="radio" name="outdoorSpace" value="garden" /> Jardín</label>
+                <label><input type="radio" name="outdoorSpace" value="patio" /> Patio</label>
+              </div>
+            </div>
+
+            <!-- Puedes ir añadiendo el resto, pero esto ya vuelve a “lo básico” que estabas usando -->
+
           </div>
         </aside>
 
-        <!-- Mapa -->
-        <section id="mapCol" class="mapCol">
-          <div id="map" class="map"></div>
+        <!-- MAPA -->
+        <div class="bh-mapWrap" id="mapWrap">
+          <div id="map" class="bh-map"></div>
 
-          <!-- Barra estado -->
-          <div id="mapStatus" class="mapStatus bh-hidden"></div>
-
-          <!-- Tarjeta (se posiciona respecto al contenedor del mapa, no al viewport) -->
-          <div id="mapCardHost" class="mapCardHost"></div>
-        </section>
-
-        <!-- Columna listado -->
-        <aside id="listCol" class="sideCol">
-          <div class="sideInner">
-            <div id="listRoot"></div>
+          <!-- Tarjeta inferior centrada respecto al contenedor del mapa (NO viewport) -->
+          <div id="mapCard" class="bh-mapCard bh-hidden" role="dialog" aria-label="Ficha del anuncio">
+            <div class="bh-mapCard-inner" id="mapCardInner"></div>
           </div>
-        </aside>
-      </div>
 
-      <!-- Footer SIEMPRE visible (sin scroll del body en desktop) -->
-      <footer class="footerBar">
-        <div class="footerInner">
-          © 2026 Buscar Hogar &nbsp;&middot;&nbsp;
-          <a href="./terms.html">Términos de uso</a> &nbsp;&middot;&nbsp;
-          <a href="./privacy.html">Política de privacidad</a> &nbsp;&middot;&nbsp;
-          <a href="./cookies.html">Política de cookies</a>
+          <!-- Mensajes (debug/estado) -->
+          <div id="mapToast" class="bh-mapToast bh-hidden"></div>
         </div>
-      </footer>
-    </section>
-  </main>
+
+        <!-- LISTADO -->
+        <aside id="listCol" class="bh-side bh-list" aria-label="Listado">
+          <div id="listInner" class="bh-listInner"></div>
+        </aside>
+      </section>
+    </main>
+
+    <!-- FOOTER (siempre visible) -->
+    <footer class="bh-footer">
+      © 2026 Buscar Hogar ·
+      <a href="./terms.html">Términos de uso</a> ·
+      <a href="./privacy.html">Política de privacidad</a> ·
+      <a href="./cookies.html">Política de cookies</a>
+    </footer>
+  </div>
 
   <!-- Leaflet -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
 
-  <!-- Código -->
-  <script type="module" src="./bh-map-core.js"></script>
+  <!-- SunCalc para el botón del sol -->
+  <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+
+  <!-- Tu JS -->
+  <script src="./bh-map-core.js"></script>
 </body>
 </html>
