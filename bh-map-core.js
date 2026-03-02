@@ -1,1273 +1,1772 @@
-/* =========================================================
-   Buscar Hogar · bh-map-core.js (completo)
+/*
+  bh-map-core.js
 
-   Objetivos principales (lo que te fallaba):
-   - Volver a cargar anuncios (arreglar “no detecta anuncios”)
-   - Recuperar mapa “normal” (tiles correctos) e iconos correctos
-   - Recuperar botón sol + botones de dibujar
-   - Arreglar “Ocultar filtros”: no debe dejar mapa/listado en blanco
-   - Periodo construcción por décadas y en la posición correcta
-   - Outdoor space en español (Espacio exterior)
-   - Ordenar por (incluye fecha asc/desc, precio asc/desc, tamaño asc/desc)
-   - Botón “Ordenar por” solo visible si listado visible
-   ========================================================= */
+  Cambios implementados aquí:
+  - Tarjeta del anuncio: ahora está dentro del mapa (posicionada respecto a #mapWrap).
+  - Cerrar tarjeta deselecciona marcador.
+  - Marcadores “vistos”: blanco con borde naranja (persistido en localStorage).
+  - Hover en listado resalta marcador.
+  - Click en listado abre directamente listing.html?id=...
+  - Listado ordenable (fecha desc por defecto + tamaño asc/desc).
+  - Botón de geolocalización (zoom 14) encima del botón “Sol”.
+  - Etiqueta “Comunidad / Ciudad / Zona” se actualiza automáticamente al mover el mapa (reverse geocoding con Nominatim).
+*/
 
-/* -----------------------------
-   1) Supabase (URL + KEY)
-   ----------------------------- */
-const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
+export function initMap(){
+  const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
 
-/* RPC que ya estabas usando: si tu función se llama distinto, aquí es donde se cambia */
-const RPC_SEARCH = "search_map_points_filtered";
+  const DEFAULT_CENTER = [37.9838, -1.1280];
+  const DEFAULT_ZOOM = 13;
 
-/* -----------------------------
-   2) Helpers UI
-   ----------------------------- */
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const statusEl = document.getElementById("status");
+  const placeLabelEl = document.getElementById("placeLabel");
 
-function setToast(msg, isError = false) {
-  const el = $("#mapToast");
-  el.textContent = msg;
-  el.classList.remove("bh-hidden");
-  el.style.borderColor = isError ? "#ffb3b3" : "#e7e7e7";
-  el.style.color = isError ? "#b00000" : "#1b1b1b";
-  clearTimeout(setToast._t);
-  setToast._t = setTimeout(() => el.classList.add("bh-hidden"), 3500);
-}
+  const listItemsEl = document.getElementById("listItems");
 
-function fmtEur(n) {
-  if (n == null || Number.isNaN(Number(n))) return "—";
-  try {
-    return Number(n).toLocaleString("es-ES") + " €";
-  } catch {
-    return `${n} €`;
-  }
-}
+  // Tarjeta dentro del mapa
+  const cardEl = document.getElementById("card");
+  const cardCloseBtn = document.getElementById("cardClose");
+  const heartBtn = document.getElementById("heartBtn");
 
-function safeInt(v) {
-  if (v == null) return null;
-  const s = String(v).replace(/[^\d]/g, "");
-  if (!s) return null;
-  return parseInt(s, 10);
-}
+  const badgeNewEl = document.getElementById("badgeNew");
+  const mediaImgEl = document.getElementById("mediaImg");
+  const mediaPlaceholderEl = document.getElementById("mediaPlaceholder");
 
-function debounce(fn, ms) {
-  let t;
-  return (...args) => {
-    clearTimeout(t);
-    t = setTimeout(() => fn(...args), ms);
-  };
-}
+  const cardAddrTopEl = document.getElementById("cardAddrTop");
+  const cardAddrBottomEl = document.getElementById("cardAddrBottom");
+  const cardPriceEl = document.getElementById("cardPrice");
+  const cardFactsEl = document.getElementById("cardFacts");
+  const cardAgencyEl = document.getElementById("cardAgency");
 
-/* -----------------------------
-   3) Estado global
-   ----------------------------- */
-const state = {
-  city: "",
-  mode: "buy",
+  // Sol overlay
+  const sunOverlayEl = document.getElementById("sunOverlay");
+  const sunOverlayLabelEl = document.getElementById("sunOverlayLabel");
+  const sunPolarOverlaySvg = document.getElementById("sunPolarOverlay");
 
-  filtersHidden: false,
-  listHidden: false,
+  const sunTimebarEl = document.getElementById("sunTimebar");
+  const sunDateDockEl = document.getElementById("sunDateDock");
+  const sunHoursRowEl = document.getElementById("sunHoursRow");
+  const sunTrackEl = document.getElementById("sunTrack");
+  const sunRangeEl = document.getElementById("sunRange");
+  const sunDateEl = document.getElementById("sunDate");
+  const sunNowBtn = document.getElementById("sunNowBtn");
 
-  // filtros
-  priceMin: null,
-  priceMax: null,
-  listedFromDays: null,
-  availability: "available", // por defecto “Disponible”
-  usefulMin: null,
-  usefulMax: null,
-  builtMin: null,
-  builtMax: null,
-  outdoor: null,
-  builtPeriods: [], // multi (rangos)
+  // Áreas
+  const areaHintEl = document.getElementById("areaHint");
+  const areaHintTextEl = document.getElementById("areaHintText");
 
-  // sort
-  sort: "date_desc",
+  function setStatus(msg) { statusEl.textContent = msg || ""; }
 
-  // datos
-  points: [],
-  markersById: new Map(),
-  selectedId: null,
-  hoveredId: null,
-
-  // vistos
-  seen: new Set(),
-
-  // áreas
-  sunActive: false,
-  pointsDrawActive: false,
-  freeDrawActive: false,
-  areasPoints: [], // polygons (latlng arrays)
-  areasFree: [],
-};
-
-function loadSeen() {
-  try {
-    const raw = localStorage.getItem("bh_seen_ids");
-    if (!raw) return;
-    const arr = JSON.parse(raw);
-    if (Array.isArray(arr)) arr.forEach((id) => state.seen.add(String(id)));
-  } catch {}
-}
-function saveSeen() {
-  try {
-    localStorage.setItem("bh_seen_ids", JSON.stringify(Array.from(state.seen)));
-  } catch {}
-}
-
-/* -----------------------------
-   4) Map init
-   ----------------------------- */
-let map;
-let tileLayer;
-let markersLayer;
-let sunLayerGroup;
-let areasLayerGroup;
-let drawTemp = {
-  pts: [],
-  ptMarkers: [],
-  closeMarker: null,
-  isDrawing: false
-};
-
-function initMap() {
-  map = L.map("map", {
-    zoomControl: true,
-    preferCanvas: true,
-  }).setView([37.9922, -1.1307], 12);
-
-  // Tile layer “normal” (evita el “mapa de otro color” que te apareció)
-  tileLayer = L.tileLayer(
-    "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-    {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      maxZoom: 20,
+  function euro(n) {
+    try {
+      return new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
+    } catch {
+      return `${n} EUR`;
     }
-  ).addTo(map);
-
-  markersLayer = L.layerGroup().addTo(map);
-  sunLayerGroup = L.layerGroup().addTo(map);
-  areasLayerGroup = L.layerGroup().addTo(map);
-
-  // Controles personalizados (localización + sol + dibujo)
-  addRightControls();
-
-  // Al mover el mapa: actualizar “Comunidad / Ciudad / Zona” y recargar puntos (debounced)
-  map.on("moveend", () => {
-    updateAreaTextFromMap();
-    loadPointsForCurrentViewDebounced();
-    if (state.sunActive) drawSunPath();
-  });
-
-  map.on("zoomend", () => {
-    syncSunButtonEnabled();
-    if (state.sunActive) drawSunPath();
-  });
-
-  // Cerrar menú ordenar al click fuera
-  document.addEventListener("click", (e) => {
-    const menu = $("#sortMenu");
-    const wrap = $("#sortWrap");
-    if (!wrap.contains(e.target)) menu.classList.add("bh-hidden");
-  });
-
-  // Init UI listeners
-  initTopbar();
-  initLayoutButtons();
-  initFiltersUI();
-  initSortUI();
-
-  // Arranque
-  syncSunButtonEnabled();
-  updateAreaTextFromMap();
-  loadPointsForCurrentView();
-}
-
-/* -----------------------------
-   5) Topbar (Favoritos / Login / miniSearch)
-   ----------------------------- */
-function initTopbar() {
-  $("#favLink").addEventListener("click", (e) => {
-    e.preventDefault();
-    alert("MVP: Favoritos (requiere registro).");
-  });
-  $("#loginLink").addEventListener("click", (e) => {
-    e.preventDefault();
-    alert("MVP: Login/registro se gestiona en index.html.");
-  });
-
-  // mini buscador: navega a map.html con city/mode manteniendo mode
-  $("#miniSearchForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const q = ($("#miniQ").value || "").trim();
-    if (!q) return;
-    const url = new URL(window.location.href);
-    url.searchParams.set("city", q);
-    url.searchParams.set("mode", state.mode);
-    window.location.href = url.toString();
-  });
-
-  // Leer params de URL
-  const sp = new URLSearchParams(window.location.search);
-  state.city = (sp.get("city") || "").trim();
-  state.mode = (sp.get("mode") || "buy").trim();
-  $("#miniQ").value = state.city || "";
-
-  // Si no viene city, no bloqueamos: igual carga por viewport
-}
-
-/* -----------------------------
-   6) Layout: ocultar/mostrar columnas (SIN romper Leaflet)
-   ----------------------------- */
-function initLayoutButtons() {
-  const mapShell = $("#mapShell");
-  const topRow = $("#topRow");
-  const filtersCol = $("#filtersCol");
-  const listCol = $("#listCol");
-
-  const toggleFiltersBtn = $("#toggleFiltersBtn");
-  const toggleListBtn = $("#toggleListBtn");
-
-  function applyLayoutClasses() {
-    mapShell.classList.toggle("filters-hidden", state.filtersHidden);
-    mapShell.classList.toggle("list-hidden", state.listHidden);
-    topRow.classList.toggle("filters-hidden", state.filtersHidden);
-    topRow.classList.toggle("list-hidden", state.listHidden);
-
-    filtersCol.classList.toggle("is-collapsed", state.filtersHidden);
-    listCol.classList.toggle("is-collapsed", state.listHidden);
-
-    toggleFiltersBtn.textContent = state.filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
-    toggleListBtn.textContent = state.listHidden ? "Mostrar listado" : "Ocultar listado";
-
-    // “Ordenar por” solo si el listado está visible
-    $("#sortWrap").classList.toggle("bh-hidden", state.listHidden);
-
-    // Lo importante: Leaflet necesita invalidateSize cuando cambia el layout
-    // Hacemos 2 invalidaciones: inmediata + tras un frame.
-    requestAnimationFrame(() => map.invalidateSize(true));
-    setTimeout(() => map.invalidateSize(true), 120);
   }
 
-  toggleFiltersBtn.addEventListener("click", () => {
-    state.filtersHidden = !state.filtersHidden;
-    applyLayoutClasses();
-  });
-
-  toggleListBtn.addEventListener("click", () => {
-    state.listHidden = !state.listHidden;
-    applyLayoutClasses();
-  });
-
-  // Inicial
-  applyLayoutClasses();
-
-  // Si el usuario redimensiona ventana
-  window.addEventListener("resize", debounce(() => map.invalidateSize(true), 120));
-}
-
-/* -----------------------------
-   7) Filtros (según definición)
-   ----------------------------- */
-function initFiltersUI() {
-  loadSeen();
-
-  // Disponibilidad: por defecto “Disponible” y NO se borra con “Limpiar filtros”
-  $("#availability").value = "available";
-
-  // Periodo construcción por décadas (como pediste)
-  buildConstructionPeriods();
-
-  // Sugerencias numéricas (se muestran al escribir con datalist)
-  setupNumericSuggestions();
-
-  // Asociar datalist a inputs (para que el navegador muestre sugerencias)
-  $("#priceMin").setAttribute("list", "dlPriceMin");
-  $("#priceMax").setAttribute("list", "dlPriceMax");
-  $("#usefulMin").setAttribute("list", "dlUsefulMin");
-  $("#usefulMax").setAttribute("list", "dlUsefulMax");
-  $("#builtMin").setAttribute("list", "dlBuiltMin");
-  $("#builtMax").setAttribute("list", "dlBuiltMax");
-
-  // Listeners filtros
-  const onAnyFilterChange = debounce(() => {
-    normalizeMinMax();
-    updateAppliedStates();
-    loadPointsForCurrentView();
-  }, 220);
-
-  $("#priceMin").addEventListener("input", onAnyFilterChange);
-  $("#priceMax").addEventListener("input", onAnyFilterChange);
-  $("#usefulMin").addEventListener("input", onAnyFilterChange);
-  $("#usefulMax").addEventListener("input", onAnyFilterChange);
-  $("#builtMin").addEventListener("input", onAnyFilterChange);
-  $("#builtMax").addEventListener("input", onAnyFilterChange);
-
-  $("#availability").addEventListener("change", () => {
-    state.availability = $("#availability").value;
-    updateAppliedStates();
-    loadPointsForCurrentView();
-  });
-
-  // Ofertado desde
-  $$("#listedFrom input[type=radio]").forEach((r) => {
-    r.addEventListener("change", () => {
-      const v = $$("#listedFrom input[type=radio]").find(x => x.checked)?.value || "";
-      state.listedFromDays = v ? parseInt(v, 10) : null;
-      updateAppliedStates();
-      loadPointsForCurrentView();
-    });
-  });
-
-  // Outdoor
-  $$("#outdoorSpace input[type=radio]").forEach((r) => {
-    r.addEventListener("change", () => {
-      const v = $$("#outdoorSpace input[type=radio]").find(x => x.checked)?.value || "";
-      state.outdoor = v || null;
-      updateAppliedStates();
-      loadPointsForCurrentView();
-    });
-  });
-
-  // Periodo construcción (multi)
-  $("#builtPeriodList").addEventListener("change", () => {
-    const checked = $$("#builtPeriodList input[type=checkbox]:checked").map(cb => cb.value);
-    state.builtPeriods = checked;
-    updateAppliedStates();
-    loadPointsForCurrentView();
-  });
-
-  // Botón “Limpiar filtros”
-  $("#clearFiltersBtn").addEventListener("click", () => {
-    // OJO: disponibilidad NO se resetea (se queda como esté; por defecto Disponible)
-    $("#priceMin").value = "";
-    $("#priceMax").value = "";
-    $("#usefulMin").value = "";
-    $("#usefulMax").value = "";
-    $("#builtMin").value = "";
-    $("#builtMax").value = "";
-
-    // radios a sin preferencia
-    $$("#listedFrom input[type=radio]").forEach(r => r.checked = (r.value === ""));
-    $$("#outdoorSpace input[type=radio]").forEach(r => r.checked = (r.value === ""));
-
-    // periodo construcción
-    $$("#builtPeriodList input[type=checkbox]").forEach(cb => cb.checked = false);
-
-    // estado interno
-    state.priceMin = null;
-    state.priceMax = null;
-    state.usefulMin = null;
-    state.usefulMax = null;
-    state.builtMin = null;
-    state.builtMax = null;
-    state.listedFromDays = null;
-    state.outdoor = null;
-    state.builtPeriods = [];
-
-    updateAppliedStates();
-    loadPointsForCurrentView();
-  });
-
-  // “X” por filtro
-  $$(".bh-clearOne").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const k = btn.getAttribute("data-clear");
-
-      if (k === "price") { $("#priceMin").value = ""; $("#priceMax").value = ""; state.priceMin = null; state.priceMax = null; }
-      if (k === "useful") { $("#usefulMin").value = ""; $("#usefulMax").value = ""; state.usefulMin = null; state.usefulMax = null; }
-      if (k === "built") { $("#builtMin").value = ""; $("#builtMax").value = ""; state.builtMin = null; state.builtMax = null; }
-      if (k === "listed") { $$("#listedFrom input[type=radio]").forEach(r => r.checked = (r.value === "")); state.listedFromDays = null; }
-      if (k === "outdoor") { $$("#outdoorSpace input[type=radio]").forEach(r => r.checked = (r.value === "")); state.outdoor = null; }
-      if (k === "builtPeriod") { $$("#builtPeriodList input[type=checkbox]").forEach(cb => cb.checked = false); state.builtPeriods = []; }
-
-      // Disponibilidad: no la “limpio” por X si quieres que siempre sea visible; pero si lo quieres, lo activamos.
-      if (k === "availability") {
-        // No lo reseteo a vacío: lo dejo en “Disponible” como regla base.
-        $("#availability").value = "available";
-        state.availability = "available";
-      }
-
-      normalizeMinMax();
-      updateAppliedStates();
-      loadPointsForCurrentView();
-    });
-  });
-
-  // Estado inicial aplicado
-  state.availability = "available";
-  updateAppliedStates();
-}
-
-/* Construcción por décadas: antes de 1950, 1950-1960 ... 2020+ */
-function buildConstructionPeriods() {
-  const host = $("#builtPeriodList");
-  host.innerHTML = "";
-
-  const opts = [];
-  opts.push({ id: "lt1950", label: "Antes de 1950" });
-  for (let y = 1950; y <= 2010; y += 10) {
-    opts.push({ id: `${y}-${y+10}`, label: `${y}-${y+10}` });
+  function openCard() { cardEl.classList.add("visible"); }
+  function closeCard() {
+    cardEl.classList.remove("visible");
+    // Pedido: cerrar tarjeta también deselecciona marcador
+    deselectActiveMarker();
   }
-  opts.push({ id: "2020+", label: "2020+" });
+  cardCloseBtn.addEventListener("click", closeCard);
 
-  for (const o of opts) {
-    const lab = document.createElement("label");
-    lab.innerHTML = `<input type="checkbox" value="${o.id}"> ${o.label}`;
-    host.appendChild(lab);
-  }
-}
-
-/* datalist con sugerencias: se actualiza según mode (compra/alquiler) si lo quieres */
-function setupNumericSuggestions() {
-  // Precio: escalones redondos. Para buy hasta 2M; para rent hasta 3k.
-  const isRent = (state.mode === "rent");
-  const maxPrice = isRent ? 3000 : 2000000;
-
-  const priceSteps = [];
-  if (isRent) {
-    [300,400,500,600,700,800,900,1000,1200,1400,1600,1800,2000,2500,3000].forEach(v => priceSteps.push(v));
-  } else {
-    [50000,75000,100000,125000,150000,175000,200000,250000,300000,350000,400000,500000,600000,750000,900000,1000000,1250000,1500000,1750000,2000000].forEach(v => priceSteps.push(v));
-  }
-
-  fillDatalist("dlPriceMin", priceSteps);
-  fillDatalist("dlPriceMax", priceSteps);
-
-  // Útil: según definición
-  const useful = [30,40,50,60,75,90,100,110,130,150,200];
-  fillDatalist("dlUsefulMin", useful);
-  fillDatalist("dlUsefulMax", useful);
-
-  // Construida: dejamos parecido a útil, pero un poco más alto
-  const built = [40,50,60,75,90,100,110,130,150,175,200,250,300];
-  fillDatalist("dlBuiltMin", built);
-  fillDatalist("dlBuiltMax", built);
-}
-
-function fillDatalist(id, arr) {
-  const dl = $("#" + id);
-  dl.innerHTML = "";
-  arr.forEach(v => {
-    const opt = document.createElement("option");
-    opt.value = String(v);
-    dl.appendChild(opt);
-  });
-}
-
-/* Intercambio automático si min > max */
-function normalizeMinMax() {
-  const pMin = safeInt($("#priceMin").value);
-  const pMax = safeInt($("#priceMax").value);
-  const uMin = safeInt($("#usefulMin").value);
-  const uMax = safeInt($("#usefulMax").value);
-  const bMin = safeInt($("#builtMin").value);
-  const bMax = safeInt($("#builtMax").value);
-
-  let _pMin = pMin, _pMax = pMax;
-  if (_pMin != null && _pMax != null && _pMin > _pMax) { const t = _pMin; _pMin = _pMax; _pMax = t; }
-  let _uMin = uMin, _uMax = uMax;
-  if (_uMin != null && _uMax != null && _uMin > _uMax) { const t = _uMin; _uMin = _uMax; _uMax = t; }
-  let _bMin = bMin, _bMax = bMax;
-  if (_bMin != null && _bMax != null && _bMin > _bMax) { const t = _bMin; _bMin = _bMax; _bMax = t; }
-
-  // Escribir de vuelta (solo si se cambió)
-  if (pMin !== _pMin) $("#priceMin").value = _pMin ?? "";
-  if (pMax !== _pMax) $("#priceMax").value = _pMax ?? "";
-  if (uMin !== _uMin) $("#usefulMin").value = _uMin ?? "";
-  if (uMax !== _uMax) $("#usefulMax").value = _uMax ?? "";
-  if (bMin !== _bMin) $("#builtMin").value = _bMin ?? "";
-  if (bMax !== _bMax) $("#builtMax").value = _bMax ?? "";
-
-  state.priceMin = _pMin;
-  state.priceMax = _pMax;
-  state.usefulMin = _uMin;
-  state.usefulMax = _uMax;
-  state.builtMin = _bMin;
-  state.builtMax = _bMax;
-}
-
-/* Poner X en rojo cuando esté aplicado */
-function updateAppliedStates() {
-  normalizeMinMax();
-
-  // price aplicado si min/max tiene valor
-  toggleApplied("price", state.priceMin != null || state.priceMax != null);
-
-  // listed aplicado si hay días
-  toggleApplied("listed", state.listedFromDays != null);
-
-  // availability aplicado siempre (porque siempre hay valor), pero la X solo roja si NO es el default
-  toggleApplied("availability", state.availability !== "available");
-
-  toggleApplied("useful", state.usefulMin != null || state.usefulMax != null);
-  toggleApplied("built", state.builtMin != null || state.builtMax != null);
-  toggleApplied("outdoor", !!state.outdoor);
-  toggleApplied("builtPeriod", (state.builtPeriods || []).length > 0);
-}
-
-function toggleApplied(key, on) {
-  const card = document.querySelector(`.bh-filterCard[data-filter="${key}"]`);
-  if (!card) return;
-  card.classList.toggle("is-applied", !!on);
-}
-
-/* -----------------------------
-   8) Ordenar
-   ----------------------------- */
-function initSortUI() {
-  $("#sortBtn").addEventListener("click", () => {
-    $("#sortMenu").classList.toggle("bh-hidden");
+  let heartOn = false;
+  heartBtn.addEventListener("click", () => {
+    heartOn = !heartOn;
+    heartBtn.style.borderColor = heartOn ? "rgba(26,115,232,0.55)" : "rgba(0,0,0,0.18)";
+    heartBtn.style.boxShadow = heartOn ? "0 6px 18px rgba(26,115,232,0.18)" : "none";
   });
 
-  $$("#sortMenu button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      state.sort = btn.getAttribute("data-sort");
-      $("#sortMenu").classList.add("bh-hidden");
-      renderList(); // solo reordena listado
-    });
-  });
-}
-
-/* -----------------------------
-   9) Cargar anuncios (RPC) y pintarlos
-   ----------------------------- */
-const loadPointsForCurrentViewDebounced = debounce(loadPointsForCurrentView, 240);
-
-async function loadPointsForCurrentView() {
-  // Si estás dibujando un área, por definición NO se muestran anuncios
-  if (state.pointsDrawActive || state.freeDrawActive || drawTemp.isDrawing) {
-    clearMarkers();
-    $("#listInner").innerHTML = "";
-    return;
-  }
-
-  const b = map.getBounds();
-
-  const payload = buildRpcPayload(b);
-  try {
-    const url = `${SUPABASE_URL}/rest/v1/rpc/${RPC_SEARCH}`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const txt = await res.text().catch(() => "");
-      setToast("Error: no se pudieron cargar anuncios.", true);
-      console.error("RPC error", res.status, txt);
-      clearMarkers();
-      $("#listInner").innerHTML = "";
+  function setPhoto(url) {
+    if (!url) {
+      mediaImgEl.style.display = "none";
+      mediaImgEl.removeAttribute("src");
+      mediaPlaceholderEl.style.display = "grid";
       return;
     }
 
-    const data = await res.json();
-    // Esperamos array de puntos
-    state.points = Array.isArray(data) ? data : [];
-    setToast(`Anuncios: ${state.points.length} | zoom ${map.getZoom()} | modo=${state.mode}`);
+    mediaImgEl.src = url;
+    mediaImgEl.style.display = "block";
+    mediaPlaceholderEl.style.display = "none";
 
-    paintMarkers();
-    renderList();
-  } catch (e) {
-    setToast("Error: no se pudieron cargar anuncios (red).", true);
-    console.error(e);
-    clearMarkers();
-    $("#listInner").innerHTML = "";
-  }
-}
-
-/* Aquí es donde construimos EXACTAMENTE los parámetros típicos del RPC.
-   Si tu RPC usa otros nombres, dime el nombre exacto y se ajusta aquí.
-*/
-function buildRpcPayload(bounds) {
-  const south = bounds.getSouth();
-  const west = bounds.getWest();
-  const north = bounds.getNorth();
-  const east = bounds.getEast();
-
-  return {
-    // viewport
-    p_south: south,
-    p_west: west,
-    p_north: north,
-    p_east: east,
-
-    // city/mode (si tu rpc no lo usa, lo ignora)
-    p_city: state.city || null,
-    p_mode: state.mode || "buy",
-
-    // filtros
-    p_price_min: state.priceMin,
-    p_price_max: state.priceMax,
-    p_listed_from_days: state.listedFromDays,
-    p_availability: state.availability, // “available” etc.
-    p_useful_min: state.usefulMin,
-    p_useful_max: state.usefulMax,
-    p_built_min: state.builtMin,
-    p_built_max: state.builtMax,
-    p_outdoor: state.outdoor,
-
-    // periodo construcción (multi)
-    p_built_periods: (state.builtPeriods && state.builtPeriods.length) ? state.builtPeriods : null,
-  };
-}
-
-/* -----------------------------
-   10) Marcadores: estilos (naranja / visto / seleccionado / hover)
-   ----------------------------- */
-function makeDotIcon(kind) {
-  const cls = ["bh-dot"];
-  if (kind === "seen") cls.push("seen");
-  if (kind === "selected") cls.push("selected");
-  if (kind === "hover") cls.push("hover");
-
-  return L.divIcon({
-    className: "",
-    html: `<div class="${cls.join(" ")}"></div>`,
-    iconSize: [18, 18],
-    iconAnchor: [9, 9],
-  });
-}
-
-function markerKindFor(id) {
-  const sid = String(id);
-  if (state.selectedId && String(state.selectedId) === sid) return "selected";
-  if (state.hoveredId && String(state.hoveredId) === sid) return "hover";
-  if (state.seen.has(sid)) return "seen";
-  return "normal";
-}
-
-function clearMarkers() {
-  markersLayer.clearLayers();
-  state.markersById.clear();
-}
-
-function paintMarkers() {
-  clearMarkers();
-
-  for (const p of state.points) {
-    const id = p.id ?? p.listing_id ?? p.uuid ?? p.public_id;
-    const lat = p.lat ?? p.latitude;
-    const lng = p.lng ?? p.longitude;
-
-    if (id == null || lat == null || lng == null) continue;
-
-    const kind = markerKindFor(id);
-    const m = L.marker([lat, lng], { icon: makeDotIcon(kind) });
-
-    m.on("click", () => selectListing(id));
-    m.addTo(markersLayer);
-    state.markersById.set(String(id), m);
+    mediaImgEl.onerror = () => {
+      mediaImgEl.style.display = "none";
+      mediaImgEl.removeAttribute("src");
+      mediaPlaceholderEl.style.display = "grid";
+    };
   }
 
-  // Si estaba seleccionada una ficha, asegúrate de mantener el estilo
-  refreshMarkerIcons();
-}
-
-function refreshMarkerIcons() {
-  for (const [id, m] of state.markersById.entries()) {
-    const kind = markerKindFor(id);
-    m.setIcon(makeDotIcon(kind));
+  function isRecent(listedAtIso, days = 14) {
+    if (!listedAtIso) return false;
+    const d = new Date(listedAtIso);
+    if (isNaN(d.getTime())) return false;
+    const diff = Date.now() - d.getTime();
+    return diff >= 0 && diff <= days * 24 * 60 * 60 * 1000;
   }
-}
 
-/* -----------------------------
-   11) Listado: render + hover resalta marcador + click abre ficha
-   ----------------------------- */
-function normalizeListing(p) {
-  // Intentamos mapear campos típicos
-  const id = p.id ?? p.listing_id ?? p.uuid ?? p.public_id;
-  const title = p.title ?? p.address ?? "—";
-  const city = p.city ?? p.city_name ?? state.city ?? "—";
-  const zip = p.postal_code ?? p.zip ?? "";
-  const price = p.price_eur ?? p.price ?? null;
-  const useful = p.useful_area_m2 ?? p.useful_m2 ?? null;
-  const built = p.built_area_m2 ?? p.built_m2 ?? null;
-  const agency = p.agency_name ?? p.agency ?? "—";
-  const photo = p.photo_url ?? p.cover_url ?? p.image_url ?? null;
+  function iconArea() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
+  }
+  function iconType() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>';
+  }
 
-  const listedAt = p.listed_at ?? p.published_at ?? p.created_at ?? null;
+  function joinNonEmpty(parts, sep) {
+    return parts.map(v => (v == null ? "" : String(v).trim()))
+      .filter(v => v.length > 0)
+      .join(sep);
+  }
 
-  return { id, title, city, zip, price, useful, built, agency, photo, listedAt };
-}
+  function buildAddressTop(p) {
+    const base = joinNonEmpty([p.street_name, p.street_number], " ");
+    const extras = joinNonEmpty([p.building, p.staircase, p.floor, p.door], ", ");
+    if (base && extras) return base + ", " + extras;
+    return base || extras || "Dirección";
+  }
 
-function sortPoints(arr) {
-  const a = arr.slice();
-  const key = state.sort;
+  function buildAddressBottom(p) {
+    const line = joinNonEmpty([p.postcode, p.city], " ");
+    return line || "—";
+  }
 
-  const getDate = (x) => {
-    const d = x.listedAt ? new Date(x.listedAt).getTime() : 0;
-    return Number.isFinite(d) ? d : 0;
-  };
-  const getPrice = (x) => (x.price == null ? -1 : Number(x.price));
-  const getSize = (x) => (x.useful == null ? (x.built == null ? -1 : Number(x.built)) : Number(x.useful));
+  // Persistencia “visto”
+  const SEEN_KEY = "bh_seen_ids_v1";
 
-  a.sort((x, y) => {
-    if (key === "date_desc") return getDate(y) - getDate(x);
-    if (key === "date_asc") return getDate(x) - getDate(y);
-    if (key === "price_desc") return getPrice(y) - getPrice(x);
-    if (key === "price_asc") return getPrice(x) - getPrice(y);
-    if (key === "size_desc") return getSize(y) - getSize(x);
-    if (key === "size_asc") return getSize(x) - getSize(y);
-    return 0;
-  });
+  function loadSeenSet(){
+    try {
+      const raw = localStorage.getItem(SEEN_KEY);
+      if (!raw) return new Set();
+      const arr = JSON.parse(raw);
+      if (!Array.isArray(arr)) return new Set();
+      return new Set(arr.map(String));
+    } catch {
+      return new Set();
+    }
+  }
 
-  return a;
-}
+  function saveSeenSet(set){
+    try {
+      localStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(set)));
+    } catch {}
+  }
 
-function renderList() {
-  const host = $("#listInner");
-  host.innerHTML = "";
+  const seenSet = loadSeenSet();
 
-  const normalized = state.points.map(normalizeListing).filter(x => x.id != null);
-  const sorted = sortPoints(normalized);
+  function markSeen(listingId){
+    if (!listingId) return;
+    const id = String(listingId);
+    if (seenSet.has(id)) return;
+    seenSet.add(id);
+    saveSeenSet(seenSet);
+    // Actualiza marcador si existe
+    const m = markerById.get(id);
+    if (m && m._icon) {
+      const dot = m._icon.querySelector(".dot");
+      if (dot && !dot.classList.contains("active")) dot.classList.add("seen");
+    }
+  }
 
-  for (const it of sorted) {
-    const card = document.createElement("div");
-    card.className = "bh-listItem";
-    card.dataset.id = String(it.id);
+  function openCardForPoint(p) {
+    // Marcar visto al abrir card (pedido)
+    markSeen(p.listing_id);
 
-    const imgHtml = it.photo
-      ? `<img src="${it.photo}" alt="">`
-      : "";
+    cardAddrTopEl.textContent = buildAddressTop(p);
+    cardAddrBottomEl.textContent = buildAddressBottom(p);
 
-    card.innerHTML = `
-      <div class="bh-listRow">
-        <div class="bh-thumb">${imgHtml}</div>
-        <div>
-          <div class="bh-liTitle">${escapeHtml(it.title)}</div>
-          <div class="bh-liSub">${escapeHtml((it.zip ? it.zip + " " : "") + it.city)}</div>
-          <div class="bh-liPrice">${fmtEur(it.price)}</div>
-          <div class="bh-liFacts">${fmtFacts(it.useful, it.built)}</div>
-          <div class="bh-liAgency">${escapeHtml(it.agency)}</div>
-        </div>
-      </div>
+    cardAddrTopEl.href = `listing.html?id=${encodeURIComponent(p.listing_id)}`;
+
+    cardPriceEl.textContent = (p.price_eur != null) ? euro(p.price_eur) : "—";
+
+    setPhoto(p.main_photo_url || null);
+
+    badgeNewEl.style.display = isRecent(p.listed_at, 14) ? "inline-flex" : "none";
+
+    const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
+    const type = p.property_type ? String(p.property_type) : "—";
+
+    cardFactsEl.innerHTML = `
+      <div class="fact">${iconArea()}<span>${m2} m² útiles</span></div>
+      <div class="fact">${iconType()}<span>${type}</span></div>
     `;
 
-    // Hover: resaltar marcador
-    card.addEventListener("mouseenter", () => {
-      state.hoveredId = String(it.id);
-      refreshMarkerIcons();
-    });
-    card.addEventListener("mouseleave", () => {
-      state.hoveredId = null;
-      refreshMarkerIcons();
-    });
-
-    // Click: abrir ficha igual que en marcador
-    card.addEventListener("click", () => selectListing(it.id));
-
-    host.appendChild(card);
-  }
-}
-
-function fmtFacts(useful, built) {
-  const u = useful != null ? `${Number(useful)} m²` : "—";
-  const b = built != null ? `${Number(built)} m²` : "—";
-  // Mostramos útil primero (prioritario), luego construida
-  return `${u} útiles · ${b} construidos`;
-}
-
-function escapeHtml(s) {
-  return String(s ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-/* -----------------------------
-   12) Selección: tarjeta del mapa + deselección al cerrar
-   ----------------------------- */
-function selectListing(id) {
-  const sid = String(id);
-  state.selectedId = sid;
-
-  // Marcar como visto
-  state.seen.add(sid);
-  saveSeen();
-
-  // Render tarjeta
-  const pRaw = state.points.find(p => String(p.id ?? p.listing_id ?? p.uuid ?? p.public_id) === sid);
-  const p = pRaw ? normalizeListing(pRaw) : null;
-
-  if (p) {
-    $("#mapCardInner").innerHTML = buildMapCardHtml(p);
-    $("#mapCard").classList.remove("bh-hidden");
-
-    // Botón cerrar
-    const closeBtn = $("#mapCardInner").querySelector("[data-close]");
-    closeBtn?.addEventListener("click", () => closeSelected());
-
-    // Click en el card -> abre ficha (listing.html)
-    const openBtn = $("#mapCardInner").querySelector("[data-open]");
-    openBtn?.addEventListener("click", () => openListing(p.id));
-
-    // También: al seleccionar desde listado, queremos igual que marker (ya está)
-  } else {
-    $("#mapCard").classList.add("bh-hidden");
+    cardAgencyEl.textContent = p.agency_name || "—";
+    openCard();
   }
 
-  refreshMarkerIcons();
-  // Scroll: llevar el elemento del listado a vista si existe
-  const li = document.querySelector(`.bh-listItem[data-id="${sid}"]`);
-  if (li && !state.listHidden) li.scrollIntoView({ block: "nearest" });
-}
+  function toInt(v) {
+    if (v == null || v === "") return null;
+    const n = parseInt(String(v), 10);
+    return Number.isFinite(n) ? n : null;
+  }
 
-function closeSelected() {
-  // cerrar tarjeta y deseleccionar marcador (esto te faltaba)
-  state.selectedId = null;
-  $("#mapCard").classList.add("bh-hidden");
-  refreshMarkerIcons();
-}
+  function toText(v) {
+    if (v == null) return null;
+    const s = String(v).trim();
+    return s.length ? s : null;
+  }
 
-function openListing(id) {
-  // Guarda URL del mapa para volver (según definición listing)
-  try { sessionStorage.setItem("bh_last_map_url", window.location.href); } catch {}
-  window.location.href = `./listing.html?id=${encodeURIComponent(String(id))}`;
-}
+  function toTextArray(csv) {
+    if (!csv) return null;
+    const arr = String(csv).split(",").map(s => s.trim()).filter(Boolean);
+    return arr.length ? arr : null;
+  }
 
-function buildMapCardHtml(p) {
-  const img = p.photo ? `<img src="${p.photo}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">` : "";
-  const price = fmtEur(p.price);
+  function getParams() {
+    const u = new URL(window.location.href);
 
-  return `
-    <div style="display:grid;grid-template-columns: 260px 1fr; gap: 0; align-items: stretch;">
-      <div style="height:160px;background:#efefef;">${img}</div>
+    let mode = (u.searchParams.get("mode") || "").trim().toLowerCase();
+    if (!mode) mode = "buy";
+    const allowed = ["buy","rent","room","new_build","all"];
+    if (!allowed.includes(mode)) mode = "buy";
 
-      <div style="padding:16px 18px; display:flex; flex-direction:column; gap:6px;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start; gap:10px;">
-          <div style="min-width:0;">
-            <div style="color:#1e6fe8;font-weight:900;font-size:30px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-              ${escapeHtml(p.title)}
-            </div>
-            <div style="font-weight:800;font-size:22px;">${escapeHtml((p.zip ? p.zip + " " : "") + p.city)}</div>
-          </div>
+    return {
+      city: (u.searchParams.get("city") || "").trim(),
+      mode,
 
-          <div style="display:flex; gap:10px; align-items:center;">
-            <button type="button" data-open style="height:44px;padding:0 14px;border-radius:14px;border:1px solid #e7e7e7;background:#fff;font-weight:800;cursor:pointer;">
-              Abrir
-            </button>
-            <button type="button" data-close style="width:56px;height:56px;border-radius:18px;border:0;background:#1e6fe8;color:#fff;font-weight:900;font-size:22px;cursor:pointer;">
-              ×
-            </button>
-          </div>
-        </div>
+      priceMin: toInt(u.searchParams.get("price_min")),
+      priceMax: toInt(u.searchParams.get("price_max")),
 
-        <div style="font-weight:900;font-size:30px;margin-top:6px;">${price}</div>
-        <div style="font-weight:800;color:#2b2b2b;">${fmtFacts(p.useful, p.built)}</div>
-        <div style="color:#1e6fe8;font-weight:900;margin-top:6px;">${escapeHtml(p.agency)}</div>
-      </div>
-    </div>
-  `;
-}
+      listedSinceDays: toInt(u.searchParams.get("since_days")),
+      availability: toText(u.searchParams.get("availability")),
 
-/* -----------------------------
-   13) Texto “Comunidad / Ciudad / Zona” según área visible
-   - Versión simple: usa el city de URL y el centro del mapa como “Zona”
-   - Si quieres exacto por geocoding (barrio, etc.) hay que añadir un servicio.
-   ----------------------------- */
-function updateAreaTextFromMap() {
-  // Sin geocoder externo: mantenemos algo estable
-  const city = state.city || "—";
-  const center = map.getCenter();
-  const zone = `${center.lat.toFixed(3)}, ${center.lng.toFixed(3)}`;
-  $("#areaText").textContent = `Comunidad Autónoma / ${city} / ${city}`;
-}
+      usefulMin: toInt(u.searchParams.get("useful_min")),
+      usefulMax: toInt(u.searchParams.get("useful_max")),
 
-/* -----------------------------
-   14) Controles derecha: localización + sol + dibujar
-   ----------------------------- */
-let ctrlButtons = {
-  locate: null,
-  sun: null,
-  points: null,
-  free: null,
-};
+      builtMin: toInt(u.searchParams.get("built_min")),
+      builtMax: toInt(u.searchParams.get("built_max")),
 
-function addRightControls() {
-  const Ctrl = L.Control.extend({
-    options: { position: "topright" },
-    onAdd: function() {
-      const box = L.DomUtil.create("div", "bh-mapCtrl");
+      bedroomsMin: toInt(u.searchParams.get("bedrooms_min")),
+      bathroomsMin: toInt(u.searchParams.get("bathrooms_min")),
 
-      // 1) Localización (encima del sol)
-      const bLocate = document.createElement("button");
-      bLocate.type = "button";
-      bLocate.title = "Ir a mi ubicación";
-      bLocate.innerHTML = "⌖";
-      box.appendChild(bLocate);
+      outdoorType: toText(u.searchParams.get("outdoor_type")),
+      orientations: toTextArray(u.searchParams.get("orientations")),
 
-      // 2) Sol
-      const bSun = document.createElement("button");
-      bSun.type = "button";
-      bSun.title = "Sol (zoom ≥ 16)";
-      bSun.innerHTML = "☀";
-      box.appendChild(bSun);
+      energyChoice: toText(u.searchParams.get("energy")),
 
-      // 3) Polígono por puntos
-      const bPts = document.createElement("button");
-      bPts.type = "button";
-      bPts.title = "Dibujar área (punto a punto)";
-      bPts.innerHTML = "✳";
-      box.appendChild(bPts);
+      buildPeriods: toTextArray(u.searchParams.get("build_periods")),
+      parkingTypes: toTextArray(u.searchParams.get("parking")),
+      storageTypes: toTextArray(u.searchParams.get("storage")),
+      accessibility: toTextArray(u.searchParams.get("accessibility"))
+    };
+  }
 
-      // 4) Dibujo libre
-      const bFree = document.createElement("button");
-      bFree.type = "button";
-      bFree.title = "Dibujar área (libre)";
-      bFree.innerHTML = "✎";
-      box.appendChild(bFree);
+  const initialParams = getParams();
 
-      L.DomEvent.disableClickPropagation(box);
-      L.DomEvent.disableScrollPropagation(box);
+  let map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+  window.__bhMap = map;
 
-      // Hooks
-      ctrlButtons.locate = bLocate;
-      ctrlButtons.sun = bSun;
-      ctrlButtons.points = bPts;
-      ctrlButtons.free = bFree;
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap &copy; CARTO"
+  }).addTo(map);
 
-      bLocate.addEventListener("click", onLocateClick);
-      bSun.addEventListener("click", onSunToggle);
-      bPts.addEventListener("click", onPointsDrawToggle);
-      bFree.addEventListener("click", onFreeDrawToggle);
+  let markersLayer = L.layerGroup().addTo(map);
+  let activeMarker = null;
 
-      return box;
+  // Relación listing_id -> marcador (para hover/selección)
+  const markerById = new Map();
+
+  function deselectActiveMarker(){
+    if (activeMarker && activeMarker._icon) {
+      const dot = activeMarker._icon.querySelector(".dot");
+      dot?.classList.remove("active");
+      // Si era visto, se queda en modo visto
+      const id = activeMarker.options?.__listingId;
+      if (id && seenSet.has(String(id))) dot?.classList.add("seen");
+    }
+    activeMarker = null;
+  }
+
+  function clearMarkers() {
+    markersLayer.clearLayers();
+    markerById.clear();
+    activeMarker = null;
+  }
+
+  function addPoint(p) {
+    if (p.lat == null || p.lng == null) return;
+
+    const el = document.createElement("div");
+    el.className = "dot";
+
+    const idStr = String(p.listing_id || "");
+    if (idStr && seenSet.has(idStr)) el.classList.add("seen");
+
+    const icon = L.divIcon({
+      className: "",
+      html: el,
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
+    });
+
+    const m = L.marker([p.lat, p.lng], { icon }).addTo(markersLayer);
+    m.options.__listingId = idStr;
+
+    if (idStr) markerById.set(idStr, m);
+
+    m.on("click", () => {
+      if (areaState.isDrawing) return;
+
+      // Selección visual
+      deselectActiveMarker();
+      activeMarker = m;
+
+      const dot = m._icon?.querySelector(".dot");
+      dot?.classList.add("active");
+      dot?.classList.remove("seen"); // activo manda
+
+      openCardForPoint(p);
+    });
+  }
+
+  function getCurrentBounds() {
+    const b = map.getBounds();
+    return {
+      south: b.getSouthWest().lat,
+      west: b.getSouthWest().lng,
+      north: b.getNorthEast().lat,
+      east: b.getNorthEast().lng
+    };
+  }
+
+  async function rpcSearchMapPoints(bounds, filters) {
+    const body = {
+      p_south: bounds.south,
+      p_west: bounds.west,
+      p_north: bounds.north,
+      p_east: bounds.east,
+
+      p_mode: (filters.mode && filters.mode !== "all") ? filters.mode : null,
+
+      p_price_min: filters.priceMin,
+      p_price_max: filters.priceMax,
+
+      p_listed_since_days: filters.listedSinceDays,
+      p_availability: filters.availability,
+
+      p_useful_min: filters.usefulMin,
+      p_useful_max: filters.usefulMax,
+
+      p_built_min: filters.builtMin,
+      p_built_max: filters.builtMax,
+
+      p_bedrooms_min: filters.bedroomsMin,
+      p_bathrooms_min: filters.bathroomsMin,
+
+      p_outdoor_type: filters.outdoorType,
+      p_orientations: filters.orientations,
+
+      p_energy_choice: filters.energyChoice,
+
+      p_build_periods: filters.buildPeriods,
+
+      p_parking_types: filters.parkingTypes,
+      p_storage_types: filters.storageTypes,
+
+      p_accessibility: filters.accessibility
+    };
+
+    const url = `${SUPABASE_URL}/rest/v1/rpc/search_map_points_filtered`;
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(txt);
+    }
+
+    return await res.json();
+  }
+
+  let debounceTimer = null;
+
+  const MAX_AREAS = 5;
+
+  const areaState = {
+    pointsActive: false,
+    freehandActive: false,
+
+    drawingMode: null,
+    isDrawing: false,
+
+    isFreehandActive: false,
+    points: [],
+    tempLine: null,
+    tempFirstMarker: null,
+    tempVertexMarkers: [],
+    tempLivePoly: null,
+
+    polys: [],
+    nextId: 1,
+
+    btnPointsEl: null,
+    btnFreeEl: null,
+    btnPlusPointsEl: null,
+    btnPlusFreeEl: null,
+
+    refreshAreasUI: null,
+
+    sunBtnForceOff: null,
+    lastHint: ""
+  };
+
+  const areasLayer = L.layerGroup().addTo(map);
+
+  function setAreaHintVisible(visible, text){
+    areaHintEl.style.display = visible ? "block" : "none";
+    areaHintEl.setAttribute("aria-hidden", visible ? "false" : "true");
+    if (typeof text === "string") {
+      areaHintTextEl.textContent = text;
+      areaState.lastHint = text;
+    }
+  }
+
+  function setMarkersVisible(visible){
+    const has = map.hasLayer(markersLayer);
+    if (visible && !has) markersLayer.addTo(map);
+    if (!visible && has) map.removeLayer(markersLayer);
+  }
+
+  function clearTempDrawing(){
+    if (areaState.tempLine) { areasLayer.removeLayer(areaState.tempLine); areaState.tempLine = null; }
+    if (areaState.tempLivePoly) { areasLayer.removeLayer(areaState.tempLivePoly); areaState.tempLivePoly = null; }
+
+    if (areaState.tempFirstMarker) {
+      areasLayer.removeLayer(areaState.tempFirstMarker);
+      areaState.tempFirstMarker = null;
+    }
+
+    areaState.tempVertexMarkers.forEach(m => areasLayer.removeLayer(m));
+    areaState.tempVertexMarkers = [];
+    areaState.points = [];
+  }
+
+  function cancelCurrentDrawing(){
+    if (!areaState.isDrawing) return;
+    areaState.isDrawing = false;
+    areaState.isFreehandActive = false;
+    areaState.drawingMode = null;
+    clearTempDrawing();
+    setMarkersVisible(true);
+    setAreaHintVisible(false, "");
+  }
+
+  function latlngsToSimple(latlngs){
+    return latlngs.map(ll => ({ lat: ll.lat, lng: ll.lng }));
+  }
+
+  function pointInPoly(lat, lng, poly){
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const xi = poly[i].lng, yi = poly[i].lat;
+      const xj = poly[j].lng, yj = poly[j].lat;
+
+      const intersect = ((yi > lat) !== (yj > lat)) &&
+        (lng < (xj - xi) * (lat - yi) / ((yj - yi) || 1e-12) + xi);
+
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  }
+
+  function isInsideAnyArea(p){
+    if (!areaState.polys.length) return true;
+    if (p.lat == null || p.lng == null) return false;
+    const lat = p.lat, lng = p.lng;
+    for (const a of areaState.polys) {
+      if (pointInPoly(lat, lng, a.latlngs)) return true;
+    }
+    return false;
+  }
+
+  function northwestVertex(latlngs){
+    let best = null;
+    for (const ll of latlngs) {
+      if (!best) { best = ll; continue; }
+      if (ll.lat > best.lat) best = ll;
+      else if (ll.lat === best.lat && ll.lng < best.lng) best = ll;
+    }
+    return best || latlngs[0];
+  }
+
+  function makeDelMarker(latlng, areaId){
+    const el = document.createElement("div");
+    el.className = "areaDel";
+    const s = document.createElement("span");
+    s.textContent = "×";
+    el.appendChild(s);
+
+    const icon = L.divIcon({
+      className: "",
+      html: el,
+      iconSize: [22,22],
+      iconAnchor: [11,11]
+    });
+
+    const m = L.marker(latlng, { icon, interactive: true, keyboard: false });
+
+    m.on("click", (e) => {
+      L.DomEvent.stopPropagation(e);
+      removeAreaById(areaId);
+    });
+
+    return m;
+  }
+
+  function removeAreaById(id, opts){
+    const options = opts || {};
+    const idx = areaState.polys.findIndex(x => x.id === id);
+    if (idx < 0) return;
+
+    const removed = areaState.polys[idx];
+
+    if (removed.poly) areasLayer.removeLayer(removed.poly);
+    if (removed.delMarker) areasLayer.removeLayer(removed.delMarker);
+
+    areaState.polys.splice(idx, 1);
+
+    if (removed && removed.type) {
+      const stillAny = areaState.polys.some(a => a.type === removed.type);
+      if (!stillAny) {
+        if (removed.type === "points") {
+          areaState.pointsActive = false;
+          if (areaState.isDrawing && areaState.drawingMode === "points") cancelCurrentDrawing();
+        }
+        if (removed.type === "freehand") {
+          areaState.freehandActive = false;
+          if (areaState.isDrawing && areaState.drawingMode === "freehand") cancelCurrentDrawing();
+        }
+      }
+    }
+
+    if (!options.silentUI && areaState.refreshAreasUI) {
+      areaState.refreshAreasUI();
+    }
+
+    scheduleReload();
+  }
+
+  function removeAreasByType(type){
+    const ids = areaState.polys.filter(a => a.type === type).map(a => a.id);
+    ids.forEach(id => removeAreaById(id, { silentUI: true }));
+    if (areaState.refreshAreasUI) areaState.refreshAreasUI();
+    scheduleReload();
+  }
+
+  function addAreaPolygon(latlngs, type){
+    if (!latlngs || latlngs.length < 3) return false;
+    if (areaState.polys.length >= MAX_AREAS) return false;
+
+    const t = (type === "freehand") ? "freehand" : "points";
+
+    const id = areaState.nextId++;
+    const poly = L.polygon(latlngs, {
+      color: "rgba(26,115,232,0.80)",
+      weight: 3,
+      opacity: 1,
+      fillColor: "rgba(26,115,232,0.20)",
+      fillOpacity: 0.18
+    }).addTo(areasLayer);
+
+    const nw = northwestVertex(latlngs);
+    const delMarker = makeDelMarker(nw, id).addTo(areasLayer);
+
+    areaState.polys.push({
+      id,
+      type: t,
+      latlngs: latlngsToSimple(latlngs),
+      poly,
+      delMarker
+    });
+
+    if (areaState.refreshAreasUI) areaState.refreshAreasUI();
+    return true;
+  }
+
+  function startNewAreaDrawing(mode){
+    if (areaState.polys.length >= MAX_AREAS) return;
+    if (mode !== "points" && mode !== "freehand") return;
+
+    if (areaState.sunBtnForceOff) areaState.sunBtnForceOff();
+
+    closeCard();
+    clearTempDrawing();
+
+    areaState.isDrawing = true;
+    areaState.drawingMode = mode;
+    setMarkersVisible(false);
+
+    if (mode === "points") {
+      setAreaHintVisible(true, "Haz clic punto a punto para dibujar el área. Cierra en el primer punto.");
+      areaState.points = [];
+      areaState.tempLine = L.polyline([], {
+        color: "rgba(26,115,232,0.88)",
+        weight: 3,
+        opacity: 1
+      }).addTo(areasLayer);
+    }
+
+    if (mode === "freehand") {
+      setAreaHintVisible(true, "Mantén pulsado y dibuja el área. Suelta para terminar.");
+      areaState.points = [];
+      areaState.isFreehandActive = false;
+    }
+  }
+
+  function finishDrawingPoints(){
+    const pts = areaState.points.slice();
+    if (pts.length < 3) {
+      cancelCurrentDrawing();
+      scheduleReload();
+      return;
+    }
+
+    addAreaPolygon(pts, "points");
+
+    cancelCurrentDrawing();
+    scheduleReload();
+  }
+
+  function addPointVertex(latlng){
+    areaState.points.push(latlng);
+
+    if (areaState.tempLine) {
+      areaState.tempLine.addLatLng(latlng);
+    }
+
+    const isFirst = areaState.points.length === 1;
+
+    const circle = L.circleMarker(latlng, {
+      radius: isFirst ? 7 : 6,
+      color: "rgba(255,255,255,0.95)",
+      weight: 3,
+      fillColor: "rgba(26,115,232,0.90)",
+      fillOpacity: 1
+    }).addTo(areasLayer);
+
+    if (isFirst) {
+      areaState.tempFirstMarker = circle;
+      circle.on("click", (e) => {
+        L.DomEvent.stopPropagation(e);
+        if (!areaState.isDrawing || areaState.drawingMode !== "points") return;
+        finishDrawingPoints();
+      });
+    } else {
+      areaState.tempVertexMarkers.push(circle);
+    }
+  }
+
+  function maybeCloseFirst(latlng){
+    if (!areaState.tempFirstMarker) return false;
+    const first = areaState.points[0];
+    if (!first) return false;
+    const d = map.distance(first, latlng);
+    return d <= 12;
+  }
+
+  function simplifyRDP(points, epsilonPx){
+    if (!points || points.length < 3) return points || [];
+    const sqEps = epsilonPx * epsilonPx;
+
+    function sqSegDist(p, a, b){
+      let x = a.x, y = a.y;
+      let dx = b.x - x;
+      let dy = b.y - y;
+
+      if (dx !== 0 || dy !== 0) {
+        const t = ((p.x - x) * dx + (p.y - y) * dy) / (dx*dx + dy*dy);
+        if (t > 1) { x = b.x; y = b.y; }
+        else if (t > 0) { x += dx * t; y += dy * t; }
+      }
+
+      dx = p.x - x;
+      dy = p.y - y;
+      return dx*dx + dy*dy;
+    }
+
+    function rdp(pts, first, last, out){
+      let maxSqDist = sqEps;
+      let index = -1;
+
+      for (let i = first + 1; i < last; i++) {
+        const sqD = sqSegDist(pts[i], pts[first], pts[last]);
+        if (sqD > maxSqDist) {
+          index = i;
+          maxSqDist = sqD;
+        }
+      }
+
+      if (index !== -1) {
+        if (index - first > 1) rdp(pts, first, index, out);
+        out.push(pts[index]);
+        if (last - index > 1) rdp(pts, index, last, out);
+      }
+    }
+
+    const out = [points[0]];
+    rdp(points, 0, points.length - 1, out);
+    out.push(points[points.length - 1]);
+    return out;
+  }
+
+  function latlngsFromFreehand(rawLatLngs){
+    if (!rawLatLngs || rawLatLngs.length < 3) return [];
+    const zoom = map.getZoom();
+    const proj = rawLatLngs.map(ll => {
+      const p = map.project(ll, zoom);
+      return { x: p.x, y: p.y, ll };
+    });
+
+    const simplified = simplifyRDP(proj, 3.0);
+    const out = simplified.map(p => p.ll);
+
+    if (out.length >= 3) {
+      const first = out[0];
+      const last = out[out.length - 1];
+      const d = map.distance(first, last);
+      if (d > 5) out.push(first);
+    }
+
+    const uniq = [];
+    for (const ll of out) {
+      const prev = uniq[uniq.length - 1];
+      if (!prev) { uniq.push(ll); continue; }
+      const dd = map.distance(prev, ll);
+      if (dd >= 1) uniq.push(ll);
+    }
+    return uniq.length >= 3 ? uniq : [];
+  }
+
+  let freehandMoveHandler = null;
+  let freehandUpHandler = null;
+  let freehandLastSample = null;
+
+  function startFreehand(e){
+    if (!areaState.isDrawing || areaState.drawingMode !== "freehand") return;
+    if (areaState.isFreehandActive) return;
+
+    areaState.isFreehandActive = true;
+    areaState.points = [];
+    freehandLastSample = null;
+
+    map.dragging.disable();
+
+    const startLL = e.latlng;
+    if (startLL) {
+      areaState.points.push(startLL);
+      freehandLastSample = { ll: startLL, t: Date.now() };
+    }
+
+    if (areaState.tempLine) { areasLayer.removeLayer(areaState.tempLine); areaState.tempLine = null; }
+    if (areaState.tempLivePoly) { areasLayer.removeLayer(areaState.tempLivePoly); areaState.tempLivePoly = null; }
+
+    areaState.tempLine = L.polyline([startLL], {
+      color: "rgba(26,115,232,0.88)",
+      weight: 3,
+      opacity: 1
+    }).addTo(areasLayer);
+
+    freehandMoveHandler = (ev) => {
+      if (!areaState.isFreehandActive) return;
+      const ll = ev.latlng;
+      if (!ll) return;
+
+      const now = Date.now();
+      const prev = freehandLastSample?.ll;
+
+      let ok = true;
+      if (freehandLastSample) {
+        const dt = now - freehandLastSample.t;
+        const dist = prev ? map.distance(prev, ll) : 999;
+        ok = (dt >= 18) && (dist >= 2.0);
+      }
+
+      if (!ok) return;
+
+      areaState.points.push(ll);
+      freehandLastSample = { ll, t: now };
+      if (areaState.tempLine) areaState.tempLine.addLatLng(ll);
+    };
+
+    freehandUpHandler = () => {
+      finishFreehand();
+    };
+
+    map.on("mousemove", freehandMoveHandler);
+    map.on("mouseup", freehandUpHandler);
+
+    map.on("touchmove", freehandMoveHandler);
+    map.on("touchend", freehandUpHandler);
+    map.on("touchcancel", freehandUpHandler);
+  }
+
+  function finishFreehand(){
+    if (!areaState.isDrawing || areaState.drawingMode !== "freehand") return;
+
+    map.off("mousemove", freehandMoveHandler);
+    map.off("mouseup", freehandUpHandler);
+    map.off("touchmove", freehandMoveHandler);
+    map.off("touchend", freehandUpHandler);
+    map.off("touchcancel", freehandUpHandler);
+
+    freehandMoveHandler = null;
+    freehandUpHandler = null;
+
+    if (areaState.tempLine) { areasLayer.removeLayer(areaState.tempLine); areaState.tempLine = null; }
+
+    map.dragging.enable();
+
+    const raw = areaState.points.slice();
+    areaState.isFreehandActive = false;
+
+    const simplifiedLL = latlngsFromFreehand(raw);
+
+    const totalLen = (() => {
+      let sum = 0;
+      for (let i = 1; i < raw.length; i++) sum += map.distance(raw[i-1], raw[i]);
+      return sum;
+    })();
+
+    if (!simplifiedLL || simplifiedLL.length < 3 || totalLen < 20) {
+      cancelCurrentDrawing();
+      scheduleReload();
+      return;
+    }
+
+    addAreaPolygon(simplifiedLL, "freehand");
+
+    cancelCurrentDrawing();
+    scheduleReload();
+  }
+
+  function handleMapClickForAreas(e){
+    if (!areaState.isDrawing) return false;
+
+    if (areaState.drawingMode === "points") {
+      const ll = e.latlng;
+      if (!ll) return true;
+
+      if (areaState.points.length >= 3 && maybeCloseFirst(ll)) {
+        finishDrawingPoints();
+        return true;
+      }
+
+      addPointVertex(ll);
+      return true;
+    }
+
+    return true;
+  }
+
+  map.on("mousedown", (e) => {
+    if (areaState.isDrawing && areaState.drawingMode === "freehand") {
+      startFreehand(e);
     }
   });
 
-  map.addControl(new Ctrl());
-}
+  map.on("touchstart", (e) => {
+    if (areaState.isDrawing && areaState.drawingMode === "freehand") {
+      startFreehand(e);
+    }
+  });
 
-function onLocateClick() {
-  if (!navigator.geolocation) {
-    setToast("Tu navegador no permite geolocalización.", true);
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const { latitude, longitude } = pos.coords;
-      map.setView([latitude, longitude], 14, { animate: true });
-    },
-    () => setToast("No se pudo obtener tu ubicación.", true),
-    { enableHighAccuracy: true, timeout: 8000 }
-  );
-}
+  // Estado de resultados actuales (para listado)
+  let currentRows = [];
 
-/* ---------- Sol (SunCalc “estilo SunCalc”: arco alrededor del centro) ---------- */
-function syncSunButtonEnabled() {
-  const z = map.getZoom();
-  const enabled = z >= 16;
-  if (ctrlButtons.sun) ctrlButtons.sun.disabled = !enabled;
-
-  // Si estaba activo y baja de 16, se desactiva automáticamente (según definición)
-  if (!enabled && state.sunActive) {
-    state.sunActive = false;
-    ctrlButtons.sun?.classList.remove("is-active");
-    sunLayerGroup.clearLayers();
-  }
-}
-
-function onSunToggle() {
-  if (map.getZoom() < 16) return;
-
-  // Sol y dibujo no pueden coexistir activos
-  if (state.pointsDrawActive || state.freeDrawActive || drawTemp.isDrawing) {
-    cancelAllDrawing();
+  function getListOrder(){
+    return window.__bhListOrder || "date_desc";
   }
 
-  state.sunActive = !state.sunActive;
-  ctrlButtons.sun.classList.toggle("is-active", state.sunActive);
+  function sortRows(rows){
+    const order = getListOrder();
+    const arr = rows.slice();
 
-  if (!state.sunActive) {
-    sunLayerGroup.clearLayers();
-    return;
-  }
-  drawSunPath();
-}
+    function dateVal(r){
+      const d = r.listed_at ? new Date(r.listed_at) : null;
+      const t = d && !isNaN(d.getTime()) ? d.getTime() : 0;
+      return t;
+    }
+    function sizeVal(r){
+      const n = (r.useful_area_m2 != null) ? Number(r.useful_area_m2) : 0;
+      return Number.isFinite(n) ? n : 0;
+    }
 
-function drawSunPath() {
-  sunLayerGroup.clearLayers();
+    if (order === "size_asc") arr.sort((a,b)=> sizeVal(a) - sizeVal(b));
+    else if (order === "size_desc") arr.sort((a,b)=> sizeVal(b) - sizeVal(a));
+    else arr.sort((a,b)=> dateVal(b) - dateVal(a)); // date_desc por defecto
 
-  const center = map.getCenter();
-  const lat = center.lat;
-  const lng = center.lng;
-
-  // Radio en metros para dibujar el “círculo” alrededor del punto
-  const radiusM = 180;
-
-  const now = new Date();
-  const start = new Date(now);
-  start.setHours(0, 0, 0, 0);
-
-  // Muestreo cada 10 minutos
-  const ptsDay = [];
-  const ptsNight = [];
-
-  for (let i = 0; i <= 24 * 60; i += 10) {
-    const t = new Date(start.getTime() + i * 60 * 1000);
-    const pos = SunCalc.getPosition(t, lat, lng);
-    const az = pos.azimuth; // rad, desde sur? SunCalc: azimuth desde sur hacia oeste
-    const alt = pos.altitude;
-
-    // Convertimos azimuth SunCalc a rumbo “desde norte sentido horario”
-    // SunCalc: 0 = sur, PI/2 = oeste, -PI/2 = este.
-    // Rumbo = (az + PI) en rad desde norte? Ajuste:
-    const bearingRad = az + Math.PI; // aproximación consistente para dibujar
-    const bearingDeg = (bearingRad * 180) / Math.PI;
-
-    const dest = destinationPoint(lat, lng, bearingDeg, radiusM);
-    const ll = [dest.lat, dest.lng];
-
-    if (alt >= 0) ptsDay.push(ll);
-    else ptsNight.push(ll);
+    return arr;
   }
 
-  // Día: naranja. Noche: gris.
-  if (ptsDay.length >= 2) {
-    L.polyline(ptsDay, { color: "#f6a000", weight: 4, opacity: 0.95 }).addTo(sunLayerGroup);
-  }
-  if (ptsNight.length >= 2) {
-    L.polyline(ptsNight, { color: "#9a9a9a", weight: 4, opacity: 0.85 }).addTo(sunLayerGroup);
-  }
+  function renderList(){
+    if (!listItemsEl) return;
 
-  // Punto central
-  L.circleMarker([lat, lng], { radius: 4, color: "#111", weight: 2, fillColor: "#fff", fillOpacity: 1 }).addTo(sunLayerGroup);
-}
+    const rows = sortRows(currentRows);
 
-/* destino en lat/lng con bearing grados y distancia metros */
-function destinationPoint(lat, lng, bearingDeg, distM) {
-  const R = 6371000;
-  const brng = bearingDeg * Math.PI / 180;
-  const φ1 = lat * Math.PI / 180;
-  const λ1 = lng * Math.PI / 180;
+    const frag = document.createDocumentFragment();
+    listItemsEl.innerHTML = "";
 
-  const δ = distM / R;
+    rows.forEach((p) => {
+      const id = String(p.listing_id || "");
 
-  const φ2 = Math.asin(Math.sin(φ1) * Math.cos(δ) + Math.cos(φ1) * Math.sin(δ) * Math.cos(brng));
-  const λ2 = λ1 + Math.atan2(
-    Math.sin(brng) * Math.sin(δ) * Math.cos(φ1),
-    Math.cos(δ) - Math.sin(φ1) * Math.sin(φ2)
-  );
+      const img = (p.main_photo_url)
+        ? (() => {
+            const i = document.createElement("img");
+            i.className = "listImg";
+            i.src = p.main_photo_url;
+            i.alt = "";
+            i.onerror = () => {
+              i.replaceWith(ph);
+            };
+            return i;
+          })()
+        : null;
 
-  return { lat: φ2 * 180 / Math.PI, lng: λ2 * 180 / Math.PI };
-}
+      const ph = document.createElement("div");
+      ph.className = "listImgPh";
+      ph.textContent = "Foto";
 
-/* ---------- Dibujo por puntos ---------- */
-function onPointsDrawToggle() {
-  // Si sol activo, se desactiva
-  if (state.sunActive) {
-    state.sunActive = false;
-    ctrlButtons.sun?.classList.remove("is-active");
-    sunLayerGroup.clearLayers();
-  }
+      const left = document.createElement("div");
+      if (img) left.appendChild(img);
+      else left.appendChild(ph);
 
-  state.pointsDrawActive = !state.pointsDrawActive;
-  ctrlButtons.points.classList.toggle("is-active", state.pointsDrawActive);
+      const title = document.createElement("div");
+      title.className = "listTitle";
+      title.textContent = buildAddressTop(p);
 
-  if (!state.pointsDrawActive) {
-    cancelPointsDrawing();
-    loadPointsForCurrentView();
-    return;
-  }
+      const sub = document.createElement("div");
+      sub.className = "listSub";
+      sub.textContent = buildAddressBottom(p);
 
-  // activar: empezamos captura de clicks
-  startPointsDrawing();
-}
+      const price = document.createElement("div");
+      price.className = "listPrice";
+      price.textContent = (p.price_eur != null) ? euro(p.price_eur) : "—";
 
-function startPointsDrawing() {
-  closeSelected(); // mientras se dibuja, no hay ficha
-  clearMarkers();  // mientras se dibuja, no hay anuncios
+      const meta = document.createElement("div");
+      meta.className = "listMeta";
+      const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
+      const type = p.property_type ? String(p.property_type) : "—";
+      meta.textContent = `${m2} · ${type}`;
 
-  drawTemp.isDrawing = true;
-  drawTemp.pts = [];
-  drawTemp.ptMarkers = [];
-  if (drawTemp.closeMarker) { map.removeLayer(drawTemp.closeMarker); drawTemp.closeMarker = null; }
+      const agency = document.createElement("div");
+      agency.className = "listAgency";
+      agency.textContent = p.agency_name || "—";
 
-  setToast("Haz clic punto a punto para dibujar el área. Cierra en el primer punto.");
+      const right = document.createElement("div");
+      right.appendChild(title);
+      right.appendChild(sub);
+      right.appendChild(price);
+      right.appendChild(meta);
+      right.appendChild(agency);
 
-  map.on("click", onMapClickAddPoint);
-}
+      const card = document.createElement("div");
+      card.className = "listCard";
+      card.appendChild(left);
+      card.appendChild(right);
 
-function onMapClickAddPoint(e) {
-  const ll = e.latlng;
-  drawTemp.pts.push(ll);
+      // Hover: resalta marcador sin hacer click (pedido)
+      card.addEventListener("mouseenter", () => {
+        const m = markerById.get(id);
+        if (m && m._icon) {
+          const dot = m._icon.querySelector(".dot");
+          dot?.classList.add("hover");
+        }
+      });
+      card.addEventListener("mouseleave", () => {
+        const m = markerById.get(id);
+        if (m && m._icon) {
+          const dot = m._icon.querySelector(".dot");
+          dot?.classList.remove("hover");
+        }
+      });
 
-  const m = L.circleMarker(ll, { radius: 5, color: "#111", weight: 2, fillColor: "#fff", fillOpacity: 1 }).addTo(areasLayerGroup);
-  drawTemp.ptMarkers.push(m);
+      // Click: abrir ficha directamente (pedido)
+      card.addEventListener("click", () => {
+        markSeen(id);
+        window.location.href = `listing.html?id=${encodeURIComponent(id)}`;
+      });
 
-  // primer punto: marcador “cerrar”
-  if (drawTemp.pts.length === 1) {
-    drawTemp.closeMarker = L.circleMarker(ll, { radius: 10, color: "#1e6fe8", weight: 3, fillColor: "#fff", fillOpacity: 1 })
-      .addTo(areasLayerGroup);
-    drawTemp.closeMarker.on("click", () => tryClosePointsPolygon());
-  }
-}
+      frag.appendChild(card);
+    });
 
-function tryClosePointsPolygon() {
-  if (drawTemp.pts.length < 3) {
-    // regla: si menos de 3 puntos, no crea polígono
-    cancelPointsDrawing();
-    state.pointsDrawActive = false;
-    ctrlButtons.points.classList.remove("is-active");
-    drawTemp.isDrawing = false;
-    setToast("Área no creada (mínimo 3 puntos).");
-    loadPointsForCurrentView();
-    return;
-  }
-
-  // crear polígono
-  const poly = L.polygon(drawTemp.pts, { color: "#1e6fe8", weight: 3, fillColor: "#1e6fe8", fillOpacity: 0.08 });
-  poly.addTo(areasLayerGroup);
-  state.areasPoints.push(poly);
-
-  // limpiar temporales
-  cancelPointsDrawing();
-  drawTemp.isDrawing = false;
-
-  setToast("Área creada.");
-  loadPointsForCurrentView(); // (si quieres filtrar por área de verdad, hay que aplicar point-in-polygon; aquí mantenemos tu comportamiento actual sin romper el backend)
-}
-
-function cancelPointsDrawing() {
-  map.off("click", onMapClickAddPoint);
-
-  // borrar marcadores temporales (no borra áreas ya creadas)
-  drawTemp.ptMarkers.forEach(m => areasLayerGroup.removeLayer(m));
-  drawTemp.ptMarkers = [];
-  drawTemp.pts = [];
-  if (drawTemp.closeMarker) {
-    areasLayerGroup.removeLayer(drawTemp.closeMarker);
-    drawTemp.closeMarker = null;
-  }
-}
-
-/* ---------- Dibujo libre (versión simple) ---------- */
-let freeDraw = {
-  down: false,
-  latlngs: [],
-  tempLine: null,
-};
-
-function onFreeDrawToggle() {
-  if (state.sunActive) {
-    state.sunActive = false;
-    ctrlButtons.sun?.classList.remove("is-active");
-    sunLayerGroup.clearLayers();
+    listItemsEl.appendChild(frag);
   }
 
-  state.freeDrawActive = !state.freeDrawActive;
-  ctrlButtons.free.classList.toggle("is-active", state.freeDrawActive);
+  async function loadPointsForCurrentView() {
+    const b = getCurrentBounds();
+    const z = map.getZoom();
+    const f = getParams();
 
-  if (!state.freeDrawActive) {
-    stopFreeDrawing();
-    loadPointsForCurrentView();
-    return;
-  }
-  startFreeDrawing();
-}
+    if (areaState.isDrawing) {
+      setStatus(areaState.lastHint || "Dibujando área...");
+      return;
+    }
 
-function startFreeDrawing() {
-  closeSelected();
-  clearMarkers();
-  setToast("Mantén pulsado y dibuja el área. Suelta para terminar.");
+    setStatus(`Cargando...`);
+    const rows = await rpcSearchMapPoints(b, f);
+    const filtered = rows.filter(isInsideAnyArea);
 
-  freeDraw.down = false;
-  freeDraw.latlngs = [];
-  if (freeDraw.tempLine) { areasLayerGroup.removeLayer(freeDraw.tempLine); freeDraw.tempLine = null; }
+    currentRows = filtered;
 
-  map.on("mousedown", onFreeDown);
-  map.on("mousemove", onFreeMove);
-  map.on("mouseup", onFreeUp);
+    clearMarkers();
+    filtered.forEach(addPoint);
 
-  // touch
-  map.on("touchstart", onFreeDown);
-  map.on("touchmove", onFreeMove);
-  map.on("touchend", onFreeUp);
-}
+    renderList();
 
-function stopFreeDrawing() {
-  map.off("mousedown", onFreeDown);
-  map.off("mousemove", onFreeMove);
-  map.off("mouseup", onFreeUp);
-  map.off("touchstart", onFreeDown);
-  map.off("touchmove", onFreeMove);
-  map.off("touchend", onFreeUp);
-
-  if (freeDraw.tempLine) { areasLayerGroup.removeLayer(freeDraw.tempLine); freeDraw.tempLine = null; }
-  freeDraw.latlngs = [];
-  freeDraw.down = false;
-}
-
-function onFreeDown(e) {
-  freeDraw.down = true;
-  freeDraw.latlngs = [e.latlng];
-  if (freeDraw.tempLine) { areasLayerGroup.removeLayer(freeDraw.tempLine); }
-  freeDraw.tempLine = L.polyline(freeDraw.latlngs, { color: "#1e6fe8", weight: 3, opacity: 0.9 }).addTo(areasLayerGroup);
-}
-
-function onFreeMove(e) {
-  if (!freeDraw.down) return;
-  freeDraw.latlngs.push(e.latlng);
-  freeDraw.tempLine.setLatLngs(freeDraw.latlngs);
-}
-
-function onFreeUp() {
-  if (!freeDraw.down) return;
-  freeDraw.down = false;
-
-  // validación mínima: trazo largo
-  if (freeDraw.latlngs.length < 10) {
-    stopFreeDrawing();
-    state.freeDrawActive = false;
-    ctrlButtons.free.classList.remove("is-active");
-    setToast("Área no creada (trazo demasiado corto).");
-    loadPointsForCurrentView();
-    return;
+    setStatus(`Anuncios: ${filtered.length} | zoom ${z} | modo=${f.mode}`);
   }
 
-  // convertir a polígono cerrando
-  const latlngs = freeDraw.latlngs.slice();
-  latlngs.push(latlngs[0]);
-
-  const poly = L.polygon(latlngs, { color: "#1e6fe8", weight: 3, fillColor: "#1e6fe8", fillOpacity: 0.08 });
-  poly.addTo(areasLayerGroup);
-  state.areasFree.push(poly);
-
-  stopFreeDrawing();
-  state.freeDrawActive = false;
-  ctrlButtons.free.classList.remove("is-active");
-
-  setToast("Área creada.");
-  loadPointsForCurrentView();
-}
-
-function cancelAllDrawing() {
-  if (state.pointsDrawActive) {
-    state.pointsDrawActive = false;
-    ctrlButtons.points?.classList.remove("is-active");
+  function scheduleReload() {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async () => {
+      try {
+        await loadPointsForCurrentView();
+      } catch (e) {
+        const msg = (e && e.message) ? e.message : String(e);
+        setStatus(`Error: ${msg}`);
+        console.error(e);
+      }
+    }, 300);
   }
-  if (state.freeDrawActive) {
-    state.freeDrawActive = false;
-    ctrlButtons.free?.classList.remove("is-active");
-  }
-  cancelPointsDrawing();
-  stopFreeDrawing();
-  drawTemp.isDrawing = false;
-}
 
-/* -----------------------------
-   15) Arranque
-   ----------------------------- */
-document.addEventListener("DOMContentLoaded", () => {
-  initMap();
-});
+  async function geocodeCity(city) {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&limit=1`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data[0]) return null;
+    return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+  }
+
+  async function goToCity(city) {
+    setStatus("Buscando ciudad...");
+    const center = await geocodeCity(city);
+    if (center) map.setView(center, 13);
+    scheduleReload();
+  }
+
+  function wireHeaderMiniSearch(){
+    const form = document.getElementById("miniSearchForm");
+    const input = document.getElementById("miniQ");
+    if (!form || !input) return;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const city = (input.value || "").trim();
+      if (!city) return;
+
+      const u = new URL(window.location.href);
+      u.searchParams.set("city", city);
+      history.replaceState(null, "", u.toString());
+
+      await goToCity(city);
+    });
+  }
+
+  function wireHeaderNav(){
+    const fav = document.getElementById("navFavoritos");
+    const login = document.getElementById("navLogin");
+
+    if (fav) fav.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("MVP: Favoritos (requiere registro).");
+    });
+
+    if (login) login.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("MVP: Iniciar sesión.");
+    });
+  }
+
+  map.on("moveend", scheduleReload);
+  map.on("zoomend", scheduleReload);
+
+  map.on("click", (e) => {
+    const consumed = handleMapClickForAreas(e);
+    if (consumed) return;
+    closeCard();
+  });
+
+  window.addEventListener("bh:filters-changed", () => {
+    // cerrar tarjeta al cambiar filtros para evitar incoherencias visuales
+    closeCard();
+    scheduleReload();
+  });
+
+  // Si cambia el orden del listado: re-render (sin refetch)
+  window.addEventListener("bh:list-order-changed", () => {
+    renderList();
+  });
+
+  // Sol (tu implementación original, casi intacta)
+  const ZOOM_SOL_MIN = 14;
+  let sunEnabled = false;
+  const sunState = { dateISO: null, minutes: null, sunriseMin: null, sunsetMin: null };
+
+  function todayISO() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function nowMinutes() {
+    const d = new Date();
+    return d.getHours()*60 + d.getMinutes();
+  }
+
+  function minutesToHHMM(mins) {
+    const h = Math.floor(mins/60);
+    const m = mins % 60;
+    return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+  }
+
+  function rad2deg(r){ return r * 180 / Math.PI; }
+
+  function sunBearingAndAltDeg(lat, lng, dateObj){
+    const pos = SunCalc.getPosition(dateObj, lat, lng);
+    const azDeg = rad2deg(pos.azimuth);
+    const bearingDeg = (180 + azDeg + 360) % 360;
+    const altDeg = rad2deg(pos.altitude);
+    return { bearingDeg, altDeg };
+  }
+
+  function bearingToCardinal(deg){
+    const dirs = ["N","NE","E","SE","S","SO","O","NO"];
+    const idx = Math.round(deg / 45) % 8;
+    return dirs[idx];
+  }
+
+  function buildDateObj(iso, minutes) {
+    const [y,m,d] = iso.split("-").map(x => parseInt(x,10));
+    const hh = Math.floor(minutes/60);
+    const mm = minutes % 60;
+    return new Date(y, (m-1), d, hh, mm, 0, 0);
+  }
+
+  function addDaysISO(iso, deltaDays){
+    const [y,m,d] = iso.split("-").map(x => parseInt(x,10));
+    const dt = new Date(y, m-1, d, 12, 0, 0, 0);
+    dt.setDate(dt.getDate() + deltaDays);
+    const yy = dt.getFullYear();
+    const mm = String(dt.getMonth()+1).padStart(2,"0");
+    const dd = String(dt.getDate()).padStart(2,"0");
+    return `${yy}-${mm}-${dd}`;
+  }
+
+  function svgClear(el){ while (el.firstChild) el.removeChild(el.firstChild); }
+  function svgEl(name, attrs){
+    const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+    if (attrs) for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+
+  function polarXY(cx, cy, R, bearingDeg, altDeg){
+    const a = Math.max(0, Math.min(90, Math.abs(altDeg)));
+    const r = ((90 - a) / 90) * R;
+    const t = bearingDeg * Math.PI / 180;
+    const x = cx + r * Math.sin(t);
+    const y = cy - r * Math.cos(t);
+    return { x, y };
+  }
+
+  function arcPath(cx, cy, r, a0Deg, a1Deg){
+    const a0 = (a0Deg - 90) * Math.PI/180;
+    const a1 = (a1Deg - 90) * Math.PI/180;
+    const x0 = cx + r * Math.cos(a0);
+    const y0 = cy + r * Math.sin(a0);
+    const x1 = cx + r * Math.cos(a1);
+    const y1 = cy + r * Math.sin(a1);
+    let da = ((a1Deg - a0Deg) % 360 + 360) % 360;
+    const large = da > 180 ? 1 : 0;
+    return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+  }
+
+  function drawSunPolar(svg, centerLatLng, dateISO, minutes){
+    const V = 1120;
+    const cx = V/2;
+    const cy = V/2;
+    const R = 450;
+
+    svg.setAttribute("viewBox", `0 0 ${V} ${V}`);
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    svgClear(svg);
+
+    svg.appendChild(svgEl("circle", {
+      cx, cy, r: R,
+      fill: "rgba(255,255,255,0.00)",
+      stroke: "rgba(0,0,0,0.35)",
+      "stroke-width": "3"
+    }));
+
+    const axes = [
+      { a:0,   label:"N", x: cx,          y: cy - R - 22, anchor:"middle" },
+      { a:90,  label:"E", x: cx + R + 22, y: cy + 12,     anchor:"start"  },
+      { a:180, label:"S", x: cx,          y: cy + R + 42, anchor:"middle" },
+      { a:270, label:"O", x: cx - R - 22, y: cy + 12,     anchor:"end"    },
+    ];
+
+    [0,90,180,270].forEach(a=>{
+      const p = polarXY(cx, cy, R, a, 0);
+      svg.appendChild(svgEl("line", {
+        x1: cx, y1: cy, x2: p.x, y2: p.y,
+        stroke: "rgba(0,0,0,0.20)",
+        "stroke-width": "2"
+      }));
+    });
+
+    axes.forEach(o=>{
+      const t = svgEl("text", {
+        x: o.x,
+        y: o.y,
+        "text-anchor": o.anchor,
+        "font-size": "34",
+        fill: "rgba(0,0,0,0.45)"
+      });
+      t.textContent = o.label;
+      svg.appendChild(t);
+    });
+
+    const dayNoon = buildDateObj(dateISO, 12*60);
+    const times = SunCalc.getTimes(dayNoon, centerLatLng.lat, centerLatLng.lng);
+    const sunrise = times.sunrise;
+    const sunset = times.sunset;
+
+    let haveSunTimes = false;
+
+    if (sunrise instanceof Date && !isNaN(sunrise.getTime()) && sunset instanceof Date && !isNaN(sunset.getTime())) {
+      const sr = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, sunrise);
+      const ss = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, sunset);
+
+      haveSunTimes = true;
+
+      const d1 = arcPath(cx, cy, R, sr.bearingDeg, ss.bearingDeg);
+
+      svg.appendChild(svgEl("path", {
+        d: `${d1} L ${cx} ${cy} Z`,
+        fill: "rgba(255, 196, 50, 0.14)",
+        stroke: "none"
+      }));
+
+      svg.appendChild(svgEl("path", {
+        d: d1,
+        fill: "none",
+        stroke: "rgba(255, 140, 0, 0.65)",
+        "stroke-width": "6",
+        "stroke-linecap": "round"
+      }));
+    }
+
+    const curDate = buildDateObj(dateISO, minutes);
+    const cur = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, curDate);
+    const meta = { isDay: cur.altDeg > 0, bearingDeg: cur.bearingDeg, altDeg: cur.altDeg };
+
+    const sunR = Math.round(18 * 1.15);
+    const sunStroke = Math.round(6 * 1.15);
+
+    const sunRingYellow = "rgba(255, 196, 50, 0.98)";
+    const sunLineYellow = "rgba(255, 196, 50, 0.86)";
+
+    if (meta.isDay) {
+      if (haveSunTimes) {
+        const pts = [];
+        const stepMin = 6;
+        const start = sunrise.getTime();
+        const end = sunset.getTime();
+        for (let tt = start; tt <= end; tt += stepMin*60*1000) {
+          const d = new Date(tt);
+          const pa = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, d);
+          if (pa.altDeg >= 0) pts.push(polarXY(cx, cy, R, pa.bearingDeg, pa.altDeg));
+        }
+        if (pts.length >= 2) {
+          const dAttr = pts.map((p,i)=> `${i===0?"M":"L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" ");
+          svg.appendChild(svgEl("path", {
+            d: dAttr,
+            fill: "none",
+            stroke: "rgba(255, 140, 0, 0.88)",
+            "stroke-width": "8",
+            "stroke-linecap": "round",
+            "stroke-linejoin": "round"
+          }));
+        }
+      }
+
+      const p = polarXY(cx, cy, R, cur.bearingDeg, cur.altDeg);
+
+      svg.appendChild(svgEl("line", {
+        x1: cx, y1: cy, x2: p.x, y2: p.y,
+        stroke: sunLineYellow,
+        "stroke-width": "8",
+        "stroke-linecap": "round"
+      }));
+
+      svg.appendChild(svgEl("circle", {
+        cx: p.x, cy: p.y, r: sunR,
+        fill: "rgba(255, 120, 60, 0.95)",
+        stroke: sunRingYellow,
+        "stroke-width": String(sunStroke)
+      }));
+    } else {
+      const p = polarXY(cx, cy, R, cur.bearingDeg, cur.altDeg);
+
+      svg.appendChild(svgEl("circle", {
+        cx: p.x, cy: p.y, r: sunR,
+        fill: "rgba(165,165,165,0.86)",
+        stroke: sunRingYellow,
+        "stroke-width": String(sunStroke)
+      }));
+    }
+
+    return meta;
+  }
+
+  function minutesOfDate(d){
+    if (!(d instanceof Date) || isNaN(d.getTime())) return null;
+    return d.getHours() * 60 + d.getMinutes();
+  }
+
+  function updateDaylightBand(){
+    const c = map.getCenter();
+    const iso = sunState.dateISO || todayISO();
+    const noon = buildDateObj(iso, 12*60);
+    const times = SunCalc.getTimes(noon, c.lat, c.lng);
+
+    const sr = minutesOfDate(times.sunrise);
+    const ss = minutesOfDate(times.sunset);
+
+    sunState.sunriseMin = sr;
+    sunState.sunsetMin = ss;
+
+    const srPct = (sr == null) ? 0 : Math.max(0, Math.min(100, (sr / 1439) * 100));
+    const ssPct = (ss == null) ? 0 : Math.max(0, Math.min(100, (ss / 1439) * 100));
+
+    sunTrackEl.style.setProperty("--sr", `${srPct.toFixed(3)}%`);
+    sunTrackEl.style.setProperty("--ss", `${ssPct.toFixed(3)}%`);
+  }
+
+  function updateSunOverlay(){
+    const ok = sunEnabled && map.getZoom() >= ZOOM_SOL_MIN;
+
+    sunOverlayEl.style.display = ok ? "block" : "none";
+    sunTimebarEl.style.display = ok ? "block" : "none";
+    sunDateDockEl.style.display = ok ? "block" : "none";
+
+    if (!ok) return;
+
+    const c = map.getCenter();
+    const iso = sunState.dateISO || todayISO();
+    const mins = (sunState.minutes != null) ? sunState.minutes : nowMinutes();
+
+    updateDaylightBand();
+
+    const meta = drawSunPolar(sunPolarOverlaySvg, c, iso, mins);
+
+    const card = bearingToCardinal(meta.bearingDeg);
+    if (meta.isDay) {
+      sunOverlayLabelEl.textContent = `${minutesToHHMM(mins)} · ${card} · ${Math.round(meta.bearingDeg)}° · alt ${Math.round(meta.altDeg)}°`;
+    } else {
+      sunOverlayLabelEl.textContent = `${minutesToHHMM(mins)} · noche · ${card} · ${Math.round(meta.bearingDeg)}° · alt ${Math.round(meta.altDeg)}°`;
+    }
+  }
+
+  function setSunEnabled(next){
+    sunEnabled = next;
+    updateSunOverlay();
+  }
+
+  function initHoursRow(){
+    const frag = document.createDocumentFragment();
+    for (let h = 0; h < 24; h++) {
+      const s = document.createElement("span");
+      s.textContent = String(h).padStart(2,"0");
+      frag.appendChild(s);
+    }
+    sunHoursRowEl.innerHTML = "";
+    sunHoursRowEl.appendChild(frag);
+  }
+
+  function preventMapDragOn(el){
+    el.addEventListener("mousedown", (e) => e.stopPropagation());
+    el.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
+    el.addEventListener("wheel", (e) => e.stopPropagation(), { passive: true });
+    el.addEventListener("click", (e) => e.stopPropagation());
+  }
+
+  initHoursRow();
+  preventMapDragOn(sunTimebarEl);
+  preventMapDragOn(sunDateDockEl);
+
+  sunState.dateISO = todayISO();
+  sunState.minutes = nowMinutes();
+
+  sunDateEl.value = sunState.dateISO;
+  sunRangeEl.value = String(sunState.minutes);
+
+  sunRangeEl.addEventListener("input", () => {
+    sunState.minutes = parseInt(sunRangeEl.value, 10);
+    updateSunOverlay();
+  });
+
+  sunDateEl.addEventListener("change", () => {
+    sunState.dateISO = sunDateEl.value || todayISO();
+    updateSunOverlay();
+  });
+
+  sunNowBtn.addEventListener("click", () => {
+    sunState.dateISO = todayISO();
+    sunState.minutes = nowMinutes();
+    sunDateEl.value = sunState.dateISO;
+    sunRangeEl.value = String(sunState.minutes);
+    updateSunOverlay();
+  });
+
+  // NUEVO: botón geolocalización (encima del sol)
+  const LocateControl = L.Control.extend({
+    options: { position: "topright" },
+    onAdd: function() {
+      const container = L.DomUtil.create("div", "quickCol");
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+
+      const btn = L.DomUtil.create("div", "qBtn", container);
+      btn.title = "Mi ubicación";
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 2v3"></path><path d="M12 19v3"></path>
+          <path d="M2 12h3"></path><path d="M19 12h3"></path>
+        </svg>
+      `;
+
+      btn.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          alert("Tu navegador no permite geolocalización.");
+          return;
+        }
+        setStatus("Obteniendo ubicación...");
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            map.setView([lat, lng], 14);
+            setStatus("Ubicación encontrada");
+            scheduleReload();
+          },
+          (err) => {
+            setStatus("No se pudo obtener la ubicación");
+            console.error(err);
+            alert("No se pudo obtener la ubicación. Revisa permisos del navegador.");
+          },
+          { enableHighAccuracy: true, timeout: 8000 }
+        );
+      });
+
+      return container;
+    }
+  });
+
+  map.addControl(new LocateControl());
+
+  const SunControl = L.Control.extend({
+    options: { position: "topright" },
+    onAdd: function() {
+      const container = L.DomUtil.create("div", "quickCol");
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+
+      const btn = L.DomUtil.create("div", "qBtn", container);
+      btn.id = "sunBtn";
+      btn.title = "Sol";
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path><path d="M12 20v2"></path>
+          <path d="M4.93 4.93l1.41 1.41"></path><path d="M17.66 17.66l1.41 1.41"></path>
+          <path d="M2 12h2"></path><path d="M20 12h2"></path>
+          <path d="M4.93 19.07l1.41-1.41"></path><path d="M17.66 6.34l1.41-1.41"></path>
+        </svg>
+      `;
+
+      function setBtnEnabled() {
+        const ok = map.getZoom() >= ZOOM_SOL_MIN;
+        btn.classList.toggle("disabled", !ok);
+        btn.title = ok ? "Sol" : `Acércate para activar (zoom ${ZOOM_SOL_MIN}+)`;
+        if (!ok && sunEnabled) {
+          btn.classList.remove("active");
+          setSunEnabled(false);
+        } else {
+          updateSunOverlay();
+        }
+      }
+
+      function forceOff(){
+        if (sunEnabled) {
+          sunEnabled = false;
+          btn.classList.remove("active");
+          updateSunOverlay();
+        }
+      }
+
+      btn.addEventListener("click", () => {
+        const ok = map.getZoom() >= ZOOM_SOL_MIN;
+        if (!ok) return;
+
+        if (areaState.isDrawing) cancelCurrentDrawing();
+
+        const next = !sunEnabled;
+        btn.classList.toggle("active", next);
+        setSunEnabled(next);
+      });
+
+      map.on("zoomend", setBtnEnabled);
+      setBtnEnabled();
+
+      areaState.sunBtnForceOff = forceOff;
+
+      return container;
+    }
+  });
+
+  map.addControl(new SunControl());
+
+  map.on("moveend", () => { if (sunEnabled) updateSunOverlay(); });
+  map.on("zoomend", () => { if (sunEnabled) updateSunOverlay(); });
+  window.addEventListener("resize", () => { if (sunEnabled) updateSunOverlay(); });
+
+  // Cuando cambia layout (ocultar/mostrar columnas) Leaflet necesita invalidateSize
+  function safeInvalidate(){
+    try { map.invalidateSize(true); } catch {}
+    if (sunEnabled) {
+      try { updateSunOverlay(); } catch {}
+    }
+  }
+
+  window.addEventListener("bh:layout-resize", () => {
+    requestAnimationFrame(() => safeInvalidate());
+  });
+
+  const AreasControl = L.Control.extend({
+    options: { position: "topright" },
+    onAdd: function() {
+      const container = L.DomUtil.create("div", "quickCol");
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+
+      const wrapPoints = L.DomUtil.create("div", "areaBtnWrap", container);
+
+      const plusPoints = L.DomUtil.create("div", "qBtnSmall", wrapPoints);
+      plusPoints.title = "Añadir área (punto a punto)";
+      plusPoints.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14"></path><path d="M5 12h14"></path>
+        </svg>
+      `;
+
+      const btnPoints = L.DomUtil.create("div", "qBtn", wrapPoints);
+      btnPoints.title = "Área por puntos";
+      btnPoints.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2l4 8-4 12-4-12 4-8z"></path>
+          <path d="M12 10l8 2-8 2-8-2 8-2z"></path>
+        </svg>
+      `;
+
+      const wrapFree = L.DomUtil.create("div", "areaBtnWrap", container);
+
+      const plusFree = L.DomUtil.create("div", "qBtnSmall", wrapFree);
+      plusFree.title = "Añadir área (dibujo libre)";
+      plusFree.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14"></path><path d="M5 12h14"></path>
+        </svg>
+      `;
+
+      const btnFree = L.DomUtil.create("div", "qBtn", wrapFree);
+      btnFree.title = "Área dibujo libre";
+      btnFree.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 17c3-6 6-6 9 0s6 6 9 0"></path>
+          <path d="M3 7c3 6 6 6 9 0s6-6 9 0"></path>
+        </svg>
+      `;
+
+      areaState.btnPointsEl = btnPoints;
+      areaState.btnFreeEl = btnFree;
+      areaState.btnPlusPointsEl = plusPoints;
+      areaState.btnPlusFreeEl = plusFree;
+
+      function hasAreasOfType(t){
+        return areaState.polys.some(a => a.type === t);
+      }
+
+      function refreshPlusVisibility(){
+        const full = areaState.polys.length >= MAX_AREAS;
+
+        plusPoints.classList.toggle("disabled", full);
+        plusFree.classList.toggle("disabled", full);
+
+        plusPoints.style.display = (areaState.pointsActive && hasAreasOfType("points")) ? "grid" : "none";
+        plusFree.style.display = (areaState.freehandActive && hasAreasOfType("freehand")) ? "grid" : "none";
+      }
+
+      function refreshButtons(){
+        btnPoints.classList.toggle("active", areaState.pointsActive);
+        btnFree.classList.toggle("active", areaState.freehandActive);
+        refreshPlusVisibility();
+      }
+
+      areaState.refreshAreasUI = refreshButtons;
+
+      function startPointsArea(){
+        if (areaState.polys.length >= MAX_AREAS) return;
+        if (!areaState.pointsActive) return;
+        if (areaState.isDrawing) cancelCurrentDrawing();
+        startNewAreaDrawing("points");
+      }
+
+      function startFreeArea(){
+        if (areaState.polys.length >= MAX_AREAS) return;
+        if (!areaState.freehandActive) return;
+        if (areaState.isDrawing) cancelCurrentDrawing();
+        startNewAreaDrawing("freehand");
+      }
+
+      function togglePoints(){
+        const willOn = !areaState.pointsActive;
+        areaState.pointsActive = willOn;
+
+        if (!willOn) {
+          if (areaState.isDrawing && areaState.drawingMode === "points") cancelCurrentDrawing();
+          removeAreasByType("points");
+          refreshButtons();
+          return;
+        }
+
+        areaState.freehandActive = false;
+        if (areaState.isDrawing && areaState.drawingMode === "freehand") cancelCurrentDrawing();
+
+        refreshButtons();
+        startPointsArea();
+      }
+
+      function toggleFree(){
+        const willOn = !areaState.freehandActive;
+        areaState.freehandActive = willOn;
+
+        if (!willOn) {
+          if (areaState.isDrawing && areaState.drawingMode === "freehand") cancelCurrentDrawing();
+          removeAreasByType("freehand");
+          refreshButtons();
+          return;
+        }
+
+        areaState.pointsActive = false;
+        if (areaState.isDrawing && areaState.drawingMode === "points") cancelCurrentDrawing();
+
+        refreshButtons();
+        startFreeArea();
+      }
+
+      btnPoints.addEventListener("click", togglePoints);
+      btnFree.addEventListener("click", toggleFree);
+
+      plusPoints.addEventListener("click", () => {
+        if (plusPoints.classList.contains("disabled")) return;
+        startPointsArea();
+      });
+
+      plusFree.addEventListener("click", () => {
+        if (plusFree.classList.contains("disabled")) return;
+        startFreeArea();
+      });
+
+      refreshButtons();
+      return container;
+    }
+  });
+
+  map.addControl(new AreasControl());
+
+  // Etiqueta dinámica “Comunidad / Ciudad / Zona” según centro del mapa
+  // (cache + throttle para no spamear Nominatim)
+  const placeCache = new Map();
+  let placeTimer = null;
+
+  function formatPlace(address){
+    const comunidad = address.state || address.region || address.county || "—";
+    const ciudad = address.city || address.town || address.village || address.municipality || "—";
+    const zona = address.suburb || address.neighbourhood || address.quarter || address.city_district || "—";
+    return `${comunidad} / ${ciudad} / ${zona}`;
+  }
+
+  async function reverseGeocode(lat, lng){
+    const key = `${lat.toFixed(3)},${lng.toFixed(3)}`;
+    if (placeCache.has(key)) return placeCache.get(key);
+
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&zoom=14&addressdetails=1`;
+    const res = await fetch(url, { headers: { "Accept": "application/json" } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const txt = data && data.address ? formatPlace(data.address) : null;
+    if (txt) placeCache.set(key, txt);
+    return txt;
+  }
+
+  function schedulePlaceUpdate(){
+    if (!placeLabelEl) return;
+    if (placeTimer) clearTimeout(placeTimer);
+    placeTimer = setTimeout(async () => {
+      try{
+        const c = map.getCenter();
+        const txt = await reverseGeocode(c.lat, c.lng);
+        if (txt) placeLabelEl.textContent = txt;
+      } catch (e){
+        // si falla, no rompemos nada
+        console.warn("reverse geocode error", e);
+      }
+    }, 650);
+  }
+
+  map.on("moveend", schedulePlaceUpdate);
+  map.on("zoomend", schedulePlaceUpdate);
+
+  (async function init(){
+    try {
+      wireHeaderMiniSearch();
+      wireHeaderNav();
+
+      if (initialParams.city) {
+        const center = await geocodeCity(initialParams.city);
+        if (center) map.setView(center, 13);
+      }
+
+      safeInvalidate();
+
+      await loadPointsForCurrentView();
+
+      // etiqueta inicial
+      schedulePlaceUpdate();
+
+      // Segunda pasada por si el layout termina de ajustar
+      setTimeout(() => safeInvalidate(), 250);
+      setTimeout(() => safeInvalidate(), 600);
+    } catch (e) {
+      const msg = (e && e.message) ? e.message : String(e);
+      setStatus(`Error: ${msg}`);
+      console.error(e);
+    }
+  })();
+}
