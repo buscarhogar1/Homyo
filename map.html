@@ -1,176 +1,122 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Buscar Hogar – Mapa</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Buscar Hogar — Mapa</title>
 
-    <link rel="stylesheet" href="/buscarhogardemo/bh-shared.css" />
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
+  <!-- Estilos del proyecto -->
+  <link rel="stylesheet" href="./bh-map.css" />
+</head>
 
-    <link rel="stylesheet" href="/buscarhogardemo/bh-map.css" />
-  </head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbarInner">
+      <a class="brand" href="./">BH</a>
 
-  <body>
-    <!-- Header común -->
-    <div id="bhHeader"></div>
+      <form id="miniSearchForm" class="miniSearch" autocomplete="off">
+        <input id="miniQ" type="text" placeholder="Buscar..." />
+        <button type="submit" aria-label="Buscar">
+          <!-- lupa -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M16.3 16.3 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </form>
 
-    <!-- Página MAP: 3 columnas (filtros | mapa | listado) + fila superior de controles -->
-    <div class="page">
-      <div class="mapShell">
-        <!-- Fila superior fija dentro del layout del mapa:
-             - Izq: botones filtros
-             - Centro: texto región/ciudad/zona (auto según viewport del mapa)
-             - Dcha: ordenar + botones listado -->
-        <div class="topRow" id="topRow">
-          <div class="topLeft">
-            <button type="button" class="topBtn" id="toggleFiltersBtn">Ocultar filtros</button>
-            <button type="button" class="topBtn" id="clearFiltersBtn">Limpiar filtros</button>
-          </div>
+      <nav class="rightGroup">
+        <a id="favLink" href="#" class="toplink">Favoritos</a>
+        <a id="loginLink" href="#" class="toplink">Iniciar sesión</a>
+      </nav>
+    </div>
+  </header>
 
-          <div class="topCenter">
-            <div class="areaCrumb" id="areaCrumb">—</div>
-          </div>
-
-          <div class="topRight">
-            <!-- “Ordenar por” debe ocultarse cuando el listado está oculto -->
-            <div class="sortWrap" id="sortWrap">
-              <button type="button" class="topBtn" id="sortBtn">Ordenar por</button>
-              <div class="sortMenu" id="sortMenu" aria-hidden="true"></div>
-            </div>
-
-            <button type="button" class="topBtn" id="toggleListBtn">Ocultar listado</button>
+  <!-- Layout principal (sin scroll en body en desktop; el scroll va dentro de columnas) -->
+  <main class="page">
+    <section id="mapShell" class="mapShell">
+      <!-- Fila superior: botones + breadcrumb -->
+      <div class="topRow">
+        <div class="topCell topCellLeft">
+          <div class="topBtnRow">
+            <button id="toggleFiltersBtn" class="pillBtn" type="button">Ocultar filtros</button>
+            <button id="clearFiltersBtn" class="pillBtn ghost" type="button">Limpiar filtros</button>
           </div>
         </div>
 
-        <!-- Grid principal -->
-        <div class="mainGrid" id="mainGrid">
-          <!-- Columna filtros -->
-          <aside class="filtersCol" id="filtersCol">
-            <div class="filtersScroll" id="filtersBarMount"></div>
-          </aside>
+        <div class="topCell topCellCenter">
+          <div id="crumbText" class="crumbText">—</div>
+        </div>
 
-          <!-- Mapa -->
-          <section class="mapCol" id="mapCol">
-            <div id="map"></div>
-
-            <!-- Overlays del sol -->
-            <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
-              <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
-              <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
-            </div>
-
-            <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
-              <div class="sunDateDockInner">
-                <input type="date" id="sunDate" />
-                <button type="button" id="sunNowBtn">Ahora</button>
+        <div class="topCell topCellRight">
+          <div class="topBtnRow right">
+            <div id="sortWrap" class="sortWrap">
+              <button id="sortBtn" class="pillBtn" type="button">Ordenar por</button>
+              <div id="sortMenu" class="sortMenu bh-hidden" role="menu" aria-label="Ordenar por">
+                <button class="sortItem" data-sort="date_desc" type="button">Fecha publicación: más reciente</button>
+                <button class="sortItem" data-sort="date_asc" type="button">Fecha publicación: más antigua</button>
+                <div class="sortSep"></div>
+                <button class="sortItem" data-sort="price_desc" type="button">Precio: mayor a menor</button>
+                <button class="sortItem" data-sort="price_asc" type="button">Precio: menor a mayor</button>
+                <div class="sortSep"></div>
+                <button class="sortItem" data-sort="size_asc" type="button">Tamaño: menor a mayor</button>
+                <button class="sortItem" data-sort="size_desc" type="button">Tamaño: mayor a menor</button>
               </div>
             </div>
 
-            <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
-              <div class="sunTimebarInner">
-                <div class="sunHoursRow" id="sunHoursRow"></div>
-                <div class="sunTrack" id="sunTrack">
-                  <input id="sunRange" class="sunRange" type="range" min="0" max="1439" step="10" />
-                </div>
-              </div>
-            </div>
-
-            <!-- Hint área -->
-            <div id="areaHint" class="areaHint" aria-hidden="true">
-              <div class="areaHintInner">
-                <div class="areaHintDot" aria-hidden="true"></div>
-                <div id="areaHintText" class="areaHintText">—</div>
-              </div>
-            </div>
-
-            <!-- Status (contador etc) -->
-            <div id="status"></div>
-
-            <!-- Tarjeta seleccionada (debe anclarse al mapa, no al viewport) -->
-            <div id="card" class="card">
-              <div class="cardGrid">
-                <div class="mediaSide">
-                  <span id="badgeNew" class="badgeNew">Nuevo</span>
-                  <img id="mediaImg" class="mediaImg" alt="" style="display:none;" />
-                  <div id="mediaPlaceholder" class="mediaPlaceholder">Foto</div>
-
-                  <div class="mediaMiniIcon" title="Fotos">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-2h4l2 2h3a2 2 0 0 1 2 2z"/>
-                      <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
-                    </svg>
-                  </div>
-                </div>
-
-                <div class="textSide">
-                  <div class="topActions">
-                    <button class="heartBtn" id="heartBtn" type="button" aria-label="Guardar">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
-                      </svg>
-                    </button>
-
-                    <button class="closeBtn" id="cardClose" type="button" aria-label="Cerrar">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18"/><path d="M6 6l12 12"/>
-                      </svg>
-                    </button>
-                  </div>
-
-                  <a id="cardAddrTop" class="addrTop" href="#">Dirección</a>
-                  <div id="cardAddrBottom" class="addrBottom">—</div>
-
-                  <div id="cardPrice" class="price">—</div>
-                  <div id="cardFacts" class="facts"></div>
-
-                  <div id="cardAgency" class="agency">—</div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Columna listado -->
-          <aside class="listCol" id="listCol">
-            <div class="listScroll">
-              <div id="listMount" class="listMount"></div>
-            </div>
-          </aside>
+            <button id="toggleListBtn" class="pillBtn" type="button">Ocultar listado</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Footer común -->
-    <div id="bhFooter"></div>
+      <!-- Grid principal -->
+      <div class="mainGrid">
+        <!-- Columna filtros -->
+        <aside id="filtersCol" class="sideCol">
+          <div class="sideInner">
+            <div id="filtersRoot"></div>
+          </div>
+        </aside>
 
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
+        <!-- Mapa -->
+        <section id="mapCol" class="mapCol">
+          <div id="map" class="map"></div>
 
-    <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+          <!-- Barra estado -->
+          <div id="mapStatus" class="mapStatus bh-hidden"></div>
 
-    <script type="module">
-      import { initLayout } from "/buscarhogardemo/bh-layout.js";
-      import { initAuth } from "/buscarhogardemo/bh-auth.js";
-      import { initFiltersBar } from "/buscarhogardemo/bh-map-filters.js";
-      import { initMap } from "/buscarhogardemo/bh-map-core.js";
+          <!-- Tarjeta (se posiciona respecto al contenedor del mapa, no al viewport) -->
+          <div id="mapCardHost" class="mapCardHost"></div>
+        </section>
 
-      initLayout({ showMiniSearch: true });
-      initAuth();
+        <!-- Columna listado -->
+        <aside id="listCol" class="sideCol">
+          <div class="sideInner">
+            <div id="listRoot"></div>
+          </div>
+        </aside>
+      </div>
 
-      // Monta filtros dentro de la columna izquierda
-      initFiltersBar({ mountId: "filtersBarMount" });
+      <!-- Footer SIEMPRE visible (sin scroll del body en desktop) -->
+      <footer class="footerBar">
+        <div class="footerInner">
+          © 2026 Buscar Hogar &nbsp;&middot;&nbsp;
+          <a href="./terms.html">Términos de uso</a> &nbsp;&middot;&nbsp;
+          <a href="./privacy.html">Política de privacidad</a> &nbsp;&middot;&nbsp;
+          <a href="./cookies.html">Política de cookies</a>
+        </div>
+      </footer>
+    </section>
+  </main>
 
-      // Arranca mapa (incluye listado, toggles, etc.)
-      initMap();
-    </script>
-  </body>
+  <!-- Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Código -->
+  <script type="module" src="./bh-map-core.js"></script>
+</body>
 </html>
