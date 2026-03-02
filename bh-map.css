@@ -1,521 +1,512 @@
 /* =========================================================
-   bh-map.css (COMPLETO)
-   Objetivo:
-   - Layout 3 columnas + fila superior minimal
-   - Sin scroll vertical del body en desktop
-   - Scroll solo en columnas (filtros/listado)
-   - El mapa nunca se queda "blanco" por CSS (map.invalidateSize se hace en JS)
-   - Evitar que inputs queden cortados: min-width:0, grid correcto, box-sizing
+   Buscar Hogar · map.css (completo)
+   Objetivos:
+   - No romper el estilo “normal” del mapa (CARTO Voyager)
+   - Columnas laterales sin espacios en blanco excesivos
+   - Sin scroll de página en escritorio: scroll solo en columnas
+   - Tarjeta del mapa centrada respecto al contenedor del mapa
+   - Filtros compactos y sin “cortes”
    ========================================================= */
 
+/* Reset mínimo */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: #1b1b1b; background: #fff; }
+
+/* Variables */
 :root{
-  --terra:#a3472f;
-  --maxW: 1400px;
+  --terra: #a3472f;
+  --maxw: 1120px;
 
-  /* anchos columnas (ya reducidas ~20% respecto a 320px típico) */
-  --sideW: 260px;
+  /* Columna lateral: 20% menos (antes aprox 320px). Ahora clamp más estrecho */
+  --sideW: clamp(240px, 19vw, 280px);
 
+  --gap: 14px;
   --radius: 18px;
-  --cardRadius: 20px;
-  --border: 1px solid rgba(0,0,0,.08);
-  --shadow: 0 10px 30px rgba(0,0,0,.08);
 
-  --bg: #ffffff;
-  --panel: #ffffff;
-  --muted: rgba(0,0,0,.55);
-  --text: rgba(0,0,0,.9);
+  --cardBorder: #e7e7e7;
+  --muted: #6b6b6b;
+  --blue: #1e6fe8;
 
-  --blue:#1a73e8;
-  --orange:#f59e0b;
-  --red:#d93025;
+  --shadow: 0 10px 26px rgba(0,0,0,.08);
 }
 
-*{ box-sizing: border-box; }
-html, body{ height:100%; }
-body{
-  margin:0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-
-  /* clave: en desktop NO queremos scroll en body */
-  overflow: hidden;
-}
-
-/* helpers */
-.bh-hidden{ display:none !important; }
-
-/* =========================
-   TOPBAR
-   ========================= */
-.topbar{
-  height:56px;
-  background: var(--terra);
-  color:#fff;
-  display:flex;
-  justify-content:center;
-}
-.topbarInner{
-  width: min(var(--maxW), calc(100% - 24px));
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-.brand{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  height:34px;
-  min-width:34px;
-  padding:0 10px;
-  border-radius:10px;
-  background: rgba(255,255,255,.18);
-  color:#fff;
-  text-decoration:none;
-  font-weight:700;
-}
-.miniSearch{
-  flex:1;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  max-width:540px;
-  background: rgba(255,255,255,.18);
-  border-radius:999px;
-  padding:6px 10px;
-}
-.miniSearch input{
-  flex:1;
-  border:0;
-  outline:0;
-  background:transparent;
-  color:#fff;
-  font-size:14px;
-  min-width:0;
-}
-.miniSearch input::placeholder{ color: rgba(255,255,255,.8); }
-.miniSearch button{
-  border:0;
-  background:transparent;
-  color:#fff;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-}
-.rightGroup{
-  display:flex;
-  align-items:center;
-  gap:18px;
-}
-.toplink{
-  color:#fff;
-  text-decoration:none;
-  font-weight:600;
-}
-
-/* =========================
-   PAGE LAYOUT
-   ========================= */
-.page{
+/* Estructura general: topbar + (main) + footer fijo */
+.bh-body { overflow: hidden; }
+.bh-page {
   height: calc(100vh - 56px);
-  display:flex;
-  justify-content:center;
-  background: #fff;
-}
-.mapShell{
-  width: min(var(--maxW), calc(100% - 16px));
-  margin: 8px auto;
-  height: calc(100% - 16px);
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+  display: grid;
+  grid-template-rows: 1fr auto;
 }
 
-/* =========================
-   TOP ROW (minimal)
-   ========================= */
-.topRow{
-  display:grid;
+.bh-topbar{
+  height: 56px;
+  background: var(--terra);
+  display: flex;
+  align-items: center;
+}
+.bh-topbar-inner{
+  width: min(var(--maxw), calc(100% - 32px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.bh-brand{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.22);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+
+.bh-miniSearch{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 520px;
+}
+.bh-miniSearch input{
+  width: 100%;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.35);
+  padding: 0 14px;
+  outline: none;
+  background: rgba(255,255,255,.15);
+  color: #fff;
+}
+.bh-miniSearch input::placeholder{ color: rgba(255,255,255,.8); }
+.bh-miniSearch button{
+  width: 36px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  cursor: pointer;
+}
+
+.bh-rightGroup{
+  display: flex;
+  gap: 18px;
+  justify-content: flex-end;
+}
+.bh-rightGroup a{
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* En móvil ocultamos mini buscador (como en definición) */
+@media (max-width: 720px){
+  .bh-topbar-inner{ grid-template-columns: auto auto; }
+  .bh-miniSearch{ display: none; }
+}
+
+/* MAIN */
+.bh-main{
+  width: min(var(--maxw), calc(100% - 20px));
+  margin: 0 auto;
+  padding: 10px 0 10px;
+  overflow: hidden; /* clave: sin scroll de página */
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+}
+
+/* TOP ROW: más estrecho y minimalista */
+.bh-topRow{
+  display: grid;
   grid-template-columns: var(--sideW) 1fr var(--sideW);
-  gap:8px;
-  align-items:center;
-
-  /* más estrecha */
-  height: 40px;
-}
-.topCell{ height:40px; display:flex; align-items:center; }
-.topBtnRow{ display:flex; gap:10px; align-items:center; }
-.topBtnRow.right{ margin-left:auto; }
-.pillBtn{
-  height:34px;
-  padding:0 14px;
-  border-radius:999px;
-  border: var(--border);
-  background:#fff;
-  cursor:pointer;
-  font-size:14px;
-}
-.pillBtn.ghost{
-  background: rgba(0,0,0,.03);
-}
-.crumbText{
-  height:34px;
-  display:flex;
-  align-items:center;
-  padding:0 14px;
-  border-radius:999px;
-  border: var(--border);
-  background:#fff;
-
-  /* alineado a la izquierda (no centrado) */
-  justify-content:flex-start;
-
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-
-  font-size:14px;
-  color: rgba(0,0,0,.75);
+  gap: var(--gap);
+  align-items: center;
+  height: 44px;  /* antes era demasiado alto */
 }
 
-/* Sort menu */
-.sortWrap{ position:relative; }
-.sortMenu{
-  position:absolute;
-  top:40px;
-  right:0;
-  min-width: 260px;
-  background:#fff;
-  border: var(--border);
+.bh-topRow-left,
+.bh-topRow-right{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.bh-topRow-center{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* alineado a la izquierda, como pediste */
+  min-width: 0;
+}
+
+.bh-chipBtn{
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--cardBorder);
+  background: #fff;
+  color: #1b1b1b;
+  cursor: pointer;
+  font-weight: 600;
+}
+.bh-chipBtn:active{ transform: translateY(1px); }
+
+/* “Comunidad / Ciudad / Zona” como texto (no botón) */
+.bh-areaText{
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--cardBorder);
+  background: #fff;
+  color: #1b1b1b;
+  font-weight: 600;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Menú ordenar */
+.bh-sortWrap{ position: relative; }
+.bh-sortMenu{
+  position: absolute;
+  right: 0;
+  top: 42px;
+  width: 240px;
+  background: #fff;
+  border: 1px solid var(--cardBorder);
   border-radius: 14px;
   box-shadow: var(--shadow);
-  padding: 8px;
-  z-index: 50;
+  padding: 6px;
+  z-index: 3000;
 }
-.sortItem{
-  width:100%;
-  text-align:left;
-  border:0;
-  background:transparent;
-  padding:10px 10px;
+.bh-sortMenu button{
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 10px 10px;
   border-radius: 10px;
-  cursor:pointer;
-  font-size:14px;
+  cursor: pointer;
+  font-weight: 600;
 }
-.sortItem:hover{ background: rgba(0,0,0,.05); }
-.sortSep{
-  height:1px;
-  background: rgba(0,0,0,.08);
-  margin:6px 6px;
-}
+.bh-sortMenu button:hover{ background: #f3f3f3; }
 
-/* =========================
-   MAIN GRID
-   ========================= */
-.mainGrid{
-  flex:1;
-  display:grid;
+.bh-hidden{ display: none !important; }
+
+/* MAP SHELL (3 columnas) */
+.bh-mapShell{
+  height: 100%;
+  display: grid;
   grid-template-columns: var(--sideW) 1fr var(--sideW);
-  gap:8px;
-  min-height:0; /* clave para que el overflow interno funcione */
+  gap: var(--gap);
+  min-height: 0; /* permite scroll interno */
 }
 
-.sideCol{
-  background: var(--panel);
-  border: var(--border);
+/* Columnas */
+.bh-side{
+  border: 1px solid var(--cardBorder);
   border-radius: var(--radius);
-  min-height:0;
-  overflow:hidden;
+  background: #fff;
+  overflow: hidden;
+  min-height: 0;
 }
-.sideInner{
-  height:100%;
-  overflow:auto; /* scroll SOLO aquí */
+.bh-filtersInner,
+.bh-listInner{
+  height: 100%;
+  overflow: auto; /* scroll SOLO dentro */
   padding: 10px;
 }
 
 /* Mapa */
-.mapCol{
-  position:relative;
-  border: var(--border);
+.bh-mapWrap{
+  position: relative;
+  border: 1px solid var(--cardBorder);
   border-radius: var(--radius);
-  overflow:hidden;
-  background:#f6f6f6;
-  min-height:0;
+  overflow: hidden;
+  min-height: 0;
 }
-.map{
-  height:100%;
-  width:100%;
-}
+.bh-map{ width: 100%; height: 100%; }
 
-/* Barra de estado */
-.mapStatus{
-  position:absolute;
-  top:10px;
-  left:50%;
-  transform:translateX(-50%);
-  background: rgba(255,255,255,.92);
-  border: var(--border);
-  border-radius: 999px;
-  padding: 8px 12px;
-  z-index: 500;
-  font-size: 13px;
-  color: rgba(0,0,0,.8);
-  max-width: calc(100% - 40px);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-/* Tarjeta dentro del mapa: centrada respecto al contenedor del mapa */
-.mapCardHost{
-  position:absolute;
-  left:50%;
+/* Tarjeta del mapa: centrada respecto al mapa */
+.bh-mapCard{
+  position: absolute;
+  left: 50%;
   bottom: 12px;
   transform: translateX(-50%);
-  z-index: 650;
-  width: min(920px, calc(100% - 24px));
-  pointer-events:none; /* se activa dentro de la tarjeta */
+  width: min(900px, calc(100% - 24px));
+  z-index: 2500;
+}
+.bh-mapCard-inner{
+  background: #fff;
+  border: 1px solid var(--cardBorder);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
-/* Footer siempre visible */
-.footerBar{
-  height: 34px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+/* Toast (errores tipo “no encuentra anuncios”) */
+.bh-mapToast{
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 2600;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--cardBorder);
+  background: rgba(255,255,255,.95);
+  box-shadow: var(--shadow);
+  font-weight: 600;
 }
-.footerInner{
-  width: 100%;
-  text-align:center;
-  font-size: 13px;
-  color: rgba(0,0,0,.55);
-}
-.footerInner a{
-  color: rgba(0,0,0,.55);
-  text-decoration:none;
-}
-.footerInner a:hover{ text-decoration:underline; }
 
-/* =========================
-   FILTROS (evitar cortes / compactar)
-   ========================= */
-
-/* cada bloque de filtro */
-.fBlock{
-  border: var(--border);
-  border-radius: var(--radius);
+/* Filtros: tarjetas compactas y sin cortar campos */
+.bh-filterCard{
+  border: 1px solid var(--cardBorder);
+  border-radius: 16px;
   padding: 10px;
-  background:#fff;
   margin-bottom: 10px;
 }
-
-/* cabecera filtro */
-.fHead{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.bh-filterHead{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 8px;
 }
-
-/* punto azul */
-.fDot{
-  width: 12px;
-  height: 12px;
-  border-radius:999px;
-  border: 2px solid var(--blue);
-  flex:0 0 auto;
-}
-
-/* título */
-.fTitle{
+.bh-filterTitle{
+  font-weight: 800;
   font-size: 18px;
-  font-weight: 700;
-  line-height: 1.1;
 }
 
-/* X cerrar filtro */
-.fClear{
-  margin-left:auto;
+.bh-clearOne{
   width: 30px;
   height: 30px;
   border-radius: 10px;
-  border: var(--border);
-  background:#fff;
-  cursor:pointer;
-  color: rgba(0,0,0,.45);
-}
-.fClear.applied{
-  color: var(--red);
-  border-color: rgba(217,48,37,.35);
-}
-
-/* cuerpo compacto */
-.fBody{
-  display:flex;
-  flex-direction:column;
-  gap: 8px; /* menos interlineado */
-  min-width:0;
-}
-
-/* dos inputs en fila (precio, metros) */
-.fTwo{
-  display:grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 10px;
-  min-width:0;
-}
-.fTwo input{
-  width:100%;
-  min-width:0;
-}
-
-/* inputs */
-.fInput{
-  height: 40px;
-  border-radius: 14px;
-  border: var(--border);
-  padding: 0 12px;
-  outline:none;
-  font-size: 14px;
-
-  /* elimina flechas en number */
-  -moz-appearance: textfield;
-}
-.fInput::-webkit-outer-spin-button,
-.fInput::-webkit-inner-spin-button{
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* radios */
-.fRadRow{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding: 6px 2px;
-}
-.fRadRow input{ transform: scale(1.1); }
-.fRadRow label{ font-size: 15px; }
-
-/* select */
-.fSelect{
-  height: 40px;
-  border-radius: 14px;
-  border: var(--border);
-  padding: 0 10px;
-  font-size: 14px;
-  background:#fff;
-}
-
-/* sugerencias tipo dropdown (numérico) */
-.suggestWrap{
-  position:relative;
-}
-.suggestMenu{
-  position:absolute;
-  top:44px;
-  left:0;
-  right:0;
-  background:#fff;
-  border: var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-  padding: 6px;
-  z-index: 80;
-  max-height: 220px;
-  overflow:auto;
-}
-.suggestItem{
-  padding: 10px;
-  border-radius: 12px;
-  cursor:pointer;
-  font-size: 14px;
-}
-.suggestItem:hover{ background: rgba(0,0,0,.05); }
-
-/* =========================
-   LISTADO
-   ========================= */
-.listCard{
-  display:grid;
-  grid-template-columns: 86px 1fr;
-  gap:10px;
-  border: var(--border);
-  border-radius: var(--cardRadius);
-  background:#fff;
-  padding:10px;
-  margin-bottom:10px;
-  cursor:pointer;
-}
-.listThumb{
-  width:86px;
-  height:68px;
-  border-radius: 14px;
-  background: rgba(0,0,0,.06);
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color: rgba(0,0,0,.35);
-  font-size: 13px;
-}
-.listThumb img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-.listTitle{
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--blue);
-  line-height: 1.2;
-  margin-bottom: 2px;
-}
-.listSub{
-  font-size: 13px;
-  color: rgba(0,0,0,.7);
-  margin-bottom: 6px;
-}
-.listPrice{
+  border: 1px solid var(--cardBorder);
+  background: #fff;
+  cursor: pointer;
   font-size: 18px;
-  font-weight: 900;
-  margin-bottom: 6px;
+  line-height: 1;
 }
-.listFacts{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  font-size: 13px;
-  color: rgba(0,0,0,.72);
+.bh-filterCard.is-applied .bh-clearOne{
+  color: #d10000;
+  border-color: #ffb3b3;
 }
-.listAgency{
-  margin-top: 6px;
-  font-size: 14px;
+
+/* Menos interlineado */
+.bh-radioList label,
+.bh-checkList label{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 2px;
+  line-height: 1.15;
+  font-weight: 600;
+}
+
+.bh-row2{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  min-width: 0;
+}
+.bh-field{ min-width: 0; }
+.bh-field input,
+select{
+  width: 100%;
+  height: 40px;
+  border-radius: 14px;
+  border: 1px solid #d9d9d9;
+  padding: 0 12px;
+  font-size: 15px;
+  outline: none;
+}
+.bh-field input::placeholder{ color: #8b8b8b; }
+
+/* Quitar flechas en inputs numéricos (aunque usamos type=text, lo dejamos por si acaso) */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+input[type=number]{ -moz-appearance: textfield; }
+
+.bh-hint{
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Listado: tarjeta estrecha tipo “la del mapa” */
+.bh-listItem{
+  border: 1px solid var(--cardBorder);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform .08s ease;
+}
+.bh-listItem:hover{ transform: translateY(-1px); }
+.bh-listRow{
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 10px;
+  padding: 10px;
+}
+.bh-thumb{
+  width: 92px;
+  height: 72px;
+  border-radius: 14px;
+  background: #efefef;
+  overflow: hidden;
+}
+.bh-thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bh-liTitle{
   color: var(--blue);
+  font-weight: 900;
+  font-size: 16px;
+  margin: 0 0 2px 0;
 }
+.bh-liSub{ color: #2b2b2b; font-weight: 700; margin: 0 0 6px 0; }
+.bh-liPrice{ font-weight: 900; font-size: 18px; margin: 0 0 6px 0; }
+.bh-liFacts{ color: #2b2b2b; font-weight: 700; margin: 0; }
+.bh-liAgency{ color: var(--blue); font-weight: 800; margin-top: 6px; }
 
-/* hover del listado (para resaltar marcador) */
-.listCard:hover{
-  outline: 2px solid rgba(26,115,232,.25);
+/* Footer siempre visible */
+.bh-footer{
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-top: 1px solid var(--cardBorder);
+  background: #fff;
+  color: #3a3a3a;
+  font-weight: 600;
+  padding: 0 10px;
 }
+.bh-footer a{
+  color: #3a3a3a;
+  text-decoration: none;
+}
+.bh-footer a:hover{ text-decoration: underline; }
 
-/* =========================
-   RESPONSIVE
-   ========================= */
-@media (max-width: 1100px){
-  :root{ --sideW: 240px; }
-}
+/* Responsive: en móvil se apilan */
 @media (max-width: 980px){
-  body{ overflow:auto; } /* en móvil sí dejamos scroll del body */
-  .page{ height:auto; }
-  .mapShell{ height:auto; }
-  .topRow{ grid-template-columns: 1fr; height:auto; gap:8px; }
-  .topCell{ height:auto; }
-  .mainGrid{
+  .bh-main{ width: calc(100% - 14px); }
+  .bh-topRow{
     grid-template-columns: 1fr;
-    grid-template-rows: auto 60vh auto;
+    height: auto;
+    gap: 10px;
   }
-  .sideInner{ max-height: 52vh; }
-  .footerBar{ height:auto; padding: 10px 0; }
+  .bh-mapShell{
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(320px, 1fr) auto;
+  }
+}
+
+/* Cuando se ocultan columnas (clases en mapShell) */
+.bh-mapShell.filters-hidden{
+  grid-template-columns: 1fr var(--sideW);
+}
+.bh-mapShell.list-hidden{
+  grid-template-columns: var(--sideW) 1fr;
+}
+.bh-mapShell.filters-hidden.list-hidden{
+  grid-template-columns: 1fr;
+}
+
+/* Ocultar realmente el panel (sin tocar el contenedor del mapa) */
+.bh-side.is-collapsed{ display: none; }
+
+/* También ajustamos la topRow cuando se ocultan columnas:
+   - la zona de botones sigue visible
+   - el mapa puede crecer sin “romper” el layout */
+.bh-topRow.filters-hidden{
+  grid-template-columns: auto 1fr var(--sideW);
+}
+.bh-topRow.list-hidden{
+  grid-template-columns: var(--sideW) 1fr auto;
+}
+.bh-topRow.filters-hidden.list-hidden{
+  grid-template-columns: auto 1fr auto;
+}
+
+/* =========================================================
+   Controles Leaflet: estilo “normal” (sin iconos raros)
+   ========================================================= */
+.leaflet-control-zoom{
+  border: 0 !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+.leaflet-control-zoom a{
+  width: 38px !important;
+  height: 38px !important;
+  line-height: 38px !important;
+}
+
+.bh-mapCtrl{
+  box-shadow: var(--shadow);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--cardBorder);
+  background: #fff;
+}
+.bh-mapCtrl button{
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.bh-mapCtrl button + button{
+  border-top: 1px solid #efefef;
+}
+.bh-mapCtrl button.is-active{
+  outline: 2px solid var(--blue);
+  outline-offset: -2px;
+}
+.bh-mapCtrl button:disabled{
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* Marcadores tipo “punto” */
+.bh-dot{
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  background: #f6a000; /* naranja */
+  box-shadow: 0 2px 10px rgba(0,0,0,.18);
+}
+.bh-dot.seen{
+  background: #fff;
+  border-color: #f6a000;
+}
+.bh-dot.selected{
+  background: var(--blue);
+  border-color: #fff;
+}
+.bh-dot.hover{
+  transform: scale(1.18);
+  border-width: 4px;
 }
