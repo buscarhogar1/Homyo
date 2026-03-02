@@ -17,138 +17,136 @@
     <link rel="stylesheet" href="/buscarhogardemo/bh-map.css" />
   </head>
 
-  <body>
+  <body class="bhMapBody">
+    <!-- Header (lo monta bh-layout.js) -->
     <div id="bhHeader"></div>
 
-    <!-- Contenedor general de la página del mapa -->
-    <div class="page">
-      <div class="mapShell">
-
-        <!-- Fila superior independiente (NO dentro de columnas) -->
-        <div class="topRow">
-          <div class="topCell topCellLeft">
-            <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
-          </div>
-
-          <div class="topCell topCellCenter">
-            <!-- Etiqueta dinámica “Comunidad / Ciudad / Zona” -->
-            <div id="placeLabel" class="placeLabel">—</div>
-          </div>
-
-          <div class="topCell topCellRight">
-            <div class="topRightTools">
-              <button id="orderBtn" class="topToggleBtn" type="button">Ordenar por</button>
-              <button id="toggleListBtn" class="topToggleBtn" type="button">Ocultar listado</button>
-
-              <!-- Menú desplegable de orden -->
-              <div id="orderMenu" class="orderMenu" aria-hidden="true">
-                <button class="orderItem" type="button" data-order="date_desc">Por fecha de publicación</button>
-                <button class="orderItem" type="button" data-order="size_asc">Tamaño: menor a mayor</button>
-                <button class="orderItem" type="button" data-order="size_desc">Tamaño: mayor a menor</button>
-              </div>
-            </div>
-          </div>
+    <!-- Contenedor principal: sin scroll vertical en el body -->
+    <main class="bhMapMain">
+      <!-- Fila superior independiente: botones + texto del área -->
+      <div class="bhTopRow" id="bhTopRow">
+        <!-- Columna izquierda: botones filtros -->
+        <div class="bhTopRowCell bhTopRowLeft">
+          <button type="button" class="bhTopBtn" id="toggleFiltersBtn">Ocultar filtros</button>
+          <button type="button" class="bhTopBtn bhTopBtnGhost" id="clearFiltersBtn">Limpiar filtros</button>
         </div>
 
-        <!-- Layout 3 columnas: filtros | mapa | listado -->
-        <div class="grid3" id="grid3">
-          <!-- Columna filtros (scroll interno) -->
-          <aside class="col colFilters" id="filtersCol">
-            <div id="filtersBarMount"></div>
-          </aside>
+        <!-- Centro: texto del área visible (no botón) -->
+        <div class="bhTopRowCell bhTopRowCenter">
+          <div class="bhAreaText" id="areaText">—</div>
+        </div>
 
-          <!-- Columna mapa -->
-          <main class="col colMap" id="mapCol">
-            <div id="mapWrap" class="mapWrap">
-              <div id="map"></div>
-
-              <!-- Overlay / UI existente -->
-              <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
-                <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
-                <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
-              </div>
-
-              <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
-                <div class="sunDateDockInner">
-                  <input type="date" id="sunDate" />
-                  <button type="button" id="sunNowBtn">Ahora</button>
-                </div>
-              </div>
-
-              <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
-                <div class="sunTimebarInner">
-                  <div class="sunHoursRow" id="sunHoursRow"></div>
-                  <div class="sunTrack" id="sunTrack">
-                    <input id="sunRange" class="sunRange" type="range" min="0" max="1439" step="10" />
-                  </div>
-                </div>
-              </div>
-
-              <div id="areaHint" class="areaHint" aria-hidden="true">
-                <div class="areaHintInner">
-                  <div class="areaHintDot" aria-hidden="true"></div>
-                  <div id="areaHintText" class="areaHintText">—</div>
-                </div>
-              </div>
-
-              <!-- Tarjeta “flotante” de selección (ahora se posiciona respecto al mapa, no al viewport) -->
-              <div id="card" class="card">
-                <div class="cardGrid">
-                  <div class="mediaSide">
-                    <span id="badgeNew" class="badgeNew">Nuevo</span>
-                    <img id="mediaImg" class="mediaImg" alt="" style="display:none;" />
-                    <div id="mediaPlaceholder" class="mediaPlaceholder">Foto</div>
-
-                    <div class="mediaMiniIcon" title="Fotos">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-2h4l2 2h3a2 2 0 0 1 2 2z"/>
-                        <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div class="textSide">
-                    <div class="topActions">
-                      <button class="heartBtn" id="heartBtn" type="button" aria-label="Guardar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
-                        </svg>
-                      </button>
-
-                      <button class="closeBtn" id="cardClose" type="button" aria-label="Cerrar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M18 6L6 18"/><path d="M6 6l12 12"/>
-                        </svg>
-                      </button>
-                    </div>
-
-                    <a id="cardAddrTop" class="addrTop" href="#">Dirección</a>
-                    <div id="cardAddrBottom" class="addrBottom">—</div>
-
-                    <div id="cardPrice" class="price">—</div>
-                    <div id="cardFacts" class="facts"></div>
-
-                    <div id="cardAgency" class="agency">—</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Status “pill” dentro del mapa (referencia visual) -->
-              <div id="status"></div>
+        <!-- Columna derecha: ordenar + ocultar listado -->
+        <div class="bhTopRowCell bhTopRowRight">
+          <div class="bhSortWrap">
+            <button type="button" class="bhTopBtn" id="sortBtn">Ordenar por</button>
+            <div class="bhSortMenu" id="sortMenu" aria-hidden="true">
+              <!-- opciones: las gestiona bh-map-core.js -->
             </div>
-          </main>
-
-          <!-- Columna listado (scroll interno) -->
-          <aside class="col colList" id="listCol">
-            <div id="listMount" class="listMount">
-              <div id="listItems" class="listItems"></div>
-            </div>
-          </aside>
+          </div>
+          <button type="button" class="bhTopBtn" id="toggleListBtn">Ocultar listado</button>
         </div>
       </div>
-    </div>
 
-    <div id="bhFooter"></div>
+      <!-- Grid principal: filtros | mapa | listado -->
+      <div class="bhMapGrid" id="bhMapGrid">
+        <!-- Columna filtros (scroll interno) -->
+        <aside class="bhCol bhColFilters" id="filtersCol">
+          <div id="filtersBarMount"></div>
+        </aside>
+
+        <!-- Mapa -->
+        <section class="bhCol bhColMap" id="mapCol">
+          <div class="mapShell" id="mapShell">
+            <div id="map"></div>
+
+            <!-- Status flotante sobre el mapa -->
+            <div id="status"></div>
+
+            <!-- Ficha del anuncio: ahora se posiciona respecto al mapa (no al viewport) -->
+            <div id="card" class="card">
+              <div class="cardGrid">
+                <div class="mediaSide">
+                  <span id="badgeNew" class="badgeNew">Nuevo</span>
+                  <img id="mediaImg" class="mediaImg" alt="" style="display:none;" />
+                  <div id="mediaPlaceholder" class="mediaPlaceholder">Foto</div>
+
+                  <div class="mediaMiniIcon" title="Fotos">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-2h4l2 2h3a2 2 0 0 1 2 2z"/>
+                      <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="textSide">
+                  <div class="topActions">
+                    <button class="heartBtn" id="heartBtn" type="button" aria-label="Guardar">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+                      </svg>
+                    </button>
+
+                    <button class="closeBtn" id="cardClose" type="button" aria-label="Cerrar">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18"/><path d="M6 6l12 12"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <a id="cardAddrTop" class="addrTop" href="#">Dirección</a>
+                  <div id="cardAddrBottom" class="addrBottom">—</div>
+
+                  <div id="cardPrice" class="price">—</div>
+                  <div id="cardFacts" class="facts"></div>
+
+                  <div id="cardAgency" class="agency">—</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Overlays de sol / fecha / timebar / areaHint (igual que antes) -->
+            <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
+              <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
+              <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
+            </div>
+
+            <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
+              <div class="sunDateDockInner">
+                <input type="date" id="sunDate" />
+                <button type="button" id="sunNowBtn">Ahora</button>
+              </div>
+            </div>
+
+            <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
+              <div class="sunTimebarInner">
+                <div class="sunHoursRow" id="sunHoursRow"></div>
+                <div class="sunTrack" id="sunTrack">
+                  <input id="sunRange" class="sunRange" type="range" min="0" max="1439" step="10" />
+                </div>
+              </div>
+            </div>
+
+            <div id="areaHint" class="areaHint" aria-hidden="true">
+              <div class="areaHintInner">
+                <div class="areaHintDot" aria-hidden="true"></div>
+                <div id="areaHintText" class="areaHintText">—</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Columna listado (scroll interno) -->
+        <aside class="bhCol bhColList" id="listCol">
+          <div class="bhListInner">
+            <div id="listings" class="bhListings"></div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Footer (lo monta bh-layout.js) -->
+    <div id="bhFooter" class="bhMapFooter"></div>
 
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -164,78 +162,41 @@
       import { initFiltersBar } from "/buscarhogardemo/bh-map-filters.js";
       import { initMap } from "/buscarhogardemo/bh-map-core.js";
 
-      // Header / auth
       initLayout({ showMiniSearch: true });
       initAuth();
 
-      // Inicializamos filtros dentro de su columna
+      // Monta filtros (sin botón Aplicar: se actualiza al vuelo)
       initFiltersBar({ mountId: "filtersBarMount" });
 
-      // Toggle columnas (arreglo del bug: el de filtros ahora alterna bien siempre)
-      const grid = document.getElementById("grid3");
-      const btnFilters = document.getElementById("toggleFiltersBtn");
-      const btnList = document.getElementById("toggleListBtn");
+      // Toggle columnas + eventos para Leaflet
+      const grid = document.getElementById("bhMapGrid");
+      const toggleFiltersBtn = document.getElementById("toggleFiltersBtn");
+      const toggleListBtn = document.getElementById("toggleListBtn");
+      const clearFiltersBtn = document.getElementById("clearFiltersBtn");
 
-      function applyToggleTexts() {
-        const filtersHidden = grid.classList.contains("hideFilters");
-        const listHidden = grid.classList.contains("hideList");
-        btnFilters.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
-        btnList.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
-      }
-
-      function notifyLayoutResize() {
-        // Leaflet necesita invalidateSize; bh-map-core.js escucha este evento
+      function emitLayoutResize() {
         window.dispatchEvent(new CustomEvent("bh:layout-resize"));
       }
 
-      btnFilters.addEventListener("click", () => {
-        grid.classList.toggle("hideFilters");
-        applyToggleTexts();
-        notifyLayoutResize();
+      toggleFiltersBtn.addEventListener("click", () => {
+        const hidden = grid.classList.toggle("filtersHidden");
+        toggleFiltersBtn.textContent = hidden ? "Mostrar filtros" : "Ocultar filtros";
+        // Importante: cuando el layout cambia, Leaflet necesita invalidateSize
+        emitLayoutResize();
       });
 
-      btnList.addEventListener("click", () => {
-        grid.classList.toggle("hideList");
-        applyToggleTexts();
-        notifyLayoutResize();
+      toggleListBtn.addEventListener("click", () => {
+        const hidden = grid.classList.toggle("listHidden");
+        toggleListBtn.textContent = hidden ? "Mostrar listado" : "Ocultar listado";
+        emitLayoutResize();
       });
 
-      applyToggleTexts();
-
-      // Orden: abre/cierra menú. El core lee window.__bhListOrder
-      const orderBtn = document.getElementById("orderBtn");
-      const orderMenu = document.getElementById("orderMenu");
-
-      function closeOrderMenu() {
-        orderMenu.style.display = "none";
-        orderMenu.setAttribute("aria-hidden", "true");
-      }
-      function openOrderMenu() {
-        orderMenu.style.display = "block";
-        orderMenu.setAttribute("aria-hidden", "false");
-      }
-
-      closeOrderMenu();
-
-      orderBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const open = orderMenu.getAttribute("aria-hidden") === "false";
-        if (open) closeOrderMenu();
-        else openOrderMenu();
+      clearFiltersBtn.addEventListener("click", () => {
+        // Limpia filtros desde el módulo de filtros (manteniendo disponibilidad)
+        window.dispatchEvent(new CustomEvent("bh:filters-clear"));
       });
 
-      document.addEventListener("click", () => closeOrderMenu());
-
-      orderMenu.querySelectorAll(".orderItem").forEach((b) => {
-        b.addEventListener("click", () => {
-          const v = b.getAttribute("data-order");
-          window.__bhListOrder = v || "date_desc";
-          closeOrderMenu();
-          window.dispatchEvent(new CustomEvent("bh:list-order-changed"));
-        });
-      });
-
-      // Inicializar mapa
+      // Inicia mapa
       initMap();
     </script>
   </body>
