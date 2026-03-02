@@ -1,6 +1,3 @@
-// bh-map-core.js
-// Mapa + listado + toggles + ordenación + controles Leaflet (sol, áreas, localización)
-
 export function initMap(){
   const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
@@ -8,20 +5,23 @@ export function initMap(){
   const DEFAULT_CENTER = [37.9838, -1.1280];
   const DEFAULT_ZOOM = 13;
 
-  // DOM principales
-  const statusEl = document.getElementById("status");
-  const listMount = document.getElementById("listMount");
-  const areaCrumbEl = document.getElementById("areaCrumb");
-
+  // Elementos nuevos de layout
+  const mapShellEl = document.getElementById("mapShell");
   const toggleFiltersBtn = document.getElementById("toggleFiltersBtn");
   const toggleListBtn = document.getElementById("toggleListBtn");
-  const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+  const cityBarEl = document.getElementById("cityBar");
 
-  const sortWrap = document.getElementById("sortWrap");
-  const sortBtn = document.getElementById("sortBtn");
-  const sortMenu = document.getElementById("sortMenu");
+  // Listado (columna derecha)
+  const listMountEl = document.getElementById("listMount");
 
-  // Tarjeta seleccionada (dentro del mapa)
+  // Estado
+  let filtersHidden = false;
+  let listHidden = false;
+
+  // Status (píldora arriba del mapa)
+  const statusEl = document.getElementById("status");
+
+  // Card (ahora vive dentro del contenedor del mapa, pero el JS es igual)
   const cardEl = document.getElementById("card");
   const cardCloseBtn = document.getElementById("cardClose");
   const heartBtn = document.getElementById("heartBtn");
@@ -36,7 +36,7 @@ export function initMap(){
   const cardFactsEl = document.getElementById("cardFacts");
   const cardAgencyEl = document.getElementById("cardAgency");
 
-  // Sol
+  // Sun overlay
   const sunOverlayEl = document.getElementById("sunOverlay");
   const sunOverlayLabelEl = document.getElementById("sunOverlayLabel");
   const sunPolarOverlaySvg = document.getElementById("sunPolarOverlay");
@@ -49,7 +49,7 @@ export function initMap(){
   const sunDateEl = document.getElementById("sunDate");
   const sunNowBtn = document.getElementById("sunNowBtn");
 
-  // Hint áreas
+  // Area hint
   const areaHintEl = document.getElementById("areaHint");
   const areaHintTextEl = document.getElementById("areaHintText");
 
@@ -65,21 +65,8 @@ export function initMap(){
 
   function openCard() { cardEl.classList.add("visible"); }
   function closeCard() { cardEl.classList.remove("visible"); }
+  cardCloseBtn.addEventListener("click", closeCard);
 
-  // Cerrar tarjeta: además deselecciona marcador activo (lo pide tu requisito)
-  let activeMarker = null;
-  function clearActiveMarker(){
-    if (activeMarker && activeMarker._icon) {
-      activeMarker._icon.querySelector(".dot")?.classList.remove("active");
-    }
-    activeMarker = null;
-  }
-  cardCloseBtn.addEventListener("click", () => {
-    closeCard();
-    clearActiveMarker();
-  });
-
-  // “Favorito” (MVP visual)
   let heartOn = false;
   heartBtn.addEventListener("click", () => {
     heartOn = !heartOn;
@@ -94,6 +81,7 @@ export function initMap(){
       mediaPlaceholderEl.style.display = "grid";
       return;
     }
+
     mediaImgEl.src = url;
     mediaImgEl.style.display = "block";
     mediaPlaceholderEl.style.display = "none";
@@ -138,29 +126,6 @@ export function initMap(){
     return line || "—";
   }
 
-  // Vistos (localStorage)
-  const SEEN_KEY = "bh_seen_listing_ids_v1";
-  function loadSeen(){
-    try {
-      const raw = localStorage.getItem(SEEN_KEY);
-      const arr = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(arr)) return new Set(arr.map(String));
-    } catch {}
-    return new Set();
-  }
-  function saveSeen(set){
-    try { localStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(set))); } catch {}
-  }
-  const seenSet = loadSeen();
-  function markSeen(listingId){
-    if (!listingId) return;
-    const s = String(listingId);
-    if (!seenSet.has(s)){
-      seenSet.add(s);
-      saveSeen(seenSet);
-    }
-  }
-
   function openCardForPoint(p) {
     cardAddrTopEl.textContent = buildAddressTop(p);
     cardAddrBottomEl.textContent = buildAddressBottom(p);
@@ -168,6 +133,7 @@ export function initMap(){
     cardAddrTopEl.href = `listing.html?id=${encodeURIComponent(p.listing_id)}`;
 
     cardPriceEl.textContent = (p.price_eur != null) ? euro(p.price_eur) : "—";
+
     setPhoto(p.main_photo_url || null);
 
     badgeNewEl.style.display = isRecent(p.listed_at, 14) ? "inline-flex" : "none";
@@ -182,15 +148,6 @@ export function initMap(){
 
     cardAgencyEl.textContent = p.agency_name || "—";
     openCard();
-
-    // Marcar como visto
-    markSeen(p.listing_id);
-    // Refrescar estilo del marcador (si existe)
-    const m = markerById.get(String(p.listing_id));
-    if (m && m._icon) {
-      const dot = m._icon.querySelector(".dot");
-      if (dot && !dot.classList.contains("active")) dot.classList.add("seen");
-    }
   }
 
   function toInt(v) {
@@ -211,12 +168,13 @@ export function initMap(){
     return arr.length ? arr : null;
   }
 
-  // Leer filtros desde URL (los escribe bh-map-filters.js)
+  // Leer parámetros (URL) y actualizar la barrita de ciudad
   function getParams() {
     const u = new URL(window.location.href);
 
     let mode = (u.searchParams.get("mode") || "").trim().toLowerCase();
     if (!mode) mode = "buy";
+
     const allowed = ["buy","rent","room","new_build","all"];
     if (!allowed.includes(mode)) mode = "buy";
 
@@ -228,8 +186,7 @@ export function initMap(){
       priceMax: toInt(u.searchParams.get("price_max")),
 
       listedSinceDays: toInt(u.searchParams.get("since_days")),
-
-      availability: toText(u.searchParams.get("availability")) || "available",
+      availability: toText(u.searchParams.get("availability")),
 
       usefulMin: toInt(u.searchParams.get("useful_min")),
       usefulMax: toInt(u.searchParams.get("useful_max")),
@@ -237,16 +194,13 @@ export function initMap(){
       builtMin: toInt(u.searchParams.get("built_min")),
       builtMax: toInt(u.searchParams.get("built_max")),
 
-      outdoorType: toText(u.searchParams.get("outdoor_type")),
-
-      bedroomsMode: toText(u.searchParams.get("bedrooms_mode")),
-      bedroomsVal: toInt(u.searchParams.get("bedrooms_min")),
-
+      bedroomsMin: toInt(u.searchParams.get("bedrooms_min")),
       bathroomsMin: toInt(u.searchParams.get("bathrooms_min")),
 
-      energyChoice: toText(u.searchParams.get("energy")),
-
+      outdoorType: toText(u.searchParams.get("outdoor_type")),
       orientations: toTextArray(u.searchParams.get("orientations")),
+
+      energyChoice: toText(u.searchParams.get("energy")),
 
       buildPeriods: toTextArray(u.searchParams.get("build_periods")),
 
@@ -257,10 +211,41 @@ export function initMap(){
     };
   }
 
+  function updateCityBar(){
+    const p = getParams();
+    const city = p.city ? p.city : "—";
+    cityBarEl.textContent = city;
+  }
+
+  // Botones mostrar/ocultar columnas
+  function applyLayoutState(){
+    mapShellEl.classList.toggle("hideFilters", filtersHidden);
+    mapShellEl.classList.toggle("hideList", listHidden);
+
+    toggleFiltersBtn.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
+    toggleListBtn.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
+
+    // Avisamos a Leaflet para que recalcule tamaños
+    window.dispatchEvent(new CustomEvent("bh:layout-resize"));
+  }
+
+  toggleFiltersBtn.addEventListener("click", () => {
+    filtersHidden = !filtersHidden;
+    applyLayoutState();
+  });
+
+  toggleListBtn.addEventListener("click", () => {
+    listHidden = !listHidden;
+    applyLayoutState();
+  });
+
+  // Inicial
+  updateCityBar();
+  applyLayoutState();
+
   const initialParams = getParams();
 
-  // Leaflet map
-  const map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+  let map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
   window.__bhMap = map;
 
   L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
@@ -269,47 +254,53 @@ export function initMap(){
   }).addTo(map);
 
   let markersLayer = L.layerGroup().addTo(map);
-  const markerById = new Map(); // listing_id -> marker
-  let currentRows = [];         // resultados actuales (para listado)
+  let activeMarker = null;
+
+  // Para poder seleccionar desde el listado
+  const markerByListingId = new Map();
+  const pointByListingId = new Map();
 
   function clearMarkers() {
     markersLayer.clearLayers();
-    markerById.clear();
-    clearActiveMarker();
+    activeMarker = null;
+    markerByListingId.clear();
+    pointByListingId.clear();
   }
 
-  // Crear marcador y conectar click
+  function setActiveMarker(m){
+    if (activeMarker && activeMarker._icon) {
+      activeMarker._icon.querySelector(".dot")?.classList.remove("active");
+    }
+    activeMarker = m;
+    if (activeMarker && activeMarker._icon) {
+      activeMarker._icon.querySelector(".dot")?.classList.add("active");
+    }
+  }
+
   function addPoint(p) {
     if (p.lat == null || p.lng == null) return;
-    const listingId = String(p.listing_id || "");
 
-    const elDot = document.createElement("div");
-    elDot.className = "dot";
-
-    // Si está visto, aplicar estilo (excepto si está activo)
-    if (listingId && seenSet.has(listingId)) elDot.classList.add("seen");
+    const el = document.createElement("div");
+    el.className = "dot";
 
     const icon = L.divIcon({
       className: "",
-      html: elDot,
+      html: el,
       iconSize: [20, 20],
       iconAnchor: [10, 10]
     });
 
     const m = L.marker([p.lat, p.lng], { icon }).addTo(markersLayer);
-    if (listingId) markerById.set(listingId, m);
+
+    // Guardamos referencias para interacción listado <-> mapa
+    if (p.listing_id != null) {
+      markerByListingId.set(String(p.listing_id), m);
+      pointByListingId.set(String(p.listing_id), p);
+    }
 
     m.on("click", () => {
       if (areaState.isDrawing) return;
-
-      // desactivar anterior
-      if (activeMarker && activeMarker._icon) {
-        activeMarker._icon.querySelector(".dot")?.classList.remove("active");
-      }
-
-      activeMarker = m;
-      m._icon.querySelector(".dot")?.classList.add("active");
-
+      setActiveMarker(m);
       openCardForPoint(p);
     });
   }
@@ -324,13 +315,7 @@ export function initMap(){
     };
   }
 
-  // RPC de supabase (mismo endpoint que ya usabas)
   async function rpcSearchMapPoints(bounds, filters) {
-    // Regla dormitorios:
-    // - eq: exactamente X
-    // - gte: mínimo X
-    // Como tu RPC anterior solo tenía p_bedrooms_min, añadimos p_bedrooms_mode.
-    // Si tu función RPC no lo soporta todavía, ignora p_bedrooms_mode (no rompe el fetch).
     const body = {
       p_south: bounds.south,
       p_west: bounds.west,
@@ -348,9 +333,11 @@ export function initMap(){
       p_useful_min: filters.usefulMin,
       p_useful_max: filters.usefulMax,
 
-      // construidos (puede ser null si room)
       p_built_min: filters.builtMin,
       p_built_max: filters.builtMax,
+
+      p_bedrooms_min: filters.bedroomsMin,
+      p_bathrooms_min: filters.bathroomsMin,
 
       p_outdoor_type: filters.outdoorType,
       p_orientations: filters.orientations,
@@ -362,11 +349,7 @@ export function initMap(){
       p_parking_types: filters.parkingTypes,
       p_storage_types: filters.storageTypes,
 
-      p_accessibility: filters.accessibility,
-
-      p_bedrooms_min: filters.bedroomsVal,
-      p_bedrooms_mode: filters.bedroomsMode,  // nuevo (si RPC lo soporta)
-      p_bathrooms_min: filters.bathroomsMin
+      p_accessibility: filters.accessibility
     };
 
     const url = `${SUPABASE_URL}/rest/v1/rpc/search_map_points_filtered`;
@@ -389,299 +372,7 @@ export function initMap(){
     return await res.json();
   }
 
-  // Debounce recarga
   let debounceTimer = null;
-  function scheduleReload() {
-    if (debounceTimer) clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(async () => {
-      try {
-        await loadPointsForCurrentView();
-      } catch (e) {
-        const msg = (e && e.message) ? e.message : String(e);
-        setStatus(`Error: ${msg}`);
-        console.error(e);
-      }
-    }, 250);
-  }
-
-  // Ordenación del listado (por defecto: fecha publicación más reciente arriba)
-  let sortKey = "listed_at_desc";
-
-  function sortRows(rows){
-    const copy = rows.slice();
-
-    const num = (x)=> (x == null ? null : Number(x));
-    const dateMs = (iso)=> {
-      const d = iso ? new Date(iso) : null;
-      const t = d && !isNaN(d.getTime()) ? d.getTime() : null;
-      return t;
-    };
-
-    copy.sort((a,b)=>{
-      if (sortKey === "listed_at_desc") {
-        const ta = dateMs(a.listed_at), tb = dateMs(b.listed_at);
-        return (tb ?? -Infinity) - (ta ?? -Infinity);
-      }
-      if (sortKey === "listed_at_asc") {
-        const ta = dateMs(a.listed_at), tb = dateMs(b.listed_at);
-        return (ta ?? Infinity) - (tb ?? Infinity);
-      }
-      if (sortKey === "useful_asc") {
-        return (num(a.useful_area_m2) ?? Infinity) - (num(b.useful_area_m2) ?? Infinity);
-      }
-      if (sortKey === "useful_desc") {
-        return (num(b.useful_area_m2) ?? -Infinity) - (num(a.useful_area_m2) ?? -Infinity);
-      }
-      if (sortKey === "price_desc") {
-        return (num(b.price_eur) ?? -Infinity) - (num(a.price_eur) ?? -Infinity);
-      }
-      if (sortKey === "price_asc") {
-        return (num(a.price_eur) ?? Infinity) - (num(b.price_eur) ?? Infinity);
-      }
-      return 0;
-    });
-
-    return copy;
-  }
-
-  // Pintar listado lateral derecho
-  function renderList(rows){
-    if (!listMount) return;
-    listMount.innerHTML = "";
-
-    const sorted = sortRows(rows);
-
-    const frag = document.createDocumentFragment();
-    sorted.forEach(p=>{
-      const id = String(p.listing_id || "");
-      const title = buildAddressTop(p);
-      const sub = buildAddressBottom(p);
-      const price = (p.price_eur != null) ? euro(p.price_eur) : "—";
-      const facts = `${p.useful_area_m2 ?? "—"} m² · ${p.property_type ?? "—"}`;
-      const agency = p.agency_name || "—";
-
-      const img = p.main_photo_url
-        ? el("img",{class:"lImg", src:p.main_photo_url, alt:""})
-        : el("div",{class:"lImgPh", text:"Foto"});
-
-      const card = el("div",{class:"lCard","data-id":id},[
-        el("div",{class:"lGrid"},[
-          img,
-          el("div",{},[
-            el("div",{class:"lTitle", text:title}),
-            el("div",{class:"lSub", text:sub}),
-            el("div",{class:"lPrice", text:price}),
-            el("div",{class:"lFacts", text:facts}),
-            el("div",{class:"lAgency", text:agency}),
-          ])
-        ])
-      ]);
-
-      // Hover: resalta marcador (sin click)
-      card.addEventListener("mouseenter", ()=>{
-        const m = markerById.get(id);
-        if (m && m._icon) m._icon.querySelector(".dot")?.classList.add("hovered");
-      });
-      card.addEventListener("mouseleave", ()=>{
-        const m = markerById.get(id);
-        if (m && m._icon) m._icon.querySelector(".dot")?.classList.remove("hovered");
-      });
-
-      // Click: abrir directamente la ficha
-      card.addEventListener("click", ()=>{
-        markSeen(id);
-        window.location.href = `listing.html?id=${encodeURIComponent(id)}`;
-      });
-
-      frag.appendChild(card);
-    });
-
-    listMount.appendChild(frag);
-  }
-
-  // Cargar puntos
-  async function loadPointsForCurrentView() {
-    const b = getCurrentBounds();
-    const z = map.getZoom();
-    const f = getParams();
-
-    if (areaState.isDrawing) {
-      setStatus(areaState.lastHint || "Dibujando área...");
-      return;
-    }
-
-    setStatus(`Cargando...`);
-    const rows = await rpcSearchMapPoints(b, f);
-
-    currentRows = Array.isArray(rows) ? rows.slice() : [];
-
-    clearMarkers();
-    currentRows.forEach(addPoint);
-
-    renderList(currentRows);
-
-    setStatus(`Anuncios: ${currentRows.length} | zoom ${z} | modo=${f.mode}`);
-  }
-
-  // Geocoding ciudad inicial (si existe)
-  async function geocodeCity(city) {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&limit=1`;
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!data[0]) return null;
-    return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-  }
-
-  // Breadcrumb “Comunidad / Ciudad / Zona” (simplificado sin APIs de pago)
-  // - Comunidad: a partir de state (si viene)
-  // - Ciudad: del query param city si existe; si no, de reverse geocode
-  // - Zona: barrio / suburb (si viene)
-  async function updateAreaCrumb(){
-    if (!areaCrumbEl) return;
-    const c = map.getCenter();
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${encodeURIComponent(c.lat)}&lon=${encodeURIComponent(c.lng)}&zoom=14&addressdetails=1`;
-    try{
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("reverse fail");
-      const data = await res.json();
-      const a = data.address || {};
-      const region = a.state || a.region || a.province || "—";
-      const city = a.city || a.town || a.village || a.municipality || (getParams().city || "—");
-      const zone = a.suburb || a.neighbourhood || a.quarter || a.hamlet || "—";
-      areaCrumbEl.textContent = `${region} / ${city} / ${zone}`;
-    } catch {
-      const city = getParams().city || "—";
-      areaCrumbEl.textContent = `— / ${city} / —`;
-    }
-  }
-
-  // Toggling columnas + fix “mapa en blanco”
-  function safeInvalidate(){
-    try { map.invalidateSize(true); } catch {}
-  }
-
-  function notifyLayoutChange(){
-    // Para evitar el “mapa en blanco”: invalidamos en 2 frames.
-    requestAnimationFrame(()=>{
-      safeInvalidate();
-      requestAnimationFrame(()=> safeInvalidate());
-    });
-  }
-
-  // Botón: ocultar/mostrar filtros (corregido)
-  toggleFiltersBtn?.addEventListener("click", ()=>{
-    const isHidden = document.body.classList.toggle("filtersHidden");
-    toggleFiltersBtn.textContent = isHidden ? "Mostrar filtros" : "Ocultar filtros";
-    notifyLayoutChange();
-    scheduleReload();
-  });
-
-  // Botón: ocultar/mostrar listado (ya funcionaba)
-  toggleListBtn?.addEventListener("click", ()=>{
-    const isHidden = document.body.classList.toggle("listHidden");
-    toggleListBtn.textContent = isHidden ? "Mostrar listado" : "Ocultar listado";
-    notifyLayoutChange();
-    scheduleReload();
-  });
-
-  // Botón: limpiar filtros global (mantiene disponibilidad)
-  clearFiltersBtn?.addEventListener("click", ()=>{
-    if (window.__bhFilters?.clearAllExceptAvailability) {
-      window.__bhFilters.clearAllExceptAvailability();
-    }
-  });
-
-  // Ordenar por: menú + opciones ampliadas
-  function closeSortMenu(){
-    sortMenu?.classList.remove("open");
-    if (sortMenu) sortMenu.setAttribute("aria-hidden","true");
-  }
-  function openSortMenu(){
-    if (!sortMenu) return;
-    sortMenu.classList.add("open");
-    sortMenu.setAttribute("aria-hidden","false");
-  }
-  sortBtn?.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    if (sortMenu?.classList.contains("open")) closeSortMenu();
-    else openSortMenu();
-  });
-  window.addEventListener("click", ()=> closeSortMenu());
-
-  function buildSortMenu(){
-    if (!sortMenu) return;
-    sortMenu.innerHTML = "";
-
-    const items = [
-      { k:"listed_at_desc", t:"Fecha de publicación: más reciente a más antigua" },
-      { k:"listed_at_asc",  t:"Fecha de publicación: más antigua a más reciente" },
-      { k:"useful_asc",     t:"Tamaño: menor a mayor" },
-      { k:"useful_desc",    t:"Tamaño: mayor a menor" },
-      { k:"price_desc",     t:"Precio: mayor a menor" },
-      { k:"price_asc",      t:"Precio: menor a mayor" },
-    ];
-
-    items.forEach(it=>{
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "sortOpt";
-      b.textContent = it.t;
-      b.addEventListener("click", ()=>{
-        sortKey = it.k;
-        closeSortMenu();
-        renderList(currentRows);
-      });
-      sortMenu.appendChild(b);
-    });
-  }
-  buildSortMenu();
-
-  // El botón “Ordenar por” solo si listado visible (CSS ya lo oculta con .listHidden)
-  // Aquí no hace falta más.
-
-  // Eventos mapa -> recarga
-  map.on("moveend", ()=>{ scheduleReload(); updateAreaCrumb(); });
-  map.on("zoomend", ()=>{ scheduleReload(); updateAreaCrumb(); });
-
-  // Cuando cambian filtros (evento emitido por bh-map-filters.js)
-  window.addEventListener("bh:filters-changed", () => {
-    scheduleReload();
-  });
-
-  // Mini search del header (si lo mantienes)
-  function wireHeaderMiniSearch(){
-    const form = document.getElementById("miniSearchForm");
-    const input = document.getElementById("miniQ");
-    if (!form || !input) return;
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const city = (input.value || "").trim();
-      if (!city) return;
-
-      const u = new URL(window.location.href);
-      u.searchParams.set("city", city);
-      history.replaceState(null, "", u.toString());
-
-      setStatus("Buscando ciudad...");
-      const center = await geocodeCity(city);
-      if (center) map.setView(center, 13);
-      scheduleReload();
-      updateAreaCrumb();
-    });
-  }
-
-  function wireHeaderNav(){
-    const fav = document.getElementById("navFavoritos");
-    const login = document.getElementById("navLogin");
-    if (fav) fav.addEventListener("click", (e) => { e.preventDefault(); alert("MVP: Favoritos (requiere registro)."); });
-    if (login) login.addEventListener("click", (e) => { e.preventDefault(); alert("MVP: Iniciar sesión."); });
-  }
-
-  // ---------------------------
-  // CONTROLES: Sol + Áreas + Localización
-  // ---------------------------
 
   const MAX_AREAS = 5;
 
@@ -828,6 +519,20 @@ export function initMap(){
 
     areaState.polys.splice(idx, 1);
 
+    if (removed && removed.type) {
+      const stillAny = areaState.polys.some(a => a.type === removed.type);
+      if (!stillAny) {
+        if (removed.type === "points") {
+          areaState.pointsActive = false;
+          if (areaState.isDrawing && areaState.drawingMode === "points") cancelCurrentDrawing();
+        }
+        if (removed.type === "freehand") {
+          areaState.freehandActive = false;
+          if (areaState.isDrawing && areaState.drawingMode === "freehand") cancelCurrentDrawing();
+        }
+      }
+    }
+
     if (!options.silentUI && areaState.refreshAreasUI) {
       areaState.refreshAreasUI();
     }
@@ -847,8 +552,8 @@ export function initMap(){
     if (areaState.polys.length >= MAX_AREAS) return false;
 
     const t = (type === "freehand") ? "freehand" : "points";
-    const id = areaState.nextId++;
 
+    const id = areaState.nextId++;
     const poly = L.polygon(latlngs, {
       color: "rgba(26,115,232,0.80)",
       weight: 3,
@@ -909,16 +614,22 @@ export function initMap(){
       scheduleReload();
       return;
     }
+
     addAreaPolygon(pts, "points");
+
     cancelCurrentDrawing();
     scheduleReload();
   }
 
   function addPointVertex(latlng){
     areaState.points.push(latlng);
-    if (areaState.tempLine) areaState.tempLine.addLatLng(latlng);
+
+    if (areaState.tempLine) {
+      areaState.tempLine.addLatLng(latlng);
+    }
 
     const isFirst = areaState.points.length === 1;
+
     const circle = L.circleMarker(latlng, {
       radius: isFirst ? 7 : 6,
       color: "rgba(255,255,255,0.95)",
@@ -947,8 +658,184 @@ export function initMap(){
     return d <= 12;
   }
 
+  function simplifyRDP(points, epsilonPx){
+    if (!points || points.length < 3) return points || [];
+    const sqEps = epsilonPx * epsilonPx;
+
+    function sqSegDist(p, a, b){
+      let x = a.x, y = a.y;
+      let dx = b.x - x;
+      let dy = b.y - y;
+
+      if (dx !== 0 || dy !== 0) {
+        const t = ((p.x - x) * dx + (p.y - y) * dy) / (dx*dx + dy*dy);
+        if (t > 1) { x = b.x; y = b.y; }
+        else if (t > 0) { x += dx * t; y += dy * t; }
+      }
+
+      dx = p.x - x;
+      dy = p.y - y;
+      return dx*dx + dy*dy;
+    }
+
+    function rdp(pts, first, last, out){
+      let maxSqDist = sqEps;
+      let index = -1;
+
+      for (let i = first + 1; i < last; i++) {
+        const sqD = sqSegDist(pts[i], pts[first], pts[last]);
+        if (sqD > maxSqDist) {
+          index = i;
+          maxSqDist = sqD;
+        }
+      }
+
+      if (index !== -1) {
+        if (index - first > 1) rdp(pts, first, index, out);
+        out.push(pts[index]);
+        if (last - index > 1) rdp(pts, index, last, out);
+      }
+    }
+
+    const out = [points[0]];
+    rdp(points, 0, points.length - 1, out);
+    out.push(points[points.length - 1]);
+    return out;
+  }
+
+  function latlngsFromFreehand(rawLatLngs){
+    if (!rawLatLngs || rawLatLngs.length < 3) return [];
+    const zoom = map.getZoom();
+    const proj = rawLatLngs.map(ll => {
+      const p = map.project(ll, zoom);
+      return { x: p.x, y: p.y, ll };
+    });
+
+    const simplified = simplifyRDP(proj, 3.0);
+    const out = simplified.map(p => p.ll);
+
+    if (out.length >= 3) {
+      const first = out[0];
+      const last = out[out.length - 1];
+      const d = map.distance(first, last);
+      if (d > 5) out.push(first);
+    }
+
+    const uniq = [];
+    for (const ll of out) {
+      const prev = uniq[uniq.length - 1];
+      if (!prev) { uniq.push(ll); continue; }
+      const dd = map.distance(prev, ll);
+      if (dd >= 1) uniq.push(ll);
+    }
+    return uniq.length >= 3 ? uniq : [];
+  }
+
+  let freehandMoveHandler = null;
+  let freehandUpHandler = null;
+  let freehandLastSample = null;
+
+  function startFreehand(e){
+    if (!areaState.isDrawing || areaState.drawingMode !== "freehand") return;
+    if (areaState.isFreehandActive) return;
+
+    areaState.isFreehandActive = true;
+    areaState.points = [];
+    freehandLastSample = null;
+
+    map.dragging.disable();
+
+    const startLL = e.latlng;
+    if (startLL) {
+      areaState.points.push(startLL);
+      freehandLastSample = { ll: startLL, t: Date.now() };
+    }
+
+    if (areaState.tempLine) { areasLayer.removeLayer(areaState.tempLine); areaState.tempLine = null; }
+    if (areaState.tempLivePoly) { areasLayer.removeLayer(areaState.tempLivePoly); areaState.tempLivePoly = null; }
+
+    areaState.tempLine = L.polyline([startLL], {
+      color: "rgba(26,115,232,0.88)",
+      weight: 3,
+      opacity: 1
+    }).addTo(areasLayer);
+
+    freehandMoveHandler = (ev) => {
+      if (!areaState.isFreehandActive) return;
+      const ll = ev.latlng;
+      if (!ll) return;
+
+      const now = Date.now();
+      const prev = freehandLastSample?.ll;
+
+      let ok = true;
+      if (freehandLastSample) {
+        const dt = now - freehandLastSample.t;
+        const dist = prev ? map.distance(prev, ll) : 999;
+        ok = (dt >= 18) && (dist >= 2.0);
+      }
+
+      if (!ok) return;
+
+      areaState.points.push(ll);
+      freehandLastSample = { ll, t: now };
+      if (areaState.tempLine) areaState.tempLine.addLatLng(ll);
+    };
+
+    freehandUpHandler = () => {
+      finishFreehand();
+    };
+
+    map.on("mousemove", freehandMoveHandler);
+    map.on("mouseup", freehandUpHandler);
+
+    map.on("touchmove", freehandMoveHandler);
+    map.on("touchend", freehandUpHandler);
+    map.on("touchcancel", freehandUpHandler);
+  }
+
+  function finishFreehand(){
+    if (!areaState.isDrawing || areaState.drawingMode !== "freehand") return;
+
+    map.off("mousemove", freehandMoveHandler);
+    map.off("mouseup", freehandUpHandler);
+    map.off("touchmove", freehandMoveHandler);
+    map.off("touchend", freehandUpHandler);
+    map.off("touchcancel", freehandUpHandler);
+
+    freehandMoveHandler = null;
+    freehandUpHandler = null;
+
+    if (areaState.tempLine) { areasLayer.removeLayer(areaState.tempLine); areaState.tempLine = null; }
+
+    map.dragging.enable();
+
+    const raw = areaState.points.slice();
+    areaState.isFreehandActive = false;
+
+    const simplifiedLL = latlngsFromFreehand(raw);
+
+    const totalLen = (() => {
+      let sum = 0;
+      for (let i = 1; i < raw.length; i++) sum += map.distance(raw[i-1], raw[i]);
+      return sum;
+    })();
+
+    if (!simplifiedLL || simplifiedLL.length < 3 || totalLen < 20) {
+      cancelCurrentDrawing();
+      scheduleReload();
+      return;
+    }
+
+    addAreaPolygon(simplifiedLL, "freehand");
+
+    cancelCurrentDrawing();
+    scheduleReload();
+  }
+
   function handleMapClickForAreas(e){
     if (!areaState.isDrawing) return false;
+
     if (areaState.drawingMode === "points") {
       const ll = e.latlng;
       if (!ll) return true;
@@ -957,20 +844,212 @@ export function initMap(){
         finishDrawingPoints();
         return true;
       }
+
       addPointVertex(ll);
       return true;
     }
+
     return true;
   }
+
+  map.on("mousedown", (e) => {
+    if (areaState.isDrawing && areaState.drawingMode === "freehand") {
+      startFreehand(e);
+    }
+  });
+
+  map.on("touchstart", (e) => {
+    if (areaState.isDrawing && areaState.drawingMode === "freehand") {
+      startFreehand(e);
+    }
+  });
+
+  // Render listado (columna derecha)
+  function renderList(points){
+    if (!listMountEl) return;
+
+    // Si el listado está oculto, no hace falta renderizar (pero no hace daño)
+    listMountEl.innerHTML = "";
+
+    if (!points || points.length === 0) {
+      const empty = document.createElement("div");
+      empty.style.padding = "10px";
+      empty.style.color = "rgba(0,0,0,0.65)";
+      empty.style.fontSize = "13px";
+      empty.textContent = "No hay viviendas en esta zona con estos filtros.";
+      listMountEl.appendChild(empty);
+      return;
+    }
+
+    for (const p of points) {
+      const listingId = (p.listing_id != null) ? String(p.listing_id) : null;
+
+      const item = document.createElement("div");
+      item.className = "listItem";
+
+      const imgUrl = p.main_photo_url || null;
+
+      const top = buildAddressTop(p);
+      const bottom = buildAddressBottom(p);
+      const price = (p.price_eur != null) ? euro(p.price_eur) : "—";
+      const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
+      const type = p.property_type ? String(p.property_type) : "—";
+      const agency = p.agency_name || "—";
+
+      item.innerHTML = `
+        <div class="listItemGrid">
+          <div class="listMedia">
+            ${imgUrl ? `<img src="${imgUrl}" alt="">` : `<div class="listMediaPh">Foto</div>`}
+          </div>
+          <div class="listText">
+            <div class="listAddrTop">${escapeHtml(top)}</div>
+            <div class="listAddrBottom">${escapeHtml(bottom)}</div>
+            <div class="listPrice">${escapeHtml(price)}</div>
+            <div class="listFacts">
+              <span>${escapeHtml(m2)}</span>
+              <span>${escapeHtml(type)}</span>
+            </div>
+            <div class="listAgency">${escapeHtml(agency)}</div>
+          </div>
+        </div>
+      `;
+
+      item.addEventListener("click", () => {
+        if (!listingId) return;
+
+        const marker = markerByListingId.get(listingId);
+        const point = pointByListingId.get(listingId);
+
+        if (marker && marker.getLatLng) {
+          map.panTo(marker.getLatLng());
+          setActiveMarker(marker);
+        }
+        if (point) {
+          openCardForPoint(point);
+        }
+      });
+
+      listMountEl.appendChild(item);
+    }
+  }
+
+  function escapeHtml(s){
+    const str = String(s ?? "");
+    return str
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  async function loadPointsForCurrentView() {
+    const b = getCurrentBounds();
+    const z = map.getZoom();
+    const f = getParams();
+
+    // Mantener actualizada la barra de ciudad
+    updateCityBar();
+
+    if (areaState.isDrawing) {
+      setStatus(areaState.lastHint || "Dibujando área...");
+      return;
+    }
+
+    setStatus("Cargando...");
+    const rows = await rpcSearchMapPoints(b, f);
+
+    const filtered = rows.filter(isInsideAnyArea);
+
+    clearMarkers();
+    filtered.forEach(addPoint);
+
+    // Render del listado
+    renderList(filtered);
+
+    setStatus(`Anuncios: ${filtered.length} | zoom ${z} | modo=${f.mode}`);
+  }
+
+  function scheduleReload() {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async () => {
+      try {
+        await loadPointsForCurrentView();
+      } catch (e) {
+        const msg = (e && e.message) ? e.message : String(e);
+        setStatus(`Error: ${msg}`);
+        console.error(e);
+      }
+    }, 300);
+  }
+
+  async function geocodeCity(city) {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&limit=1`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data[0]) return null;
+    return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+  }
+
+  async function goToCity(city) {
+    setStatus("Buscando ciudad...");
+    const center = await geocodeCity(city);
+    if (center) map.setView(center, 13);
+    scheduleReload();
+  }
+
+  function wireHeaderMiniSearch(){
+    const form = document.getElementById("miniSearchForm");
+    const input = document.getElementById("miniQ");
+
+    if (!form || !input) return;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const city = (input.value || "").trim();
+      if (!city) return;
+
+      const u = new URL(window.location.href);
+      u.searchParams.set("city", city);
+      history.replaceState(null, "", u.toString());
+
+      updateCityBar();
+      await goToCity(city);
+    });
+  }
+
+  function wireHeaderNav(){
+    const fav = document.getElementById("navFavoritos");
+    const login = document.getElementById("navLogin");
+
+    if (fav) fav.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("MVP: Favoritos (requiere registro).");
+    });
+
+    if (login) login.addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("MVP: Iniciar sesión.");
+    });
+  }
+
+  map.on("moveend", scheduleReload);
+  map.on("zoomend", scheduleReload);
 
   map.on("click", (e) => {
     const consumed = handleMapClickForAreas(e);
     if (consumed) return;
     closeCard();
-    clearActiveMarker();
   });
 
-  // --- Sol (reutiliza tu implementación original, compactada) ---
+  // Cuando cambian filtros, recargamos puntos
+  window.addEventListener("bh:filters-changed", () => {
+    updateCityBar();
+    scheduleReload();
+  });
+
+  // Sol (sin cambios funcionales)
   const ZOOM_SOL_MIN = 14;
   let sunEnabled = false;
   const sunState = { dateISO: null, minutes: null, sunriseMin: null, sunsetMin: null };
@@ -982,16 +1061,20 @@ export function initMap(){
     const day = String(d.getDate()).padStart(2,"0");
     return `${y}-${m}-${day}`;
   }
+
   function nowMinutes() {
     const d = new Date();
     return d.getHours()*60 + d.getMinutes();
   }
+
   function minutesToHHMM(mins) {
     const h = Math.floor(mins/60);
     const m = mins % 60;
     return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
   }
+
   function rad2deg(r){ return r * 180 / Math.PI; }
+
   function sunBearingAndAltDeg(lat, lng, dateObj){
     const pos = SunCalc.getPosition(dateObj, lat, lng);
     const azDeg = rad2deg(pos.azimuth);
@@ -999,23 +1082,37 @@ export function initMap(){
     const altDeg = rad2deg(pos.altitude);
     return { bearingDeg, altDeg };
   }
+
   function bearingToCardinal(deg){
     const dirs = ["N","NE","E","SE","S","SO","O","NO"];
     const idx = Math.round(deg / 45) % 8;
     return dirs[idx];
   }
+
   function buildDateObj(iso, minutes) {
     const [y,m,d] = iso.split("-").map(x => parseInt(x,10));
     const hh = Math.floor(minutes/60);
     const mm = minutes % 60;
     return new Date(y, (m-1), d, hh, mm, 0, 0);
   }
+
+  function addDaysISO(iso, deltaDays){
+    const [y,m,d] = iso.split("-").map(x => parseInt(x,10));
+    const dt = new Date(y, m-1, d, 12, 0, 0, 0);
+    dt.setDate(dt.getDate() + deltaDays);
+    const yy = dt.getFullYear();
+    const mm = String(dt.getMonth()+1).padStart(2,"0");
+    const dd = String(dt.getDate()).padStart(2,"0");
+    return `${yy}-${mm}-${dd}`;
+  }
+
   function svgClear(el){ while (el.firstChild) el.removeChild(el.firstChild); }
   function svgEl(name, attrs){
     const el = document.createElementNS("http://www.w3.org/2000/svg", name);
     if (attrs) for (const [k,v] of Object.entries(attrs)) el.setAttribute(k, String(v));
     return el;
   }
+
   function polarXY(cx, cy, R, bearingDeg, altDeg){
     const a = Math.max(0, Math.min(90, Math.abs(altDeg)));
     const r = ((90 - a) / 90) * R;
@@ -1025,26 +1122,213 @@ export function initMap(){
     return { x, y };
   }
 
+  function arcPath(cx, cy, r, a0Deg, a1Deg){
+    const a0 = (a0Deg - 90) * Math.PI/180;
+    const a1 = (a1Deg - 90) * Math.PI/180;
+    const x0 = cx + r * Math.cos(a0);
+    const y0 = cy + r * Math.sin(a0);
+    const x1 = cx + r * Math.cos(a1);
+    const y1 = cy + r * Math.sin(a1);
+    let da = ((a1Deg - a0Deg) % 360 + 360) % 360;
+    const large = da > 180 ? 1 : 0;
+    return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+  }
+
   function drawSunPolar(svg, centerLatLng, dateISO, minutes){
-    const V = 1120, cx = V/2, cy = V/2, R = 450;
+    const V = 1120;
+    const cx = V/2;
+    const cy = V/2;
+    const R = 450;
+
     svg.setAttribute("viewBox", `0 0 ${V} ${V}`);
     svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
     svgClear(svg);
 
-    svg.appendChild(svgEl("circle", { cx, cy, r: R, fill:"rgba(255,255,255,0)", stroke:"rgba(0,0,0,0.35)", "stroke-width":"3" }));
+    svg.appendChild(svgEl("circle", {
+      cx, cy, r: R,
+      fill: "rgba(255,255,255,0.00)",
+      stroke: "rgba(0,0,0,0.35)",
+      "stroke-width": "3"
+    }));
+
+    const axes = [
+      { a:0,   label:"N", x: cx,          y: cy - R - 22, anchor:"middle" },
+      { a:90,  label:"E", x: cx + R + 22, y: cy + 12,     anchor:"start"  },
+      { a:180, label:"S", x: cx,          y: cy + R + 42, anchor:"middle" },
+      { a:270, label:"O", x: cx - R - 22, y: cy + 12,     anchor:"end"    },
+    ];
 
     [0,90,180,270].forEach(a=>{
       const p = polarXY(cx, cy, R, a, 0);
-      svg.appendChild(svgEl("line", { x1:cx,y1:cy,x2:p.x,y2:p.y, stroke:"rgba(0,0,0,0.20)","stroke-width":"2" }));
+      svg.appendChild(svgEl("line", {
+        x1: cx, y1: cy, x2: p.x, y2: p.y,
+        stroke: "rgba(0,0,0,0.20)",
+        "stroke-width": "2"
+      }));
     });
+
+    axes.forEach(o=>{
+      const t = svgEl("text", {
+        x: o.x,
+        y: o.y,
+        "text-anchor": o.anchor,
+        "font-size": "34",
+        fill: "rgba(0,0,0,0.45)"
+      });
+      t.textContent = o.label;
+      svg.appendChild(t);
+    });
+
+    const dayNoon = buildDateObj(dateISO, 12*60);
+    const times = SunCalc.getTimes(dayNoon, centerLatLng.lat, centerLatLng.lng);
+    const sunrise = times.sunrise;
+    const sunset = times.sunset;
+
+    let haveSunTimes = false;
+    let sunriseBearing = null;
+    let sunsetBearing = null;
+
+    if (sunrise instanceof Date && !isNaN(sunrise.getTime()) && sunset instanceof Date && !isNaN(sunset.getTime())) {
+      const sr = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, sunrise);
+      const ss = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, sunset);
+
+      sunriseBearing = sr.bearingDeg;
+      sunsetBearing = ss.bearingDeg;
+      haveSunTimes = true;
+
+      const d1 = arcPath(cx, cy, R, sunriseBearing, sunsetBearing);
+
+      svg.appendChild(svgEl("path", {
+        d: `${d1} L ${cx} ${cy} Z`,
+        fill: "rgba(255, 196, 50, 0.14)",
+        stroke: "none"
+      }));
+
+      svg.appendChild(svgEl("path", {
+        d: d1,
+        fill: "none",
+        stroke: "rgba(255, 140, 0, 0.65)",
+        "stroke-width": "6",
+        "stroke-linecap": "round"
+      }));
+
+      const srPt = polarXY(cx, cy, R, sunriseBearing, 0);
+      const ssPt = polarXY(cx, cy, R, sunsetBearing, 0);
+
+      const riseSetStroke = "rgba(255, 140, 0, 0.85)";
+
+      svg.appendChild(svgEl("line", {
+        x1: cx, y1: cy, x2: srPt.x, y2: srPt.y,
+        stroke: riseSetStroke,
+        "stroke-width": "6",
+        "stroke-linecap": "round"
+      }));
+
+      svg.appendChild(svgEl("line", {
+        x1: cx, y1: cy, x2: ssPt.x, y2: ssPt.y,
+        stroke: riseSetStroke,
+        "stroke-width": "6",
+        "stroke-linecap": "round"
+      }));
+
+      [srPt, ssPt].forEach(pt=>{
+        svg.appendChild(svgEl("circle", {
+          cx: pt.x, cy: pt.y, r: 12,
+          fill: "rgba(0,0,0,0.22)"
+        }));
+      });
+    }
 
     const curDate = buildDateObj(dateISO, minutes);
     const cur = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, curDate);
+
     const meta = { isDay: cur.altDeg > 0, bearingDeg: cur.bearingDeg, altDeg: cur.altDeg };
 
-    const p = polarXY(cx, cy, R, cur.bearingDeg, cur.altDeg);
-    svg.appendChild(svgEl("line", { x1:cx,y1:cy,x2:p.x,y2:p.y, stroke:"rgba(255, 196, 50, 0.86)","stroke-width":"8","stroke-linecap":"round" }));
-    svg.appendChild(svgEl("circle", { cx:p.x, cy:p.y, r: 20, fill: meta.isDay ? "rgba(255, 120, 60, 0.95)" : "rgba(165,165,165,0.86)", stroke:"rgba(255, 196, 50, 0.98)","stroke-width":"7" }));
+    const sunR = Math.round(18 * 1.15);
+    const sunStroke = Math.round(6 * 1.15);
+
+    const sunRingYellow = "rgba(255, 196, 50, 0.98)";
+    const sunLineYellow = "rgba(255, 196, 50, 0.86)";
+
+    if (!meta.isDay && haveSunTimes) {
+      const nextISO = addDaysISO(dateISO, 1);
+      const nextNoon = buildDateObj(nextISO, 12*60);
+      const timesNext = SunCalc.getTimes(nextNoon, centerLatLng.lat, centerLatLng.lng);
+      const sunriseNext = timesNext.sunrise;
+
+      if (sunset instanceof Date && sunriseNext instanceof Date && !isNaN(sunriseNext.getTime())) {
+        const ptsN = [];
+        const stepMin = 10;
+
+        for (let tt = sunset.getTime(); tt <= sunriseNext.getTime(); tt += stepMin*60*1000) {
+          const d = new Date(tt);
+          const pa = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, d);
+          if (pa.altDeg <= 0) ptsN.push(polarXY(cx, cy, R, pa.bearingDeg, pa.altDeg));
+        }
+
+        if (ptsN.length >= 2) {
+          const dAttrN = ptsN.map((p,i)=> `${i===0?"M":"L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" ");
+          svg.appendChild(svgEl("path", {
+            d: dAttrN,
+            fill: "none",
+            stroke: "rgba(140,140,140,0.55)",
+            "stroke-width": "6",
+            "stroke-linecap": "round",
+            "stroke-linejoin": "round"
+          }));
+        }
+      }
+    }
+
+    if (meta.isDay) {
+      if (haveSunTimes) {
+        const pts = [];
+        const stepMin = 6;
+        const start = sunrise.getTime();
+        const end = sunset.getTime();
+        for (let tt = start; tt <= end; tt += stepMin*60*1000) {
+          const d = new Date(tt);
+          const pa = sunBearingAndAltDeg(centerLatLng.lat, centerLatLng.lng, d);
+          if (pa.altDeg >= 0) pts.push(polarXY(cx, cy, R, pa.bearingDeg, pa.altDeg));
+        }
+        if (pts.length >= 2) {
+          const dAttr = pts.map((p,i)=> `${i===0?"M":"L"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(" ");
+          svg.appendChild(svgEl("path", {
+            d: dAttr,
+            fill: "none",
+            stroke: "rgba(255, 140, 0, 0.88)",
+            "stroke-width": "8",
+            "stroke-linecap": "round",
+            "stroke-linejoin": "round"
+          }));
+        }
+      }
+
+      const p = polarXY(cx, cy, R, cur.bearingDeg, cur.altDeg);
+
+      svg.appendChild(svgEl("line", {
+        x1: cx, y1: cy, x2: p.x, y2: p.y,
+        stroke: sunLineYellow,
+        "stroke-width": "8",
+        "stroke-linecap": "round"
+      }));
+
+      svg.appendChild(svgEl("circle", {
+        cx: p.x, cy: p.y, r: sunR,
+        fill: "rgba(255, 120, 60, 0.95)",
+        stroke: sunRingYellow,
+        "stroke-width": String(sunStroke)
+      }));
+    } else {
+      const p = polarXY(cx, cy, R, cur.bearingDeg, cur.altDeg);
+
+      svg.appendChild(svgEl("circle", {
+        cx: p.x, cy: p.y, r: sunR,
+        fill: "rgba(165,165,165,0.86)",
+        stroke: sunRingYellow,
+        "stroke-width": String(sunStroke)
+      }));
+    }
 
     return meta;
   }
@@ -1089,8 +1373,18 @@ export function initMap(){
     updateDaylightBand();
 
     const meta = drawSunPolar(sunPolarOverlaySvg, c, iso, mins);
+
     const card = bearingToCardinal(meta.bearingDeg);
-    sunOverlayLabelEl.textContent = `${minutesToHHMM(mins)} · ${meta.isDay ? "día" : "noche"} · ${card} · ${Math.round(meta.bearingDeg)}° · alt ${Math.round(meta.altDeg)}°`;
+    if (meta.isDay) {
+      sunOverlayLabelEl.textContent = `${minutesToHHMM(mins)} · ${card} · ${Math.round(meta.bearingDeg)}° · alt ${Math.round(meta.altDeg)}°`;
+    } else {
+      sunOverlayLabelEl.textContent = `${minutesToHHMM(mins)} · noche · ${card} · ${Math.round(meta.bearingDeg)}° · alt ${Math.round(meta.altDeg)}°`;
+    }
+  }
+
+  function setSunEnabled(next){
+    sunEnabled = next;
+    updateSunOverlay();
   }
 
   function initHoursRow(){
@@ -1117,6 +1411,7 @@ export function initMap(){
 
   sunState.dateISO = todayISO();
   sunState.minutes = nowMinutes();
+
   sunDateEl.value = sunState.dateISO;
   sunRangeEl.value = String(sunState.minutes);
 
@@ -1124,10 +1419,12 @@ export function initMap(){
     sunState.minutes = parseInt(sunRangeEl.value, 10);
     updateSunOverlay();
   });
+
   sunDateEl.addEventListener("change", () => {
     sunState.dateISO = sunDateEl.value || todayISO();
     updateSunOverlay();
   });
+
   sunNowBtn.addEventListener("click", () => {
     sunState.dateISO = todayISO();
     sunState.minutes = nowMinutes();
@@ -1136,52 +1433,6 @@ export function initMap(){
     updateSunOverlay();
   });
 
-  // Control: Localización (encima del sol)
-  const LocationControl = L.Control.extend({
-    options: { position: "topright" },
-    onAdd: function(){
-      const container = L.DomUtil.create("div", "quickCol");
-      L.DomEvent.disableClickPropagation(container);
-      L.DomEvent.disableScrollPropagation(container);
-
-      const btn = L.DomUtil.create("div", "qBtn", container);
-      btn.title = "Ir a mi ubicación";
-      btn.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2v3"></path><path d="M12 19v3"></path>
-          <path d="M2 12h3"></path><path d="M19 12h3"></path>
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M12 5a7 7 0 1 0 7 7"></path>
-        </svg>
-      `;
-
-      btn.addEventListener("click", () => {
-        if (!navigator.geolocation) {
-          alert("Tu navegador no permite geolocalización.");
-          return;
-        }
-        setStatus("Localizando...");
-        navigator.geolocation.getCurrentPosition(
-          (pos)=>{
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            map.setView([lat,lng], 14);
-            scheduleReload();
-            updateAreaCrumb();
-          },
-          ()=>{
-            alert("No se pudo obtener tu ubicación.");
-            scheduleReload();
-          },
-          { enableHighAccuracy: true, timeout: 8000 }
-        );
-      });
-
-      return container;
-    }
-  });
-
-  // Control: Sol
   const SunControl = L.Control.extend({
     options: { position: "topright" },
     onAdd: function() {
@@ -1208,8 +1459,7 @@ export function initMap(){
         btn.title = ok ? "Sol" : `Acércate para activar (zoom ${ZOOM_SOL_MIN}+)`;
         if (!ok && sunEnabled) {
           btn.classList.remove("active");
-          sunEnabled = false;
-          updateSunOverlay();
+          setSunEnabled(false);
         } else {
           updateSunOverlay();
         }
@@ -1231,8 +1481,7 @@ export function initMap(){
 
         const next = !sunEnabled;
         btn.classList.toggle("active", next);
-        sunEnabled = next;
-        updateSunOverlay();
+        setSunEnabled(next);
       });
 
       map.on("zoomend", setBtnEnabled);
@@ -1244,7 +1493,27 @@ export function initMap(){
     }
   });
 
-  // Control: Áreas
+  map.addControl(new SunControl());
+
+  map.on("moveend", () => { if (sunEnabled) updateSunOverlay(); });
+  map.on("zoomend", () => { if (sunEnabled) updateSunOverlay(); });
+  window.addEventListener("resize", () => { if (sunEnabled) updateSunOverlay(); });
+
+  // Cuando cambia el layout (ocultar/mostrar columnas), Leaflet necesita invalidateSize
+  function safeInvalidate(){
+    try {
+      map.invalidateSize(true);
+    } catch {}
+    if (sunEnabled) {
+      try { updateSunOverlay(); } catch {}
+    }
+  }
+
+  window.addEventListener("bh:layout-resize", () => {
+    requestAnimationFrame(() => safeInvalidate());
+  });
+
+  // Áreas (sin cambios funcionales)
   const AreasControl = L.Control.extend({
     options: { position: "topright" },
     onAdd: function() {
@@ -1385,14 +1654,8 @@ export function initMap(){
     }
   });
 
-  // Añadir controles en orden: Localización (arriba), Sol, Áreas
-  map.addControl(new LocationControl());
-  map.addControl(new SunControl());
   map.addControl(new AreasControl());
 
-  // ---------------------------
-  // Init
-  // ---------------------------
   (async function init(){
     try {
       wireHeaderMiniSearch();
@@ -1403,14 +1666,14 @@ export function initMap(){
         if (center) map.setView(center, 13);
       }
 
-      // Primera carga
-      await loadPointsForCurrentView();
-      await updateAreaCrumb();
+      // Asegurar que Leaflet pinta bien tras el primer layout
+      safeInvalidate();
 
-      // Fix de render inicial por si el layout tarda
-      notifyLayoutChange();
-      setTimeout(()=> notifyLayoutChange(), 250);
-      setTimeout(()=> notifyLayoutChange(), 650);
+      await loadPointsForCurrentView();
+
+      // Otra pasada por si el layout terminó de asentarse justo después
+      setTimeout(() => safeInvalidate(), 250);
+      setTimeout(() => safeInvalidate(), 600);
     } catch (e) {
       const msg = (e && e.message) ? e.message : String(e);
       setStatus(`Error: ${msg}`);
