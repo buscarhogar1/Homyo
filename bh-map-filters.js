@@ -114,7 +114,7 @@ export function initFiltersBar({ mountId }) {
   const u = new URL(window.location.href);
   const mode = (u.searchParams.get("mode") || "buy").toLowerCase();
 
-  // Sugerencias según definición 2
+  // Sugerencias según definición :contentReference[oaicite:2]{index=2}
   const PRICE_BUY = [50000, 75000, 100000, 125000, 150000, 175000, 200000, 250000, 300000, 350000, 400000, 450000, 500000, 600000, 750000, 1000000, 1500000, 2000000];
   const PRICE_RENT = [300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 1800, 2000, 2500, 3000];
 
