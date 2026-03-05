@@ -733,7 +733,7 @@ body{
   box-sizing: border-box;
   display: grid;
   grid-template-rows: 14px 1fr;
-  gap: 4px;
+  gap: 8px;
 }
 
 .sunHoursRow{
@@ -1009,7 +1009,7 @@ body{
   gap: 10px;
   font-size: 14px;
   color: rgba(0,0,0,0.80);
-  padding: 3px 2px;
+  padding: 6px 2px;
 }
 .fRadio input{
   width: 18px;
@@ -1059,13 +1059,13 @@ body{
 /* ====== Filtros: opciones en columna (una por línea) ====== */
 .fOptCol{
   display: grid;
-  gap: 4px;
+  gap: 8px;
 }
 .fOptLine{
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 3px 2px;
+  padding: 6px 2px;
   font-size: 14px;
   color: rgba(0,0,0,0.80);
 }
@@ -1081,5 +1081,5 @@ body{
 .fCol2{
   display:grid;
   grid-template-columns: 1fr;
-  gap: 4px;
+  gap: 8px;
 }
