@@ -357,7 +357,7 @@ export function initMap(){
       p_bedrooms_min: filters.bedroomsMin,
       p_bathrooms_min: filters.bathroomsMin,
 
-      p_outdoor_type: filters.outdoorTypess,
+      p_outdoor_type: filters.outdoorTypes,
       p_orientations: filters.orientations,
 
       p_energy_choice: filters.energyChoice,
