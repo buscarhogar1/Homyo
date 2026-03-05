@@ -18,21 +18,20 @@
   </head>
 
   <body>
-    <!-- Header (inyectado por bh-layout.js) -->
-    <div id="bhHeaderMount"></div>
+    <div id="bhHeader"></div>
 
+    <!-- Contenedor general de la página del mapa -->
     <div class="page">
       <div class="mapShell">
-        <!-- Fila superior: botones + etiqueta del lugar -->
+
+        <!-- Fila superior independiente (NO dentro de columnas) -->
         <div class="topRow">
           <div class="topCell topCellLeft">
-            <div class="topLeftTools">
-              <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
-            </div>
+            <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
           </div>
 
           <div class="topCell topCellCenter">
-            <!-- etiqueta de lugar (ciudad / zona) -->
+            <!-- Etiqueta dinámica “Comunidad / Ciudad / Zona” -->
             <div id="placeLabel" class="placeLabel">—</div>
           </div>
 
@@ -56,57 +55,103 @@
 
         <!-- Layout 3 columnas: filtros | mapa | listado -->
         <div class="grid3" id="grid3">
-          <aside class="col filtersCol" id="filtersCol">
+          <!-- Columna filtros (scroll interno) -->
+          <aside class="col colFilters" id="filtersCol">
             <div id="filtersBarMount"></div>
           </aside>
 
-          <main class="col mapCol">
-            <div id="map"></div>
+          <!-- Columna mapa -->
+          <main class="col colMap" id="mapCol">
+            <div id="mapWrap" class="mapWrap">
+              <div id="map"></div>
 
-            <!-- Sun overlay (si se activa) -->
-            <div id="sunbarWrap" class="sunbarWrap" style="display:none;">
-              <div class="sunbarInner">
-                <div class="sunbarTop">
-                  <div class="sunTitle">Sol</div>
-                  <button id="sunCloseBtn" class="sunCloseBtn" type="button">×</button>
+              <!-- Overlay / UI existente -->
+              <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
+                <div id="sunOverlayLabel" class="sunOverlayLabel">—</div>
+                <svg id="sunPolarOverlay" aria-label="Diagrama solar"></svg>
+              </div>
+
+              <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
+                <div class="sunDateDockInner">
+                  <input type="date" id="sunDate" />
+                  <button type="button" id="sunNowBtn">Ahora</button>
                 </div>
-                <div class="sunbarRow">
-                  <div class="sunbarRowItem">
-                    <div class="sunLabel">Salida</div>
-                    <div class="sunVal" id="sunriseVal">—</div>
-                  </div>
-                  <div class="sunbarRowItem">
-                    <div class="sunLabel">Puesta</div>
-                    <div class="sunVal" id="sunsetVal">—</div>
-                  </div>
-                  <div class="sunbarRowItem">
-                    <div class="sunLabel">Altura</div>
-                    <div class="sunVal" id="sunAltVal">—</div>
+              </div>
+
+              <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
+                <div class="sunTimebarInner">
+                  <div class="sunHoursRow" id="sunHoursRow"></div>
+                  <div class="sunTrack" id="sunTrack">
+                    <input id="sunRange" class="sunRange" type="range" min="0" max="1439" step="10" />
                   </div>
                 </div>
               </div>
+
+              <div id="areaHint" class="areaHint" aria-hidden="true">
+                <div class="areaHintInner">
+                  <div class="areaHintDot" aria-hidden="true"></div>
+                  <div id="areaHintText" class="areaHintText">—</div>
+                </div>
+              </div>
+
+              <!-- Tarjeta “flotante” de selección (ahora se posiciona respecto al mapa, no al viewport) -->
+              <div id="card" class="card">
+                <div class="cardGrid">
+                  <div class="mediaSide">
+                    <span id="badgeNew" class="badgeNew">Nuevo</span>
+                    <img id="mediaImg" class="mediaImg" alt="" style="display:none;" />
+                    <div id="mediaPlaceholder" class="mediaPlaceholder">Foto</div>
+
+                    <div class="mediaMiniIcon" title="Fotos">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-2h4l2 2h3a2 2 0 0 1 2 2z"/>
+                        <path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="textSide">
+                    <div class="topActions">
+                      <button class="heartBtn" id="heartBtn" type="button" aria-label="Guardar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+                        </svg>
+                      </button>
+
+                      <button class="closeBtn" id="cardClose" type="button" aria-label="Cerrar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M18 6L6 18"/><path d="M6 6l12 12"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <a id="cardAddrTop" class="addrTop" href="#">Dirección</a>
+                    <div id="cardAddrBottom" class="addrBottom">—</div>
+
+                    <div id="cardPrice" class="price">—</div>
+                    <div id="cardFacts" class="facts"></div>
+
+                    <div id="cardAgency" class="agency">—</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status “pill” dentro del mapa (referencia visual) -->
+              <div id="status"></div>
             </div>
-
-            <!-- Botón para activar/desactivar sol -->
-            <button id="sunToggleBtn" class="sunToggleBtn" type="button" title="Sol">☀</button>
-
-            <!-- Toast / estado -->
-            <div id="statusToast" class="statusToast" aria-live="polite"></div>
           </main>
 
-          <aside class="col listCol" id="listCol">
-            <div class="listHead">
-              <div class="listTitle">Resultados</div>
-              <div class="listCount" id="listCount">—</div>
+          <!-- Columna listado (scroll interno) -->
+          <aside class="col colList" id="listCol">
+            <div id="listMount" class="listMount">
+              <div id="listItems" class="listItems"></div>
             </div>
-            <div class="listItems" id="listItems"></div>
           </aside>
         </div>
       </div>
     </div>
 
-    <!-- Footer (inyectado por bh-layout.js) -->
-    <div id="bhFooterMount"></div>
+    <div id="bhFooter"></div>
 
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -129,7 +174,7 @@
       // Inicializamos filtros dentro de su columna
       initFiltersBar({ mountId: "filtersBarMount" });
 
-      // Toggle columnas
+      // Toggle columnas (arreglo del bug: el de filtros ahora alterna bien siempre)
       const grid = document.getElementById("grid3");
       const btnFilters = document.getElementById("toggleFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
@@ -143,7 +188,7 @@
 
       function notifyLayoutResize() {
         // Leaflet necesita invalidateSize; bh-map-core.js escucha este evento.
-        // Disparamos 2 veces para cubrir el cambio de layout (grid) y evitar el "mapa en blanco".
+        // Disparamos 2 veces para cubrir el cambio de grid/layout y evitar el “mapa en blanco”.
         requestAnimationFrame(() => {
           window.dispatchEvent(new CustomEvent("bh:layout-resize"));
           setTimeout(() => window.dispatchEvent(new CustomEvent("bh:layout-resize")), 120);

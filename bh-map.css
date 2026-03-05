@@ -26,21 +26,26 @@
 html, body {
   height: 100%;
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif;
-  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   background: var(--bg);
+  color: var(--text);
+}
+
+/* En escritorio, nada de scroll en la página */
+body{
+  overflow: hidden;
 }
 
 .page{
   height: calc(100% - var(--headerH));
-  padding: 8px 4px 8px;
+  padding: 6px 2px 6px;
   box-sizing: border-box;
 }
 
 .mapShell{
   width: 100%;
-  margin: 0;
-  height: 100%;
+margin: 0;
+height: 100%;
   box-sizing: border-box;
   position: relative;
 }
@@ -85,45 +90,53 @@ html, body {
   padding: 6px 12px;
   border-radius: 999px;
   background: rgba(255,255,255,0.92);
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.10);
   font-size: 13px;
-  color: rgba(0,0,0,0.82);
+  color: rgba(0,0,0,0.78);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  /* Alineación a la izquierda sobre el mapa (pedido) */
+  justify-self: start;
 }
 
-/* Order menu */
+.topRightTools{
+  position: relative;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Menú desplegable de orden */
 .orderMenu{
   position: absolute;
   right: 0;
   top: 36px;
-  width: 330px;
-  background: rgba(255,255,255,0.98);
+  width: 230px;
+  background: #fff;
   border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 14px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.16);
   padding: 8px;
-  z-index: 1200;
+  z-index: 950;
+  display: none;
 }
-
 .orderItem{
   width: 100%;
   text-align: left;
   padding: 10px 10px;
-  border: 0;
   border-radius: 10px;
-  cursor: pointer;
+  border: 0;
   background: transparent;
+  cursor: pointer;
   font-size: 13px;
   color: rgba(0,0,0,0.86);
 }
-
 .orderItem:hover{
   background: rgba(0,0,0,0.05);
 }
 
-/* Layout 3 columnas */
+/* Grid 3 columnas */
 .grid3{
   height: calc(100% - var(--topRowH) - var(--gap));
   display: grid;
@@ -145,297 +158,811 @@ html, body {
 
 /* Columnas */
 .col{
-  min-width: 0;
   height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
 }
 
-.filtersCol, .listCol{
-  background: rgba(0,0,0,0.02);
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 16px;
+/* Reducir margen blanco a la izquierda: quitamos centrar con grandes paddings y ajustamos .page */
+.colFilters, .colList{
   overflow: hidden;
 }
 
-.grid3.hideFilters .filtersCol{
-  display: none;
+.colFilters{
+  display: block;
 }
-.grid3.hideList .listCol{
-  display: none;
+.colList{
+  display: block;
 }
 
-/* MAP */
-.mapCol{
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
+/* Scroll interno de columnas */
+#filtersCol{
   border: 1px solid rgba(0,0,0,0.08);
-}
-
-#map{
-  width: 100%;
-  height: 100%;
-}
-
-/* Sun toggle */
-.sunToggleBtn{
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  width: 46px;
-  height: 46px;
-  border-radius: 999px;
-  border: 1px solid rgba(0,0,0,0.12);
-  background: rgba(255,255,255,0.96);
-  cursor: pointer;
-  font-size: 20px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sunToggleBtn:hover{
-  background: #fff;
-}
-
-.sunbarWrap{
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  padding: var(--sunbar-outer-pad);
-  border-radius: 18px;
-  background: rgba(255,255,255,0.95);
-  border: 1px solid rgba(0,0,0,0.10);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-}
-
-.sunbarInner{
-  display: grid;
-  gap: var(--sunbar-gap);
-}
-
-.sunbarTop{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sunTitle{
-  font-size: 14px;
-  color: rgba(0,0,0,0.86);
-}
-
-.sunCloseBtn{
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  border: 1px solid rgba(0,0,0,0.12);
-  background: rgba(255,255,255,0.92);
-  cursor: pointer;
-  font-size: 18px;
-  line-height: 1;
-}
-
-.sunCloseBtn:hover{
-  background: #fff;
-}
-
-.sunbarRow{
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--sunbar-gap);
-}
-
-.sunbarRowItem{
-  height: var(--sunbar-inner-h);
   border-radius: 14px;
+  background: rgba(255,255,255,0.98);
+  overflow: hidden;
+}
+#filtersBarMount{
+  height: 100%;
+  overflow: auto;
+}
+
+#listCol{
   border: 1px solid rgba(0,0,0,0.08);
-  background: rgba(0,0,0,0.02);
-  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.98);
+  overflow: hidden;
+}
+
+.listMount{
+  height: 100%;
+  overflow: auto;
+}
+.listItems{
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 10px;
+  box-sizing: border-box;
 }
 
-.sunLabel{
-  font-size: 12px;
-  color: rgba(0,0,0,0.55);
-}
-
-.sunVal{
-  font-size: 14px;
-  color: rgba(0,0,0,0.86);
-}
-
-/* STATUS */
-.statusToast{
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  padding: 10px 12px;
+/* Mapa */
+.mapWrap{
+  height: 100%;
   border-radius: 14px;
-  border: 1px solid rgba(0,0,0,0.10);
+  overflow: hidden;
+  border: 1px solid #f0f1f3;
+  position: relative; /* importante: tarjeta posicionada respecto al mapa */
+}
+#map{
+  height: 100%;
+}
+
+/* Status dentro del mapa */
+#status{
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
   background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 999px;
+  padding: 8px 12px;
   font-size: 13px;
-  color: rgba(0,0,0,0.82);
-  max-width: calc(100% - 24px);
+  color: #111;
+  z-index: 500;
+  max-width: min(980px, calc(100% - 28px));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+/* Marcadores */
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #ffb100;
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+.dot:hover { transform: scale(1.12); }
+
+/* Anuncio visto: blanco con borde naranja (pedido) */
+.dot.seen{
+  background: #ffffff;
+  border-color: #ffb100;
+}
+
+/* Hover desde listado */
+.dot.hover{
+  transform: scale(1.22);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+}
+
+/* Seleccionado: azul (mantener) */
+.dot.active {
+  background: #1a73e8;
+  border-color: #0b3d91;
+  transform: scale(1.18);
+}
+
+/* Tarjeta (ahora dentro del mapa, en la parte inferior y centrada respecto al mapa) */
+.card {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  width: min(720px, calc(100% - 28px));
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.14);
+  border-radius: 12px;
+  box-shadow: 0 14px 38px rgba(0,0,0,0.18);
+  z-index: 9999;
+  overflow: hidden;
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(10px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.card.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  height: 143px;
+}
+
+.mediaSide {
+  position: relative;
+  background: #f1f2f4;
+  overflow: hidden;
+  height: 100%;
+}
+
+.mediaImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mediaPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #9aa1aa;
+  font-size: 13px;
+}
+
+.badgeNew {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #f7a300;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
   display: none;
 }
 
-/* LISTADO */
-.listHead{
-  padding: 12px 12px 10px;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
+.mediaMiniIcon {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.94);
+  border: 1px solid rgba(0,0,0,0.10);
+  display: grid;
+  place-items: center;
+}
+.mediaMiniIcon svg {
+  width: 16px;
+  height: 16px;
+  color: rgba(0,0,0,0.75);
+}
+
+.textSide {
+  position: relative;
+  padding: 12px 14px 12px;
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
 }
 
-.listTitle{
-  font-size: 14px;
-  color: rgba(0,0,0,0.86);
-}
-
-.listCount{
-  font-size: 12px;
-  color: rgba(0,0,0,0.55);
-}
-
-.listItems{
-  height: calc(100% - 44px);
-  overflow: auto;
-  padding: 10px;
-}
-
-.listItem{
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 14px;
-  background: rgba(255,255,255,0.95);
-  overflow: hidden;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.listItem:hover{
-  border-color: rgba(0,0,0,0.14);
-}
-
-.listItemTop{
+.topActions {
+  position: absolute;
+  right: 10px;
+  top: 10px;
   display: flex;
   gap: 10px;
-  padding: 10px;
+  align-items: center;
 }
 
-.listThumb{
-  width: 84px;
-  height: 62px;
-  border-radius: 12px;
-  background: rgba(0,0,0,0.06);
-  flex: 0 0 auto;
-  object-fit: cover;
-}
-
-.listMain{
-  min-width: 0;
+.heartBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.18);
+  background: #fff;
+  cursor: pointer;
   display: grid;
-  gap: 4px;
+  place-items: center;
+}
+.heartBtn svg {
+  width: 18px;
+  height: 18px;
+  color: #1a73e8;
 }
 
-.listPrice{
+.closeBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 0;
+  background: #1a73e8;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.closeBtn svg {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}
+
+.addrTop {
+  color: #1a73e8;
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1.08;
+  font-weight: 650;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  padding-right: 112px;
+  max-height: calc(1.08em * 2);
+}
+.addrTop:hover { text-decoration: underline; }
+
+.addrBottom {
+  margin-top: 5px;
+  font-size: 16px;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 900;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.facts {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  color: rgba(0,0,0,0.85);
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.fact svg {
+  width: 18px;
+  height: 18px;
+  color: rgba(0,0,0,0.75);
+}
+
+.agency {
+  margin-top: auto;
+  padding-top: 10px;
   font-size: 14px;
-  color: rgba(0,0,0,0.86);
-}
-
-.listMeta{
-  font-size: 12px;
-  color: rgba(0,0,0,0.62);
+  font-weight: 400;
+  color: #1a73e8;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.listSub{
-  font-size: 12px;
-  color: rgba(0,0,0,0.55);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* FILTROS */
-.filtersRoot{
-  height: 100%;
-  overflow: auto;
+/* Listado: tarjetas compactas tipo “card”, adaptadas al ancho de la columna */
+.listCard{
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 10px;
   padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+.listCard:hover{
+  box-shadow: 0 12px 26px rgba(0,0,0,0.10);
+}
+.listImg{
+  width: 92px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #f1f2f4;
+}
+.listImgPh{
+  width: 92px;
+  height: 80px;
+  border-radius: 12px;
+  background: #f1f2f4;
+  display: grid;
+  place-items: center;
+  color: rgba(0,0,0,0.40);
+  font-size: 12px;
+}
+.listTitle{
+  font-size: 15px;
+  color: #1a73e8;
+  text-decoration: none;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.listSub{
+  margin-top: 2px;
+  font-size: 13px;
+  color: rgba(0,0,0,0.78);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.listPrice{
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 900;
+  color: rgba(0,0,0,0.90);
+}
+.listMeta{
+  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: rgba(0,0,0,0.70);
+}
+.listAgency{
+  margin-top: 6px;
+  font-size: 13px;
+  color: #1a73e8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Leaflet controles */
+.leaflet-control-zoom a {
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  border-radius: 10px;
+}
+.leaflet-bar a, .leaflet-bar a:hover {
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+/* Controles rápidos (Sol / áreas / geolocalización) */
+.quickCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.qBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.96);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+  user-select: none;
+}
+.qBtn:hover { background: #fff; }
+.qBtn svg { width: 20px; height: 20px; color: rgba(0,0,0,0.80); }
+
+.qBtn.active {
+  border-color: rgba(26,115,232,0.55);
+  box-shadow: 0 12px 28px rgba(26,115,232,0.16);
+}
+
+.qBtn.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.qBtnSmall{
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  border: 1px solid rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.96);
+  cursor: pointer;
+  display: grid;
+  place-items:center;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.10);
+  user-select: none;
+}
+.qBtnSmall:hover{ background:#fff; }
+.qBtnSmall svg{ width: 18px; height: 18px; color: rgba(0,0,0,0.78); }
+
+.qBtnSmall.active{
+  border-color: rgba(26,115,232,0.55);
+  box-shadow: 0 12px 26px rgba(26,115,232,0.16);
+}
+
+.qBtnSmall.disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.areaHint{
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 760;
+  display: none;
+  pointer-events: none;
+  max-width: calc(100% - 28px);
+}
+.areaHintInner{
+  height: 44px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(0,0,0,0.10);
+  backdrop-filter: blur(6px);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.areaHintDot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(26,115,232,0.85);
+  flex: 0 0 auto;
+}
+.areaHintText{
+  font-size: 13px;
+  color: rgba(0,0,0,0.78);
+  white-space: nowrap;
+  text-align: center;
+}
+
+.areaDel{
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(0,0,0,0.18);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+  display: grid;
+  place-items: center;
+  user-select: none;
+  cursor: pointer;
+}
+.areaDel span{
+  font-size: 14px;
+  line-height: 1;
+  color: rgba(0,0,0,0.62);
+  transform: translateY(-0.5px);
+}
+
+/* Sol overlay (sin cambios relevantes) */
+.sunOverlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 650;
+  width: min(72vmin, 760px);
+  height: min(72vmin, 760px);
+  display: none;
+  pointer-events: none;
+}
+
+.sunOverlay svg{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sunOverlayLabel{
+  position: absolute;
+  left: 50%;
+  top: -38px;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.62);
+  color: rgba(255,255,255,0.92);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.sunTimebar {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 700;
+  display: none;
+  pointer-events: auto;
+}
+
+.sunTimebarInner{
+  position: relative;
+  height: var(--sunbar-inner-h);
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(0,0,0,0.10);
+  backdrop-filter: blur(6px);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: 14px 1fr;
+  gap: 8px;
+}
+
+.sunHoursRow{
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 0;
+  font-size: 10.5px;
+  color: rgba(0,0,0,0.58);
+  user-select: none;
+  line-height: 14px;
+}
+
+.sunHoursRow span{
+  text-align: center;
+  transform: translateY(-1px);
+}
+
+.sunTrack {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background:
+    linear-gradient(to right,
+      rgba(255,176,0,0.0) 0%,
+      rgba(255,176,0,0.0) var(--sr, 0%),
+      rgba(255,176,0,0.16) var(--sr, 0%),
+      rgba(255,176,0,0.16) var(--ss, 0%),
+      rgba(255,176,0,0.0) var(--ss, 0%),
+      rgba(255,176,0,0.0) 100%
+    );
+  border: 1px solid rgba(0,0,0,0.10);
+  overflow: hidden;
+}
+
+.sunTrack:before{
+  content:"";
+  position:absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.06), rgba(0,0,0,0.03));
+  opacity: 0.28;
+  pointer-events:none;
+}
+
+.sunRange {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  outline: none;
+}
+
+.sunRange::-webkit-slider-thumb{
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255,176,0,0.96);
+  border: 3px solid rgba(255,255,255,0.96);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+  cursor: pointer;
+}
+.sunRange::-moz-range-thumb{
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255,176,0,0.96);
+  border: 3px solid rgba(255,255,255,0.96);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+  cursor: pointer;
+}
+
+.sunDateDock{
+  position: absolute;
+  right: 14px;
+  bottom: calc(var(--sunbar-outer-pad) + var(--sunbar-inner-h) + var(--sunbar-gap));
+  z-index: 720;
+  display: none;
+  pointer-events: auto;
+}
+
+.sunDateDockInner{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(0,0,0,0.10);
+  backdrop-filter: blur(6px);
+}
+
+.sunDateDock input[type="date"]{
+  font-size: 12.5px;
+  padding: 7px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(255,255,255,0.92);
+  outline: none;
+}
+
+.sunDateDock button{
+  border: 0;
+  background: rgba(0,0,0,0.70);
+  color: rgba(255,255,255,0.92);
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 650;
+}
+
+.sunDateDock button:hover{
+  background: rgba(0,0,0,0.78);
+}
+
+/* Responsive: en móvil permitimos scroll normal y layout en columna */
+@media (max-width: 980px) {
+  body{ overflow: auto; }
+
+  .page{
+    height: auto;
+    padding: 10px 10px 10px;
+  }
+
+  .topRow{
+    grid-template-columns: 1fr;
+    height: auto;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .topCellCenter{ justify-content: flex-start; }
+  .placeLabel{ justify-self: start; }
+
+  .grid3{
+    height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  #filtersCol, #listCol{
+    height: 340px;
+  }
+
+  .mapWrap{
+    height: 60vh;
+    min-height: 420px;
+  }
+
+  .card{
+    width: calc(100% - 20px);
+  }
+
+  .cardGrid{
+    grid-template-columns: 1fr;
+    height: 320px;
+  }
+  .mediaSide{ height: 210px; }
+  .textSide{ height: calc(320px - 210px); }
+  .addrTop{ padding-right: 0; }
+}
+/* Filtros: estilo “tarjeta” similar a tu versión anterior */
+.filtersRoot{
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
 }
 
 .fBlock{
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 16px;
-  background: rgba(255,255,255,0.92);
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-.fBlock.active{
-  border-color: rgba(163,71,47,0.35);
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 14px;
+  background: #fff;
+  padding: 12px;
 }
 
 .fHead{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 10px;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .fTitle{
-  display: flex;
+  display: inline-flex;
+  gap: 10px;
   align-items: center;
-  gap: 8px;
-  min-width: 0;
 }
 
 .fDot{
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 999px;
-  background: rgba(0,0,0,0.22);
+  border: 2px solid rgba(26,115,232,0.85);
+  background: transparent;
+  flex: 0 0 auto;
 }
 
 .fBlock.active .fDot{
-  background: rgba(163,71,47,0.9);
+  background: rgba(26,115,232,0.90);
 }
 
 .fTitleText{
-  font-size: 13px;
+  font-size: 16px;
   color: rgba(0,0,0,0.86);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 650;
 }
 
 .fClearBtn{
   width: 28px;
   height: 28px;
-  border-radius: 999px;
-  border: 1px solid rgba(0,0,0,0.10);
-  background: rgba(255,255,255,0.9);
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.02);
   cursor: pointer;
+  color: rgba(0,0,0,0.55);
+  display: grid;
+  place-items: center;
   font-size: 18px;
   line-height: 1;
-  color: rgba(0,0,0,0.55);
 }
-
+.fClearBtn:hover{
+  background: rgba(0,0,0,0.05);
+}
 .fClearBtn.active{
-  border-color: rgba(163,71,47,0.35);
-  color: rgba(163,71,47,0.9);
+  border-color: rgba(220,38,38,0.35);
+  color: rgba(220,38,38,0.95);
+  background: rgba(220,38,38,0.06);
 }
 
 .fBody{
-  padding: 10px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
@@ -446,84 +973,71 @@ html, body {
 }
 
 .fInp{
-  width: 100%;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,0.10);
-  background: #fff;
-  padding: 10px 12px;
-  font-size: 13px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.14);
+  padding: 0 12px;
+  font-size: 14px;
   outline: none;
-  box-sizing: border-box;
+  background: #fff;
 }
-
 .fInp:focus{
-  border-color: rgba(26,115,232,0.40);
+  border-color: rgba(26,115,232,0.45);
+  box-shadow: 0 0 0 3px rgba(26,115,232,0.10);
 }
 
 .fSel{
-  width: 100%;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,0.10);
-  background: #fff;
-  padding: 10px 12px;
-  font-size: 13px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.14);
+  padding: 0 12px;
+  font-size: 14px;
   outline: none;
-  box-sizing: border-box;
+  background: #fff;
 }
 
 .fRadio{
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,0.08);
-  background: rgba(0,0,0,0.02);
-  cursor: pointer;
+  font-size: 14px;
+  color: rgba(0,0,0,0.80);
+  padding: 6px 2px;
 }
-
 .fRadio input{
-  width: 16px;
-  height: 16px;
-}
-
-.fRadioLabel{
-  font-size: 13px;
-  color: rgba(0,0,0,0.82);
+  width: 18px;
+  height: 18px;
 }
 
 .fSuggest{
-  font-size: 12px;
+  font-size: 12.5px;
   color: rgba(0,0,0,0.55);
-  margin-top: -2px;
+  min-height: 16px;
 }
 
-/* Mobile */
-@media (max-width: 960px){
-  .topRow{
-    grid-template-columns: 1fr;
-    height: auto;
-    gap: 10px;
-  }
-  .topCellLeft, .topCellCenter, .topCellRight{
-    justify-content: space-between;
-  }
 
-  .grid3{
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-
-  .filtersCol, .listCol{
-    height: auto;
-  }
-
-  .mapCol{
-    height: 60vh;
-  }
+/* Colapsar columnas sin display:none (evita el “mapa en blanco” en Leaflet) */
+.grid3.hideFilters #filtersCol{
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border-width: 0 !important;
+  overflow: hidden !important;
+  opacity: 0;
+  pointer-events: none;
+}
+.grid3.hideList #listCol{
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border-width: 0 !important;
+  overflow: hidden !important;
+  opacity: 0;
+  pointer-events: none;
 }
 
-/* Dropdown de sugerencias para rangos numéricos (Tipo 1) */
+
+/* Dropdown de sugerencias para filtros Tipo 1 */
 .fDropWrap{ position: relative; }
 .fDrop{
   position: absolute;
@@ -552,3 +1066,4 @@ html, body {
   color: rgba(0,0,0,0.86);
 }
 .fDropItem:hover{ background: rgba(0,0,0,0.05); }
+
