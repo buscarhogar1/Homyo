@@ -902,9 +902,16 @@ export function initMap(){
       const n = (r.useful_area_m2 != null) ? Number(r.useful_area_m2) : 0;
       return Number.isFinite(n) ? n : 0;
     }
+    function priceVal(r){
+      const n = (r.price_eur != null) ? Number(r.price_eur) : 0;
+      return Number.isFinite(n) ? n : 0;
+    }
 
     if (order === "size_asc") arr.sort((a,b)=> sizeVal(a) - sizeVal(b));
     else if (order === "size_desc") arr.sort((a,b)=> sizeVal(b) - sizeVal(a));
+    else if (order === "price_asc") arr.sort((a,b)=> priceVal(a) - priceVal(b));
+    else if (order === "price_desc") arr.sort((a,b)=> priceVal(b) - priceVal(a));
+    else if (order === "date_asc") arr.sort((a,b)=> dateVal(a) - dateVal(b));
     else arr.sort((a,b)=> dateVal(b) - dateVal(a)); // date_desc por defecto
 
     return arr;
