@@ -256,14 +256,6 @@ export function initMap(){
 
   const initialParams = getParams();
 
-
-  // Guard: si Leaflet (L) no está cargado, evitamos romper toda la vista.
-  if (typeof window.L === "undefined") {
-    setStatus("Error: Leaflet no está cargado (L undefined). Revisa que map.html cargue leaflet.js.");
-    console.error("Leaflet no está cargado: L undefined");
-    return;
-  }
-
   let map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
   window.__bhMap = map;
 
@@ -921,10 +913,9 @@ export function initMap(){
     else if (order === "price_desc") arr.sort((a,b)=> priceVal(b) - priceVal(a));
     else if (order === "size_asc") arr.sort((a,b)=> sizeVal(a) - sizeVal(b));
     else if (order === "size_desc") arr.sort((a,b)=> sizeVal(b) - sizeVal(a));
-    else arr.sort((a,b)=> dateVal(b) - dateVal(a)); // fallback
+    else arr.sort((a,b)=> dateVal(b) - dateVal(a)); // date_desc por defecto
 
     return arr;
-  }
   }
 
   function renderList(){
@@ -1572,7 +1563,10 @@ export function initMap(){
   }
 
   window.addEventListener("bh:layout-resize", () => {
-    requestAnimationFrame(() => safeInvalidate());
+    requestAnimationFrame(() => {
+      safeInvalidate();
+      setTimeout(() => safeInvalidate(), 120);
+    });
   });
 
   const AreasControl = L.Control.extend({
