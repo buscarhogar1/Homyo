@@ -20,7 +20,7 @@
   --gap: 14px;
 
   /* Altura fila superior independiente */
-  --topRowH: 48px;
+  --topRowH: 40px;
 }
 
 html, body {
@@ -38,14 +38,14 @@ body{
 
 .page{
   height: calc(100% - var(--headerH));
-  padding: 10px 8px 10px;
+  padding: 6px 6px 6px;
   box-sizing: border-box;
 }
 
 .mapShell{
-  width: min(1400px, 100%);
-  margin: 0 auto;
-  height: 100%;
+  width: 100%;
+margin: 0;
+height: 100%;
   box-sizing: border-box;
   position: relative;
 }
@@ -71,7 +71,7 @@ body{
 .topCellRight{ justify-content: flex-end; position: relative; }
 
 .topToggleBtn{
-  height: 36px;
+  height: 32px;
   padding: 0 12px;
   border-radius: 999px;
   border: 1px solid rgba(0,0,0,0.14);
@@ -87,7 +87,7 @@ body{
 
 .placeLabel{
   max-width: 100%;
-  padding: 8px 12px;
+  padding: 6px 12px;
   border-radius: 999px;
   background: rgba(255,255,255,0.92);
   border: 1px solid rgba(0,0,0,0.10);
@@ -111,7 +111,7 @@ body{
 .orderMenu{
   position: absolute;
   right: 0;
-  top: 42px;
+  top: 36px;
   width: 230px;
   background: #fff;
   border: 1px solid rgba(0,0,0,0.12);
@@ -173,13 +173,6 @@ body{
 }
 .colList{
   display: block;
-}
-
-.grid3.hideFilters #filtersCol{
-  display: none;
-}
-.grid3.hideList #listCol{
-  display: none;
 }
 
 /* Scroll interno de columnas */
@@ -898,10 +891,10 @@ body{
 }
 /* Filtros: estilo “tarjeta” similar a tu versión anterior */
 .filtersRoot{
-  padding: 12px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   box-sizing: border-box;
 }
 
@@ -909,7 +902,7 @@ body{
   border: 1px solid rgba(0,0,0,0.10);
   border-radius: 14px;
   background: #fff;
-  padding: 12px;
+  padding: 10px;
 }
 
 .fHead{
@@ -917,7 +910,7 @@ body{
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .fTitle{
@@ -970,13 +963,13 @@ body{
 .fBody{
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .fRow2{
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 
 .fInp{
@@ -1009,7 +1002,7 @@ body{
   gap: 10px;
   font-size: 14px;
   color: rgba(0,0,0,0.80);
-  padding: 6px 2px;
+  padding: 4px 2px;
 }
 .fRadio input{
   width: 18px;
@@ -1021,3 +1014,56 @@ body{
   color: rgba(0,0,0,0.55);
   min-height: 16px;
 }
+
+
+/* Colapsar columnas sin display:none (evita el “mapa en blanco” en Leaflet) */
+.grid3.hideFilters #filtersCol{
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border-width: 0 !important;
+  overflow: hidden !important;
+  opacity: 0;
+  pointer-events: none;
+}
+.grid3.hideList #listCol{
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border-width: 0 !important;
+  overflow: hidden !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+/* Dropdown de sugerencias para filtros Tipo 1 */
+.fDropWrap{ position: relative; }
+.fDrop{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+  padding: 6px;
+  z-index: 1200;
+  display: none;
+  max-height: 220px;
+  overflow: auto;
+}
+.fDropItem{
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: rgba(0,0,0,0.86);
+}
+.fDropItem:hover{ background: rgba(0,0,0,0.05); }
+
