@@ -1,33 +1,36 @@
 /*
   bh-map-filters.js
 
-  Implementación basada en la definición funcional de filtros.
-  Reglas clave:
-  - En el mapa NO existe el filtro "Tipo de oferta". El modo viene de la portada (mode en URL).
+  Reglas:
+  - No hay filtro “Ciudad”.
   - No hay botones “Aplicar” ni “Limpiar”: el mapa se actualiza al cambiar cualquier filtro.
-  - Cada filtro tiene una “×” para vaciarlo; si el filtro está activo, la × se marca como activa.
-  - Tipo 1 (rango numérico): inputs min/max + dropdown dinámico de sugerencias (máx 4).
-    - El dropdown aparece al hacer foco y se actualiza al escribir.
-    - El usuario puede seleccionar una sugerencia o escribir cualquier valor manualmente.
-    - Si min > max, se intercambian automáticamente.
-  - Las opciones de selección (única o múltiple) se muestran SIEMPRE en columna (una opción por línea).
+  - Cada filtro tiene una “X” para vaciarlo; si el filtro está activo, la X se pone roja.
+  - Inputs numéricos:
+    - sin flechas (type="text" + inputmode="numeric")
+    - sugerencias mientras escribes (lista de valores típicos)
 */
 
-function h(tag, attrs, children) {
-  const n = document.createElement(tag);
+function el(tag, attrs, children) {
+  const n = document.createElement("div");
+  const real = document.createElement(tag);
+  // trick: keep previous behavior of attribute setting
   for (const k in (attrs || {})) {
     const v = attrs[k];
-    if (k === "class") n.className = v;
-    else if (k === "text") n.textContent = v;
-    else if (k === "html") n.innerHTML = v;
-    else if (k === "value") n.value = v;
-    else n.setAttribute(k, v);
+    if (k === "class") real.className = v;
+    else if (k === "text") real.textContent = v;
+    else if (k === "html") real.innerHTML = v;
+    else real.setAttribute(k, v);
   }
-  (children || []).forEach(c => { if (c) n.appendChild(c); });
-  return n;
+  if (children) {
+    for (const c of children) {
+      if (c == null) continue;
+      real.appendChild(c);
+    }
+  }
+  return real;
 }
 
-function toInt(v) {
+function intOrNull(v) {
   const s = String(v ?? "").trim();
   if (!s) return null;
   const n = parseInt(s, 10);
@@ -44,6 +47,45 @@ function fromCSV(s) {
   return String(s).split(",").map(x => x.trim()).filter(Boolean);
 }
 
+function getParamsFromURL() {
+  const u = new URL(window.location.href);
+
+  let mode = (u.searchParams.get("mode") || "").trim().toLowerCase();
+  if (!mode) mode = "buy";
+  const allowed = ["buy","rent","room","new_build","all"];
+  if (!allowed.includes(mode)) mode = "buy";
+
+  return {
+    mode,
+
+    priceMin: intOrNull(u.searchParams.get("price_min")),
+    priceMax: intOrNull(u.searchParams.get("price_max")),
+
+    usefulMin: intOrNull(u.searchParams.get("useful_min")),
+    usefulMax: intOrNull(u.searchParams.get("useful_max")),
+
+    builtMin: intOrNull(u.searchParams.get("built_min")),
+    builtMax: intOrNull(u.searchParams.get("built_max")),
+
+    bedroomsMin: intOrNull(u.searchParams.get("bedrooms_min")),
+    bedroomsEq: intOrNull(u.searchParams.get("bedrooms_eq")), // (opcional, futuro)
+    bathroomsMin: intOrNull(u.searchParams.get("bathrooms_min")),
+
+    outdoorType: (u.searchParams.get("outdoor_type") || "").trim() || null,
+    orientations: fromCSV(u.searchParams.get("orientations")),
+
+    buildPeriods: fromCSV(u.searchParams.get("build_periods")),
+    accessibility: fromCSV(u.searchParams.get("accessibility")),
+    parkingTypes: fromCSV(u.searchParams.get("parking")),
+    storageTypes: fromCSV(u.searchParams.get("storage")),
+
+    energyChoice: (u.searchParams.get("energy") || "").trim() || null,
+
+    listedSinceDays: intOrNull(u.searchParams.get("since_days")),
+    availability: (u.searchParams.get("availability") || "").trim() || null
+  };
+}
+
 function setURLParam(key, value) {
   const u = new URL(window.location.href);
   if (value == null || value === "" || (Array.isArray(value) && value.length === 0)) u.searchParams.delete(key);
@@ -55,90 +97,42 @@ function fireFiltersChanged() {
   window.dispatchEvent(new CustomEvent("bh:filters-changed"));
 }
 
-function getMode() {
-  const u = new URL(window.location.href);
-  const mode = (u.searchParams.get("mode") || "buy").trim().toLowerCase();
-  const allowed = ["buy","rent","room","new_build","all"];
-  return allowed.includes(mode) ? mode : "buy";
+/* Sugerencias para inputs numéricos */
+const SUGGEST = {
+  price: [50000, 80000, 100000, 120000, 150000, 180000, 200000, 250000, 300000, 350000, 400000, 450000, 500000, 600000, 750000, 1000000],
+  area: [30, 40, 50, 60, 75, 90, 100, 110, 130, 150, 200],
+  beds: [1, 2, 3, 4, 5, 6],
+  baths: [1, 2, 3, 4, 5]
+};
+
+function pickSuggestion(list, typedInt) {
+  if (!Number.isFinite(typedInt)) return null;
+  const sorted = (list || []).slice().sort((a,b)=>a-b);
+  for (const v of sorted) if (v >= typedInt) return v;
+  return null;
 }
 
-/* =====================
-   Sugerencias (Tipo 1)
-   ===================== */
-
-const PRICE_LADDER_BUY = [
-  0, 50000, 75000, 100000, 125000, 150000, 175000, 200000, 250000, 300000,
-  350000, 400000, 450000, 500000, 600000, 750000, 1000000, 1250000, 1500000, 1750000, 2000000
-];
-
-const PRICE_LADDER_RENT = [
-  0, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 2300, 2500, 2800, 3000
-];
-
-const AREA_LADDER = [30, 40, 50, 60, 75, 90, 100, 110, 130, 150, 200];
-
-function scaleTypedForPrice(n) {
-  if (n == null) return null;
-  if (n < 10) return n * 100000;      // "2" -> 200.000
-  if (n < 100) return n * 1000;       // "75" -> 75.000
-  return n;                            // "120000" -> 120.000
-}
-
-function scaleTypedForArea(n) {
-  if (n == null) return null;
-  if (n < 20) return n * 10;          // "7" -> 70
-  return n;
-}
-
-function nextSuggestionsFromLadder(ladder, target, maxCount) {
-  const list = ladder.slice().sort((a,b)=>a-b);
-  if (target == null) {
-    // sin teclear: primeras (sin 0)
-    return list.filter(x => x !== 0).slice(0, maxCount);
-  }
-  const idx = Math.max(0, list.findIndex(x => x >= target));
-  const start = (idx === -1) ? list.length - 1 : idx;
-  const out = [];
-  for (let i = start; i < list.length && out.length < maxCount; i++) {
-    if (list[i] === 0) continue;
-    out.push(list[i]);
-  }
-  // Si no hay suficientes hacia arriba, completamos hacia abajo (cercanas)
-  for (let i = start - 1; i >= 0 && out.length < maxCount; i--) {
-    if (list[i] === 0) continue;
-    out.push(list[i]);
-  }
-  // orden ascendente
-  out.sort((a,b)=>a-b);
-  return out.slice(0, maxCount);
-}
-
-function formatMoney(n) {
-  // Sin símbolo fijo para evitar conflictos de formato; UI ya pone "€" en placeholders
-  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-
-/* =====================
-   Bloque de filtro
-   ===================== */
-
+/* Bloque de filtro “tarjeta” */
 function filterBlock({ title, isActiveFn, onClear, contentEl }) {
-  const dot = h("div", { class: "fDot" });
-  const titleEl = h("div", { class: "fTitleText", text: title });
+  const dot = el("div", { class: "fDot" });
+  const titleEl = el("div", { class: "fTitleText", text: title });
 
-  const clearBtn = h("button", { class: "fClearBtn", type: "button", "aria-label": "Limpiar", text: "×" });
+  const clearBtn = el("button", { class: "fClearBtn", type: "button", "aria-label": "Limpiar", text: "×" });
   clearBtn.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
     onClear?.();
   });
 
-  const head = h("div", { class: "fHead" }, [
-    h("div", { class: "fTitle" }, [dot, titleEl]),
+  const head = el("div", { class: "fHead" }, [
+    el("div", { class: "fTitle" }, [dot, titleEl]),
     clearBtn
   ]);
 
-  const blk = h("div", { class: "fBlock" }, [ head, contentEl ]);
+  const blk = el("div", { class: "fBlock" }, [
+    head,
+    contentEl
+  ]);
 
   function refresh() {
     const active = !!isActiveFn?.();
@@ -149,250 +143,104 @@ function filterBlock({ title, isActiveFn, onClear, contentEl }) {
   return { el: blk, refresh };
 }
 
-/* =====================
-   Controles UI
-   ===================== */
+/* ======= UI helpers ======= */
 
-function numericRangeDropdown({ kind, placeholderMin, placeholderMax, initialMin, initialMax, onChange }) {
-  const wrap = h("div", { class: "fBody" });
+function numericRange({ placeholderA, placeholderB, initialA, initialB, suggestList, onChange }) {
+  const a = el("input", { class: "fInp", type: "text", inputmode: "numeric", placeholder: placeholderA, value: initialA == null ? "" : String(initialA) });
+  const b = el("input", { class: "fInp", type: "text", inputmode: "numeric", placeholder: placeholderB, value: initialB == null ? "" : String(initialB) });
 
-  const row = h("div", { class: "fCol2" });
-  const minWrap = h("div", { class: "fInpWrap" });
-  const maxWrap = h("div", { class: "fInpWrap" });
+  const sugA = el("div", { class: "fSuggest" });
+  const sugB = el("div", { class: "fSuggest" });
 
-  const minInp = h("input", { class: "fInp", type: "text", inputmode: "numeric", placeholder: placeholderMin, value: initialMin == null ? "" : String(initialMin) });
-  const maxInp = h("input", { class: "fInp", type: "text", inputmode: "numeric", placeholder: placeholderMax, value: initialMax == null ? "" : String(initialMax) });
-
-  const minDrop = h("div", { class: "fDrop bh-hidden" });
-  const maxDrop = h("div", { class: "fDrop bh-hidden" });
-
-  minWrap.appendChild(minInp);
-  minWrap.appendChild(minDrop);
-
-  maxWrap.appendChild(maxInp);
-  maxWrap.appendChild(maxDrop);
-
-  row.appendChild(minWrap);
-  row.appendChild(maxWrap);
-  wrap.appendChild(row);
-
-  const mode = getMode();
-
-  function ladder() {
-    if (kind === "price") return (mode === "rent") ? PRICE_LADDER_RENT : PRICE_LADDER_BUY;
-    return AREA_LADDER;
-  }
-
-  function sanitize(inp) {
+  function sanitize(inp){
     const v = inp.value.replace(/[^0-9]/g, "");
     if (v !== inp.value) inp.value = v;
   }
 
-  function computeSuggestions(rawInt) {
-    const maxCount = 4;
-
-    // Caso 1: sin teclear nada -> sugerencias "por defecto" coherentes con el modo y con si es Min/Max
-    // Aquí devolvemos un set genérico; el componente se limita a 4.
-    if (rawInt == null) {
-      if (kind === "price") {
-        // Valores típicos de entrada (no extremos)
-        return (mode === "rent")
-          ? [600, 800, 1000, 1200].slice(0, maxCount)
-          : [150000, 200000, 250000, 300000].slice(0, maxCount);
-      }
-      // Área: tamaños típicos
-      return [50, 75, 90, 110].slice(0, maxCount);
+  function updateSuggest(inp, sug){
+    const n = intOrNull(inp.value);
+    const pick = pickSuggestion(suggestList, n);
+    if (pick == null || (n != null && pick === n)) {
+      sug.textContent = "";
+      sug.style.display = "none";
+      return;
     }
-
-    // Caso 2: el usuario empieza a escribir -> sugerencias derivadas del número escrito
-    if (kind === "price") {
-      // Heurística:
-      // - Si escribe 1 dígito (2) => 200k/220k/250k/300k (compra) o 200/250/300/400 (alquiler)
-      // - Si escribe 2 dígitos (75) => 75k/80k/90k/100k (compra) o 750/800/900/1000 (alquiler)
-      // - Si escribe 3+ dígitos => tomamos ese número como base y proponemos escalones cercanos
-      const s = String(rawInt);
-      if (mode === "rent") {
-        let base;
-        if (s.length === 1) base = rawInt * 100;
-        else if (s.length === 2) base = rawInt * 10;
-        else base = rawInt;
-
-        const steps = [0, 50, 100, 200, 300, 400, 500];
-        const out = [];
-        for (let i = 0; i < steps.length && out.length < maxCount; i++) {
-          const v = base + steps[i];
-          if (v > 0) out.push(v);
-        }
-        return out.slice(0, maxCount);
-      } else {
-        let base;
-        if (s.length === 1) base = rawInt * 100000;
-        else if (s.length === 2) base = rawInt * 1000;
-        else base = rawInt;
-
-        // Proponemos 4 valores cercanos y "redondos"
-        const deltas = [0, 20000, 50000, 100000, 200000, 500000, 1000000];
-        const out = [];
-        for (let i = 0; i < deltas.length && out.length < maxCount; i++) {
-          const v = base + deltas[i];
-          if (v > 0) out.push(v);
-        }
-        return out.slice(0, maxCount);
-      }
-    }
-
-    // Área (m²):
-    // - 1 dígito (7) => 70/75/80/90
-    // - 2 dígitos (75) => 75/80/90/100
-    // - 3+ (120) => 120/130/150/200
-    {
-      const s = String(rawInt);
-      let base;
-      if (s.length === 1) base = rawInt * 10;
-      else base = rawInt;
-
-      // Escalones cercanos lógicos
-      const candidates = [base, base + 5, base + 10, base + 20, base + 30, base + 50, base + 80];
-      const out = [];
-      for (let i = 0; i < candidates.length && out.length < maxCount; i++) {
-        const v = Math.max(1, Math.round(candidates[i]));
-        out.push(v);
-      }
-      // Dedup
-      return Array.from(new Set(out)).slice(0, maxCount);
-    }
-  }
-    const target = scaleTypedForArea(rawInt);
-    return nextSuggestionsFromLadder(ladder(), target, maxCount);
+    sug.textContent = String(pick);
+    sug.style.display = "block";
   }
 
-  function renderDrop(drop, values, onPick, fmt) {
-    drop.innerHTML = "";
-    values.forEach(v => {
-      const btn = h("button", { class: "fDropItem", type: "button", text: fmt(v) });
-      btn.addEventListener("mousedown", (e) => {
-        // mousedown para evitar que blur cierre antes del click
-        e.preventDefault();
-        onPick(v);
-      });
-      drop.appendChild(btn);
-    });
-    drop.classList.toggle("bh-hidden", values.length === 0);
-  }
-
-  function closeAllDrops() {
-    minDrop.classList.add("bh-hidden");
-    maxDrop.classList.add("bh-hidden");
-  }
-
-  function fmt(v) {
-    if (kind === "price") return `${formatMoney(v)} €`;
-    return `${v}`;
-  }
-
-  function emitAndFixSwap() {
-    let min = toInt(minInp.value);
-    let max = toInt(maxInp.value);
-
-    // Regla: si min>max, se intercambian automáticamente
-    if (min != null && max != null && min > max) {
-      const tmp = min;
-      min = max;
-      max = tmp;
-      minInp.value = String(min);
-      maxInp.value = String(max);
-    }
-
+  function emit(){
+    const min = intOrNull(a.value);
+    const max = intOrNull(b.value);
     onChange?.(min, max);
   }
 
-  function openAndUpdate(inp, drop) {
-    sanitize(inp);
-    const rawInt = toInt(inp.value);
-    const values = computeSuggestions(rawInt);
-    renderDrop(drop, values, (picked) => {
-      inp.value = String(picked);
-      closeAllDrops();
-      emitAndFixSwap();
-    }, fmt);
-    drop.classList.remove("bh-hidden");
-  }
-
-  function hook(inp, drop) {
-    inp.addEventListener("focus", () => openAndUpdate(inp, drop));
+  [a,b].forEach((inp, idx) => {
+    const sug = idx===0 ? sugA : sugB;
     inp.addEventListener("input", () => {
-      openAndUpdate(inp, drop);
-      emitAndFixSwap();
+      sanitize(inp);
+      updateSuggest(inp, sug);
+      emit();
     });
-    inp.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeAllDrops();
-    });
-    inp.addEventListener("blur", () => {
-      // delay para permitir click en sugerencia
-      setTimeout(() => drop.classList.add("bh-hidden"), 120);
-    });
-  }
-
-  hook(minInp, minDrop);
-  hook(maxInp, maxDrop);
-
-  // click fuera: cerrar
-  document.addEventListener("mousedown", (e) => {
-    if (!wrap.contains(e.target)) closeAllDrops();
+    inp.addEventListener("focus", () => updateSuggest(inp, sug));
+    inp.addEventListener("blur", () => { sug.textContent=""; sug.style.display="none"; });
   });
 
-  // Emit inicial (por si hay valores ya en URL)
-  emitAndFixSwap();
+  const row = el("div", { class: "fRow2" }, [
+    el("div", { class: "fInpWrap" }, [a, sugA]),
+    el("div", { class: "fInpWrap" }, [b, sugB])
+  ]);
 
-  return { el: wrap, minInp, maxInp };
+  const body = el("div", { class: "fBody" }, [row]);
+
+  // inicial
+  updateSuggest(a, sugA);
+  updateSuggest(b, sugB);
+
+  return { el: body, a, b };
 }
 
-function selectOneColumn({ options, initial, onChange, placeholder }) {
-  const wrap = h("div", { class: "fBody" });
-  const sel = h("select", { class: "fSel" });
-  sel.appendChild(h("option", { value: "", text: placeholder ?? "Sin preferencia" }));
-  options.forEach(([v, t]) => sel.appendChild(h("option", { value: v, text: t })));
+function selectOne({ options, initial, onChange, placeholder }) {
+  const sel = el("select", { class: "fSel" });
+  const firstText = placeholder ?? "Sin preferencia";
+  sel.appendChild(el("option", { value: "", text: firstText }));
+  for (const [v, t] of options) sel.appendChild(el("option", { value: v, text: t }));
   sel.value = initial ?? "";
-  sel.addEventListener("change", () => onChange?.(sel.value || null));
-  wrap.appendChild(sel);
-  return { el: wrap, sel };
+  sel.addEventListener("change", () => onChange?.(sel.value));
+  return sel;
 }
 
-function radioGroupColumn({ name, options, initial, onChange }) {
-  const wrap = h("div", { class: "fBody" });
-  const list = h("div", { class: "fOptCol" });
+function radioGroup({ name, options, initial, onChange }) {
+  const wrap = el("div", { class: "fRadioList" });
   options.forEach(([v, label]) => {
-    const id = `${name}_${String(v).replace(/[^a-z0-9_]/gi,"_")}`;
-    const inp = h("input", { type: "radio", name, id, value: v });
+    const id = `${name}_${v || "none"}`;
+    const inp = el("input", { type: "radio", name, id, value: v });
     if ((initial ?? "") === (v ?? "")) inp.checked = true;
-    inp.addEventListener("change", () => { if (inp.checked) onChange?.(v || null); });
+    inp.addEventListener("change", () => {
+      if (inp.checked) onChange?.(v);
+    });
 
-    const line = h("label", { class: "fOptLine", for: id }, [
+    const line = el("label", { class: "fRadioLine", for: id }, [
       inp,
-      h("span", { class: "fOptText", text: label })
+      el("span", { class: "fRadioText", text: label })
     ]);
 
-    list.appendChild(line);
+    wrap.appendChild(line);
   });
-  wrap.appendChild(list);
-  return { el: wrap, get: () => {
-    const checked = list.querySelector("input[type=radio]:checked");
-    return checked ? (checked.value || null) : null;
-  }};
+  return wrap;
 }
 
-function multiChecklistColumn({ name, options, initialValues, onChange }) {
-  const wrap = h("div", { class: "fBody" });
-  const list = h("div", { class: "fOptCol" });
+function multiChecklist({ name, options, initialValues, onChange }) {
   const set = new Set((initialValues || []).map(String));
+  const wrap = el("div", { class: "fCheckList" });
 
   function emit() {
     onChange?.(Array.from(set));
   }
 
   options.forEach(([v, label]) => {
-    const id = `${name}_${String(v).replace(/[^a-z0-9_]/gi,"_")}`;
-    const inp = h("input", { type: "checkbox", id, value: v });
+    const id = `${name}_${v}`;
+    const inp = el("input", { type: "checkbox", id, value: v });
     if (set.has(String(v))) inp.checked = true;
 
     inp.addEventListener("change", () => {
@@ -402,77 +250,86 @@ function multiChecklistColumn({ name, options, initialValues, onChange }) {
       emit();
     });
 
-    const line = h("label", { class: "fOptLine", for: id }, [
+    const line = el("label", { class: "fCheckLine", for: id }, [
       inp,
-      h("span", { class: "fOptText", text: label })
+      el("span", { class: "fCheckText", text: label })
     ]);
 
-    list.appendChild(line);
+    wrap.appendChild(line);
   });
 
-  wrap.appendChild(list);
   return { el: wrap, get: () => Array.from(set), set: (vals) => {
     set.clear();
     (vals || []).forEach(x => set.add(String(x)));
-    list.querySelectorAll("input[type=checkbox]").forEach(chk => chk.checked = set.has(String(chk.value)));
-    emit();
+    // re-sync DOM
+    wrap.querySelectorAll("input[type=checkbox]").forEach(chk => {
+      chk.checked = set.has(String(chk.value));
+    });
   }};
 }
 
-/* =====================
-   Init
-   ===================== */
+/* ======= Init ======= */
 
 export function initFiltersBar({ mountId }) {
   const mount = document.getElementById(mountId);
   if (!mount) return;
 
-  const u = new URL(window.location.href);
+  const p = getParamsFromURL();
 
-  const p = {
-    priceMin: toInt(u.searchParams.get("price_min")),
-    priceMax: toInt(u.searchParams.get("price_max")),
-    usefulMin: toInt(u.searchParams.get("useful_min")),
-    usefulMax: toInt(u.searchParams.get("useful_max")),
-    builtMin: toInt(u.searchParams.get("built_min")),
-    builtMax: toInt(u.searchParams.get("built_max")),
-
-    sinceDays: toInt(u.searchParams.get("since_days")),
-    bedroomsMin: toInt(u.searchParams.get("bedrooms_min")),
-    bathroomsMin: toInt(u.searchParams.get("bathrooms_min")),
-
-    buildPeriods: fromCSV(u.searchParams.get("build_periods")),
-    outdoorTypes: fromCSV(u.searchParams.get("outdoor_type")), // mantenemos el nombre por compatibilidad; ahora admite CSV
-    orientations: fromCSV(u.searchParams.get("orientations")),
-    accessibility: fromCSV(u.searchParams.get("accessibility")),
-    parking: fromCSV(u.searchParams.get("parking")),
-    storage: fromCSV(u.searchParams.get("storage")),
-    energyMin: (u.searchParams.get("energy") || "").trim() || null, // se interpreta como mínimo aceptado
-    availability: (u.searchParams.get("availability") || "").trim() || null
-  };
-
-  const root = h("div", { class: "filtersRoot" });
+  const root = el("div", { class: "filtersRoot" });
   mount.innerHTML = "";
   mount.appendChild(root);
 
   const blocks = [];
-  const mode = getMode();
 
-  function refreshAll() { blocks.forEach(b => b.refresh()); }
-
-  function setCsvParam(key, arr) {
-    const csv = toCSV(arr);
-    setURLParam(key, csv);
+  function refreshAll() {
+    blocks.forEach(b => b.refresh());
   }
 
-  /* 1. Precio mínimo / máximo (Tipo 1) */
+  // 1) Tipo de oferta
   {
-    const range = numericRangeDropdown({
-      kind: "price",
-      placeholderMin: "Min €",
-      placeholderMax: "Max €",
-      initialMin: p.priceMin,
-      initialMax: p.priceMax,
+    const sel = selectOne({
+      placeholder: "Selecciona",
+      options: [
+        ["buy", "Comprar"],
+        ["rent", "Alquilar"],
+        ["room", "Habitación"],
+        ["new_build", "Obra nueva"],
+        ["all", "Todas"]
+      ],
+      initial: p.mode,
+      onChange: (v) => {
+        setURLParam("mode", v || "buy");
+        fireFiltersChanged();
+        refreshAll();
+      }
+    });
+
+    const body = el("div", { class: "fBody" }, [sel]);
+
+    const blk = filterBlock({
+      title: "Tipo de oferta",
+      isActiveFn: () => true,
+      onClear: () => { /* no-op */ },
+      contentEl: body
+    });
+
+    // El tipo de oferta no se “limpia” (siempre hay uno)
+    blk.el.querySelector(".fClearBtn")?.setAttribute("disabled","true");
+    blk.el.querySelector(".fClearBtn")?.classList.remove("active");
+
+    blocks.push(blk);
+    root.appendChild(blk.el);
+  }
+
+  // 2) Precio mínimo / máximo
+  {
+    const range = numericRange({
+      placeholderA: "Min €",
+      placeholderB: "Max €",
+      initialA: p.priceMin,
+      initialB: p.priceMax,
+      suggestList: SUGGEST.price,
       onChange: (min, max) => {
         setURLParam("price_min", min);
         setURLParam("price_max", max);
@@ -482,11 +339,12 @@ export function initFiltersBar({ mountId }) {
     });
 
     const blk = filterBlock({
-      title: "Precio mínimo / máximo",
-      isActiveFn: () => (toInt(range.minInp.value) != null || toInt(range.maxInp.value) != null),
+      title: "Precio",
+      isActiveFn: () => (intOrNull(range.el.querySelectorAll("input")[0].value) != null || intOrNull(range.el.querySelectorAll("input")[1].value) != null),
       onClear: () => {
-        range.minInp.value = "";
-        range.maxInp.value = "";
+        const ins = range.el.querySelectorAll("input");
+        ins[0].value = "";
+        ins[1].value = "";
         setURLParam("price_min", null);
         setURLParam("price_max", null);
         fireFiltersChanged();
@@ -499,14 +357,14 @@ export function initFiltersBar({ mountId }) {
     root.appendChild(blk.el);
   }
 
-  /* 2. Metros cuadrados útiles interiores (Tipo 1) */
+  // 3) Metros cuadrados útiles
   {
-    const range = numericRangeDropdown({
-      kind: "area",
-      placeholderMin: "Mín (m²)",
-      placeholderMax: "Máx (m²)",
-      initialMin: p.usefulMin,
-      initialMax: p.usefulMax,
+    const range = numericRange({
+      placeholderA: "Desde (m²)",
+      placeholderB: "Hasta (m²)",
+      initialA: p.usefulMin,
+      initialB: p.usefulMax,
+      suggestList: SUGGEST.area,
       onChange: (min, max) => {
         setURLParam("useful_min", min);
         setURLParam("useful_max", max);
@@ -516,11 +374,12 @@ export function initFiltersBar({ mountId }) {
     });
 
     const blk = filterBlock({
-      title: "Metros cuadrados útiles interiores",
-      isActiveFn: () => (toInt(range.minInp.value) != null || toInt(range.maxInp.value) != null),
+      title: "Superficie útil",
+      isActiveFn: () => (intOrNull(range.el.querySelectorAll("input")[0].value) != null || intOrNull(range.el.querySelectorAll("input")[1].value) != null),
       onClear: () => {
-        range.minInp.value = "";
-        range.maxInp.value = "";
+        const ins = range.el.querySelectorAll("input");
+        ins[0].value = "";
+        ins[1].value = "";
         setURLParam("useful_min", null);
         setURLParam("useful_max", null);
         fireFiltersChanged();
@@ -533,145 +392,14 @@ export function initFiltersBar({ mountId }) {
     root.appendChild(blk.el);
   }
 
-  /* 3. Periodo de construcción (Tipo 3, múltiple) */
-  {
-    const chk = multiChecklistColumn({
-      name: "build_periods",
-      options: [
-        ["pre1960", "Antes de 1960"],
-        ["1960_1970", "1960–1970"],
-        ["1970_1980", "1970–1980"],
-        ["1980_1990", "1980–1990"],
-        ["1990_2000", "1990–2000"],
-        ["2000_2010", "2000–2010"],
-        ["2010_2020", "2010–2020"],
-        ["2020_plus", "2020+"]
-      ],
-      initialValues: p.buildPeriods,
-      onChange: (vals) => {
-        setCsvParam("build_periods", vals);
-        fireFiltersChanged();
-        refreshAll();
-      }
-    });
-
-    const blk = filterBlock({
-      title: "Periodo de construcción",
-      isActiveFn: () => chk.get().length > 0,
-      onClear: () => {
-        chk.set([]);
-        setURLParam("build_periods", null);
-        fireFiltersChanged();
-        refreshAll();
-      },
-      contentEl: chk.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
-  }
-
-  /* 4. Ofertado desde (fecha de publicación) (Tipo 2, única) */
-  {
-    const rg = radioGroupColumn({
-      name: "since_days",
-      options: [
-        ["", "Sin preferencia"],
-        ["1", "Últimas 24 horas"],
-        ["5", "Últimos 5 días"],
-        ["10", "Últimos 10 días"],
-        ["30", "Últimos 30 días"],
-        ["60", "Últimos 60 días"]
-      ],
-      initial: (p.sinceDays == null ? "" : String(p.sinceDays)),
-      onChange: (v) => {
-        setURLParam("since_days", toInt(v));
-        fireFiltersChanged();
-        refreshAll();
-      }
-    });
-
-    const blk = filterBlock({
-      title: "Ofertado desde (fecha de publicación)",
-      isActiveFn: () => (toInt(new URL(window.location.href).searchParams.get("since_days")) != null),
-      onClear: () => {
-        setURLParam("since_days", null);
-        fireFiltersChanged();
-        refreshAll();
-      },
-      contentEl: rg.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
-  }
-
-  /* 5. Número mínimo de dormitorios (Tipo 2, valor mínimo) */
-  {
-    const sel = selectOneColumn({
-      placeholder: "Sin preferencia",
-      options: [["1","1+"],["2","2+"],["3","3+"],["4","4+"]],
-      initial: (p.bedroomsMin == null ? "" : String(p.bedroomsMin)),
-      onChange: (v) => {
-        setURLParam("bedrooms_min", toInt(v));
-        fireFiltersChanged();
-        refreshAll();
-      }
-    });
-
-    const blk = filterBlock({
-      title: "Número mínimo de dormitorios",
-      isActiveFn: () => (toInt(new URL(window.location.href).searchParams.get("bedrooms_min")) != null),
-      onClear: () => {
-        sel.sel.value = "";
-        setURLParam("bedrooms_min", null);
-        fireFiltersChanged();
-        refreshAll();
-      },
-      contentEl: sel.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
-  }
-
-  /* 6. Número de baños (Tipo 2, valor mínimo) */
-  {
-    const sel = selectOneColumn({
-      placeholder: "Sin preferencia",
-      options: [["1","1"],["2","2"],["3","3"],["4","4"],["5","5"]],
-      initial: (p.bathroomsMin == null ? "" : String(p.bathroomsMin)),
-      onChange: (v) => {
-        setURLParam("bathrooms_min", toInt(v));
-        fireFiltersChanged();
-        refreshAll();
-      }
-    });
-
-    const blk = filterBlock({
-      title: "Número de baños",
-      isActiveFn: () => (toInt(new URL(window.location.href).searchParams.get("bathrooms_min")) != null),
-      onClear: () => {
-        sel.sel.value = "";
-        setURLParam("bathrooms_min", null);
-        fireFiltersChanged();
-        refreshAll();
-      },
-      contentEl: sel.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
-  }
-
-  /* 7. Metros cuadrados construidos totales (Tipo 1) - no aparece en habitación */
-  if (mode !== "room") {
-    const range = numericRangeDropdown({
-      kind: "area",
-      placeholderMin: "Mín (m²)",
-      placeholderMax: "Máx (m²)",
-      initialMin: p.builtMin,
-      initialMax: p.builtMax,
+  // 4) Metros cuadrados construidos (no aparece en habitaciones)
+  if (p.mode !== "room") {
+    const range = numericRange({
+      placeholderA: "Desde (m²)",
+      placeholderB: "Hasta (m²)",
+      initialA: p.builtMin,
+      initialB: p.builtMax,
+      suggestList: SUGGEST.area,
       onChange: (min, max) => {
         setURLParam("built_min", min);
         setURLParam("built_max", max);
@@ -681,11 +409,12 @@ export function initFiltersBar({ mountId }) {
     });
 
     const blk = filterBlock({
-      title: "Metros cuadrados construidos totales",
-      isActiveFn: () => (toInt(range.minInp.value) != null || toInt(range.maxInp.value) != null),
+      title: "Superficie construida",
+      isActiveFn: () => (intOrNull(range.el.querySelectorAll("input")[0].value) != null || intOrNull(range.el.querySelectorAll("input")[1].value) != null),
       onClear: () => {
-        range.minInp.value = "";
-        range.maxInp.value = "";
+        const ins = range.el.querySelectorAll("input");
+        ins[0].value = "";
+        ins[1].value = "";
         setURLParam("built_min", null);
         setURLParam("built_max", null);
         fireFiltersChanged();
@@ -697,204 +426,324 @@ export function initFiltersBar({ mountId }) {
     blocks.push(blk);
     root.appendChild(blk.el);
   } else {
-    // coherencia: si venimos con valores en URL, los quitamos al estar en habitación
-    if (p.builtMin != null || p.builtMax != null) {
+    // si venimos con built_min/built_max en URL y estamos en room, los limpiamos para coherencia
+    if (getParamsFromURL().builtMin != null || getParamsFromURL().builtMax != null) {
       setURLParam("built_min", null);
       setURLParam("built_max", null);
       fireFiltersChanged();
     }
   }
 
-  /* 8. Espacio exterior (Tipo 3, múltiple) */
+  // 5) Número de dormitorios
   {
-    const chk = multiChecklistColumn({
-      name: "outdoor_type",
+    // UI: 1,2,3,4 y 1+,2+,3+,4+.
+    // Hoy, el backend usa bedrooms_min. Guardamos también bedrooms_eq (futuro), sin romper nada.
+    const sel = selectOne({
+      placeholder: "Sin preferencia",
       options: [
-        ["balcon", "Balcón"],
-        ["terraza", "Terraza"],
-        ["jardin", "Jardín"],
-        ["patio", "Patio"]
+        ["1", "1"],
+        ["2", "2"],
+        ["3", "3"],
+        ["4", "4"],
+        ["1+", "1+"],
+        ["2+", "2+"],
+        ["3+", "3+"],
+        ["4+", "4+"]
       ],
-      initialValues: p.outdoorTypes,
-      onChange: (vals) => {
-        setCsvParam("outdoor_type", vals); // compat: mismo nombre, ahora admite CSV
-        // Si se queda vacío, limpiamos orientaciones (no deberían aplicar sin exterior)
-        if (!vals.length) {
-          setURLParam("orientations", null);
+      initial: (p.bedroomsEq != null ? String(p.bedroomsEq) : (p.bedroomsMin != null ? String(p.bedroomsMin) + "+" : "")),
+      onChange: (v) => {
+        if (!v) {
+          setURLParam("bedrooms_min", null);
+          setURLParam("bedrooms_eq", null);
+        } else if (v.endsWith("+")) {
+          setURLParam("bedrooms_min", intOrNull(v));
+          setURLParam("bedrooms_eq", null);
+        } else {
+          const eq = intOrNull(v);
+          setURLParam("bedrooms_eq", eq);
+          setURLParam("bedrooms_min", eq); // fallback razonable mientras el backend no soporte eq
         }
         fireFiltersChanged();
         refreshAll();
       }
     });
 
+    const body = el("div", { class: "fBody" }, [sel]);
+
+    const blk = filterBlock({
+      title: "Dormitorios",
+      isActiveFn: () => {
+        const pp = getParamsFromURL();
+        return pp.bedroomsMin != null || pp.bedroomsEq != null;
+      },
+      onClear: () => {
+        sel.value = "";
+        setURLParam("bedrooms_min", null);
+        setURLParam("bedrooms_eq", null);
+        fireFiltersChanged();
+        refreshAll();
+      },
+      contentEl: body
+    });
+
+    blocks.push(blk);
+    root.appendChild(blk.el);
+  }
+
+  // 6) Número de baños (mínimo)
+  {
+    const sel = selectOne({
+      placeholder: "Sin preferencia",
+      options: [["1","1"],["2","2"],["3","3"],["4","4"],["5","5"]],
+      initial: (p.bathroomsMin == null ? "" : String(p.bathroomsMin)),
+      onChange: (v) => {
+        setURLParam("bathrooms_min", intOrNull(v));
+        fireFiltersChanged();
+        refreshAll();
+      }
+    });
+
+    const body = el("div", { class: "fBody" }, [sel]);
+
+    const blk = filterBlock({
+      title: "Baños",
+      isActiveFn: () => (getParamsFromURL().bathroomsMin != null),
+      onClear: () => {
+        sel.value = "";
+        setURLParam("bathrooms_min", null);
+        fireFiltersChanged();
+        refreshAll();
+      },
+      contentEl: body
+    });
+
+    blocks.push(blk);
+    root.appendChild(blk.el);
+  }
+
+  // 7) Espacio exterior (selección única)
+  {
+    const sel = selectOne({
+      placeholder: "Selecciona",
+      options: [
+        ["balcon", "Balcón"],
+        ["terraza", "Terraza"],
+        ["jardin", "Jardín"],
+        ["patio", "Patio"]
+      ],
+      initial: p.outdoorType ?? "",
+      onChange: (v) => {
+        setURLParam("outdoor_type", v || null);
+        // si se quita, también quitamos orientaciones
+        if (!v) setURLParam("orientations", null);
+        fireFiltersChanged();
+        refreshAll();
+      }
+    });
+
+    const body = el("div", { class: "fBody" }, [sel]);
+
     const blk = filterBlock({
       title: "Espacio exterior",
-      isActiveFn: () => chk.get().length > 0,
+      isActiveFn: () => (getParamsFromURL().outdoorType != null),
       onClear: () => {
-        chk.set([]);
+        sel.value = "";
         setURLParam("outdoor_type", null);
         setURLParam("orientations", null);
         fireFiltersChanged();
         refreshAll();
       },
-      contentEl: chk.el
+      contentEl: body
     });
 
     blocks.push(blk);
     root.appendChild(blk.el);
   }
 
-  /* 9. Orientación del balcón (Tipo 3, múltiple) - solo si hay espacio exterior seleccionado */
+  // 8) Orientación del espacio exterior (multi, solo si hay espacio exterior)
   {
-    const chk = multiChecklistColumn({
-      name: "orientations",
+    const pp = getParamsFromURL();
+    if (pp.outdoorType != null) {
+      const chk = multiChecklist({
+        name: "orient",
+        options: [["N","N"],["NE","NE"],["E","E"],["SE","SE"],["S","S"],["SW","SW"],["W","W"],["NW","NW"]],
+        initialValues: pp.orientations,
+        onChange: (vals) => {
+          setURLParam("orientations", toCSV(vals));
+          fireFiltersChanged();
+          refreshAll();
+        }
+      });
+
+      const body = el("div", { class: "fBody" }, [chk.el]);
+
+      const blk = filterBlock({
+        title: "Orientación del espacio exterior",
+        isActiveFn: () => (getParamsFromURL().orientations.length > 0),
+        onClear: () => {
+          chk.set([]);
+          setURLParam("orientations", null);
+          fireFiltersChanged();
+          refreshAll();
+        },
+        contentEl: body
+      });
+
+      blocks.push(blk);
+      root.appendChild(blk.el);
+    } else {
+      // coherencia: si no hay outdoor_type, no mantenemos orientaciones en URL
+      if ((pp.orientations || []).length) setURLParam("orientations", null);
+    }
+  }
+
+  // 9) Periodo de construcción (multi)
+  {
+    const chk = multiChecklist({
+      name: "buildp",
       options: [
-        ["N", "N"],
-        ["S", "S"],
-        ["E", "E"],
-        ["O", "O"]
+        ["pre_1950", "Antes de 1950"],
+        ["1950_1960", "1950–1960"],
+        ["1960_1970", "1960–1970"],
+        ["1970_1980", "1970–1980"],
+        ["1980_1990", "1980–1990"],
+        ["1990_2000", "1990–2000"],
+        ["2000_2010", "2000–2010"],
+        ["2010_2020", "2010–2020"],
+        ["2020_plus", "2020+"]
       ],
-      initialValues: p.orientations,
+      initialValues: p.buildPeriods,
       onChange: (vals) => {
-        setCsvParam("orientations", vals);
+        setURLParam("build_periods", toCSV(vals));
         fireFiltersChanged();
         refreshAll();
       }
     });
 
+    const body = el("div", { class: "fBody" }, [chk.el]);
+
     const blk = filterBlock({
-      title: "Orientación del balcón",
-      isActiveFn: () => chk.get().length > 0,
+      title: "Periodo de construcción",
+      isActiveFn: () => (getParamsFromURL().buildPeriods.length > 0),
       onClear: () => {
         chk.set([]);
-        setURLParam("orientations", null);
+        setURLParam("build_periods", null);
         fireFiltersChanged();
         refreshAll();
       },
-      contentEl: chk.el
+      contentEl: body
     });
-
-    // Visibilidad condicionada
-    const shouldShow = () => {
-      const outs = fromCSV(new URL(window.location.href).searchParams.get("outdoor_type"));
-      return outs.length > 0;
-    };
-
-    const origRefresh = blk.refresh;
-    blk.refresh = () => {
-      origRefresh();
-      blk.el.classList.toggle("bh-hidden", !shouldShow());
-      if (!shouldShow() && chk.get().length) {
-        chk.set([]);
-        setURLParam("orientations", null);
-        fireFiltersChanged();
-      }
-    };
 
     blocks.push(blk);
     root.appendChild(blk.el);
   }
 
-  /* 10. Accesibilidad (Tipo 3, múltiple; lógica AND en backend) */
+  // 10) Accesibilidad (multi, AND)
   {
-    const chk = multiChecklistColumn({
-      name: "accessibility",
+    const chk = multiChecklist({
+      name: "acc",
       options: [
         ["ascensor", "Ascensor"],
         ["movilidad_reducida", "Adaptado a movilidad reducida"]
       ],
       initialValues: p.accessibility,
       onChange: (vals) => {
-        setCsvParam("accessibility", vals);
+        setURLParam("accessibility", toCSV(vals));
         fireFiltersChanged();
         refreshAll();
       }
     });
 
+    const body = el("div", { class: "fBody" }, [chk.el]);
+
     const blk = filterBlock({
       title: "Accesibilidad",
-      isActiveFn: () => chk.get().length > 0,
+      isActiveFn: () => (getParamsFromURL().accessibility.length > 0),
       onClear: () => {
         chk.set([]);
         setURLParam("accessibility", null);
         fireFiltersChanged();
         refreshAll();
       },
-      contentEl: chk.el
+      contentEl: body
     });
 
     blocks.push(blk);
     root.appendChild(blk.el);
   }
 
-  /* 11. Parking (Tipo 3, múltiple) */
+  // 11) Parking (multi)
   {
-    const chk = multiChecklistColumn({
-      name: "parking",
+    const chk = multiChecklist({
+      name: "park",
       options: [
         ["incluido", "Incluido"],
         ["opcional", "Opcional"],
-        ["no", "No disponible"]
+        ["no_disponible", "No disponible"]
       ],
-      initialValues: p.parking,
+      initialValues: p.parkingTypes,
       onChange: (vals) => {
-        setCsvParam("parking", vals);
+        setURLParam("parking", toCSV(vals));
         fireFiltersChanged();
         refreshAll();
       }
     });
 
+    const body = el("div", { class: "fBody" }, [chk.el]);
+
     const blk = filterBlock({
       title: "Parking",
-      isActiveFn: () => chk.get().length > 0,
+      isActiveFn: () => (getParamsFromURL().parkingTypes.length > 0),
       onClear: () => {
         chk.set([]);
         setURLParam("parking", null);
         fireFiltersChanged();
         refreshAll();
       },
-      contentEl: chk.el
+      contentEl: body
     });
 
     blocks.push(blk);
     root.appendChild(blk.el);
   }
 
-  /* 12. Trastero (Tipo 3, múltiple) */
+  // 12) Trastero (multi)
   {
-    const chk = multiChecklistColumn({
-      name: "storage",
+    const chk = multiChecklist({
+      name: "stor",
       options: [
-        ["si", "Incluido"],
-        ["no", "No incluido"]
+        ["incluido", "Incluido"],
+        ["no_incluido", "No incluido"]
       ],
-      initialValues: p.storage,
+      initialValues: p.storageTypes,
       onChange: (vals) => {
-        setCsvParam("storage", vals);
+        setURLParam("storage", toCSV(vals));
         fireFiltersChanged();
         refreshAll();
       }
     });
 
+    const body = el("div", { class: "fBody" }, [chk.el]);
+
     const blk = filterBlock({
       title: "Trastero",
-      isActiveFn: () => chk.get().length > 0,
+      isActiveFn: () => (getParamsFromURL().storageTypes.length > 0),
       onClear: () => {
         chk.set([]);
         setURLParam("storage", null);
         fireFiltersChanged();
         refreshAll();
       },
-      contentEl: chk.el
+      contentEl: body
     });
 
     blocks.push(blk);
     root.appendChild(blk.el);
   }
 
-  /* 13. Mínimo certificado energético (Tipo 2, única) */
+  // 13) Certificado energético (opción única)
   {
-    const sel = selectOneColumn({
+    const sel = selectOne({
       placeholder: "Sin preferencia",
       options: [
         ["pending", "Pendiente"],
@@ -911,69 +760,107 @@ export function initFiltersBar({ mountId }) {
         ["F", "F"],
         ["G", "G"]
       ],
-      initial: p.energyMin || "",
+      initial: p.energyChoice ?? "",
       onChange: (v) => {
-        setURLParam("energy", v);
+        setURLParam("energy", v || null);
         fireFiltersChanged();
         refreshAll();
       }
     });
 
+    const body = el("div", { class: "fBody" }, [sel]);
+
     const blk = filterBlock({
-      title: "Mínimo certificado energético",
-      isActiveFn: () => {
-        const val = (new URL(window.location.href).searchParams.get("energy") || "").trim();
-        return !!val;
-      },
+      title: "Certificado energético",
+      isActiveFn: () => (getParamsFromURL().energyChoice != null),
       onClear: () => {
-        sel.sel.value = "";
+        sel.value = "";
         setURLParam("energy", null);
         fireFiltersChanged();
         refreshAll();
       },
-      contentEl: sel.el
+      contentEl: body
     });
 
     blocks.push(blk);
     root.appendChild(blk.el);
   }
 
-  /* 14. Disponibilidad (Tipo 2, única) */
+  // 14) Ofertado desde (fecha publicación)
   {
-    const sel = selectOneColumn({
-      placeholder: "Sin preferencia",
+    const rg = radioGroup({
+      name: "since_days",
       options: [
-        ["available", "Disponible"],
-        ["negotiation", "Ofertado / en negociación"],
-        ["sold", "Alquilado / vendido"]
+        ["", "Sin preferencia"],
+        ["1", "24 h"],
+        ["5", "5 días"],
+        ["10", "10 días"],
+        ["30", "30 días"]
       ],
-      initial: p.availability || "",
+      initial: (p.listedSinceDays == null ? "" : String(p.listedSinceDays)),
       onChange: (v) => {
-        setURLParam("availability", v);
+        setURLParam("since_days", intOrNull(v));
         fireFiltersChanged();
         refreshAll();
       }
     });
 
+    const body = el("div", { class: "fBody" }, [rg]);
+
     const blk = filterBlock({
-      title: "Disponibilidad",
-      isActiveFn: () => {
-        const val = (new URL(window.location.href).searchParams.get("availability") || "").trim();
-        return !!val;
-      },
+      title: "Ofertado desde",
+      isActiveFn: () => (getParamsFromURL().listedSinceDays != null),
       onClear: () => {
-        sel.sel.value = "";
-        setURLParam("availability", null);
+        setURLParam("since_days", null);
+        // re-check "Sin preferencia"
+        body.querySelectorAll("input[type=radio]").forEach(r => {
+          r.checked = (r.value === "");
+        });
         fireFiltersChanged();
         refreshAll();
       },
-      contentEl: sel.el
+      contentEl: body
     });
 
     blocks.push(blk);
     root.appendChild(blk.el);
   }
 
-  // Refresh inicial (incluye ocultar/mostrar del filtro 9 si procede)
+  // 15) Disponibilidad
+  {
+    const sel = selectOne({
+      placeholder: "Sin preferencia",
+      options: [
+        ["available", "Disponible"],
+        ["reserved", "Reservado"],
+        ["rented", "Alquilado"],
+        ["sold", "Vendido"]
+      ],
+      initial: p.availability ?? "",
+      onChange: (v) => {
+        setURLParam("availability", v || null);
+        fireFiltersChanged();
+        refreshAll();
+      }
+    });
+
+    const body = el("div", { class: "fBody" }, [sel]);
+
+    const blk = filterBlock({
+      title: "Disponibilidad",
+      isActiveFn: () => (getParamsFromURL().availability != null),
+      onClear: () => {
+        sel.value = "";
+        setURLParam("availability", null);
+        fireFiltersChanged();
+        refreshAll();
+      },
+      contentEl: body
+    });
+
+    blocks.push(blk);
+    root.appendChild(blk.el);
+  }
+
   refreshAll();
 }
