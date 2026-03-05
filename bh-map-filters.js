@@ -156,7 +156,7 @@ function filterBlock({ title, isActiveFn, onClear, contentEl }) {
 function numericRangeDropdown({ kind, placeholderMin, placeholderMax, initialMin, initialMax, onChange }) {
   const wrap = h("div", { class: "fBody" });
 
-  const row = h("div", { class: "fRow2" });
+  const row = h("div", { class: "fCol2" });
   const minWrap = h("div", { class: "fInpWrap" });
   const maxWrap = h("div", { class: "fInpWrap" });
 
@@ -190,10 +190,78 @@ function numericRangeDropdown({ kind, placeholderMin, placeholderMax, initialMin
 
   function computeSuggestions(rawInt) {
     const maxCount = 4;
-    if (kind === "price") {
-      const target = scaleTypedForPrice(rawInt);
-      return nextSuggestionsFromLadder(ladder(), target, maxCount);
+
+    // Caso 1: sin teclear nada -> sugerencias "por defecto" coherentes con el modo y con si es Min/Max
+    // Aquí devolvemos un set genérico; el componente se limita a 4.
+    if (rawInt == null) {
+      if (kind === "price") {
+        // Valores típicos de entrada (no extremos)
+        return (mode === "rent")
+          ? [600, 800, 1000, 1200].slice(0, maxCount)
+          : [150000, 200000, 250000, 300000].slice(0, maxCount);
+      }
+      // Área: tamaños típicos
+      return [50, 75, 90, 110].slice(0, maxCount);
     }
+
+    // Caso 2: el usuario empieza a escribir -> sugerencias derivadas del número escrito
+    if (kind === "price") {
+      // Heurística:
+      // - Si escribe 1 dígito (2) => 200k/220k/250k/300k (compra) o 200/250/300/400 (alquiler)
+      // - Si escribe 2 dígitos (75) => 75k/80k/90k/100k (compra) o 750/800/900/1000 (alquiler)
+      // - Si escribe 3+ dígitos => tomamos ese número como base y proponemos escalones cercanos
+      const s = String(rawInt);
+      if (mode === "rent") {
+        let base;
+        if (s.length === 1) base = rawInt * 100;
+        else if (s.length === 2) base = rawInt * 10;
+        else base = rawInt;
+
+        const steps = [0, 50, 100, 200, 300, 400, 500];
+        const out = [];
+        for (let i = 0; i < steps.length && out.length < maxCount; i++) {
+          const v = base + steps[i];
+          if (v > 0) out.push(v);
+        }
+        return out.slice(0, maxCount);
+      } else {
+        let base;
+        if (s.length === 1) base = rawInt * 100000;
+        else if (s.length === 2) base = rawInt * 1000;
+        else base = rawInt;
+
+        // Proponemos 4 valores cercanos y "redondos"
+        const deltas = [0, 20000, 50000, 100000, 200000, 500000, 1000000];
+        const out = [];
+        for (let i = 0; i < deltas.length && out.length < maxCount; i++) {
+          const v = base + deltas[i];
+          if (v > 0) out.push(v);
+        }
+        return out.slice(0, maxCount);
+      }
+    }
+
+    // Área (m²):
+    // - 1 dígito (7) => 70/75/80/90
+    // - 2 dígitos (75) => 75/80/90/100
+    // - 3+ (120) => 120/130/150/200
+    {
+      const s = String(rawInt);
+      let base;
+      if (s.length === 1) base = rawInt * 10;
+      else base = rawInt;
+
+      // Escalones cercanos lógicos
+      const candidates = [base, base + 5, base + 10, base + 20, base + 30, base + 50, base + 80];
+      const out = [];
+      for (let i = 0; i < candidates.length && out.length < maxCount; i++) {
+        const v = Math.max(1, Math.round(candidates[i]));
+        out.push(v);
+      }
+      // Dedup
+      return Array.from(new Set(out)).slice(0, maxCount);
+    }
+  }
     const target = scaleTypedForArea(rawInt);
     return nextSuggestionsFromLadder(ladder(), target, maxCount);
   }
@@ -829,6 +897,7 @@ export function initFiltersBar({ mountId }) {
     const sel = selectOneColumn({
       placeholder: "Sin preferencia",
       options: [
+        ["pending", "Pendiente"],
         ["A+++++", "A+++++"],
         ["A++++", "A++++"],
         ["A+++", "A+++"],
@@ -840,8 +909,7 @@ export function initFiltersBar({ mountId }) {
         ["D", "D"],
         ["E", "E"],
         ["F", "F"],
-        ["G", "G"],
-        ["pending", "Pendiente"]
+        ["G", "G"]
       ],
       initial: p.energyMin || "",
       onChange: (v) => {

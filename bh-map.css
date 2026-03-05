@@ -1076,3 +1076,10 @@ body{
 .fOptText{
   line-height: 1.2;
 }
+
+
+.fCol2{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
