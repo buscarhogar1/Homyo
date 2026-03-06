@@ -105,6 +105,7 @@ html,body{
   margin-left:auto;
   display:flex;
   gap:10px;
+  align-items:center;
 }
 
 .rightGroup a{
@@ -118,6 +119,49 @@ html,body{
 
 .rightGroup a:hover{
   background:rgba(255,255,255,0.14);
+}
+
+.navUserArea{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.navUserBtn,
+.navLogoutBtn{
+  appearance:none;
+  border:0;
+  background:transparent;
+  color:#fff;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:650;
+  padding:8px 10px;
+  border-radius:999px;
+}
+
+.navUserBtn:hover,
+.navLogoutBtn:hover{
+  background:rgba(255,255,255,0.14);
+}
+
+.navUserBtn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+.navAvatar{
+  width:24px;
+  height:24px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.18);
+  border:1px solid rgba(255,255,255,0.28);
+  display:grid;
+  place-items:center;
+  font-size:12px;
+  font-weight:800;
+  line-height:1;
 }
 
 /* ===== Footer ===== */
@@ -271,7 +315,7 @@ html,body{
 }
 
 .bh-hidden{
-  display:none;
+  display:none !important;
 }
 
 .bh-probox{
@@ -308,6 +352,12 @@ html,body{
 
 @media (max-width:720px){
   .miniSearch{ display:none; }
+
+  .navUserBtn,
+  .navLogoutBtn,
+  .rightGroup a{
+    padding:8px 8px;
+  }
 }
 
 @media (max-width:520px){
@@ -316,5 +366,12 @@ html,body{
     border-radius:14px;
     max-height:92vh;
   }
-}
 
+  .rightGroup{
+    gap:4px;
+  }
+
+  .navUserLabel{
+    display:none;
+  }
+}

@@ -1,4 +1,3 @@
-// bh-layout.js
 // Layout común: header + footer + modal auth
 // Uso: initLayout({ showMiniSearch: true|false })
 
@@ -40,7 +39,17 @@ function renderHeader({ showMiniSearch, root }) {
 
         <div class="rightGroup" aria-label="Acciones">
           <a href="#" id="navFavoritos">Favoritos</a>
+
           <a href="#" id="navLogin">Iniciar sesión</a>
+
+          <div id="navUserArea" class="navUserArea bh-hidden" aria-label="Usuario conectado">
+            <button type="button" id="navAccountBtn" class="navUserBtn">
+              <span id="navUserAvatar" class="navAvatar" aria-hidden="true">U</span>
+              <span id="navUserLabel">Mi cuenta</span>
+            </button>
+
+            <button type="button" id="navLogoutBtn" class="navLogoutBtn">Cerrar sesión</button>
+          </div>
         </div>
       </div>
     </header>

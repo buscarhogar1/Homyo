@@ -1,16 +1,63 @@
-// bh-auth.js
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Ajusta aquí si cambias de proyecto
 const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 function $(id){ return document.getElementById(id); }
 
+function getUserDisplayName(user) {
+  const fullName = String(user?.user_metadata?.full_name || "").trim();
+  if (fullName) return fullName;
+
+  const email = String(user?.email || "").trim();
+  if (!email) return "Mi cuenta";
+
+  return email.split("@")[0] || "Mi cuenta";
+}
+
+function getUserInitial(user) {
+  const display = getUserDisplayName(user).trim();
+  const initial = display.charAt(0).toUpperCase();
+  return initial || "U";
+}
+
+function updateHeaderAuthState(session) {
+  const navLogin = $("navLogin");
+  const navUserArea = $("navUserArea");
+  const navUserAvatar = $("navUserAvatar");
+  const navUserLabel = $("navUserLabel");
+
+  const user = session?.user || null;
+
+  if (!navLogin || !navUserArea || !navUserAvatar || !navUserLabel) return;
+
+  if (!user) {
+    navLogin.classList.remove("bh-hidden");
+    navUserArea.classList.add("bh-hidden");
+    navUserAvatar.textContent = "U";
+    navUserLabel.textContent = "Mi cuenta";
+    document.body.classList.remove("bh-authenticated");
+    window.BH_AUTH_SESSION = null;
+    window.dispatchEvent(new CustomEvent("bh:auth-changed", { detail: { session: null } }));
+    return;
+  }
+
+  navLogin.classList.add("bh-hidden");
+  navUserArea.classList.remove("bh-hidden");
+  navUserAvatar.textContent = getUserInitial(user);
+  navUserLabel.textContent = "Mi cuenta";
+    
+  document.body.classList.add("bh-authenticated");
+  window.BH_AUTH_SESSION = session;
+  window.dispatchEvent(new CustomEvent("bh:auth-changed", { detail: { session } }));
+}
+
 export function initAuth() {
   const overlay = $("authOverlay");
   const navLogin = $("navLogin");
+  const navAccountBtn = $("navAccountBtn");
+  const navLogoutBtn = $("navLogoutBtn");
   const closeAuth = $("closeAuth");
 
   if (!overlay || !navLogin || !closeAuth) {
@@ -131,14 +178,38 @@ export function initAuth() {
     navLogin.focus();
   }
 
-  navLogin.addEventListener("click",(e)=>{ e.preventDefault(); openAuth(); });
+  navLogin.addEventListener("click",(e)=>{
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    openAuth();
+  });
+
   closeAuth.addEventListener("click", closeAuthModal);
   overlay.addEventListener("click",(e)=>{ if(e.target === overlay) closeAuthModal(); });
   document.addEventListener("keydown",(e)=>{ if(overlay.classList.contains("open") && e.key === "Escape") closeAuthModal(); });
 
   $("navFavoritos")?.addEventListener("click", (e) => {
     e.preventDefault();
+    e.stopImmediatePropagation();
     alert("MVP: Favoritos (requiere registro).");
+  });
+
+  navAccountBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    alert("MVP: Mi cuenta.");
+  });
+
+  navLogoutBtn?.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      updateHeaderAuthState(null);
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo cerrar la sesión.");
+    }
   });
 
   async function oauth(provider){
@@ -174,7 +245,7 @@ export function initAuth() {
       if (error) throw error;
       if (!data || typeof data.exists !== "boolean") throw new Error("Bad response");
       return { ok:true, exists: data.exists };
-    } catch(e){
+    } catch(_e){
       return { ok:false, exists:false };
     }
   }
@@ -226,9 +297,10 @@ export function initAuth() {
       setBusy(true);
       setMsg(authMsgPw, "");
 
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
+      updateHeaderAuthState(data?.session || null);
       setMsg(authMsgPw, "Sesión iniciada.");
       setTimeout(() => closeAuthModal(), 400);
     } catch(e){
@@ -279,8 +351,9 @@ export function initAuth() {
       if (needsConfirm){
         showRegisterSuccess();
         regHeader.textContent = "Cuenta creada";
-        setMsg(authMsgReg, `Te hemos enviado un correo para confirmar el email. Después podrás iniciar sesión.`);
+        setMsg(authMsgReg, "Te hemos enviado un correo para confirmar el email. Después podrás iniciar sesión.");
       } else {
+        updateHeaderAuthState(data.session);
         setMsg(authMsgReg, "Cuenta creada y sesión iniciada.");
         setTimeout(() => closeAuthModal(), 500);
       }
@@ -296,4 +369,15 @@ export function initAuth() {
   emailInput.addEventListener("keydown",(e)=>{ if(e.key==="Enter") emailContinueBtn.click(); });
   pwInput.addEventListener("keydown",(e)=>{ if(e.key==="Enter") pwLoginBtn.click(); });
   regPassword.addEventListener("keydown",(e)=>{ if(e.key==="Enter") regCreateBtn.click(); });
+
+  supabase.auth.getSession().then(({ data }) => {
+    updateHeaderAuthState(data?.session || null);
+  }).catch((err) => {
+    console.error(err);
+    updateHeaderAuthState(null);
+  });
+
+  supabase.auth.onAuthStateChange((_event, session) => {
+    updateHeaderAuthState(session || null);
+  });
 }
