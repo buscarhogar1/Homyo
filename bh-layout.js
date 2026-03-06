@@ -113,13 +113,16 @@ function renderAuthModal({ root }) {
 
           <div id="authStepRegister" class="bh-hidden">
             <div class="bh-msg" id="regHeader"></div>
-            <input id="regName" class="bh-input" type="text" autocomplete="name" placeholder="Nombre" />
-            <input id="regPassword" class="bh-input" type="password" autocomplete="new-password" placeholder="Contraseña (mín. 8)" />
-            <button type="button" class="bh-btn bh-primary" id="regCreateBtn">Crear cuenta</button>
+
+            <div id="regFormFields">
+              <input id="regName" class="bh-input" type="text" autocomplete="name" placeholder="Nombre" />
+              <input id="regPassword" class="bh-input" type="password" autocomplete="new-password" placeholder="Contraseña (mín. 8)" />
+              <button type="button" class="bh-btn bh-primary" id="regCreateBtn">Crear cuenta</button>
+            </div>
 
             <div class="bh-msg bh-hidden" id="authMsgReg" role="status" aria-live="polite"></div>
 
-            <div class="bh-msg" style="margin-top:12px;">
+            <div class="bh-msg" id="regFooterActions" style="margin-top:12px;">
               <button type="button" class="bh-linkbtn" id="backStartFromRegBtn">Volver</button>
             </div>
           </div>
