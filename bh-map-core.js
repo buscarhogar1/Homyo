@@ -242,7 +242,7 @@ export function initMap(){
       bedroomsMin: toInt(u.searchParams.get("bedrooms_min")),
       bathroomsMin: toInt(u.searchParams.get("bathrooms_min")),
 
-      outdoorType: toText(u.searchParams.get("outdoor_type")),
+      outdoorTypes: toTextArray(u.searchParams.get("outdoor_type")),
       orientations: toTextArray(u.searchParams.get("orientations")),
 
       energyChoice: toText(u.searchParams.get("energy")),
@@ -357,7 +357,7 @@ export function initMap(){
       p_bedrooms_min: filters.bedroomsMin,
       p_bathrooms_min: filters.bathroomsMin,
 
-      p_outdoor_type: filters.outdoorType,
+      p_outdoor_type: filters.outdoorTypess,
       p_orientations: filters.orientations,
 
       p_energy_choice: filters.energyChoice,
@@ -1555,7 +1555,10 @@ export function initMap(){
   }
 
   window.addEventListener("bh:layout-resize", () => {
-    requestAnimationFrame(() => safeInvalidate());
+    requestAnimationFrame(() => {
+      safeInvalidate();
+      setTimeout(() => safeInvalidate(), 120);
+    });
   });
 
   const AreasControl = L.Control.extend({

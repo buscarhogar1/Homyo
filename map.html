@@ -187,18 +187,18 @@
       function notifyLayoutResize() {
         requestAnimationFrame(() => {
           window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-          try{
+          try {
             if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
               window.__bhMap.invalidateSize(true);
             }
-          }catch(_e){}
+          } catch (_e) {}
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-            try{
+            try {
               if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
                 window.__bhMap.invalidateSize(true);
               }
-            }catch(_e){}
+            } catch (_e) {}
           }, 120);
         });
       }
@@ -208,18 +208,23 @@
         applyToggleTexts();
         notifyLayoutResize();
       });
-
       btnClearFilters?.addEventListener("click", () => {
         const u = new URL(window.location.href);
         [
-          "price_min","price_max",
-          "useful_min","useful_max",
-          "built_min","built_max",
-          "build_periods","since_days",
-          "bedrooms_min","bathrooms_min",
-          "outdoor_type","orientations",
-          "accessibility","parking","storage",
-          "energy","availability"
+          "price_min", "price_max",
+          "useful_min", "useful_max",
+          "built_min", "built_max",
+          "build_periods",
+          "since_days",
+          "bedrooms_min",
+          "bathrooms_min",
+          "outdoor_type",
+          "orientations",
+          "accessibility",
+          "parking",
+          "storage",
+          "energy",
+          "availability"
         ].forEach((k) => u.searchParams.delete(k));
         history.replaceState(null, "", u.toString());
         initFiltersBar({ mountId: "filtersBarMount" });
