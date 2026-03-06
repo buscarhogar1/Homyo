@@ -496,7 +496,7 @@ export function initFiltersBar({ mountId }) {
     });
 
     const blk = filterBlock({
-      title: "Periodo de construcción",
+      title: "Construcción",
       isActiveFn: () => getParamsFromURL().buildPeriods.length > 0,
       onClear: () => {
         c.setValues([]);
@@ -528,7 +528,7 @@ export function initFiltersBar({ mountId }) {
     });
 
     const blk = filterBlock({
-      title: "Ofertado desde (fecha de publicación)",
+      title: "Publicación",
       isActiveFn: () => getParamsFromURL().sinceDays != null,
       onClear: () => {
         c.clear();
@@ -559,7 +559,7 @@ export function initFiltersBar({ mountId }) {
     });
 
     const blk = filterBlock({
-      title: "Número mínimo de dormitorios",
+      title: "Dormitorios",
       isActiveFn: () => getParamsFromURL().bedroomsMin != null,
       onClear: () => {
         c.clear();
@@ -591,7 +591,7 @@ export function initFiltersBar({ mountId }) {
     });
 
     const blk = filterBlock({
-      title: "Número de baños",
+      title: "Baños",
       isActiveFn: () => getParamsFromURL().bathroomsMin != null,
       onClear: () => {
         c.clear();

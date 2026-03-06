@@ -194,35 +194,47 @@
       function notifyLayoutResize() {
         requestAnimationFrame(() => {
           window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-          window.dispatchEvent(new Event("resize"));
           try {
             if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
               window.__bhMap.invalidateSize(true);
             }
           } catch (_e) {}
-
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-            window.dispatchEvent(new Event("resize"));
             try {
               if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
                 window.__bhMap.invalidateSize(true);
               }
             } catch (_e) {}
           }, 120);
-
-          setTimeout(() => {
-            try {
-              if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
-                window.__bhMap.invalidateSize(true);
-              }
-            } catch (_e) {}
-          }, 260);
         });
       }
       btnFilters.addEventListener("click", () => {
         grid.classList.toggle("hideFilters");
         applyToggleTexts();
+        notifyLayoutResize();
+      });
+      btnClearFilters?.addEventListener("click", () => {
+        const u = new URL(window.location.href);
+        [
+          "price_min", "price_max",
+          "useful_min", "useful_max",
+          "built_min", "built_max",
+          "build_periods",
+          "since_days",
+          "bedrooms_min",
+          "bathrooms_min",
+          "outdoor_type",
+          "orientations",
+          "accessibility",
+          "parking",
+          "storage",
+          "energy",
+          "availability"
+        ].forEach((k) => u.searchParams.delete(k));
+        history.replaceState(null, "", u.toString());
+        initFiltersBar({ mountId: "filtersBarMount" });
+        window.dispatchEvent(new CustomEvent("bh:filters-changed"));
         notifyLayoutResize();
       });
       btnClearFilters.addEventListener("click", () => {
@@ -233,7 +245,6 @@
 
       btnList.addEventListener("click", () => {
         grid.classList.toggle("hideList");
-        listCol.classList.toggle("is-collapsed");
         applyToggleTexts();
         notifyLayoutResize();
       });
