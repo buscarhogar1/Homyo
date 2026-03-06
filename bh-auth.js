@@ -1,6 +1,7 @@
 // bh-auth.js
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// Ajusta aquí si cambias de proyecto
 const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -35,6 +36,10 @@ export function initAuth() {
   const regName = $("regName");
   const regPassword = $("regPassword");
   const regCreateBtn = $("regCreateBtn");
+  const regFormWrap = $("regFormWrap");
+  const regBackRow = $("regBackRow");
+  const regLoginRow = $("regLoginRow");
+  const regGoLoginBtn = $("regGoLoginBtn");
 
   const goRegisterBtn = $("goRegisterBtn");
   const backStartFromPwBtn = $("backStartFromPwBtn");
@@ -44,22 +49,17 @@ export function initAuth() {
 
   let pendingEmail = "";
 
-  function show(el){
-    if (el) el.classList.remove("bh-hidden");
-  }
-
-  function hide(el){
-    if (el) el.classList.add("bh-hidden");
-  }
+  function show(el){ if (el) el.classList.remove("bh-hidden"); }
+  function hide(el){ if (el) el.classList.add("bh-hidden"); }
 
   function setMsg(el, text){
-    if (!el) return;
-    if (!text){
-      el.innerHTML = "";
+    if(!el) return;
+    if(!text){
+      el.textContent = "";
       el.classList.add("bh-hidden");
       return;
     }
-    el.innerHTML = text;
+    el.textContent = text;
     el.classList.remove("bh-hidden");
   }
 
@@ -69,113 +69,72 @@ export function initAuth() {
     });
   }
 
-  function resetRegisterStep(){
-    if (regHeader) regHeader.textContent = pendingEmail ? `Crear cuenta con: ${pendingEmail}` : "";
-    show(regName);
-    show(regPassword);
-    show(regCreateBtn);
-    show(backStartFromRegBtn);
-    if (backStartFromRegBtn) backStartFromRegBtn.textContent = "Volver";
+  function resetRegisterView(){
+    show(regFormWrap);
+    show(regBackRow);
+    hide(regLoginRow);
   }
 
-  function showRegisterSuccess(email){
-    if (regHeader) regHeader.innerHTML = `
-      <div style="font-size:30px;font-weight:700;line-height:1.15;color:#111;margin:0 0 12px;">Cuenta creada</div>
-      <div style="font-size:18px;line-height:1.4;color:#111;margin:0;">${email}</div>
-    `;
-
-    hide(regName);
-    hide(regPassword);
-    hide(regCreateBtn);
-    show(backStartFromRegBtn);
-    if (backStartFromRegBtn) backStartFromRegBtn.textContent = "Volver";
-
-    setMsg(
-      authMsgReg,
-      "Te hemos enviado un correo para confirmar el email. Después podrás iniciar sesión."
-    );
+  function showRegisterSuccess(){
+    hide(regFormWrap);
+    hide(regBackRow);
+    show(regLoginRow);
   }
 
   function goStart(){
-    show(stepStart);
-    hide(stepPw);
-    hide(stepReg);
-
+    show(stepStart); hide(stepPw); hide(stepReg);
     setMsg(authMsgStart, "");
     setMsg(authMsgPw, "");
     setMsg(authMsgReg, "");
-
     pendingEmail = "";
-
-    if (pwInput) pwInput.value = "";
-    if (regName) regName.value = "";
-    if (regPassword) regPassword.value = "";
-
-    resetRegisterStep();
-
-    if (emailInput) emailInput.focus();
+    pwInput.value = "";
+    regName.value = "";
+    regPassword.value = "";
+    resetRegisterView();
+    emailInput.focus();
   }
 
   function goPassword(email){
-    hide(stepStart);
-    show(stepPw);
-    hide(stepReg);
-
+    hide(stepStart); show(stepPw); hide(stepReg);
     setMsg(authMsgStart, "");
     setMsg(authMsgPw, "");
     setMsg(authMsgReg, "");
-
+    resetRegisterView();
     pendingEmail = email;
-    if (pwHeader) pwHeader.textContent = `Email: ${email}`;
-    if (pwInput) {
-      pwInput.value = "";
-      pwInput.focus();
-    }
+    pwHeader.textContent = `Email: ${email}`;
+    pwInput.value = "";
+    pwInput.focus();
   }
 
   function goRegister(email){
-    hide(stepStart);
-    hide(stepPw);
-    show(stepReg);
-
+    hide(stepStart); hide(stepPw); show(stepReg);
     setMsg(authMsgStart, "");
     setMsg(authMsgPw, "");
     setMsg(authMsgReg, "");
-
+    resetRegisterView();
     pendingEmail = email;
-    resetRegisterStep();
-
-    if (regName) regName.focus();
+    regHeader.textContent = `Crear cuenta con: ${email}`;
+    regName.focus();
   }
 
   function openAuth(){
     overlay.classList.add("open");
-    overlay.setAttribute("aria-hidden", "false");
+    overlay.setAttribute("aria-hidden","false");
     document.body.style.overflow = "hidden";
     goStart();
   }
 
   function closeAuthModal(){
     overlay.classList.remove("open");
-    overlay.setAttribute("aria-hidden", "true");
+    overlay.setAttribute("aria-hidden","true");
     document.body.style.overflow = "";
-    if (navLogin) navLogin.focus();
+    navLogin.focus();
   }
 
-  navLogin.addEventListener("click", (e) => {
-    e.preventDefault();
-    openAuth();
-  });
-
+  navLogin.addEventListener("click",(e)=>{ e.preventDefault(); openAuth(); });
   closeAuth.addEventListener("click", closeAuthModal);
-
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeAuthModal();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (overlay.classList.contains("open") && e.key === "Escape") closeAuthModal();
-  });
+  overlay.addEventListener("click",(e)=>{ if(e.target === overlay) closeAuthModal(); });
+  document.addEventListener("keydown",(e)=>{ if(overlay.classList.contains("open") && e.key === "Escape") closeAuthModal(); });
 
   $("navFavoritos")?.addEventListener("click", (e) => {
     e.preventDefault();
@@ -183,7 +142,7 @@ export function initAuth() {
   });
 
   async function oauth(provider){
-    try {
+    try{
       setBusy(true);
       setMsg(authMsgStart, "");
       localStorage.setItem("bh_return_url", window.location.href);
@@ -197,42 +156,39 @@ export function initAuth() {
 
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
-    } catch (e) {
+    } catch(e){
       setMsg(authMsgStart, "No se pudo iniciar sesión. Revisa que Google esté activado en Supabase y que exista auth/callback.html.");
       console.error(e);
       setBusy(false);
     }
   }
 
-  googleBtn.addEventListener("click", () => oauth("google"));
+  googleBtn.addEventListener("click", ()=> oauth("google"));
 
   async function checkEmailExists(email){
-    try {
+    try{
       const { data, error } = await supabase.functions.invoke("check-email", {
         body: { email }
       });
 
       if (error) throw error;
       if (!data || typeof data.exists !== "boolean") throw new Error("Bad response");
-      return { ok: true, exists: data.exists };
-    } catch (e) {
-      return { ok: false, exists: false };
+      return { ok:true, exists: data.exists };
+    } catch(e){
+      return { ok:false, exists:false };
     }
   }
 
   emailContinueBtn.addEventListener("click", async () => {
     const email = (emailInput.value || "").trim().toLowerCase();
-    if (!email) {
-      setMsg(authMsgStart, "Escribe un email.");
-      return;
-    }
+    if (!email) { setMsg(authMsgStart, "Escribe un email."); return; }
 
     setBusy(true);
     setMsg(authMsgStart, "");
 
     const r = await checkEmailExists(email);
 
-    if (r.ok) {
+    if (r.ok){
       setBusy(false);
       if (r.exists) goPassword(email);
       else goRegister(email);
@@ -246,31 +202,27 @@ export function initAuth() {
 
   goRegisterBtn.addEventListener("click", () => {
     const email = pendingEmail || (emailInput.value || "").trim().toLowerCase();
-    if (!email) {
-      goStart();
-      return;
-    }
+    if (!email) { goStart(); return; }
     goRegister(email);
   });
 
   backStartFromPwBtn.addEventListener("click", goStart);
   backStartFromRegBtn.addEventListener("click", goStart);
+  regGoLoginBtn.addEventListener("click", () => {
+    if (!pendingEmail) {
+      goStart();
+      return;
+    }
+    goPassword(pendingEmail);
+  });
 
   pwLoginBtn.addEventListener("click", async () => {
     const email = pendingEmail;
     const password = pwInput.value || "";
+    if (!email) { goStart(); return; }
+    if (!password) { setMsg(authMsgPw, "Escribe tu contraseña."); return; }
 
-    if (!email) {
-      goStart();
-      return;
-    }
-
-    if (!password) {
-      setMsg(authMsgPw, "Escribe tu contraseña.");
-      return;
-    }
-
-    try {
+    try{
       setBusy(true);
       setMsg(authMsgPw, "");
 
@@ -279,7 +231,7 @@ export function initAuth() {
 
       setMsg(authMsgPw, "Sesión iniciada.");
       setTimeout(() => closeAuthModal(), 400);
-    } catch (e) {
+    } catch(e){
       setMsg(authMsgPw, "No se pudo iniciar sesión. Revisa email y contraseña.");
       console.error(e);
     } finally {
@@ -292,22 +244,11 @@ export function initAuth() {
     const name = (regName.value || "").trim();
     const password = regPassword.value || "";
 
-    if (!email) {
-      goStart();
-      return;
-    }
+    if (!email) { goStart(); return; }
+    if (!name) { setMsg(authMsgReg, "Escribe tu nombre."); return; }
+    if (password.length < 8) { setMsg(authMsgReg, "La contraseña debe tener al menos 8 caracteres."); return; }
 
-    if (!name) {
-      setMsg(authMsgReg, "Escribe tu nombre.");
-      return;
-    }
-
-    if (password.length < 8) {
-      setMsg(authMsgReg, "La contraseña debe tener al menos 8 caracteres.");
-      return;
-    }
-
-    try {
+    try{
       setBusy(true);
       setMsg(authMsgReg, "");
 
@@ -322,9 +263,9 @@ export function initAuth() {
         }
       });
 
-      if (error) {
+      if (error){
         const msg = String(error.message || "");
-        if (msg.toLowerCase().includes("already") || msg.toLowerCase().includes("registered")) {
+        if (msg.toLowerCase().includes("already") || msg.toLowerCase().includes("registered")){
           setBusy(false);
           goPassword(email);
           setMsg(authMsgPw, "Ese email ya está registrado. Entra con tu contraseña.");
@@ -335,21 +276,16 @@ export function initAuth() {
 
       const needsConfirm = !data?.session;
 
-      if (needsConfirm) {
-        showRegisterSuccess(email);
+      if (needsConfirm){
+        showRegisterSuccess();
+        regHeader.textContent = "Cuenta creada";
+        setMsg(authMsgReg, `Te hemos enviado un correo para confirmar el email. Después podrás iniciar sesión.`);
       } else {
-        if (regHeader) regHeader.innerHTML = `
-          <div style="font-size:30px;font-weight:700;line-height:1.15;color:#111;margin:0 0 12px;">Cuenta creada</div>
-          <div style="font-size:18px;line-height:1.4;color:#111;margin:0;">${email}</div>
-        `;
-        hide(regName);
-        hide(regPassword);
-        hide(regCreateBtn);
-        hide(backStartFromRegBtn);
         setMsg(authMsgReg, "Cuenta creada y sesión iniciada.");
         setTimeout(() => closeAuthModal(), 500);
       }
-    } catch (e) {
+
+    } catch(e){
       setMsg(authMsgReg, "No se pudo crear la cuenta. Revisa el email o prueba otra contraseña.");
       console.error(e);
     } finally {
@@ -357,15 +293,7 @@ export function initAuth() {
     }
   });
 
-  emailInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") emailContinueBtn.click();
-  });
-
-  pwInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") pwLoginBtn.click();
-  });
-
-  regPassword.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") regCreateBtn.click();
-  });
+  emailInput.addEventListener("keydown",(e)=>{ if(e.key==="Enter") emailContinueBtn.click(); });
+  pwInput.addEventListener("keydown",(e)=>{ if(e.key==="Enter") pwLoginBtn.click(); });
+  regPassword.addEventListener("keydown",(e)=>{ if(e.key==="Enter") regCreateBtn.click(); });
 }
