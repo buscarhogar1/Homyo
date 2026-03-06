@@ -371,6 +371,17 @@
       .sideCardInner{padding:14px;}
       .sideTitle{color:var(--muted); font-size:13px; margin:0 0 10px;}
 
+      .kv{display:grid; gap:10px;}
+      .kvLine{display:grid; grid-template-columns: 92px 1fr; gap:10px;}
+      .k{color:var(--muted); font-size:13px;}
+      .v{font-size:14px;}
+      .mono{
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+        font-size:12px;
+        color:var(--muted);
+        word-break:break-all;
+      }
+
       #miniMap{height:160px; width:100%; background:linear-gradient(135deg,#f0f1f3,#ffffff);}
       .mapHeader{
         display:flex;
@@ -393,131 +404,28 @@
         background:linear-gradient(135deg,#f0f1f3,#ffffff);
       }
 
-      .contactCard{
-        padding:0;
-      }
-      .contactHero{
-        position:relative;
-        min-height:118px;
-        background:#f3f3f3;
-        border-bottom:1px solid var(--border);
-      }
-      .agencyLogoWrap{
-        position:absolute;
-        left:24px;
-        top:20px;
-        width:98px;
-        height:98px;
-        border-radius:6px;
-        border:1px solid #d8d8d8;
-        background:#fff;
-        box-shadow:0 1px 2px rgba(0,0,0,0.04);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:10px;
-        box-sizing:border-box;
-      }
-      .agencyLogoText{
-        font-size:16px;
-        line-height:1.05;
-        font-weight:800;
-        text-align:center;
-        color:#111;
-        word-break:break-word;
-      }
-      .agencyBadge{
-        position:absolute;
-        right:18px;
-        top:18px;
-        width:30px;
-        height:30px;
+      .contactBtns{
         display:grid;
-        place-items:center;
-        color:#005bbb;
+        gap:10px;
       }
-      .agencyBadge svg{
-        width:20px;
-        height:20px;
-        display:block;
-      }
-      .contactBody{
-        padding:30px 24px 18px;
-      }
-      .contactAgencyName{
-        margin:0;
-        font-size:18px;
-        line-height:1.35;
-        font-weight:600;
-        color:#0068c9;
-      }
-      .contactLinkRow,
-      .contactActionRow{
-        margin-top:18px;
-      }
-      .contactLinkBtn,
-      .contactSecondaryBtn,
       .cta{
-        width:100%;
         display:inline-flex;
         align-items:center;
         justify-content:center;
         gap:10px;
-        min-height:44px;
-        border:0;
-        background:transparent;
+        width:100%;
+        height:42px;
+        border-radius:12px;
         cursor:pointer;
-        font-size:15px;
-        color:#0068c9;
-        padding:0;
-        text-align:left;
+        border:1px solid var(--border);
+        background:#fff;
+        font-size:14px;
       }
-      .contactLinkBtn,
-      .contactSecondaryBtn{
-        justify-content:flex-start;
-      }
-      .contactLinkBtn svg,
-      .contactSecondaryBtn svg,
-      .cta svg{
-        width:22px;
-        height:22px;
-        flex:0 0 auto;
-      }
-      .cta{
-        border-radius:4px;
-        background:#f89b1f;
+      .ctaPrimary{
+        background:#111;
         color:#fff;
-        min-height:44px;
-        font-weight:600;
+        border-color:#111;
       }
-      .contactSecondaryBtn{
-        color:#0068c9;
-      }
-      .contactDivider{
-        height:1px;
-        background:var(--border);
-        margin:18px -24px 16px;
-      }
-      .contactMeta{
-        display:grid;
-        gap:10px;
-      }
-      .kv{display:grid; gap:10px;}
-      .kvLine{display:grid; grid-template-columns:92px 1fr; gap:10px;}
-      .k{color:var(--muted); font-size:13px;}
-      .v{font-size:14px;}
-      .mono{
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-        font-size:12px;
-        color:var(--muted);
-        word-break:break-all;
-      }
-      .contactNote{
-        margin-top:14px;
-        font-size:13px;
-      }
-      .contactLinkBtn[disabled],
-      .contactSecondaryBtn[disabled],
       .cta[disabled]{
         opacity:0.55;
         cursor:not-allowed;
@@ -811,74 +719,35 @@
               <div id="miniMap"></div>
             </div>
 
-            <div class="sideCard contactCard">
-              <div class="contactHero">
-                <div class="agencyLogoWrap">
-                  <div class="agencyLogoText" id="agencyLogo">BH</div>
+            <div class="sideCard">
+              <div class="sideCardInner">
+                <p class="sideTitle">Contacto</p>
+                <div class="contactBtns">
+                  <button class="cta ctaPrimary" id="callBtn" type="button" disabled>Ver teléfono</button>
+                  <button class="cta" id="emailBtn" type="button" disabled>Contacto inmobiliaria</button>
                 </div>
-                <div class="agencyBadge" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 3l7 4v10l-7 4-7-4V7l7-4z"></path>
-                    <path d="M9 10h6"></path>
-                    <path d="M9 13h6"></path>
-                  </svg>
-                </div>
-              </div>
-              <div class="contactBody">
-                <p class="contactAgencyName" id="agency">—</p>
-
-                <div class="contactLinkRow">
-                  <button class="contactLinkBtn" id="callBtn" type="button" disabled>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.46-1.29a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                    <span id="callBtnText">Ver teléfono</span>
-                  </button>
-                </div>
-
-                <div class="contactActionRow">
-                  <button class="cta" id="emailBtn" type="button" disabled>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M4 4h16v16H4z"></path>
-                      <path d="M4 7l8 6 8-6"></path>
-                    </svg>
-                    <span>Contactar con la inmobiliaria</span>
-                  </button>
-                </div>
-
-                <div class="contactActionRow">
-                  <button class="contactSecondaryBtn" id="visitBtn" type="button" disabled>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-                      <path d="M16 2v4"></path>
-                      <path d="M8 2v4"></path>
-                      <path d="M3 10h18"></path>
-                    </svg>
-                    <span>Solicitar visita</span>
-                  </button>
-                </div>
-
-                <div class="contactDivider"></div>
-
-                <div class="contactMeta">
-                  <div class="kv">
-                    <div class="kvLine">
-                      <div class="k">Publicado</div>
-                      <div class="v" id="listedAt">—</div>
-                    </div>
-                    <div class="kvLine">
-                      <div class="k">Tipo</div>
-                      <div class="v" id="ptype">—</div>
-                    </div>
-                    <div class="kvLine">
-                      <div class="k">ID</div>
-                      <div class="v mono" id="id">—</div>
-                    </div>
+                <div style="height:10px;"></div>
+                <div class="kv">
+                  <div class="kvLine">
+                    <div class="k">Agencia</div>
+                    <div class="v" id="agency">—</div>
                   </div>
-
-                  <div class="p mutedP contactNote" id="contactMvpNote">
-                    MVP: botones de contacto se activarán cuando tengamos teléfono/email en la base de datos.
+                  <div class="kvLine">
+                    <div class="k">Publicado</div>
+                    <div class="v" id="listedAt">—</div>
                   </div>
+                  <div class="kvLine">
+                    <div class="k">Tipo</div>
+                    <div class="v" id="ptype">—</div>
+                  </div>
+                  <div class="kvLine">
+                    <div class="k">ID</div>
+                    <div class="v mono" id="id">—</div>
+                  </div>
+                </div>
+                <div style="height:10px;"></div>
+                <div class="p mutedP" style="font-size:13px;" id="contactMvpNote">
+                  MVP: botones de contacto se activarán cuando tengamos teléfono/email en la base de datos.
                 </div>
               </div>
             </div>
@@ -916,7 +785,6 @@
       const subTitleEl = document.getElementById("subTitle");
       const priceEl = document.getElementById("price");
       const agencyEl = document.getElementById("agency");
-      const agencyLogoEl = document.getElementById("agencyLogo");
       const listedAtEl = document.getElementById("listedAt");
       const idEl = document.getElementById("id");
       const ptypeEl = document.getElementById("ptype");
@@ -951,9 +819,7 @@
       const featuresGridEl = document.getElementById("featuresGrid");
 
       const callBtn = document.getElementById("callBtn");
-      const callBtnTextEl = document.getElementById("callBtnText");
       const emailBtn = document.getElementById("emailBtn");
-      const visitBtn = document.getElementById("visitBtn");
       const contactMvpNoteEl = document.getElementById("contactMvpNote");
 
       const gmapsBtnEl = document.getElementById("gmapsBtn");
@@ -1246,21 +1112,6 @@
 
       function storageKey(listingId){ return "bh_saved_" + listingId; }
 
-      function buildAgencyLogoText(name){
-        const clean = String(name || "").trim();
-        if (!clean) return "BH";
-
-        const words = clean
-          .split(/\s+/)
-          .map((part) => part.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]/g, ""))
-          .filter(Boolean);
-
-        if (!words.length) return clean.slice(0, 2).toUpperCase();
-        if (words.length === 1) return words[0].slice(0, 3).toUpperCase();
-
-        return (words[0][0] + words[1][0]).toUpperCase();
-      }
-
       function setSavedUI(isSaved){
         saveTextEl.textContent = isSaved ? "Guardado" : "Guardar";
         stickySaveTextEl.textContent = isSaved ? "Guardado" : "Guardar";
@@ -1273,7 +1124,7 @@
         }
         const stored = sessionStorage.getItem("bh_last_map_url");
         if (stored) return stored;
-        return "./map.html";
+        return "./";
       }
 
       function wireBackLinks(){
@@ -1297,19 +1148,14 @@
       }
 
       function setContactButtons(phone, email){
-        const phoneText = String(phone || "").trim();
-        const emailText = String(email || "").trim();
-        const hasPhone = !!phoneText;
-        const hasEmail = !!emailText;
+        const hasPhone = !!(phone && String(phone).trim());
+        const hasEmail = !!(email && String(email).trim());
 
         callBtn.disabled = !hasPhone;
         emailBtn.disabled = !hasEmail;
-        visitBtn.disabled = !hasEmail;
 
         stickyPhoneBtnEl.disabled = !hasPhone;
         stickyContactBtnEl.disabled = !hasEmail;
-
-        callBtnTextEl.textContent = hasPhone ? phoneText : "Ver teléfono";
 
         if (hasPhone || hasEmail){
           contactMvpNoteEl.style.display = "none";
@@ -1319,24 +1165,20 @@
 
         callBtn.onclick = () => {
           if (!hasPhone) return;
-          window.location.href = "tel:" + phoneText.replace(/\s+/g, "");
+          alert("Teléfono: " + String(phone));
         };
         stickyPhoneBtnEl.onclick = () => {
           if (!hasPhone) return;
-          window.location.href = "tel:" + phoneText.replace(/\s+/g, "");
+          alert("Teléfono: " + String(phone));
         };
 
         emailBtn.onclick = () => {
           if (!hasEmail) return;
-          window.location.href = "mailto:" + emailText;
-        };
-        visitBtn.onclick = () => {
-          if (!hasEmail) return;
-          window.location.href = "mailto:" + emailText + "?subject=" + encodeURIComponent("Solicitud de visita");
+          window.location.href = "mailto:" + String(email);
         };
         stickyContactBtnEl.onclick = () => {
           if (!hasEmail) return;
-          window.location.href = "mailto:" + emailText;
+          window.location.href = "mailto:" + String(email);
         };
       }
 
@@ -1403,7 +1245,6 @@
           stickyPriceEl.textContent = row.price_eur != null ? euro(row.price_eur) : "—";
 
           agencyEl.textContent = row.agency_name || "—";
-          agencyLogoEl.textContent = buildAgencyLogoText(row.agency_name);
           listedAtEl.textContent = fmtDate(row.listed_at);
           ptypeEl.textContent = row.property_type || "—";
           idEl.textContent = row.listing_id || listingId;
