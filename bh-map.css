@@ -1083,3 +1083,71 @@ body{
   grid-template-columns: 1fr;
   gap: 4px;
 }
+
+
+.bh-hidden{ display:none !important; }
+
+.fInpStack{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.fInpWrap{
+  position: relative;
+}
+
+.fDrop{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.10);
+  padding: 6px;
+  z-index: 1200;
+}
+
+.fDropItem{
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: rgba(0,0,0,0.86);
+}
+
+.fDropItem:hover{
+  background: rgba(0,0,0,0.05);
+}
+
+.fOptCol{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+
+.fOptLine{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 2px;
+  font-size: 14px;
+  color: rgba(0,0,0,0.80);
+}
+
+.fOptLine input{
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.fOptText{
+  line-height: 1.25;
+}
