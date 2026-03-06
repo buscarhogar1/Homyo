@@ -612,6 +612,10 @@
       @media (max-width: 1200px){
         :root{ --bleed: 24px; }
       }
+      #ubicacion{
+        grid-column:1 / -1;
+      }
+
       @media (max-width: 980px){
         .mediaOuter{ margin-left: 0; margin-right: 0; }
         .mediaSizer{aspect-ratio:auto; min-height:0; max-height:none;}
@@ -780,14 +784,6 @@
             <div class="featuresGrid" id="featuresGrid"></div>
           </div>
 
-          <div class="section" id="ubicacion">
-            <h2 class="h2 small">Ubicación</h2>
-            <div id="mainMap"></div>
-
-            <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
-              Calcular tiempo de viaje con Google Maps
-            </a>
-          </div>
         </div>
 
         <div>
@@ -854,31 +850,21 @@
                     <span>Solicitar una visita</span>
                   </button>
                 </div>
-
-                <div class="agencyMeta kv">
-                  <div class="kvLine">
-                    <div class="k">Publicado</div>
-                    <div class="v" id="listedAt">—</div>
-                  </div>
-                  <div class="kvLine">
-                    <div class="k">Tipo</div>
-                    <div class="v" id="ptype">—</div>
-                  </div>
-                  <div class="kvLine">
-                    <div class="k">ID</div>
-                    <div class="v mono" id="id">—</div>
-                  </div>
-                </div>
-
-                <div style="height:10px;"></div>
-                <div class="p mutedP" style="font-size:13px;" id="contactMvpNote">
-                  El logo, el teléfono y el correo se mostrarán aquí cuando esos datos estén conectados en la base de datos pública.
-                </div>
               </div>
             </div>
 
           </div>
         </div>
+
+        <div class="section" id="ubicacion">
+          <h2 class="h2 small">Ubicación</h2>
+          <div id="mainMap"></div>
+
+          <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
+            Calcular tiempo de viaje con Google Maps
+          </a>
+        </div>
+
       </div>
 
     </div>
@@ -912,10 +898,6 @@
       const agencyEl = document.getElementById("agency");
       const agencyLogoImgEl = document.getElementById("agencyLogoImg");
       const agencyLogoFallbackEl = document.getElementById("agencyLogoFallback");
-      const listedAtEl = document.getElementById("listedAt");
-      const idEl = document.getElementById("id");
-      const ptypeEl = document.getElementById("ptype");
-
       const crumbsCityEl = document.getElementById("crumbCity");
       const crumbsNeighborhoodEl = document.getElementById("crumbNeighborhood");
       const crumbsAddressEl = document.getElementById("crumbAddress");
@@ -949,8 +931,6 @@
       const emailBtn = document.getElementById("emailBtn");
       const contactBtn = document.getElementById("contactBtn");
       const visitBtn = document.getElementById("visitBtn");
-      const contactMvpNoteEl = document.getElementById("contactMvpNote");
-
       const gmapsBtnEl = document.getElementById("gmapsBtn");
 
       const backBtnEl = document.getElementById("backBtn");
@@ -1313,13 +1293,6 @@
 
         stickyPhoneBtnEl.disabled = !hasPhone;
         stickyContactBtnEl.disabled = !hasEmail;
-
-        if (hasPhone || hasEmail){
-          contactMvpNoteEl.style.display = "none";
-        } else {
-          contactMvpNoteEl.style.display = "block";
-        }
-
         callBtn.onclick = () => {
           if (!hasPhone) return;
           window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
@@ -1391,7 +1364,6 @@
             showBanner("No hay fila en listing_detail_public para este id: " + listingId);
             titleEl.textContent = "Ficha no encontrada";
             stickyAddrEl.textContent = "Ficha no encontrada";
-            idEl.textContent = listingId;
             return;
           }
 
@@ -1412,10 +1384,6 @@
 
           agencyEl.textContent = row.agency_name || "—";
           setAgencyLogo(row.agency_name, row.agency_logo_url || null);
-          listedAtEl.textContent = fmtDate(row.listed_at);
-          ptypeEl.textContent = row.property_type || "—";
-          idEl.textContent = row.listing_id || listingId;
-
           factsRowEl.innerHTML = "";
           if (row.useful_area_m2 != null) addFact(ICON_AREA, String(row.useful_area_m2) + " m² útiles");
           if (row.property_type) addFact(ICON_TYPE, row.property_type, true);
