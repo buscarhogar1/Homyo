@@ -182,7 +182,6 @@
       const btnFilters = document.getElementById("toggleFiltersBtn");
       const btnClearFilters = document.getElementById("clearFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
-      const filtersCol = document.getElementById("filtersCol");
       const listCol = document.getElementById("listCol");
 
       function applyToggleTexts() {
@@ -223,7 +222,6 @@
       }
       btnFilters.addEventListener("click", () => {
         grid.classList.toggle("hideFilters");
-        filtersCol.classList.toggle("is-collapsed");
         applyToggleTexts();
         notifyLayoutResize();
       });
