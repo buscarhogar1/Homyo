@@ -868,3 +868,32 @@ export function initFiltersBar({ mountId }) {
   mount.appendChild(root);
   refreshAll();
 }
+
+
+export function clearAllFilters({ mountId } = {}) {
+  const u = new URL(window.location.href);
+  [
+    "price_min", "price_max",
+    "useful_min", "useful_max",
+    "built_min", "built_max",
+    "build_periods",
+    "since_days",
+    "bedrooms_min",
+    "bathrooms_min",
+    "outdoor_type",
+    "orientations",
+    "accessibility",
+    "parking",
+    "storage",
+    "energy",
+    "availability"
+  ].forEach((k) => u.searchParams.delete(k));
+
+  history.replaceState(null, "", u.toString());
+
+  if (mountId) {
+    initFiltersBar({ mountId });
+  }
+
+  fireFiltersChanged();
+}

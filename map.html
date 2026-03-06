@@ -27,7 +27,10 @@
         <!-- Fila superior independiente (NO dentro de columnas) -->
         <div class="topRow">
           <div class="topCell topCellLeft">
-            <div class="topLeftTools"><button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button><button id="clearFiltersBtn" class="topToggleBtn" type="button">Limpiar filtros</button></div>
+            <div class="topLeftTools">
+              <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
+              <button id="clearFiltersBtn" class="topToggleBtn" type="button">Limpiar filtros</button>
+            </div>
           </div>
 
           <div class="topCell topCellCenter">
@@ -42,7 +45,10 @@
 
               <!-- Menú desplegable de orden -->
               <div id="orderMenu" class="orderMenu" aria-hidden="true">
-                <button class="orderItem" type="button" data-order="date_desc">Por fecha de publicación</button>
+                <button class="orderItem" type="button" data-order="date_desc">Fecha de publicación: más reciente a más antiguo</button>
+                <button class="orderItem" type="button" data-order="date_asc">Fecha de publicación: más antiguo a más reciente</button>
+                <button class="orderItem" type="button" data-order="price_desc">Precio: mayor a menor</button>
+                <button class="orderItem" type="button" data-order="price_asc">Precio: menor a mayor</button>
                 <button class="orderItem" type="button" data-order="size_asc">Tamaño: menor a mayor</button>
                 <button class="orderItem" type="button" data-order="size_desc">Tamaño: mayor a menor</button>
               </div>
@@ -161,7 +167,7 @@
     <script type="module">
       import { initLayout } from "/buscarhogardemo/bh-layout.js";
       import { initAuth } from "/buscarhogardemo/bh-auth.js";
-      import { initFiltersBar } from "/buscarhogardemo/bh-map-filters.js";
+      import { initFiltersBar, clearAllFilters } from "/buscarhogardemo/bh-map-filters.js";
       import { initMap } from "/buscarhogardemo/bh-map-core.js";
 
       // Header / auth
@@ -176,6 +182,8 @@
       const btnFilters = document.getElementById("toggleFiltersBtn");
       const btnClearFilters = document.getElementById("clearFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
+      const filtersCol = document.getElementById("filtersCol");
+      const listCol = document.getElementById("listCol");
 
       function applyToggleTexts() {
         const filtersHidden = grid.classList.contains("hideFilters");
@@ -187,53 +195,47 @@
       function notifyLayoutResize() {
         requestAnimationFrame(() => {
           window.dispatchEvent(new CustomEvent("bh:layout-resize"));
+          window.dispatchEvent(new Event("resize"));
           try {
             if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
               window.__bhMap.invalidateSize(true);
             }
           } catch (_e) {}
+
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent("bh:layout-resize"));
+            window.dispatchEvent(new Event("resize"));
             try {
               if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
                 window.__bhMap.invalidateSize(true);
               }
             } catch (_e) {}
           }, 120);
+
+          setTimeout(() => {
+            try {
+              if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
+                window.__bhMap.invalidateSize(true);
+              }
+            } catch (_e) {}
+          }, 260);
         });
       }
-
       btnFilters.addEventListener("click", () => {
         grid.classList.toggle("hideFilters");
+        filtersCol.classList.toggle("is-collapsed");
         applyToggleTexts();
         notifyLayoutResize();
       });
-      btnClearFilters?.addEventListener("click", () => {
-        const u = new URL(window.location.href);
-        [
-          "price_min", "price_max",
-          "useful_min", "useful_max",
-          "built_min", "built_max",
-          "build_periods",
-          "since_days",
-          "bedrooms_min",
-          "bathrooms_min",
-          "outdoor_type",
-          "orientations",
-          "accessibility",
-          "parking",
-          "storage",
-          "energy",
-          "availability"
-        ].forEach((k) => u.searchParams.delete(k));
-        history.replaceState(null, "", u.toString());
-        initFiltersBar({ mountId: "filtersBarMount" });
-        window.dispatchEvent(new CustomEvent("bh:filters-changed"));
+      btnClearFilters.addEventListener("click", () => {
+        clearAllFilters({ mountId: "filtersBarMount" });
         notifyLayoutResize();
       });
 
+
       btnList.addEventListener("click", () => {
         grid.classList.toggle("hideList");
+        listCol.classList.toggle("is-collapsed");
         applyToggleTexts();
         notifyLayoutResize();
       });
