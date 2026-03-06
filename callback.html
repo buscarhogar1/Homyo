@@ -3,59 +3,133 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Buscar Hogar – Acceso</title>
+    <title>Buscar Hogar – Verificación</title>
     <style>
+      :root{
+        --bg:#ffffff;
+        --text:#111111;
+        --muted:#5f6368;
+        --border:#e6e7eb;
+        --accent:#7a2f1b;
+        --accentHover:#622614;
+      }
+
+      *{ box-sizing:border-box; }
+
       html,body{
         height:100%;
         margin:0;
         font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-        background:#fff;
-        color:#111;
+        background:var(--bg);
+        color:var(--text);
       }
-      .wrap{
-        min-height:100%;
-        display:grid;
-        place-items:center;
-        padding:20px;
-        box-sizing:border-box;
+
+      body{
+        min-height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:24px;
+      }
+
+      .card{
+        width:min(560px,100%);
+        border:1px solid var(--border);
+        border-radius:24px;
+        padding:40px 32px;
         text-align:center;
+        background:#fff;
+        box-shadow:0 18px 50px rgba(0,0,0,0.06);
       }
-      .box{
-        width:min(720px,100%);
-        border:1px solid #e6e7eb;
-        border-radius:14px;
-        padding:22px 18px;
+
+      .eyebrow{
+        font-size:15px;
+        color:var(--muted);
+        margin:0 0 12px;
       }
-      .title{
-        font-size:22px;
-        margin:0 0 10px;
+
+      h1{
+        margin:0 0 14px;
+        font-size:42px;
+        line-height:1.06;
+        letter-spacing:-0.02em;
       }
-      .muted{
-        opacity:.8;
-        font-size:14px;
+
+      .msg{
+        margin:0 auto;
+        max-width:420px;
+        font-size:20px;
         line-height:1.45;
-        word-break:break-word;
+        color:#232323;
       }
-      .small{
-        opacity:.72;
-        font-size:12.5px;
-        line-height:1.4;
-        margin-top:12px;
-        word-break:break-word;
+
+      .sub{
+        margin:16px auto 0;
+        max-width:420px;
+        font-size:15px;
+        line-height:1.5;
+        color:var(--muted);
       }
-      .error{
-        color:#9f1239;
+
+      .actions{
+        margin-top:28px;
+        display:flex;
+        justify-content:center;
       }
+
+      .btn{
+        appearance:none;
+        border:0;
+        border-radius:14px;
+        padding:14px 22px;
+        min-width:200px;
+        font-size:16px;
+        font-weight:600;
+        cursor:pointer;
+        color:#fff;
+        background:var(--accent);
+      }
+
+      .btn:hover{ background:var(--accentHover); }
+
+      .status-ok{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        width:62px;
+        height:62px;
+        border-radius:999px;
+        margin:0 auto 18px;
+        background:#f5f8f5;
+        border:1px solid #d9e8d9;
+      }
+
+      .status-ok svg{
+        width:28px;
+        height:28px;
+        stroke:#2f7d32;
+      }
+
+      .hidden{ display:none; }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <div class="box">
-        <h1 id="title" class="title">Finalizando acceso…</h1>
-        <div id="msg" class="muted">Un momento.</div>
-        <div id="details" class="small"></div>
+    <main class="card">
+      <div class="status-ok" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"></path>
+        </svg>
       </div>
-    </div>
+
+      <p class="eyebrow">Buscar Hogar</p>
+      <h1 id="title">Email verificado</h1>
+      <p class="msg" id="msg">Tu cuenta ya está verificada. Ya puedes iniciar sesión.</p>
+      <p class="sub" id="sub">Pulsa el botón para volver a la página principal.</p>
+
+      <div class="actions">
+        <button class="btn" id="goBtn" type="button">Ir a inicio</button>
+      </div>
+    </main>
 
     <script type="module">
       import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -66,78 +140,55 @@
 
       const titleEl = document.getElementById("title");
       const msgEl = document.getElementById("msg");
-      const detailsEl = document.getElementById("details");
+      const subEl = document.getElementById("sub");
+      const goBtn = document.getElementById("goBtn");
 
-      function setState(title, msg, details = "", isError = false) {
-        titleEl.textContent = title;
-        msgEl.textContent = msg;
-        detailsEl.textContent = details;
-        msgEl.classList.toggle("error", isError);
+      const HOME_URL = "../index.html";
+
+      function goHome(){
+        window.location.href = HOME_URL;
       }
 
-      function getIndexUrl() {
-        return "../index.html";
-      }
+      goBtn.addEventListener("click", goHome);
 
-      async function handleCallback() {
-        const url = new URL(window.location.href);
-        const hash = window.location.hash || "";
-        const hashParams = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
+      const currentUrl = new URL(window.location.href);
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const hasCode = currentUrl.searchParams.has("code");
+      const hasHashSession = hashParams.has("access_token");
+      const hasError = currentUrl.searchParams.has("error") || currentUrl.searchParams.has("error_description") || hashParams.has("error") || hashParams.has("error_description");
+      const authType = currentUrl.searchParams.get("type") || hashParams.get("type") || "";
 
-        const hasCode = url.searchParams.has("code");
-        const hasError = url.searchParams.has("error") || url.searchParams.has("error_description");
-        const hasHashSession = hashParams.has("access_token") && hashParams.has("refresh_token");
+      try {
+        if (hasCode) {
+          const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+          if (error) throw error;
+        } else if (hasHashSession) {
+          const access_token = hashParams.get("access_token");
+          const refresh_token = hashParams.get("refresh_token");
 
-        if (!hasCode && !hasError && !hasHashSession) {
-          setState(
-            "Callback OK",
-            "Esta página existe. Para funcionar, tienes que llegar aquí desde el email de confirmación o desde Google.",
-            "URL actual: " + window.location.href
-          );
-          return;
+          const { error } = await supabase.auth.setSession({ access_token, refresh_token });
+          if (error) throw error;
+        } else if (hasError) {
+          throw new Error(hashParams.get("error_description") || currentUrl.searchParams.get("error_description") || "No se pudo completar la verificación.");
         }
 
-        try {
-          if (hasError) {
-            const desc = url.searchParams.get("error_description") || url.searchParams.get("error") || "Error desconocido.";
-            throw new Error(desc);
-          }
+        window.history.replaceState({}, document.title, window.location.pathname);
 
-          setState("Finalizando acceso…", "Estamos validando tu cuenta.", "");
-
-          if (hasCode) {
-            const { error } = await supabase.auth.exchangeCodeForSession(url.href);
-            if (error) throw error;
-          } else if (hasHashSession) {
-            const access_token = hashParams.get("access_token");
-            const refresh_token = hashParams.get("refresh_token");
-
-            const { error } = await supabase.auth.setSession({
-              access_token,
-              refresh_token
-            });
-            if (error) throw error;
-          }
-
-          window.history.replaceState({}, document.title, window.location.pathname);
-
-          setState("Cuenta verificada", "Acceso completado. Volviendo a la página principal…", "");
-
-          setTimeout(() => {
-            window.location.href = getIndexUrl();
-          }, 700);
-        } catch (e) {
-          setState(
-            "No se pudo completar el acceso",
-            "Vuelve atrás e inténtalo de nuevo.",
-            "Error: " + (e?.message || String(e)),
-            true
-          );
-          console.error(e);
+        if (authType === "signup") {
+          titleEl.textContent = "Email verificado";
+          msgEl.textContent = "Tu cuenta ya está verificada. Ya puedes iniciar sesión.";
+          subEl.textContent = "Pulsa el botón para volver a la página principal.";
+        } else {
+          titleEl.textContent = "Acceso completado";
+          msgEl.textContent = "Ya puedes continuar en Buscar Hogar.";
+          subEl.textContent = "Pulsa el botón para volver a la página principal.";
         }
+      } catch (e) {
+        console.error(e);
+        titleEl.textContent = "No se pudo completar la verificación";
+        msgEl.textContent = "El enlace no es válido o ha caducado. Vuelve a solicitarlo e inténtalo de nuevo.";
+        subEl.textContent = "Puedes volver al inicio y repetir el acceso.";
       }
-
-      handleCallback();
     </script>
   </body>
 </html>
