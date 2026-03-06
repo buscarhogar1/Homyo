@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Buscar Hogar – Acceso</title>
+    <style>
+      html,body{
+        height:100%;
+        margin:0;
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+        background:#fff;
+        color:#111;
+      }
+      .wrap{
+        min-height:100%;
+        display:grid;
+        place-items:center;
+        padding:20px;
+        box-sizing:border-box;
+        text-align:center;
+      }
+      .box{
+        width:min(720px,100%);
+        border:1px solid #e6e7eb;
+        border-radius:14px;
+        padding:22px 18px;
+      }
+      .title{
+        font-size:22px;
+        margin:0 0 10px;
+      }
+      .muted{
+        opacity:.8;
+        font-size:14px;
+        line-height:1.45;
+        word-break:break-word;
+      }
+      .small{
+        opacity:.72;
+        font-size:12.5px;
+        line-height:1.4;
+        margin-top:12px;
+        word-break:break-word;
+      }
+      .error{
+        color:#9f1239;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="box">
+        <h1 id="title" class="title">Finalizando acceso…</h1>
+        <div id="msg" class="muted">Un momento.</div>
+        <div id="details" class="small"></div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+      const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
+      const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const titleEl = document.getElementById("title");
+      const msgEl = document.getElementById("msg");
+      const detailsEl = document.getElementById("details");
+
+      function setState(title, msg, details = "", isError = false) {
+        titleEl.textContent = title;
+        msgEl.textContent = msg;
+        detailsEl.textContent = details;
+        msgEl.classList.toggle("error", isError);
+      }
+
+      function getIndexUrl() {
+        return "../index.html";
+      }
+
+      async function handleCallback() {
+        const url = new URL(window.location.href);
+        const hash = window.location.hash || "";
+        const hashParams = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
+
+        const hasCode = url.searchParams.has("code");
+        const hasError = url.searchParams.has("error") || url.searchParams.has("error_description");
+        const hasHashSession = hashParams.has("access_token") && hashParams.has("refresh_token");
+
+        if (!hasCode && !hasError && !hasHashSession) {
+          setState(
+            "Callback OK",
+            "Esta página existe. Para funcionar, tienes que llegar aquí desde el email de confirmación o desde Google.",
+            "URL actual: " + window.location.href
+          );
+          return;
+        }
+
+        try {
+          if (hasError) {
+            const desc = url.searchParams.get("error_description") || url.searchParams.get("error") || "Error desconocido.";
+            throw new Error(desc);
+          }
+
+          setState("Finalizando acceso…", "Estamos validando tu cuenta.", "");
+
+          if (hasCode) {
+            const { error } = await supabase.auth.exchangeCodeForSession(url.href);
+            if (error) throw error;
+          } else if (hasHashSession) {
+            const access_token = hashParams.get("access_token");
+            const refresh_token = hashParams.get("refresh_token");
+
+            const { error } = await supabase.auth.setSession({
+              access_token,
+              refresh_token
+            });
+            if (error) throw error;
+          }
+
+          window.history.replaceState({}, document.title, window.location.pathname);
+
+          setState("Cuenta verificada", "Acceso completado. Volviendo a la página principal…", "");
+
+          setTimeout(() => {
+            window.location.href = getIndexUrl();
+          }, 700);
+        } catch (e) {
+          setState(
+            "No se pudo completar el acceso",
+            "Vuelve atrás e inténtalo de nuevo.",
+            "Error: " + (e?.message || String(e)),
+            true
+          );
+          console.error(e);
+        }
+      }
+
+      handleCallback();
+    </script>
+  </body>
+</html>
