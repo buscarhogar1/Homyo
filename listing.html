@@ -1044,9 +1044,7 @@
             "postcode",
             "province",
             "lat",
-            "lng",
-            "phone",
-            "email"
+            "lng"
           ].join(",")
         );
         params.set("listing_id", "eq." + listingId);
@@ -1432,9 +1430,7 @@
           ensureMainMap(lat, lng);
           updateGoogleMapsLink(lat, lng);
 
-          const phone = row.phone;
-          const email = row.email;
-          setContactButtons(phone, email);
+          setContactButtons(null, null);
 
         } catch (e) {
           console.error(e);
