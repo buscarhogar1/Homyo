@@ -36,8 +36,6 @@ export function initAuth() {
   const regName = $("regName");
   const regPassword = $("regPassword");
   const regCreateBtn = $("regCreateBtn");
-  const regFormFields = $("regFormFields");
-  const regFooterActions = $("regFooterActions");
 
   const goRegisterBtn = $("goRegisterBtn");
   const backStartFromPwBtn = $("backStartFromPwBtn");
@@ -47,11 +45,10 @@ export function initAuth() {
 
   let pendingEmail = "";
 
-  function show(el){ el?.classList.remove("bh-hidden"); }
-  function hide(el){ el?.classList.add("bh-hidden"); }
+  function show(el){ el.classList.remove("bh-hidden"); }
+  function hide(el){ el.classList.add("bh-hidden"); }
 
   function setMsg(el, text){
-    if(!el) return;
     if(!text){
       el.textContent = "";
       el.classList.add("bh-hidden");
@@ -62,24 +59,11 @@ export function initAuth() {
   }
 
   function setBusy(isBusy){
-    [googleBtn, emailContinueBtn, pwLoginBtn, regCreateBtn].forEach((b) => {
-      if (b) b.disabled = isBusy;
-    });
-  }
-
-  function showRegisterForm(){
-    show(regFormFields);
-    show(regFooterActions);
-  }
-
-  function hideRegisterForm(){
-    hide(regFormFields);
-    hide(regFooterActions);
+    [googleBtn, emailContinueBtn, pwLoginBtn, regCreateBtn].forEach(b => b.disabled = isBusy);
   }
 
   function goStart(){
     show(stepStart); hide(stepPw); hide(stepReg);
-    showRegisterForm();
     setMsg(authMsgStart, "");
     setMsg(authMsgPw, "");
     setMsg(authMsgReg, "");
@@ -92,7 +76,6 @@ export function initAuth() {
 
   function goPassword(email){
     hide(stepStart); show(stepPw); hide(stepReg);
-    showRegisterForm();
     setMsg(authMsgStart, "");
     setMsg(authMsgPw, "");
     setMsg(authMsgReg, "");
@@ -104,18 +87,12 @@ export function initAuth() {
 
   function goRegister(email){
     hide(stepStart); hide(stepPw); show(stepReg);
-    showRegisterForm();
     setMsg(authMsgStart, "");
     setMsg(authMsgPw, "");
     setMsg(authMsgReg, "");
     pendingEmail = email;
     regHeader.textContent = `Crear cuenta con: ${email}`;
     regName.focus();
-  }
-
-  function showRegisterSuccess(message){
-    hideRegisterForm();
-    setMsg(authMsgReg, message);
   }
 
   function openAuth(){
@@ -271,9 +248,9 @@ export function initAuth() {
       const needsConfirm = !data?.session;
 
       if (needsConfirm){
-        showRegisterSuccess("Cuenta creada. Te hemos enviado un correo para confirmar el email. Después podrás iniciar sesión.");
+        setMsg(authMsgReg, "Cuenta creada. Te hemos enviado un correo para confirmar el email. Después podrás iniciar sesión.");
       } else {
-        showRegisterSuccess("Cuenta creada y sesión iniciada.");
+        setMsg(authMsgReg, "Cuenta creada y sesión iniciada.");
         setTimeout(() => closeAuthModal(), 500);
       }
 
