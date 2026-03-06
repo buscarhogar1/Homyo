@@ -127,6 +127,7 @@ function getAreaDefaultSuggestions() {
 
 function getPriceSuggestions(rawDigits, mode) {
   if (!rawDigits) return getPriceDefaultSuggestions(mode);
+
   const typed = parseInt(rawDigits, 10);
   if (!Number.isFinite(typed)) return getPriceDefaultSuggestions(mode);
 
@@ -138,36 +139,32 @@ function getPriceSuggestions(rawDigits, mode) {
 
     const pool = [
       base,
-      Math.ceil(base / 50) * 50,
+      Math.ceil((base + 50) / 50) * 50,
       Math.ceil((base + 100) / 50) * 50,
-      Math.ceil((base + 200) / 50) * 50,
-      Math.ceil((base + 300) / 50) * 50,
-      Math.ceil((base + 500) / 50) * 50
+      Math.ceil((base + 200) / 50) * 50
     ];
-    const uniq = [...new Set(pool.filter(v => v > 0 && v <= 3000))].sort((a, b) => a - b);
-    return uniq.slice(0, 4);
+    return [...new Set(pool.filter(v => v > 0 && v <= 3000))].sort((a, b) => a - b).slice(0, 4);
   }
 
   let base;
   if (rawDigits.length === 1) base = typed * 100000;
-  else if (rawDigits.length === 2) base = typed * 1000;
+  else if (rawDigits.length <= 3) base = typed * 1000;
   else base = typed;
 
+  const step = base < 300000 ? 5000 : base < 1000000 ? 10000 : 50000;
   const pool = [
     base,
-    Math.ceil((base + 20000) / 1000) * 1000,
-    Math.ceil((base + 50000) / 1000) * 1000,
-    Math.ceil((base + 100000) / 1000) * 1000,
-    Math.ceil((base + 200000) / 1000) * 1000,
-    Math.ceil((base + 500000) / 1000) * 1000,
-    2000000
+    Math.ceil((base + step) / 1000) * 1000,
+    Math.ceil((base + step * 4) / 1000) * 1000,
+    Math.ceil((base + step * 9) / 1000) * 1000
   ];
-  const uniq = [...new Set(pool.filter(v => v > 0 && v <= 2000000))].sort((a, b) => a - b);
-  return uniq.slice(0, 4);
+
+  return [...new Set(pool.filter(v => v > 0 && v <= 2000000))].sort((a, b) => a - b).slice(0, 4);
 }
 
 function getAreaSuggestions(rawDigits) {
   if (!rawDigits) return getAreaDefaultSuggestions();
+
   const typed = parseInt(rawDigits, 10);
   if (!Number.isFinite(typed)) return getAreaDefaultSuggestions();
 
@@ -175,17 +172,14 @@ function getAreaSuggestions(rawDigits) {
   if (rawDigits.length === 1) base = typed * 10;
   else base = typed;
 
+  const step = base < 100 ? 5 : base < 200 ? 10 : 25;
   const pool = [
     base,
-    base + 5,
-    base + 10,
-    base + 15,
-    base + 20,
-    base + 30,
-    base + 50
+    base + step,
+    base + step * 2,
+    base + step * 4
   ];
-  const uniq = [...new Set(pool.filter(v => v > 0))].sort((a, b) => a - b);
-  return uniq.slice(0, 4);
+  return [...new Set(pool.filter(v => v > 0))].sort((a, b) => a - b).slice(0, 4);
 }
 
 function numericRangeControl({ type, initialMin, initialMax, placeholderMin, placeholderMax, onChange }) {
