@@ -1,7 +1,3 @@
-
-// Safe wrapper to avoid top‑level return errors
-(function(){
-
 /*
   bh-map-filters.js
 
@@ -518,6 +514,3 @@ export function initFiltersBar({ mountId }) {
 
   refreshAll();
 }
-
-
-})();
