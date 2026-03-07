@@ -1024,256 +1024,133 @@ body{
 
 
 
-/* =========================
-   MOBILE APP LAYOUT (MAP)
-   ========================= */
-
+/* ================= MOBILE-ONLY UI ================= */
+/* Oculto por defecto en escritorio para no alterar nada del layout desktop */
 .mobileTopRow,
 .mobileActionsRow,
-.mobileBottomNav,
-.mobilePanelHead{
-  display: none;
+.mobileBottomNav{
+  display:none;
 }
 
-@media (max-width: 768px) {
-  html, body{
-    height: 100dvh;
-  }
-
-  body{
-    overflow: hidden;
-    background: #fff;
-  }
-
-  #bhHeader,
-  #bhFooter,
-  .topRow{
-    display: none !important;
+@media (max-width: 768px){
+  .mobileTopRow,
+  .mobileActionsRow,
+  .mobileBottomNav{
+    display:flex;
   }
 
   .mobileTopRow{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: env(safe-area-inset-top, 0px) 12px 10px;
-    min-height: 60px;
-    box-sizing: border-box;
-    background: #fff;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
+    align-items:center;
+    gap:10px;
+    padding:8px 10px 0;
+    box-sizing:border-box;
   }
 
   .mobileBack{
-    width: 40px;
-    height: 40px;
-    display: grid;
-    place-items: center;
-    border-radius: 999px;
-    text-decoration: none;
-    color: #111;
-    font-size: 26px;
-    line-height: 1;
-    flex: 0 0 auto;
+    width:36px;
+    height:36px;
+    border-radius:999px;
+    border:1px solid rgba(0,0,0,0.12);
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:#111;
+    font-size:20px;
+    flex:0 0 auto;
   }
 
   .mobileSearchShell{
-    flex: 1 1 auto;
-    height: 42px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(0,0,0,0.14);
-    background: #fff;
-    padding: 0 14px;
-    box-sizing: border-box;
+    flex:1 1 auto;
+    min-width:0;
   }
 
-  .mobileSearchIcon{
-    font-size: 18px;
-    color: rgba(0,0,0,0.55);
-    flex: 0 0 auto;
-  }
-
-  .mobileSearchInput{
-    flex: 1 1 auto;
-    border: 0;
-    outline: none;
-    background: transparent;
-    font-size: 16px;
-    color: #111;
-    min-width: 0;
+  .mobileSearch{
+    width:100%;
+    height:36px;
+    border-radius:999px;
+    border:1px solid rgba(0,0,0,0.12);
+    background:#fff;
+    padding:0 14px;
+    font-size:14px;
+    box-sizing:border-box;
   }
 
   .mobileActionsRow{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    padding: 0;
-    background: #fff;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
+    gap:8px;
+    padding:8px 10px 0;
+    box-sizing:border-box;
   }
 
   .mobileActionBtn{
-    height: 52px;
-    border: 0;
-    border-right: 1px solid rgba(0,0,0,0.08);
-    background: #fff;
-    font-size: 15px;
-    color: #111;
-    cursor: pointer;
+    flex:1 1 0;
+    height:36px;
+    border-radius:999px;
+    border:1px solid rgba(0,0,0,0.12);
+    background:#fff;
+    color:#111;
+    font-size:13px;
   }
 
-  .mobileActionBtn:last-child{
-    border-right: 0;
+  /* En móvil ocultamos la franja desktop y dejamos que el mapa viva debajo de la UI móvil */
+  .topRow{
+    display:none !important;
   }
 
   .page{
-    height: calc(100dvh - 60px - 52px - 64px);
-    padding: 0;
-    overflow: hidden;
+    height: calc(100% - var(--headerH) - 108px);
+    padding: 8px 10px 64px;
   }
 
   .mapShell{
-    width: 100%;
-    height: 100%;
-    margin: 0;
+    width:100%;
+    margin:0;
   }
 
   .grid3{
-    height: 100%;
+    height:100%;
     grid-template-columns: 1fr !important;
-    gap: 0;
+    gap:0;
   }
 
-  .colFilters,
-  .colList{
-    overflow: hidden;
+  #filtersCol,
+  #listCol{
+    display:none !important;
   }
 
-  #mapCol{
-    height: 100%;
-    min-height: 0;
-  }
-
-  .mapWrap{
-    height: 100%;
-    border: 0;
-    border-radius: 0;
+  #mapCol,
+  .colMap{
+    min-width:0;
+    width:100%;
   }
 
   #map{
-    height: 100%;
-  }
-
-  /* Desktop side columns become full-screen mobile panels */
-  #filtersCol,
-  #listCol{
-    position: fixed;
-    inset: 0;
-    z-index: 3000;
-    background: #fff;
-    border: 0;
-    border-radius: 0;
-    display: none;
-    height: 100dvh;
-    overflow: hidden;
-  }
-
-  body.mobileFiltersOpen #filtersCol{
-    display: block !important;
-  }
-
-  body.mobileListOpen #listCol{
-    display: block !important;
-  }
-
-  .mobilePanelHead{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: calc(56px + env(safe-area-inset-top, 0px));
-    padding: env(safe-area-inset-top, 0px) 14px 0;
-    box-sizing: border-box;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-    background: #fff;
-  }
-
-  .mobilePanelTitle{
-    font-size: 18px;
-    color: #111;
-  }
-
-  .mobilePanelClose{
-    width: 38px;
-    height: 38px;
-    border-radius: 999px;
-    border: 1px solid rgba(0,0,0,0.12);
-    background: #fff;
-    font-size: 24px;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  #filtersBarMount{
-    height: calc(100dvh - 56px - env(safe-area-inset-top, 0px));
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .listMount{
-    height: calc(100dvh - 56px - env(safe-area-inset-top, 0px));
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-    box-sizing: border-box;
+    height:100%;
+    min-height:0;
   }
 
   .mobileBottomNav{
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: calc(64px + env(safe-area-inset-bottom, 0px));
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    background: #fff;
-    border-top: 1px solid rgba(0,0,0,0.08);
-    z-index: 2500;
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:56px;
+    background:#fff;
+    border-top:1px solid rgba(0,0,0,0.10);
+    align-items:center;
+    justify-content:space-around;
+    z-index:1600;
   }
 
-  .mobileBottomItem{
-    display: grid;
-    place-items: center;
-    text-decoration: none;
-    color: rgba(0,0,0,0.62);
-    font-size: 13px;
-    background: #fff;
+  .mobileNavBtn{
+    border:0;
+    background:transparent;
+    color:#111;
+    font-size:12px;
   }
 
-  .mobileBottomItemActive{
-    color: #111;
-  }
-
-  .card{
-    left: 50%;
-    bottom: calc(74px + env(safe-area-inset-bottom, 0px));
-    width: calc(100% - 20px);
-    max-width: none;
-    border-radius: 14px;
-  }
-
-  .sunDateDock,
-  .sunTimebar{
-    bottom: calc(74px + env(safe-area-inset-bottom, 0px));
-  }
-
-  #status{
-    top: 10px;
-    max-width: calc(100% - 20px);
-  }
-
-  .orderMenu{
-    display: none !important;
+  .mobileNavBtn.is-active{
+    color:var(--terra);
   }
 }

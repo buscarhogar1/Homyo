@@ -25,8 +25,7 @@
     <div class="mobileTopRow" aria-hidden="true">
       <a href="index.html" class="mobileBack" aria-label="Volver">←</a>
       <div class="mobileSearchShell">
-        <span class="mobileSearchIcon" aria-hidden="true">⌕</span>
-        <input id="mobileSearchInput" class="mobileSearchInput" type="text" placeholder="Buscar zona..." />
+        <input class="mobileSearch" type="text" placeholder="Buscar zona..." />
       </div>
     </div>
 
@@ -68,10 +67,6 @@
         <div class="grid3" id="grid3">
           <!-- Columna filtros (scroll interno) -->
           <aside class="col colFilters" id="filtersCol">
-            <div class="mobilePanelHead">
-              <div class="mobilePanelTitle">Filtros</div>
-              <button id="mobileFiltersCloseBtn" class="mobilePanelClose" type="button" aria-label="Cerrar filtros">×</button>
-            </div>
             <div id="filtersBarMount"></div>
           </aside>
 
@@ -158,10 +153,6 @@
 
           <!-- Columna listado (scroll interno) -->
           <aside class="col colList" id="listCol">
-            <div class="mobilePanelHead">
-              <div class="mobilePanelTitle">Listado</div>
-              <button id="mobileListCloseBtn" class="mobilePanelClose" type="button" aria-label="Cerrar listado">×</button>
-            </div>
             <div id="listMount" class="listMount">
               <div id="listItems" class="listItems"></div>
             </div>
@@ -170,15 +161,14 @@
       </div>
     </div>
 
+    <div id="bhFooter"></div>
 
     <nav class="mobileBottomNav" aria-hidden="true">
-      <a href="map.html" class="mobileBottomItem mobileBottomItemActive">Buscar</a>
-      <a href="#" class="mobileBottomItem">Favoritos</a>
-      <a href="#" class="mobileBottomItem">Notificaciones</a>
-      <a href="#" class="mobileBottomItem">Perfil</a>
+      <button class="mobileNavBtn is-active" type="button">Mapa</button>
+      <button class="mobileNavBtn" type="button">Guardar</button>
+      <button class="mobileNavBtn" type="button">Cuenta</button>
     </nav>
 
-    <div id="bhFooter"></div>
 
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -205,26 +195,6 @@
       const grid = document.getElementById("grid3");
       const btnFilters = document.getElementById("toggleFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
-      const mobileFiltersBtn = document.getElementById("mobileFiltersBtn");
-      const mobileListBtn = document.getElementById("mobileListBtn");
-      const mobileFiltersCloseBtn = document.getElementById("mobileFiltersCloseBtn");
-      const mobileListCloseBtn = document.getElementById("mobileListCloseBtn");
-
-      function closeMobilePanels() {
-        document.body.classList.remove("mobileFiltersOpen");
-        document.body.classList.remove("mobileListOpen");
-        notifyLayoutResize();
-      }
-
-      function openMobileFilters() {
-        document.body.classList.remove("mobileListOpen");
-        document.body.classList.add("mobileFiltersOpen");
-      }
-
-      function openMobileList() {
-        document.body.classList.remove("mobileFiltersOpen");
-        document.body.classList.add("mobileListOpen");
-      }
 
       function applyToggleTexts() {
         const filtersHidden = grid.classList.contains("hideFilters");
@@ -246,24 +216,8 @@
 
       btnList.addEventListener("click", () => {
         grid.classList.toggle("hideList");
-          notifyLayoutResize();
-      });
-
-
-      mobileFiltersBtn?.addEventListener("click", () => {
-        openMobileFilters();
-      });
-
-      mobileListBtn?.addEventListener("click", () => {
-        openMobileList();
-      });
-
-      mobileFiltersCloseBtn?.addEventListener("click", () => {
-        closeMobilePanels();
-      });
-
-      mobileListCloseBtn?.addEventListener("click", () => {
-        closeMobilePanels();
+        applyToggleTexts();
+        notifyLayoutResize();
       });
 
       applyToggleTexts();
