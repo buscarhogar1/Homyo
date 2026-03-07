@@ -46,8 +46,8 @@ function updateHeaderAuthState(session) {
   navLogin.classList.add("bh-hidden");
   navUserArea.classList.remove("bh-hidden");
   navUserAvatar.textContent = getUserInitial(user);
-  navUserLabel.textContent = "Mi cuenta";
-    
+  navUserLabel.textContent = getUserDisplayName(user);
+
   document.body.classList.add("bh-authenticated");
   window.BH_AUTH_SESSION = session;
   window.dispatchEvent(new CustomEvent("bh:auth-changed", { detail: { session } }));
