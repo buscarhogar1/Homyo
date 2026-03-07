@@ -1054,9 +1054,9 @@ body{
   .mobileTopRow{
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: env(safe-area-inset-top, 0px) 12px 10px;
-    min-height: 60px;
+    gap: 12px;
+    padding: calc(env(safe-area-inset-top, 0px) + 10px) 12px 12px;
+    min-height: 72px;
     box-sizing: border-box;
     background: #fff;
     border-bottom: 1px solid rgba(0,0,0,0.08);
@@ -1077,7 +1077,7 @@ body{
 
   .mobileSearchShell{
     flex: 1 1 auto;
-    height: 42px;
+    height: 46px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -1230,7 +1230,7 @@ body{
 
   .mobileBottomNav{
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     position: fixed;
     left: 0;
     right: 0;
@@ -1243,19 +1243,23 @@ body{
   }
 
   .mobileBottomItem{
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
     text-decoration: none;
-    color: rgba(0,0,0,0.62);
-    font-size: 13px;
+    color: rgba(0,0,0,0.70);
+    font-size: 14px;
+    font-weight: 500;
     background: #fff;
     text-align: center;
+    border: 0;
   }
 
   .mobileBottomItemActive{
     color: #111;
+    font-weight: 700;
   }
 
   .card{
@@ -1407,5 +1411,32 @@ body{
     gap: 10px !important;
     width: 100% !important;
     padding: 2px 0 !important;
+  }
+}
+
+
+
+@media (max-width: 768px){
+  .sunTimebar{
+    left: 10px;
+    right: 10px;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    z-index: 2200;
+  }
+
+  .sunDateDock{
+    right: 10px;
+    left: auto;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px) + var(--sunbar-inner-h) + 18px);
+    z-index: 2210;
+  }
+
+  .sunDateDockInner{
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .sunDateDock input[type="date"]{
+    max-width: 170px;
   }
 }

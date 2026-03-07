@@ -218,7 +218,6 @@
       const mobileListCloseBtn = document.getElementById("mobileListCloseBtn");
       const mobileOrderBtn = document.getElementById("mobileOrderBtn");
       const mobileOrderMenu = document.getElementById("mobileOrderMenu");
-      const mobileSearchInput = document.getElementById("mobileSearchInput");
 
       function closeMobilePanels() {
         document.body.classList.remove("mobileFiltersOpen");
@@ -243,48 +242,15 @@
         btnList.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
       }
 
-      function notifyLayoutResize(centerToRestore = null) {
-        requestAnimationFrame(() => {
-          window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-          window.dispatchEvent(new Event("resize"));
-          try {
-            if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
-              window.__bhMap.invalidateSize(true);
-              if (centerToRestore && typeof window.__bhMap.panTo === "function") {
-                window.__bhMap.panTo(centerToRestore, { animate: false });
-              }
-            }
-          } catch (_e) {}
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-            window.dispatchEvent(new Event("resize"));
-            try {
-              if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
-                window.__bhMap.invalidateSize(true);
-                if (centerToRestore && typeof window.__bhMap.panTo === "function") {
-                  window.__bhMap.panTo(centerToRestore, { animate: false });
-                }
-              }
-            } catch (_e) {}
-          }, 120);
-          setTimeout(() => {
-            try {
-              if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
-                window.__bhMap.invalidateSize(true);
-                if (centerToRestore && typeof window.__bhMap.panTo === "function") {
-                  window.__bhMap.panTo(centerToRestore, { animate: false });
-                }
-              }
-            } catch (_e) {}
-          }, 260);
-        });
+      function notifyLayoutResize() {
+        // Leaflet necesita invalidateSize; bh-map-core.js escucha este evento
+        window.dispatchEvent(new CustomEvent("bh:layout-resize"));
       }
 
       btnFilters.addEventListener("click", () => {
-        const center = (window.__bhMap && typeof window.__bhMap.getCenter === "function") ? window.__bhMap.getCenter() : null;
         grid.classList.toggle("hideFilters");
         applyToggleTexts();
-        notifyLayoutResize(center);
+        notifyLayoutResize();
       });
 
       btnList.addEventListener("click", () => {
@@ -307,37 +273,6 @@
 
       mobileListCloseBtn?.addEventListener("click", () => {
         closeMobilePanels();
-      });
-
-      async function runMobileSearch() {
-        const q = (mobileSearchInput?.value || "").trim();
-        if (!q || !window.__bhMap) return;
-        try {
-          const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=es&q=" + encodeURIComponent(q);
-          const res = await fetch(url, { headers: { "Accept": "application/json" } });
-          if (!res.ok) return;
-          const data = await res.json();
-          if (!Array.isArray(data) || !data.length) return;
-          const hit = data[0];
-          const lat = Number(hit.lat);
-          const lon = Number(hit.lon);
-          if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-          window.__bhMap.setView([lat, lon], 13, { animate: false });
-          const placeLabel = document.getElementById("placeLabel");
-          if (placeLabel) placeLabel.textContent = hit.display_name || q;
-          notifyLayoutResize({ lat, lng: lon });
-        } catch (_e) {}
-      }
-
-      mobileSearchInput?.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          runMobileSearch();
-        }
-      });
-
-      mobileSearchInput?.addEventListener("search", () => {
-        runMobileSearch();
       });
 
       applyToggleTexts();
