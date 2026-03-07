@@ -1323,3 +1323,89 @@ body{
     justify-content:space-evenly;
   }
 }
+
+
+
+/* ===== FIX PRESENTACIÓN FILTROS EN COLUMNA ===== */
+/* Las opciones de filtros (única o múltiple) siempre deben ir una debajo de otra */
+.fOptCol{
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+.fOptLine{
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 2px 0 !important;
+  box-sizing: border-box !important;
+}
+
+.fOptLine input{
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+.fOptText{
+  display: block !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  line-height: 1.2 !important;
+  white-space: normal !important;
+}
+
+.fBody .fRadio{
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 2px 0 !important;
+  box-sizing: border-box !important;
+}
+
+.fBody .fRadio input{
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+.fBody label{
+  white-space: normal !important;
+}
+
+@media (max-width: 768px){
+  .fOptCol{
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .fOptLine{
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding: 2px 0 !important;
+  }
+
+  .fOptText{
+    display: block !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+  }
+
+  .fBody .fRadio{
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding: 2px 0 !important;
+  }
+}
