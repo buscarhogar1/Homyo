@@ -113,6 +113,12 @@ function renderAuthModal({ root }) {
 
             <div class="bh-msg bh-hidden" id="authMsgPw" role="status" aria-live="polite"></div>
 
+            <div class="bh-msg bh-hidden" id="forgotPwRow" style="margin-top:8px;">
+              <button type="button" class="bh-linkbtn" id="forgotPwBtn">¿Olvidaste la contraseña?</button>
+            </div>
+
+            <div class="bh-msg bh-hidden" id="forgotPwMsg" role="status" aria-live="polite"></div>
+
             <div class="bh-msg" style="margin-top:12px;">
               <button type="button" class="bh-linkbtn" id="goRegisterBtn">No tengo cuenta, registrarme</button>
               <span> · </span>

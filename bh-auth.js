@@ -78,6 +78,9 @@ export function initAuth() {
   const pwHeader = $("pwHeader");
   const pwInput = $("pwInput");
   const pwLoginBtn = $("pwLoginBtn");
+  const forgotPwBtn = $("forgotPwBtn");
+  const forgotPwRow = $("forgotPwRow");
+  const forgotPwMsg = $("forgotPwMsg");
 
   const regHeader = $("regHeader");
   const regName = $("regName");
@@ -122,6 +125,11 @@ export function initAuth() {
     hide(regLoginRow);
   }
 
+  function resetPasswordRecoveryView(){
+    hide(forgotPwRow);
+    setMsg(forgotPwMsg, "");
+  }
+
   function showRegisterSuccess(){
     hide(regFormWrap);
     hide(regBackRow);
@@ -138,6 +146,7 @@ export function initAuth() {
     regName.value = "";
     regPassword.value = "";
     resetRegisterView();
+    resetPasswordRecoveryView();
     emailInput.focus();
   }
 
@@ -147,6 +156,7 @@ export function initAuth() {
     setMsg(authMsgPw, "");
     setMsg(authMsgReg, "");
     resetRegisterView();
+    resetPasswordRecoveryView();
     pendingEmail = email;
     pwHeader.textContent = `Email: ${email}`;
     pwInput.value = "";
@@ -159,6 +169,7 @@ export function initAuth() {
     setMsg(authMsgPw, "");
     setMsg(authMsgReg, "");
     resetRegisterView();
+    resetPasswordRecoveryView();
     pendingEmail = email;
     regHeader.textContent = `Crear cuenta con: ${email}`;
     regName.focus();
@@ -287,6 +298,34 @@ export function initAuth() {
     goPassword(pendingEmail);
   });
 
+  forgotPwBtn?.addEventListener("click", async () => {
+    const email = pendingEmail || (emailInput.value || "").trim().toLowerCase();
+    if (!email) {
+      setMsg(forgotPwMsg, "Primero escribe tu email.");
+      return;
+    }
+
+    try {
+      setBusy(true);
+      setMsg(forgotPwMsg, "");
+
+      const redirectTo = (window.BH_BASE_URL || window.location.origin + "/") + "auth/reset-password.html";
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo
+      });
+
+      if (error) throw error;
+
+      setMsg(forgotPwMsg, "Te hemos enviado un correo para cambiar la contraseña.");
+    } catch (e) {
+      setMsg(forgotPwMsg, "No se pudo enviar el correo de recuperación. Inténtalo de nuevo.");
+      console.error(e);
+    } finally {
+      setBusy(false);
+    }
+  });
+
   pwLoginBtn.addEventListener("click", async () => {
     const email = pendingEmail;
     const password = pwInput.value || "";
@@ -305,6 +344,7 @@ export function initAuth() {
       setTimeout(() => closeAuthModal(), 400);
     } catch(e){
       setMsg(authMsgPw, "No se pudo iniciar sesión. Revisa email y contraseña.");
+      show(forgotPwRow);
       console.error(e);
     } finally {
       setBusy(false);
