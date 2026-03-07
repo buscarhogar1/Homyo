@@ -160,7 +160,15 @@
           <aside class="col colList" id="listCol">
             <div class="mobilePanelHead">
               <div class="mobilePanelTitle">Listado</div>
-              <button id="mobileListCloseBtn" class="mobilePanelClose" type="button" aria-label="Cerrar listado">×</button>
+              <div class="mobilePanelHeadActions">
+                <button id="mobileOrderBtn" class="mobilePanelActionBtn" type="button" aria-label="Ordenar listado">Ordenar por</button>
+                <button id="mobileListCloseBtn" class="mobilePanelClose" type="button" aria-label="Cerrar listado">×</button>
+              </div>
+              <div id="mobileOrderMenu" class="mobileOrderMenu" aria-hidden="true">
+                <button class="orderItem" type="button" data-order="date_desc">Por fecha de publicación</button>
+                <button class="orderItem" type="button" data-order="size_asc">Tamaño: menor a mayor</button>
+                <button class="orderItem" type="button" data-order="size_desc">Tamaño: mayor a menor</button>
+              </div>
             </div>
             <div id="listMount" class="listMount">
               <div id="listItems" class="listItems"></div>
@@ -172,9 +180,8 @@
 
 
     <nav class="mobileBottomNav" aria-hidden="true">
-      <a href="map.html" class="mobileBottomItem mobileBottomItemActive">Buscar</a>
+      <a href="index.html" class="mobileBottomItem">Inicio</a>
       <a href="#" class="mobileBottomItem">Favoritos</a>
-      <a href="#" class="mobileBottomItem">Notificaciones</a>
       <a href="#" class="mobileBottomItem">Perfil</a>
     </nav>
 
@@ -209,6 +216,8 @@
       const mobileListBtn = document.getElementById("mobileListBtn");
       const mobileFiltersCloseBtn = document.getElementById("mobileFiltersCloseBtn");
       const mobileListCloseBtn = document.getElementById("mobileListCloseBtn");
+      const mobileOrderBtn = document.getElementById("mobileOrderBtn");
+      const mobileOrderMenu = document.getElementById("mobileOrderMenu");
 
       function closeMobilePanels() {
         document.body.classList.remove("mobileFiltersOpen");
@@ -268,7 +277,7 @@
 
       applyToggleTexts();
 
-      // Orden: abre/cierra menú. El core lee window.__bhListOrder
+      // Orden: escritorio + móvil
       const orderBtn = document.getElementById("orderBtn");
       const orderMenu = document.getElementById("orderMenu");
 
@@ -281,7 +290,19 @@
         orderMenu.setAttribute("aria-hidden", "false");
       }
 
+      function closeMobileOrderMenu() {
+        if (!mobileOrderMenu) return;
+        mobileOrderMenu.style.display = "none";
+        mobileOrderMenu.setAttribute("aria-hidden", "true");
+      }
+      function openMobileOrderMenu() {
+        if (!mobileOrderMenu) return;
+        mobileOrderMenu.style.display = "block";
+        mobileOrderMenu.setAttribute("aria-hidden", "false");
+      }
+
       closeOrderMenu();
+      closeMobileOrderMenu();
 
       orderBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -290,13 +311,32 @@
         else openOrderMenu();
       });
 
-      document.addEventListener("click", () => closeOrderMenu());
+      mobileOrderBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = mobileOrderMenu?.getAttribute("aria-hidden") === "false";
+        if (open) closeMobileOrderMenu();
+        else openMobileOrderMenu();
+      });
+
+      document.addEventListener("click", () => {
+        closeOrderMenu();
+        closeMobileOrderMenu();
+      });
 
       orderMenu.querySelectorAll(".orderItem").forEach((b) => {
         b.addEventListener("click", () => {
           const v = b.getAttribute("data-order");
           window.__bhListOrder = v || "date_desc";
           closeOrderMenu();
+          window.dispatchEvent(new CustomEvent("bh:list-order-changed"));
+        });
+      });
+
+      mobileOrderMenu?.querySelectorAll(".orderItem").forEach((b) => {
+        b.addEventListener("click", () => {
+          const v = b.getAttribute("data-order");
+          window.__bhListOrder = v || "date_desc";
+          closeMobileOrderMenu();
           window.dispatchEvent(new CustomEvent("bh:list-order-changed"));
         });
       });

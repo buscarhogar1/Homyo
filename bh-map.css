@@ -1280,71 +1280,43 @@ body{
 
 
 
-/* ===== FIX FILTROS EN COLUMNA ===== */
-/* Las opciones de filtros de selección deben ir siempre una debajo de otra */
-.fOptCol{
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  gap: 8px !important;
-}
-
-.fOptLine{
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  width: 100% !important;
-  padding: 3px 2px !important;
-  box-sizing: border-box !important;
-  line-height: 1.2 !important;
-}
-
-.fOptLine input{
-  width: 18px !important;
-  height: 18px !important;
-  flex: 0 0 auto !important;
-  margin: 0 !important;
-}
-
-.fOptText{
-  display: block !important;
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-}
-
-/* Compatibilidad con otras clases de filtros */
-.fBody label{
-  white-space: normal !important;
-}
-
-.fBody .fRadio{
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  width: 100% !important;
-}
-
-.fBody .fRadio input{
-  flex: 0 0 auto !important;
-}
-
-/* En móvil, mantener también siempre en columna */
-@media (max-width: 768px){
-  .fOptCol{
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 8px !important;
+@media (max-width: 768px) {
+  .mobilePanelHead{
+    position: relative;
   }
 
-  .fOptLine{
-    display: flex !important;
-    align-items: flex-start !important;
-    gap: 10px !important;
-    width: 100% !important;
-    padding: 2px 0 !important;
+  .mobilePanelHeadActions{
+    display:flex;
+    align-items:center;
+    gap:10px;
   }
 
-  .fOptText{
-    display: block !important;
-    line-height: 1.2 !important;
+  .mobilePanelActionBtn{
+    height:36px;
+    padding:0 12px;
+    border-radius:999px;
+    border:1px solid rgba(0,0,0,0.12);
+    background:#fff;
+    color:#111;
+    font-size:13px;
+    white-space:nowrap;
+  }
+
+  .mobileOrderMenu{
+    position:absolute;
+    right:14px;
+    top:calc(100% - 4px);
+    width:230px;
+    background:#fff;
+    border:1px solid rgba(0,0,0,0.12);
+    border-radius:12px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.16);
+    padding:8px;
+    z-index:2600;
+    display:none;
+  }
+
+  .mobileBottomNav{
+    justify-content:space-evenly;
   }
 }
