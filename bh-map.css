@@ -1277,3 +1277,74 @@ body{
     display: none !important;
   }
 }
+
+
+
+/* ===== FIX FILTROS EN COLUMNA ===== */
+/* Las opciones de filtros de selección deben ir siempre una debajo de otra */
+.fOptCol{
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+}
+
+.fOptLine{
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 3px 2px !important;
+  box-sizing: border-box !important;
+  line-height: 1.2 !important;
+}
+
+.fOptLine input{
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+}
+
+.fOptText{
+  display: block !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+/* Compatibilidad con otras clases de filtros */
+.fBody label{
+  white-space: normal !important;
+}
+
+.fBody .fRadio{
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+.fBody .fRadio input{
+  flex: 0 0 auto !important;
+}
+
+/* En móvil, mantener también siempre en columna */
+@media (max-width: 768px){
+  .fOptCol{
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .fOptLine{
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding: 2px 0 !important;
+  }
+
+  .fOptText{
+    display: block !important;
+    line-height: 1.2 !important;
+  }
+}
