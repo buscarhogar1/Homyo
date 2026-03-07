@@ -368,6 +368,24 @@
         border-radius:14px;
         overflow:hidden;
       }
+
+      .desktopOnly{display:block;}
+      .mobileOnly{display:none;}
+
+      .mobileSummaryStack{
+        display:none;
+      }
+      .mobileSectionBlock{
+        margin-top:16px;
+      }
+      .mobileMapCard{
+        overflow:hidden;
+      }
+      #miniMapMobile{
+        height:180px;
+        width:100%;
+        background:linear-gradient(135deg,#f0f1f3,#ffffff);
+      }
       .sideCardInner{padding:14px;}
       .sideTitle{color:var(--muted); font-size:13px; margin:0 0 10px;}
 
@@ -612,10 +630,6 @@
       @media (max-width: 1200px){
         :root{ --bleed: 24px; }
       }
-      #ubicacion{
-        grid-column:1 / -1;
-      }
-
       @media (max-width: 980px){
         .mediaOuter{ margin-left: 0; margin-right: 0; }
         .mediaSizer{aspect-ratio:auto; min-height:0; max-height:none;}
@@ -627,6 +641,24 @@
         .sideSticky{position:static;}
         .featLine{grid-template-columns: 1fr; gap:4px;}
         #stickySentinel{ top: 0; }
+
+        .desktopOnly{display:none !important;}
+        .mobileOnly{display:block !important;}
+        .mobileSummaryStack{
+          display:grid;
+          gap:12px;
+          margin-top:16px;
+          margin-bottom:6px;
+        }
+        .stickyBar{
+          display:none;
+        }
+        .agencyTop{
+          padding:16px 16px 14px;
+        }
+        .agencyBody{
+          padding:16px;
+        }
       }
       @media (max-width: 560px){
         .mediaSmallGrid{grid-template-columns:1fr;}
@@ -664,7 +696,7 @@
 
     <div class="wrap">
       <div class="topRow">
-        <a class="back" id="backBtn" href="./map.html">Volver al mapa</a>
+        <a class="back" id="backBtn" href="./">Volver al mapa</a>
       </div>
 
       <div id="banner" class="banner"></div>
@@ -766,6 +798,77 @@
 
           <div class="factsRow" id="factsRow"></div>
 
+          <div class="mobileOnly mobileSummaryStack">
+            <div class="sideCard mobileMapCard">
+              <div class="mapHeader">
+                <div class="mapHeaderTitle">Mapa</div>
+                <div class="mapHeaderSmall" id="mapHintMobile">—</div>
+              </div>
+              <div id="miniMapMobile"></div>
+            </div>
+
+            <div class="sideCard agencyCard mobileAgencyCard">
+              <div class="agencyTop">
+                <div class="agencyLogoWrap">
+                  <div class="agencyLogoFrame">
+                    <img id="agencyLogoImgMobile" alt="Logo de la agencia" style="display:none;" />
+                    <div class="agencyLogoFallback" id="agencyLogoFallbackMobile">AG</div>
+                  </div>
+                </div>
+              </div>
+              <div class="agencyBody">
+                <p class="agencyName" id="agencyMobile">—</p>
+
+                <div class="contactBtns">
+                  <button class="cta ctaGhost" id="callBtnMobile" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8.03 9.97a16 16 0 0 0 6 6l1.52-1.26a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
+                      </svg>
+                    </span>
+                    <span>Ver teléfono</span>
+                  </button>
+
+                  <button class="cta ctaGhost" id="emailBtnMobile" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M4 4h16v16H4z"/>
+                        <path d="m4 7 8 6 8-6"/>
+                      </svg>
+                    </span>
+                    <span>Ver correo</span>
+                  </button>
+
+                  <button class="cta ctaPrimary" id="contactBtnMobile" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M4 4h16v16H4z"/>
+                        <path d="m4 7 8 6 8-6"/>
+                      </svg>
+                    </span>
+                    <span>Ponerse en contacto</span>
+                  </button>
+
+                  <button class="cta ctaSecondary" id="visitBtnMobile" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M8 2v4"/>
+                        <path d="M16 2v4"/>
+                        <path d="M3 10h18"/>
+                        <path d="M5 4h14v16H5z"/>
+                      </svg>
+                    </span>
+                    <span>Solicitar una visita</span>
+                  </button>
+                </div>
+
+                <div class="p mutedP mobileSectionBlock" style="font-size:13px;" id="contactMvpNoteMobile">
+                  El logo, el teléfono y el correo se mostrarán aquí cuando esos datos estén conectados en la base de datos pública.
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="subnav">
             <a href="#descripcion">Descripción</a>
             <a href="#caracteristicas">Características</a>
@@ -784,9 +887,17 @@
             <div class="featuresGrid" id="featuresGrid"></div>
           </div>
 
+          <div class="section" id="ubicacion">
+            <h2 class="h2 small">Ubicación</h2>
+            <div id="mainMap"></div>
+
+            <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
+              Calcular tiempo de viaje con Google Maps
+            </a>
+          </div>
         </div>
 
-        <div>
+        <div class="desktopOnly">
           <div class="sideSticky">
             <div class="sideCard">
               <div class="mapHeader">
@@ -850,21 +961,31 @@
                     <span>Solicitar una visita</span>
                   </button>
                 </div>
+
+                <div class="agencyMeta kv">
+                  <div class="kvLine">
+                    <div class="k">Publicado</div>
+                    <div class="v" id="listedAt">—</div>
+                  </div>
+                  <div class="kvLine">
+                    <div class="k">Tipo</div>
+                    <div class="v" id="ptype">—</div>
+                  </div>
+                  <div class="kvLine">
+                    <div class="k">ID</div>
+                    <div class="v mono" id="id">—</div>
+                  </div>
+                </div>
+
+                <div style="height:10px;"></div>
+                <div class="p mutedP" style="font-size:13px;" id="contactMvpNote">
+                  El logo, el teléfono y el correo se mostrarán aquí cuando esos datos estén conectados en la base de datos pública.
+                </div>
               </div>
             </div>
 
           </div>
         </div>
-
-        <div class="section" id="ubicacion">
-          <h2 class="h2 small">Ubicación</h2>
-          <div id="mainMap"></div>
-
-          <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
-            Calcular tiempo de viaje con Google Maps
-          </a>
-        </div>
-
       </div>
 
     </div>
@@ -896,8 +1017,15 @@
       const subTitleEl = document.getElementById("subTitle");
       const priceEl = document.getElementById("price");
       const agencyEl = document.getElementById("agency");
+      const agencyMobileEl = document.getElementById("agencyMobile");
       const agencyLogoImgEl = document.getElementById("agencyLogoImg");
+      const agencyLogoImgMobileEl = document.getElementById("agencyLogoImgMobile");
       const agencyLogoFallbackEl = document.getElementById("agencyLogoFallback");
+      const agencyLogoFallbackMobileEl = document.getElementById("agencyLogoFallbackMobile");
+      const listedAtEl = document.getElementById("listedAt");
+      const idEl = document.getElementById("id");
+      const ptypeEl = document.getElementById("ptype");
+
       const crumbsCityEl = document.getElementById("crumbCity");
       const crumbsNeighborhoodEl = document.getElementById("crumbNeighborhood");
       const crumbsAddressEl = document.getElementById("crumbAddress");
@@ -920,6 +1048,7 @@
       const panoCountEl = document.getElementById("panoCount");
 
       const mapHintEl = document.getElementById("mapHint");
+      const mapHintMobileEl = document.getElementById("mapHintMobile");
       const navHintEl = document.getElementById("navHint");
 
       const descWrapEl = document.getElementById("descWrap");
@@ -931,6 +1060,14 @@
       const emailBtn = document.getElementById("emailBtn");
       const contactBtn = document.getElementById("contactBtn");
       const visitBtn = document.getElementById("visitBtn");
+      const contactMvpNoteEl = document.getElementById("contactMvpNote");
+
+      const callBtnMobile = document.getElementById("callBtnMobile");
+      const emailBtnMobile = document.getElementById("emailBtnMobile");
+      const contactBtnMobile = document.getElementById("contactBtnMobile");
+      const visitBtnMobile = document.getElementById("visitBtnMobile");
+      const contactMvpNoteMobileEl = document.getElementById("contactMvpNoteMobile");
+
       const gmapsBtnEl = document.getElementById("gmapsBtn");
 
       const backBtnEl = document.getElementById("backBtn");
@@ -946,6 +1083,9 @@
 
       let miniMap = null;
       let miniMarker = null;
+
+      let miniMapMobile = null;
+      let miniMarkerMobile = null;
 
       let mainMap = null;
       let mainMarker = null;
@@ -1040,20 +1180,7 @@
             "agency_phone",
             "property_type",
             "useful_area_m2",
-            "built_area_m2",
             "built_year",
-            "bedrooms",
-            "bathrooms",
-            "outdoor_space_type",
-            "outdoor_orientation",
-            "parking_type",
-            "storage_type",
-            "accessibility_features",
-            "energy_label",
-            "energy_label_status",
-            "energy_label_pending_until",
-            "availability",
-            "floor",
             "city",
             "neighborhood",
             "address_display",
@@ -1090,13 +1217,45 @@
 
       function ensureMiniMap(lat, lng) {
         const hasCoords = (typeof lat === "number" && typeof lng === "number" && isFinite(lat) && isFinite(lng));
+
         if (!hasCoords) {
           mapHintEl.textContent = "Sin coordenadas";
+          if (mapHintMobileEl) mapHintMobileEl.textContent = "Sin coordenadas";
           if (miniMap) { miniMap.remove(); miniMap = null; miniMarker = null; }
+          if (miniMapMobile) { miniMapMobile.remove(); miniMapMobile = null; miniMarkerMobile = null; }
           return;
         }
 
         mapHintEl.textContent = "Ver ubicación";
+        if (mapHintMobileEl) mapHintMobileEl.textContent = "Ver ubicación";
+
+        const isMobile = window.matchMedia("(max-width: 980px)").matches;
+
+        if (isMobile) {
+          if (miniMap) { miniMap.remove(); miniMap = null; miniMarker = null; }
+
+          if (!miniMapMobile) {
+            miniMapMobile = L.map("miniMapMobile", {
+              zoomControl: true,
+              attributionControl: false,
+              scrollWheelZoom: false,
+              dragging: false,
+              doubleClickZoom: false,
+              boxZoom: false,
+              keyboard: false
+            }).setView([lat, lng], 15);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(miniMapMobile);
+          } else {
+            miniMapMobile.setView([lat, lng], 15);
+            setTimeout(() => miniMapMobile && miniMapMobile.invalidateSize(), 0);
+          }
+
+          if (miniMarkerMobile) miniMarkerMobile.setLatLng([lat, lng]);
+          else miniMarkerMobile = L.marker([lat, lng]).addTo(miniMapMobile);
+          return;
+        }
+
+        if (miniMapMobile) { miniMapMobile.remove(); miniMapMobile = null; miniMarkerMobile = null; }
 
         if (!miniMap) {
           miniMap = L.map("miniMap", {
@@ -1111,6 +1270,7 @@
           L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(miniMap);
         } else {
           miniMap.setView([lat, lng], 15);
+          setTimeout(() => miniMap && miniMap.invalidateSize(), 0);
         }
 
         if (miniMarker) miniMarker.setLatLng([lat, lng]);
@@ -1144,6 +1304,29 @@
         const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
         gmapsBtnEl.href = url;
         gmapsBtnEl.style.display = "inline-flex";
+      }
+
+      function initials(name){
+        const s = String(name || "").trim();
+        if (!s) return "AG";
+        const parts = s.split(/\s+/).filter(Boolean).slice(0,2);
+        const out = parts.map(p => p[0]).join("").toUpperCase();
+        return out || "AG";
+      }
+
+      function setAgencyLogoAndName(row){
+        const agencyName = row.agency_name || "—";
+        agencyEl.textContent = agencyName;
+        if (agencyMobileEl) agencyMobileEl.textContent = agencyName;
+
+        const fallback = initials(agencyName);
+        agencyLogoFallbackEl.textContent = fallback;
+        if (agencyLogoFallbackMobileEl) agencyLogoFallbackMobileEl.textContent = fallback;
+
+        if (agencyLogoImgEl) agencyLogoImgEl.style.display = "none";
+        if (agencyLogoImgMobileEl) agencyLogoImgMobileEl.style.display = "none";
+        agencyLogoFallbackEl.style.display = "flex";
+        if (agencyLogoFallbackMobileEl) agencyLogoFallbackMobileEl.style.display = "flex";
       }
 
       function makeFeatBlock(title, lines) {
@@ -1185,145 +1368,35 @@
         const dash = "—";
         const vOrDash = (x) => (x == null || x === "") ? dash : String(x);
 
-        const parseNum = (x) => {
-          const n = Number(x);
-          return Number.isFinite(n) ? n : null;
-        };
+        const price = row.price_eur != null ? Number(row.price_eur) : null;
+        const area = row.useful_area_m2 != null ? Number(row.useful_area_m2) : null;
 
-        const yesNo = (x) => {
-          if (x === true) return "Sí";
-          if (x === false) return "No";
-          return dash;
-        };
-
-        const formatM2 = (x) => {
-          const n = parseNum(x);
-          return n == null ? dash : String(n) + " m²";
-        };
-
-        const formatMoney = (x) => {
-          const n = parseNum(x);
-          return n == null ? dash : euro(n);
-        };
-
-        const normalizeArray = (value) => {
-          if (Array.isArray(value)) return value.filter(Boolean).map(String);
-          if (typeof value === "string" && value.trim()) {
-            const cleaned = value.trim();
-            if (cleaned.startsWith("{") && cleaned.endsWith("}")) {
-              return cleaned
-                .slice(1, -1)
-                .split(",")
-                .map((v) => v.trim().replace(/^"(.*)"$/, "$1"))
-                .filter(Boolean);
-            }
-            return [cleaned];
-          }
-          return [];
-        };
-
-        const hasToken = (arr, tokens) => {
-          const normalized = arr.map((v) => String(v).toLowerCase());
-          return tokens.some((token) => normalized.some((v) => v.includes(token)));
-        };
-
-        const titleCaseList = (arr) => {
-          if (!arr.length) return dash;
-          return arr.map((item) => {
-            const s = String(item).replace(/[_-]+/g, " ").trim();
-            return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
-          }).filter(Boolean).join(", ");
-        };
-
-        const price = parseNum(row.price_eur);
-        const usefulArea = parseNum(row.useful_area_m2);
-        const builtArea = parseNum(row.built_area_m2);
-        const bedrooms = parseNum(row.bedrooms);
-        const bathrooms = parseNum(row.bathrooms);
-
-        const pricePerUsefulM2 =
-          (price != null && usefulArea != null && usefulArea > 0)
-            ? Math.round(price / usefulArea)
+        const pricePerM2 =
+          (price != null && area != null && isFinite(price) && isFinite(area) && area > 0)
+            ? Math.round(price / area)
             : null;
 
-        const pricePerBuiltM2 =
-          (price != null && builtArea != null && builtArea > 0)
-            ? Math.round(price / builtArea)
-            : null;
+        const offeredSince = row.listed_at ? fmtDate(row.listed_at) : dash;
+        const askingPrice = (price != null) ? euro(price) : dash;
 
-        const listedSince = row.listed_at ? fmtDate(row.listed_at) : dash;
-        const availability = row.availability === "available"
-          ? "Disponible"
-          : vOrDash(row.availability);
+        const b1 = makeFeatBlock("Transacción", [
+          ["En venta desde", offeredSince],
+          ["Aceptación", dash],
+          ["Precio de venta", askingPrice],
+          ["Precio por m²", pricePerM2 != null ? euro(pricePerM2) : dash],
+          ["Estado", dash],
+          ["Cuota de comunidad", dash]
+        ]);
 
-        const outdoorOrientation = titleCaseList(normalizeArray(row.outdoor_orientation));
-        const accessibility = normalizeArray(row.accessibility_features);
+        const b2 = makeFeatBlock("Construcción", [
+          ["Tipo de vivienda", vOrDash(row.property_type)],
+          ["Tipo de construcción", dash],
+          ["Año de construcción", row.built_year != null ? String(row.built_year) : dash],
+          ["Tipo de cubierta", dash]
+        ]);
 
-        const hasBalcony = row.outdoor_space_type ? /balc/i.test(String(row.outdoor_space_type)) : null;
-        const hasTerrace = row.outdoor_space_type ? /terra/i.test(String(row.outdoor_space_type)) : null;
-        const hasGarden = row.outdoor_space_type ? /jard[ií]n|garden/i.test(String(row.outdoor_space_type)) : null;
-        const hasPatio = row.outdoor_space_type ? /patio/i.test(String(row.outdoor_space_type)) : null;
-
-        const hasElevator = hasToken(accessibility, ["ascensor", "elevator"]);
-        const hasReducedMobility = hasToken(accessibility, ["movilidad reducida", "wheelchair", "adapt", "accessible", "accesib"]);
-
-        const blocks = [
-          makeFeatBlock("Descripción", [
-            ["Precio de venta", formatMoney(price)],
-            ["Impuestos compra", dash],
-            ["Precio por m² útiles interiores", pricePerUsefulM2 != null ? euro(pricePerUsefulM2) : dash],
-            ["Precio por m² construidos totales", pricePerBuiltM2 != null ? euro(pricePerBuiltM2) : dash],
-            ["Disponible desde", listedSince]
-          ]),
-          makeFeatBlock("Estado", [
-            ["Disponible", availability],
-            ["Cuota de la asociación de propietarios", dash]
-          ]),
-          makeFeatBlock("Construcción", [
-            ["Tipo de apartamento", vOrDash(row.property_type)],
-            ["Tipo de construcción", dash],
-            ["Año de construcción", row.built_year != null ? String(row.built_year) : dash],
-            ["Tipo de cubierta", dash]
-          ]),
-          makeFeatBlock("Superficies", [
-            ["Superficie útil interior", formatM2(usefulArea)],
-            ["Superficie construida interior", dash],
-            ["Superficie construida total", formatM2(builtArea)],
-            ["Altura techo", dash]
-          ]),
-          makeFeatBlock("Distribución", [
-            ["Número de dormitorios", bedrooms != null ? String(bedrooms) : dash],
-            ["Número de habitaciones", dash],
-            ["Número de baños", bathrooms != null ? String(bathrooms) : dash],
-            ["Equipamiento del baño", dash],
-            ["Ubicación en el edificio", vOrDash(row.floor)],
-            ["Número de plantas", dash]
-          ]),
-          makeFeatBlock("Espacio exterior", [
-            ["Información de la ubicación", outdoorOrientation],
-            ["Balcón", hasBalcony == null ? dash : yesNo(hasBalcony)],
-            ["Terraza", hasTerrace == null ? dash : yesNo(hasTerrace)],
-            ["Jardín", hasGarden == null ? dash : yesNo(hasGarden)],
-            ["Patio", hasPatio == null ? dash : yesNo(hasPatio)]
-          ]),
-          makeFeatBlock("Energía", [
-            ["Etiqueta energética", vOrDash(row.energy_label)],
-            ["Aislamiento", dash],
-            ["Calefacción", dash],
-            ["Agua caliente", dash],
-            ["Información caldera", dash]
-          ]),
-          makeFeatBlock("Aparcamiento", [
-            ["Aparcamiento", vOrDash(row.parking_type)],
-            ["Cuota de mantenimiento mensual", dash]
-          ]),
-          makeFeatBlock("Accesibilidad", [
-            ["Ascensor", accessibility.length ? yesNo(hasElevator) : dash],
-            ["Adaptado a movilidad reducida", accessibility.length ? yesNo(hasReducedMobility) : dash]
-          ])
-        ];
-
-        blocks.forEach((block) => featuresGridEl.appendChild(block));
+        featuresGridEl.appendChild(b1);
+        featuresGridEl.appendChild(b2);
       }
 
       function renderDescription(row) {
@@ -1411,39 +1484,44 @@
         const hasPhone = !!(phone && String(phone).trim());
         const hasEmail = !!(email && String(email).trim());
 
-        callBtn.disabled = !hasPhone;
-        emailBtn.disabled = !hasEmail;
-        contactBtn.disabled = !hasEmail;
-        visitBtn.disabled = !hasEmail;
+        const phoneBtns = [callBtn, stickyPhoneBtnEl, callBtnMobile].filter(Boolean);
+        const emailBtns = [emailBtn, contactBtn, stickyContactBtnEl, emailBtnMobile, contactBtnMobile].filter(Boolean);
+        const noteEls = [contactMvpNoteEl, contactMvpNoteMobileEl].filter(Boolean);
 
-        stickyPhoneBtnEl.disabled = !hasPhone;
-        stickyContactBtnEl.disabled = !hasEmail;
-        callBtn.onclick = () => {
+        phoneBtns.forEach(btn => { btn.disabled = !hasPhone; });
+        emailBtns.forEach(btn => { btn.disabled = !hasEmail; });
+
+        noteEls.forEach(el => {
+          el.style.display = (hasPhone || hasEmail) ? "none" : "block";
+        });
+
+        const revealPhone = () => {
           if (!hasPhone) return;
-          window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
-        };
-        stickyPhoneBtnEl.onclick = () => {
-          if (!hasPhone) return;
-          window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
+          alert("Teléfono: " + String(phone));
         };
 
-        emailBtn.onclick = () => {
+        const openEmail = () => {
           if (!hasEmail) return;
           window.location.href = "mailto:" + String(email);
         };
-        contactBtn.onclick = () => {
-          if (!hasEmail) return;
-          window.location.href = "mailto:" + String(email);
-        };
-        visitBtn.onclick = () => {
-          if (!hasEmail) return;
-          const subject = encodeURIComponent("Solicitud de visita");
-          window.location.href = "mailto:" + String(email) + "?subject=" + subject;
-        };
-        stickyContactBtnEl.onclick = () => {
-          if (!hasEmail) return;
-          window.location.href = "mailto:" + String(email);
-        };
+
+        [callBtn, stickyPhoneBtnEl, callBtnMobile].filter(Boolean).forEach(btn => {
+          btn.onclick = revealPhone;
+        });
+
+        [emailBtn, contactBtn, stickyContactBtnEl, emailBtnMobile, contactBtnMobile].filter(Boolean).forEach(btn => {
+          btn.onclick = openEmail;
+        });
+
+        [visitBtn, visitBtnMobile].filter(Boolean).forEach(btn => {
+          btn.disabled = !hasEmail;
+          btn.onclick = () => {
+            if (!hasEmail) return;
+            const subject = encodeURIComponent("Solicitud de visita");
+            const body = encodeURIComponent("Hola, me interesa solicitar una visita para este inmueble: " + window.location.href);
+            window.location.href = "mailto:" + String(email) + "?subject=" + subject + "&body=" + body;
+          };
+        });
       }
 
       shareBtn.addEventListener("click", async () => {
@@ -1489,6 +1567,7 @@
             showBanner("No hay fila en listing_detail_public para este id: " + listingId);
             titleEl.textContent = "Ficha no encontrada";
             stickyAddrEl.textContent = "Ficha no encontrada";
+            idEl.textContent = listingId;
             return;
           }
 
@@ -1508,7 +1587,11 @@
           stickyPriceEl.textContent = row.price_eur != null ? euro(row.price_eur) : "—";
 
           agencyEl.textContent = row.agency_name || "—";
-          setAgencyLogo(row.agency_name, null);
+          setAgencyLogo(row.agency_name, row.agency_logo_url || null);
+          listedAtEl.textContent = fmtDate(row.listed_at);
+          ptypeEl.textContent = row.property_type || "—";
+          idEl.textContent = row.listing_id || listingId;
+
           factsRowEl.innerHTML = "";
           if (row.useful_area_m2 != null) addFact(ICON_AREA, String(row.useful_area_m2) + " m² útiles");
           if (row.property_type) addFact(ICON_TYPE, row.property_type, true);
@@ -1531,7 +1614,7 @@
           ensureMainMap(lat, lng);
           updateGoogleMapsLink(lat, lng);
 
-          setContactButtons(row.agency_phone || null, row.agency_email || null);
+          setContactButtons(row.agency_phone, row.agency_email);
 
         } catch (e) {
           console.error(e);

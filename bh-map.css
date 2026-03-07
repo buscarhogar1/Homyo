@@ -147,13 +147,13 @@ body{
 
 /* Estados: ocultar columnas */
 .grid3.hideFilters{
-  grid-template-columns: 0px 1fr var(--sideW);
+  grid-template-columns: 1fr var(--sideW);
 }
 .grid3.hideList{
-  grid-template-columns: var(--sideW) 1fr 0px;
+  grid-template-columns: var(--sideW) 1fr;
 }
 .grid3.hideFilters.hideList{
-  grid-template-columns: 0px 1fr 0px;
+  grid-template-columns: 1fr;
 }
 
 /* Columnas */
@@ -1245,10 +1245,13 @@ body{
   .mobileBottomItem{
     display: grid;
     place-items: center;
+    width: 100%;
+    height: 100%;
     text-decoration: none;
     color: rgba(0,0,0,0.62);
     font-size: 13px;
     background: #fff;
+    text-align: center;
   }
 
   .mobileBottomItemActive{
