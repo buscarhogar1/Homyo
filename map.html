@@ -22,15 +22,24 @@
 
     <!-- Contenedor general de la página del mapa -->
     <div class="page">
+
+<!-- MOBILE HEADER -->
+<div class="mobileTopRow">
+  <a href="/index.html" class="mobileBack">←</a>
+  <input class="mobileSearch" placeholder="Buscar zona..." />
+</div>
+
+<div class="mobileActionsRow">
+  <button id="mobileFiltersBtn" class="mobileBtn">Filtros</button>
+  <button id="mobileListBtn" class="mobileBtn">Listado</button>
+</div>
+
       <div class="mapShell">
 
         <!-- Fila superior independiente (NO dentro de columnas) -->
         <div class="topRow">
           <div class="topCell topCellLeft">
-            <div class="topLeftTools">
-              <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
-              <button id="clearFiltersBtn" class="topToggleBtn" type="button">Limpiar filtros</button>
-            </div>
+            <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
           </div>
 
           <div class="topCell topCellCenter">
@@ -167,7 +176,7 @@
     <script type="module">
       import { initLayout } from "/buscarhogardemo/bh-layout.js";
       import { initAuth } from "/buscarhogardemo/bh-auth.js";
-      import { initFiltersBar, clearAllFilters } from "/buscarhogardemo/bh-map-filters.js";
+      import { initFiltersBar } from "/buscarhogardemo/bh-map-filters.js";
       import { initMap } from "/buscarhogardemo/bh-map-core.js";
 
       // Header / auth
@@ -180,9 +189,7 @@
       // Toggle columnas (arreglo del bug: el de filtros ahora alterna bien siempre)
       const grid = document.getElementById("grid3");
       const btnFilters = document.getElementById("toggleFiltersBtn");
-      const btnClearFilters = document.getElementById("clearFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
-      const listCol = document.getElementById("listCol");
 
       function applyToggleTexts() {
         const filtersHidden = grid.classList.contains("hideFilters");
@@ -192,43 +199,22 @@
       }
 
       function notifyLayoutResize() {
-        requestAnimationFrame(() => {
-          try {
-            if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
-              window.__bhMap.invalidateSize(true);
-            }
-          } catch (_e) {}
-          window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-          window.dispatchEvent(new Event("resize"));
-          setTimeout(() => {
-            try {
-              if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
-                window.__bhMap.invalidateSize(true);
-              }
-            } catch (_e) {}
-            window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-            window.dispatchEvent(new Event("resize"));
-          }, 120);
-          setTimeout(() => {
-            try {
-              if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
-                window.__bhMap.invalidateSize(true);
-                const c = window.__bhMap.getCenter?.();
-                if (c) window.__bhMap.panTo(c, { animate: false });
-              }
-            } catch (_e) {}
-          }, 260);
-        });
+        // Leaflet necesita invalidateSize tras cambios de layout.
+        // bh-map-core.js escucha este evento, pero reforzamos con doble tick.
+        window.dispatchEvent(new CustomEvent("bh:layout-resize"));
+        setTimeout(() => window.dispatchEvent(new CustomEvent("bh:layout-resize")), 50);
+
+        // Si el core expone el mapa, forzamos también invalidateSize.
+        try{
+          if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
+            window.__bhMap.invalidateSize(true);
+            setTimeout(() => window.__bhMap.invalidateSize(true), 60);
+          }
+        }catch(_e){}
       }
       btnFilters.addEventListener("click", () => {
         grid.classList.toggle("hideFilters");
         applyToggleTexts();
-        notifyLayoutResize();
-      });
-
-
-      btnClearFilters?.addEventListener("click", () => {
-        clearAllFilters({ mountId: "filtersBarMount" });
         notifyLayoutResize();
       });
 

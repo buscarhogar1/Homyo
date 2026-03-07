@@ -38,13 +38,13 @@ body{
 
 .page{
   height: calc(100% - var(--headerH));
-  padding: 10px var(--gap) 10px;
+  padding: 10px 8px 10px;
   box-sizing: border-box;
 }
 
 .mapShell{
-  width: 100%;
-  margin: 0;
+  width: min(1400px, 100%);
+  margin: 0 auto;
   height: 100%;
   box-sizing: border-box;
   position: relative;
@@ -69,12 +69,6 @@ body{
 .topCellLeft{ justify-content: flex-start; }
 .topCellCenter{ justify-content: center; }
 .topCellRight{ justify-content: flex-end; position: relative; }
-
-.topLeftTools{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
 
 .topToggleBtn{
   height: 36px;
@@ -1091,71 +1085,73 @@ body{
 }
 
 
-.bh-hidden{ display:none !important; }
+/* ================= MOBILE LAYOUT ================= */
 
-.fInpStack{
-  display:grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
+@media (max-width: 768px){
+
+  .mobileTopRow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px;
+  }
+
+  .mobileBack{
+    font-size:22px;
+    text-decoration:none;
+  }
+
+  .mobileSearch{
+    flex:1;
+    height:36px;
+    border-radius:20px;
+    border:1px solid rgba(0,0,0,0.2);
+    padding:0 12px;
+  }
+
+  .mobileActionsRow{
+    display:flex;
+    gap:8px;
+    padding:8px;
+  }
+
+  .mobileBtn{
+    flex:1;
+    height:38px;
+    border-radius:20px;
+    border:1px solid rgba(0,0,0,0.2);
+    background:#fff;
+  }
+
+  /* hide desktop layout */
+  .topRow{
+    display:none;
+  }
+
+  .grid3{
+    grid-template-columns: 1fr !important;
+  }
+
+  #filtersCol,
+  #listCol{
+    display:none;
+  }
+
+  #map{
+    height:calc(100vh - 160px);
+  }
+
+  .mobileBottomNav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:56px;
+    background:#fff;
+    border-top:1px solid rgba(0,0,0,0.1);
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+  }
+
 }
-
-.fInpWrap{
-  position: relative;
-}
-
-.fDrop{
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 6px);
-  background: #fff;
-  border: 1px solid rgba(0,0,0,0.12);
-  border-radius: 12px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.10);
-  padding: 6px;
-  z-index: 1200;
-}
-
-.fDropItem{
-  width: 100%;
-  text-align: left;
-  padding: 8px 10px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  cursor: pointer;
-  font-size: 13px;
-  color: rgba(0,0,0,0.86);
-}
-
-.fDropItem:hover{
-  background: rgba(0,0,0,0.05);
-}
-
-.fOptCol{
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 4px;
-}
-
-.fOptLine{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 3px 2px;
-  font-size: 14px;
-  color: rgba(0,0,0,0.80);
-}
-
-.fOptLine input{
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  flex: 0 0 auto;
-}
-
-.fOptText{
-  line-height: 1.25;
-}
-
-
