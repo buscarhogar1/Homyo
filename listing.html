@@ -368,24 +368,6 @@
         border-radius:14px;
         overflow:hidden;
       }
-
-      .desktopOnly{display:block;}
-      .mobileOnly{display:none;}
-
-      .mobileSummaryStack{
-        display:none;
-      }
-      .mobileSectionBlock{
-        margin-top:16px;
-      }
-      .mobileMapCard{
-        overflow:hidden;
-      }
-      #miniMapMobile{
-        height:180px;
-        width:100%;
-        background:linear-gradient(135deg,#f0f1f3,#ffffff);
-      }
       .sideCardInner{padding:14px;}
       .sideTitle{color:var(--muted); font-size:13px; margin:0 0 10px;}
 
@@ -422,63 +404,10 @@
         background:linear-gradient(135deg,#f0f1f3,#ffffff);
       }
 
-      .agencyCard{
-        padding:0;
+      #ubicacion{
+        grid-column:1 / -1;
       }
-      .agencyTop{
-        padding:18px 18px 16px;
-        background:#f4f4f5;
-        border-bottom:1px solid var(--border);
-      }
-      .agencyLogoWrap{
-        min-height:112px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-      }
-      .agencyLogoFrame{
-        width:110px;
-        height:110px;
-        border-radius:10px;
-        border:1px solid #d7d9de;
-        background:#fff;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        overflow:hidden;
-        box-shadow:0 1px 2px rgba(0,0,0,0.04);
-      }
-      .agencyLogoFrame img{
-        width:100%;
-        height:100%;
-        object-fit:contain;
-        display:block;
-        background:#fff;
-      }
-      .agencyLogoFallback{
-        width:100%;
-        height:100%;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:12px;
-        text-align:center;
-        color:#6b7280;
-        font-weight:800;
-        font-size:24px;
-        letter-spacing:1px;
-        background:#fff;
-      }
-      .agencyBody{
-        padding:18px;
-      }
-      .agencyName{
-        margin:0 0 16px;
-        font-size:16px;
-        line-height:1.35;
-        font-weight:700;
-        color:#0b69c7;
-      }
+
       .contactBtns{
         display:grid;
         gap:10px;
@@ -489,45 +418,21 @@
         justify-content:center;
         gap:10px;
         width:100%;
-        min-height:46px;
-        border-radius:10px;
+        height:42px;
+        border-radius:12px;
         cursor:pointer;
-        border:1px solid #d7d9de;
+        border:1px solid var(--border);
         background:#fff;
-        font-size:15px;
-        color:#0b69c7;
+        font-size:14px;
       }
       .ctaPrimary{
-        background:#f79a1f;
+        background:#111;
         color:#fff;
-        border-color:#f79a1f;
-        font-weight:700;
-      }
-      .ctaSecondary{
-        font-weight:600;
+        border-color:#111;
       }
       .cta[disabled]{
-        opacity:0.6;
+        opacity:0.55;
         cursor:not-allowed;
-      }
-      .ctaGhost{
-        justify-content:flex-start;
-        padding:0 14px;
-        text-align:left;
-        background:#fff;
-      }
-      .ctaIcon{
-        width:18px;
-        height:18px;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        flex:0 0 auto;
-      }
-      .agencyMeta{
-        margin-top:16px;
-        padding-top:16px;
-        border-top:1px solid var(--border);
       }
 
       .gmapsBtn{
@@ -641,24 +546,6 @@
         .sideSticky{position:static;}
         .featLine{grid-template-columns: 1fr; gap:4px;}
         #stickySentinel{ top: 0; }
-
-        .desktopOnly{display:none !important;}
-        .mobileOnly{display:block !important;}
-        .mobileSummaryStack{
-          display:grid;
-          gap:12px;
-          margin-top:16px;
-          margin-bottom:6px;
-        }
-        .stickyBar{
-          /* visible on mobile as well */
-        }
-        .agencyTop{
-          padding:16px 16px 14px;
-        }
-        .agencyBody{
-          padding:16px;
-        }
       }
       @media (max-width: 560px){
         .mediaSmallGrid{grid-template-columns:1fr;}
@@ -798,77 +685,6 @@
 
           <div class="factsRow" id="factsRow"></div>
 
-          <div class="mobileOnly mobileSummaryStack">
-            <div class="sideCard mobileMapCard">
-              <div class="mapHeader">
-                <div class="mapHeaderTitle">Mapa</div>
-                <div class="mapHeaderSmall" id="mapHintMobile">—</div>
-              </div>
-              <div id="miniMapMobile"></div>
-            </div>
-
-            <div class="sideCard agencyCard mobileAgencyCard">
-              <div class="agencyTop">
-                <div class="agencyLogoWrap">
-                  <div class="agencyLogoFrame">
-                    <img id="agencyLogoImgMobile" alt="Logo de la agencia" style="display:none;" />
-                    <div class="agencyLogoFallback" id="agencyLogoFallbackMobile">AG</div>
-                  </div>
-                </div>
-              </div>
-              <div class="agencyBody">
-                <p class="agencyName" id="agencyMobile">—</p>
-
-                <div class="contactBtns">
-                  <button class="cta ctaGhost" id="callBtnMobile" type="button" disabled>
-                    <span class="ctaIcon">
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8.03 9.97a16 16 0 0 0 6 6l1.52-1.26a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
-                      </svg>
-                    </span>
-                    <span>Ver teléfono</span>
-                  </button>
-
-                  <button class="cta ctaGhost" id="emailBtnMobile" type="button" disabled>
-                    <span class="ctaIcon">
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M4 4h16v16H4z"/>
-                        <path d="m4 7 8 6 8-6"/>
-                      </svg>
-                    </span>
-                    <span>Ver correo</span>
-                  </button>
-
-                  <button class="cta ctaPrimary" id="contactBtnMobile" type="button" disabled>
-                    <span class="ctaIcon">
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M4 4h16v16H4z"/>
-                        <path d="m4 7 8 6 8-6"/>
-                      </svg>
-                    </span>
-                    <span>Ponerse en contacto</span>
-                  </button>
-
-                  <button class="cta ctaSecondary" id="visitBtnMobile" type="button" disabled>
-                    <span class="ctaIcon">
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M8 2v4"/>
-                        <path d="M16 2v4"/>
-                        <path d="M3 10h18"/>
-                        <path d="M5 4h14v16H5z"/>
-                      </svg>
-                    </span>
-                    <span>Solicitar una visita</span>
-                  </button>
-                </div>
-
-                <div class="p mutedP mobileSectionBlock" style="font-size:13px;" id="contactMvpNoteMobile">
-                  El logo, el teléfono y el correo se mostrarán aquí cuando esos datos estén conectados en la base de datos pública.
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="subnav">
             <a href="#descripcion">Descripción</a>
             <a href="#caracteristicas">Características</a>
@@ -887,17 +703,10 @@
             <div class="featuresGrid" id="featuresGrid"></div>
           </div>
 
-          <div class="section" id="ubicacion">
-            <h2 class="h2 small">Ubicación</h2>
-            <div id="mainMap"></div>
-
-            <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
-              Calcular tiempo de viaje con Google Maps
-            </a>
           </div>
         </div>
 
-        <div class="desktopOnly">
+        <div>
           <div class="sideSticky">
             <div class="sideCard">
               <div class="mapHeader">
@@ -907,62 +716,19 @@
               <div id="miniMap"></div>
             </div>
 
-            <div class="sideCard agencyCard">
-              <div class="agencyTop">
-                <div class="agencyLogoWrap">
-                  <div class="agencyLogoFrame" id="agencyLogoFrame">
-                    <img id="agencyLogoImg" alt="Logo de la agencia" style="display:none;" />
-                    <div class="agencyLogoFallback" id="agencyLogoFallback">AG</div>
-                  </div>
-                </div>
-              </div>
-              <div class="agencyBody">
-                <p class="agencyName" id="agency">—</p>
-
+            <div class="sideCard">
+              <div class="sideCardInner">
+                <p class="sideTitle">Contacto</p>
                 <div class="contactBtns">
-                  <button class="cta ctaGhost" id="callBtn" type="button" disabled>
-                    <span class="ctaIcon">
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8.03 9.97a16 16 0 0 0 6 6l1.52-1.26a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
-                      </svg>
-                    </span>
-                    <span>Ver teléfono</span>
-                  </button>
-
-                  <button class="cta ctaGhost" id="emailBtn" type="button" disabled>
-                    <span class="ctaIcon">
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M4 4h16v16H4z"/>
-                        <path d="m4 7 8 6 8-6"/>
-                      </svg>
-                    </span>
-                    <span>Ver correo</span>
-                  </button>
-
-                  <button class="cta ctaPrimary" id="contactBtn" type="button" disabled>
-                    <span class="ctaIcon">
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M4 4h16v16H4z"/>
-                        <path d="m4 7 8 6 8-6"/>
-                      </svg>
-                    </span>
-                    <span>Ponerse en contacto</span>
-                  </button>
-
-                  <button class="cta ctaSecondary" id="visitBtn" type="button" disabled>
-                    <span class="ctaIcon">
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path d="M8 2v4"/>
-                        <path d="M16 2v4"/>
-                        <path d="M3 10h18"/>
-                        <path d="M5 4h14v16H5z"/>
-                      </svg>
-                    </span>
-                    <span>Solicitar una visita</span>
-                  </button>
+                  <button class="cta ctaPrimary" id="callBtn" type="button" disabled>Ver teléfono</button>
+                  <button class="cta" id="emailBtn" type="button" disabled>Contacto inmobiliaria</button>
                 </div>
-
-                <div class="agencyMeta kv">
+                <div style="height:10px;"></div>
+                <div class="kv">
+                  <div class="kvLine">
+                    <div class="k">Agencia</div>
+                    <div class="v" id="agency">—</div>
+                  </div>
                   <div class="kvLine">
                     <div class="k">Publicado</div>
                     <div class="v" id="listedAt">—</div>
@@ -976,16 +742,23 @@
                     <div class="v mono" id="id">—</div>
                   </div>
                 </div>
-
                 <div style="height:10px;"></div>
                 <div class="p mutedP" style="font-size:13px;" id="contactMvpNote">
-                  El logo, el teléfono y el correo se mostrarán aquí cuando esos datos estén conectados en la base de datos pública.
+                  MVP: botones de contacto se activarán cuando tengamos teléfono/email en la base de datos.
                 </div>
               </div>
             </div>
 
           </div>
         </div>
+          <div class="section" id="ubicacion">
+            <h2 class="h2 small">Ubicación</h2>
+            <div id="mainMap"></div>
+
+            <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
+              Calcular tiempo de viaje con Google Maps
+            </a>
+
       </div>
 
     </div>
@@ -1017,11 +790,6 @@
       const subTitleEl = document.getElementById("subTitle");
       const priceEl = document.getElementById("price");
       const agencyEl = document.getElementById("agency");
-      const agencyMobileEl = document.getElementById("agencyMobile");
-      const agencyLogoImgEl = document.getElementById("agencyLogoImg");
-      const agencyLogoImgMobileEl = document.getElementById("agencyLogoImgMobile");
-      const agencyLogoFallbackEl = document.getElementById("agencyLogoFallback");
-      const agencyLogoFallbackMobileEl = document.getElementById("agencyLogoFallbackMobile");
       const listedAtEl = document.getElementById("listedAt");
       const idEl = document.getElementById("id");
       const ptypeEl = document.getElementById("ptype");
@@ -1048,7 +816,6 @@
       const panoCountEl = document.getElementById("panoCount");
 
       const mapHintEl = document.getElementById("mapHint");
-      const mapHintMobileEl = document.getElementById("mapHintMobile");
       const navHintEl = document.getElementById("navHint");
 
       const descWrapEl = document.getElementById("descWrap");
@@ -1058,15 +825,7 @@
 
       const callBtn = document.getElementById("callBtn");
       const emailBtn = document.getElementById("emailBtn");
-      const contactBtn = document.getElementById("contactBtn");
-      const visitBtn = document.getElementById("visitBtn");
       const contactMvpNoteEl = document.getElementById("contactMvpNote");
-
-      const callBtnMobile = document.getElementById("callBtnMobile");
-      const emailBtnMobile = document.getElementById("emailBtnMobile");
-      const contactBtnMobile = document.getElementById("contactBtnMobile");
-      const visitBtnMobile = document.getElementById("visitBtnMobile");
-      const contactMvpNoteMobileEl = document.getElementById("contactMvpNoteMobile");
 
       const gmapsBtnEl = document.getElementById("gmapsBtn");
 
@@ -1083,9 +842,6 @@
 
       let miniMap = null;
       let miniMarker = null;
-
-      let miniMapMobile = null;
-      let miniMarkerMobile = null;
 
       let mainMap = null;
       let mainMarker = null;
@@ -1136,32 +892,6 @@
         factsRowEl.appendChild(wrap);
       }
 
-      function getAgencyInitials(name){
-        const text = String(name || "").trim();
-        if (!text) return "AG";
-        const parts = text.split(/\s+/).filter(Boolean).slice(0, 2);
-        return parts.map(p => p[0]).join("").toUpperCase() || "AG";
-      }
-
-      function setAgencyLogo(name, logoUrl){
-        const hasLogo = !!(logoUrl && String(logoUrl).trim());
-        agencyLogoFallbackEl.textContent = getAgencyInitials(name);
-
-        if (hasLogo){
-          agencyLogoImgEl.src = String(logoUrl);
-          agencyLogoImgEl.style.display = "block";
-          agencyLogoFallbackEl.style.display = "none";
-          agencyLogoImgEl.onerror = () => {
-            agencyLogoImgEl.style.display = "none";
-            agencyLogoFallbackEl.style.display = "flex";
-          };
-        } else {
-          agencyLogoImgEl.removeAttribute("src");
-          agencyLogoImgEl.style.display = "none";
-          agencyLogoFallbackEl.style.display = "flex";
-        }
-      }
-
       const ICON_AREA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
       const ICON_YEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M5 7h14v14H5z"/></svg>';
       const ICON_TYPE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>';
@@ -1176,8 +906,6 @@
             "price_eur",
             "listed_at",
             "agency_name",
-            "agency_email",
-            "agency_phone",
             "property_type",
             "useful_area_m2",
             "built_year",
@@ -1217,45 +945,13 @@
 
       function ensureMiniMap(lat, lng) {
         const hasCoords = (typeof lat === "number" && typeof lng === "number" && isFinite(lat) && isFinite(lng));
-
         if (!hasCoords) {
           mapHintEl.textContent = "Sin coordenadas";
-          if (mapHintMobileEl) mapHintMobileEl.textContent = "Sin coordenadas";
           if (miniMap) { miniMap.remove(); miniMap = null; miniMarker = null; }
-          if (miniMapMobile) { miniMapMobile.remove(); miniMapMobile = null; miniMarkerMobile = null; }
           return;
         }
 
         mapHintEl.textContent = "Ver ubicación";
-        if (mapHintMobileEl) mapHintMobileEl.textContent = "Ver ubicación";
-
-        const isMobile = window.matchMedia("(max-width: 980px)").matches;
-
-        if (isMobile) {
-          if (miniMap) { miniMap.remove(); miniMap = null; miniMarker = null; }
-
-          if (!miniMapMobile) {
-            miniMapMobile = L.map("miniMapMobile", {
-              zoomControl: true,
-              attributionControl: false,
-              scrollWheelZoom: false,
-              dragging: false,
-              doubleClickZoom: false,
-              boxZoom: false,
-              keyboard: false
-            }).setView([lat, lng], 15);
-            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(miniMapMobile);
-          } else {
-            miniMapMobile.setView([lat, lng], 15);
-            setTimeout(() => miniMapMobile && miniMapMobile.invalidateSize(), 0);
-          }
-
-          if (miniMarkerMobile) miniMarkerMobile.setLatLng([lat, lng]);
-          else miniMarkerMobile = L.marker([lat, lng]).addTo(miniMapMobile);
-          return;
-        }
-
-        if (miniMapMobile) { miniMapMobile.remove(); miniMapMobile = null; miniMarkerMobile = null; }
 
         if (!miniMap) {
           miniMap = L.map("miniMap", {
@@ -1270,7 +966,6 @@
           L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(miniMap);
         } else {
           miniMap.setView([lat, lng], 15);
-          setTimeout(() => miniMap && miniMap.invalidateSize(), 0);
         }
 
         if (miniMarker) miniMarker.setLatLng([lat, lng]);
@@ -1304,29 +999,6 @@
         const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
         gmapsBtnEl.href = url;
         gmapsBtnEl.style.display = "inline-flex";
-      }
-
-      function initials(name){
-        const s = String(name || "").trim();
-        if (!s) return "AG";
-        const parts = s.split(/\s+/).filter(Boolean).slice(0,2);
-        const out = parts.map(p => p[0]).join("").toUpperCase();
-        return out || "AG";
-      }
-
-      function setAgencyLogoAndName(row){
-        const agencyName = row.agency_name || "—";
-        agencyEl.textContent = agencyName;
-        if (agencyMobileEl) agencyMobileEl.textContent = agencyName;
-
-        const fallback = initials(agencyName);
-        agencyLogoFallbackEl.textContent = fallback;
-        if (agencyLogoFallbackMobileEl) agencyLogoFallbackMobileEl.textContent = fallback;
-
-        if (agencyLogoImgEl) agencyLogoImgEl.style.display = "none";
-        if (agencyLogoImgMobileEl) agencyLogoImgMobileEl.style.display = "none";
-        agencyLogoFallbackEl.style.display = "flex";
-        if (agencyLogoFallbackMobileEl) agencyLogoFallbackMobileEl.style.display = "flex";
       }
 
       function makeFeatBlock(title, lines) {
@@ -1366,37 +1038,125 @@
         featuresGridEl.innerHTML = "";
 
         const dash = "—";
-        const vOrDash = (x) => (x == null || x === "") ? dash : String(x);
+        const vOrDash = (x) => {
+          if (x == null) return dash;
+          if (Array.isArray(x)) return x.length ? x.join(", ") : dash;
+          const s = String(x).trim();
+          return s ? s : dash;
+        };
 
-        const price = row.price_eur != null ? Number(row.price_eur) : null;
-        const area = row.useful_area_m2 != null ? Number(row.useful_area_m2) : null;
+        const toNum = (x) => {
+          const n = Number(x);
+          return Number.isFinite(n) ? n : null;
+        };
 
-        const pricePerM2 =
-          (price != null && area != null && isFinite(price) && isFinite(area) && area > 0)
-            ? Math.round(price / area)
+        const price = toNum(row.price_eur);
+        const usefulArea = toNum(row.useful_area_m2);
+        const builtAreaTotal = toNum(row.built_area_m2);
+
+        const pricePerUsefulM2 =
+          (price != null && usefulArea != null && usefulArea > 0)
+            ? Math.round(price / usefulArea)
             : null;
 
-        const offeredSince = row.listed_at ? fmtDate(row.listed_at) : dash;
-        const askingPrice = (price != null) ? euro(price) : dash;
+        const pricePerBuiltM2 =
+          (price != null && builtAreaTotal != null && builtAreaTotal > 0)
+            ? Math.round(price / builtAreaTotal)
+            : null;
 
-        const b1 = makeFeatBlock("Transacción", [
-          ["En venta desde", offeredSince],
-          ["Aceptación", dash],
-          ["Precio de venta", askingPrice],
-          ["Precio por m²", pricePerM2 != null ? euro(pricePerM2) : dash],
-          ["Estado", dash],
-          ["Cuota de comunidad", dash]
+        const outdoorType = vOrDash(row.outdoor_space_type);
+        const outdoorOrientation = Array.isArray(row.outdoor_orientation) && row.outdoor_orientation.length
+          ? row.outdoor_orientation.join(", ")
+          : null;
+        const outdoorInfo = outdoorType === dash
+          ? dash
+          : (outdoorOrientation ? `${outdoorType} · ${outdoorOrientation}` : outdoorType);
+
+        const accessibility = Array.isArray(row.accessibility_features)
+          ? row.accessibility_features.map(v => String(v).toLowerCase())
+          : [];
+        const hasElevator = accessibility.some(v => v.includes("ascensor") || v.includes("elevator")) ? "Sí" : dash;
+        const adaptedReducedMobility = accessibility.some(v =>
+          v.includes("movilidad") || v.includes("reducida") || v.includes("wheelchair") || v.includes("accessible")
+        ) ? "Sí" : dash;
+
+        const energyValue = row.energy_label
+          ? String(row.energy_label)
+          : (row.energy_label_status === "pending" ? "Pendiente" : dash);
+
+        const descriptionBlock = makeFeatBlock("Descripción", [
+          ["Precio de venta", price != null ? euro(price) : dash],
+          ["Vivienda de segunda mano / obra nueva", dash],
+          ["Precio por m² útiles interiores", pricePerUsefulM2 != null ? euro(pricePerUsefulM2) : dash],
+          ["Precio por m² construidos totales", pricePerBuiltM2 != null ? euro(pricePerBuiltM2) : dash],
+          ["Disponible desde", row.listed_at ? fmtDate(row.listed_at) : dash]
         ]);
 
-        const b2 = makeFeatBlock("Construcción", [
-          ["Tipo de vivienda", vOrDash(row.property_type)],
+        const statusBlock = makeFeatBlock("Estado", [
+          ["Disponible", vOrDash(row.availability)],
+          ["Cuota de la asociación de propietarios", dash]
+        ]);
+
+        const constructionBlock = makeFeatBlock("Construcción", [
+          ["Tipo de apartamento", vOrDash(row.property_type)],
           ["Tipo de construcción", dash],
-          ["Año de construcción", row.built_year != null ? String(row.built_year) : dash],
+          ["Año de construcción", vOrDash(row.built_year)],
           ["Tipo de cubierta", dash]
         ]);
 
-        featuresGridEl.appendChild(b1);
-        featuresGridEl.appendChild(b2);
+        const surfacesBlock = makeFeatBlock("Superficies", [
+          ["Superficie útil interior", usefulArea != null ? `${usefulArea} m²` : dash],
+          ["Superficie construida interior", dash],
+          ["Superficie construida total", builtAreaTotal != null ? `${builtAreaTotal} m²` : dash],
+          ["Altura techo", dash]
+        ]);
+
+        const distributionBlock = makeFeatBlock("Distribución", [
+          ["Número de dormitorios", vOrDash(row.bedrooms)],
+          ["Número de habitaciones", dash],
+          ["Número de baños", vOrDash(row.bathrooms)],
+          ["Equipamiento del baño", dash],
+          ["Ubicación en el edificio", vOrDash(row.floor)],
+          ["Número de plantas", dash]
+        ]);
+
+        const exteriorBlock = makeFeatBlock("Espacio exterior", [
+          ["Información de la ubicación", outdoorInfo],
+          ["Balcón", outdoorType !== dash && outdoorType.toLowerCase().includes("balc") ? "Sí" : dash],
+          ["Terraza", outdoorType !== dash && outdoorType.toLowerCase().includes("terra") ? "Sí" : dash],
+          ["Jardín", outdoorType !== dash && outdoorType.toLowerCase().includes("jard") ? "Sí" : dash],
+          ["Patio", outdoorType !== dash && outdoorType.toLowerCase().includes("patio") ? "Sí" : dash]
+        ]);
+
+        const energyBlock = makeFeatBlock("Energía", [
+          ["Etiqueta energética", energyValue],
+          ["Aislamiento", dash],
+          ["Calefacción", dash],
+          ["Agua caliente", dash],
+          ["Información caldera", dash]
+        ]);
+
+        const parkingBlock = makeFeatBlock("Aparcamiento", [
+          ["Aparcamiento", vOrDash(row.parking_type)],
+          ["Cuota de mantenimiento mensual", dash]
+        ]);
+
+        const accessibilityBlock = makeFeatBlock("Accesibilidad", [
+          ["Ascensor", hasElevator],
+          ["Adaptado a movilidad reducida", adaptedReducedMobility]
+        ]);
+
+        [
+          descriptionBlock,
+          statusBlock,
+          constructionBlock,
+          surfacesBlock,
+          distributionBlock,
+          exteriorBlock,
+          energyBlock,
+          parkingBlock,
+          accessibilityBlock
+        ].forEach(block => featuresGridEl.appendChild(block));
       }
 
       function renderDescription(row) {
@@ -1484,44 +1244,35 @@
         const hasPhone = !!(phone && String(phone).trim());
         const hasEmail = !!(email && String(email).trim());
 
-        const phoneBtns = [callBtn, stickyPhoneBtnEl, callBtnMobile].filter(Boolean);
-        const emailBtns = [emailBtn, contactBtn, stickyContactBtnEl, emailBtnMobile, contactBtnMobile].filter(Boolean);
-        const noteEls = [contactMvpNoteEl, contactMvpNoteMobileEl].filter(Boolean);
+        callBtn.disabled = !hasPhone;
+        emailBtn.disabled = !hasEmail;
 
-        phoneBtns.forEach(btn => { btn.disabled = !hasPhone; });
-        emailBtns.forEach(btn => { btn.disabled = !hasEmail; });
+        stickyPhoneBtnEl.disabled = !hasPhone;
+        stickyContactBtnEl.disabled = !hasEmail;
 
-        noteEls.forEach(el => {
-          el.style.display = (hasPhone || hasEmail) ? "none" : "block";
-        });
+        if (hasPhone || hasEmail){
+          contactMvpNoteEl.style.display = "none";
+        } else {
+          contactMvpNoteEl.style.display = "block";
+        }
 
-        const revealPhone = () => {
+        callBtn.onclick = () => {
+          if (!hasPhone) return;
+          alert("Teléfono: " + String(phone));
+        };
+        stickyPhoneBtnEl.onclick = () => {
           if (!hasPhone) return;
           alert("Teléfono: " + String(phone));
         };
 
-        const openEmail = () => {
+        emailBtn.onclick = () => {
           if (!hasEmail) return;
           window.location.href = "mailto:" + String(email);
         };
-
-        [callBtn, stickyPhoneBtnEl, callBtnMobile].filter(Boolean).forEach(btn => {
-          btn.onclick = revealPhone;
-        });
-
-        [emailBtn, contactBtn, stickyContactBtnEl, emailBtnMobile, contactBtnMobile].filter(Boolean).forEach(btn => {
-          btn.onclick = openEmail;
-        });
-
-        [visitBtn, visitBtnMobile].filter(Boolean).forEach(btn => {
-          btn.disabled = !hasEmail;
-          btn.onclick = () => {
-            if (!hasEmail) return;
-            const subject = encodeURIComponent("Solicitud de visita");
-            const body = encodeURIComponent("Hola, me interesa solicitar una visita para este inmueble: " + window.location.href);
-            window.location.href = "mailto:" + String(email) + "?subject=" + subject + "&body=" + body;
-          };
-        });
+        stickyContactBtnEl.onclick = () => {
+          if (!hasEmail) return;
+          window.location.href = "mailto:" + String(email);
+        };
       }
 
       shareBtn.addEventListener("click", async () => {
@@ -1587,7 +1338,6 @@
           stickyPriceEl.textContent = row.price_eur != null ? euro(row.price_eur) : "—";
 
           agencyEl.textContent = row.agency_name || "—";
-          setAgencyLogo(row.agency_name, row.agency_logo_url || null);
           listedAtEl.textContent = fmtDate(row.listed_at);
           ptypeEl.textContent = row.property_type || "—";
           idEl.textContent = row.listing_id || listingId;
@@ -1614,7 +1364,7 @@
           ensureMainMap(lat, lng);
           updateGoogleMapsLink(lat, lng);
 
-          setContactButtons(row.agency_phone, row.agency_email);
+          setContactButtons(null, null);
 
         } catch (e) {
           console.error(e);
