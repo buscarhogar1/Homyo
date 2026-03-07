@@ -149,7 +149,65 @@
       }
 
       @media (max-width: 720px){
-        .headline{ font-size: 36px; }
+        .main{
+          padding: 30px 16px 20px;
+          align-items: flex-start;
+        }
+
+        .center{
+          width: min(100%, 560px);
+        }
+
+        .headline{
+          font-size: 32px;
+          line-height: 1.15;
+          margin-bottom: 18px;
+        }
+
+        .modeRow{
+          width: 100%;
+          gap: 8px;
+          margin-bottom: 16px;
+          justify-content: center;
+        }
+
+        .pill{
+          font-size: 14px;
+          padding: 8px 12px;
+        }
+
+        .searchBox{
+          width: 100%;
+          flex-direction: column;
+          align-items: stretch;
+          border-radius: 20px;
+          padding: 12px;
+          gap: 8px;
+        }
+
+        .searchIcon{
+          display: none;
+        }
+
+        .input{
+          font-size: 16px;
+          padding: 12px;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        .btn{
+          width: 100%;
+          margin: 0;
+          padding: 14px;
+          font-size: 16px;
+        }
+
+        .subTag{
+          width: 100%;
+          font-size: 13px;
+          margin-top: 14px;
+        }
       }
     </style>
   </head>
@@ -243,4 +301,3 @@
     </script>
   </body>
 </html>
-
