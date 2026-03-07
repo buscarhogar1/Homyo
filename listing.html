@@ -404,34 +404,6 @@
         background:linear-gradient(135deg,#f0f1f3,#ffffff);
       }
 
-      .contactBtns{
-        display:grid;
-        gap:10px;
-      }
-      .cta{
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        gap:10px;
-        width:100%;
-        height:42px;
-        border-radius:12px;
-        cursor:pointer;
-        border:1px solid var(--border);
-        background:#fff;
-        font-size:14px;
-      }
-      .ctaPrimary{
-        background:#111;
-        color:#fff;
-        border-color:#111;
-      }
-      .cta[disabled]{
-        opacity:0.55;
-        cursor:not-allowed;
-      }
-
-
       .agencyCard{
         padding:0;
       }
@@ -534,9 +506,10 @@
         justify-content:center;
         flex:0 0 auto;
       }
-
-      .contentGrid > #ubicacion{
-        grid-column:1 / -1;
+      .agencyMeta{
+        margin-top:16px;
+        padding-top:16px;
+        border-top:1px solid var(--border);
       }
 
       .gmapsBtn{
@@ -639,6 +612,10 @@
       @media (max-width: 1200px){
         :root{ --bleed: 24px; }
       }
+      #ubicacion{
+        grid-column:1 / -1;
+      }
+
       @media (max-width: 980px){
         .mediaOuter{ margin-left: 0; margin-right: 0; }
         .mediaSizer{aspect-ratio:auto; min-height:0; max-height:none;}
@@ -687,7 +664,7 @@
 
     <div class="wrap">
       <div class="topRow">
-        <a class="back" id="backBtn" href="./">Volver al mapa</a>
+        <a class="back" id="backBtn" href="./map.html">Volver al mapa</a>
       </div>
 
       <div id="banner" class="banner"></div>
@@ -806,6 +783,7 @@
             <h2 class="h2 small">Características</h2>
             <div class="featuresGrid" id="featuresGrid"></div>
           </div>
+
         </div>
 
         <div>
@@ -821,7 +799,7 @@
             <div class="sideCard agencyCard">
               <div class="agencyTop">
                 <div class="agencyLogoWrap">
-                  <div class="agencyLogoFrame">
+                  <div class="agencyLogoFrame" id="agencyLogoFrame">
                     <img id="agencyLogoImg" alt="Logo de la agencia" style="display:none;" />
                     <div class="agencyLogoFallback" id="agencyLogoFallback">AG</div>
                   </div>
@@ -886,7 +864,9 @@
             Calcular tiempo de viaje con Google Maps
           </a>
         </div>
+
       </div>
+
     </div>
 
     <div id="bhFooter"></div>
@@ -918,7 +898,6 @@
       const agencyEl = document.getElementById("agency");
       const agencyLogoImgEl = document.getElementById("agencyLogoImg");
       const agencyLogoFallbackEl = document.getElementById("agencyLogoFallback");
-
       const crumbsCityEl = document.getElementById("crumbCity");
       const crumbsNeighborhoodEl = document.getElementById("crumbNeighborhood");
       const crumbsAddressEl = document.getElementById("crumbAddress");
@@ -950,8 +929,8 @@
 
       const callBtn = document.getElementById("callBtn");
       const emailBtn = document.getElementById("emailBtn");
-      const contactMvpNoteEl = document.getElementById("contactMvpNote");
-
+      const contactBtn = document.getElementById("contactBtn");
+      const visitBtn = document.getElementById("visitBtn");
       const gmapsBtnEl = document.getElementById("gmapsBtn");
 
       const backBtnEl = document.getElementById("backBtn");
@@ -1017,6 +996,32 @@
         factsRowEl.appendChild(wrap);
       }
 
+      function getAgencyInitials(name){
+        const text = String(name || "").trim();
+        if (!text) return "AG";
+        const parts = text.split(/\s+/).filter(Boolean).slice(0, 2);
+        return parts.map(p => p[0]).join("").toUpperCase() || "AG";
+      }
+
+      function setAgencyLogo(name, logoUrl){
+        const hasLogo = !!(logoUrl && String(logoUrl).trim());
+        agencyLogoFallbackEl.textContent = getAgencyInitials(name);
+
+        if (hasLogo){
+          agencyLogoImgEl.src = String(logoUrl);
+          agencyLogoImgEl.style.display = "block";
+          agencyLogoFallbackEl.style.display = "none";
+          agencyLogoImgEl.onerror = () => {
+            agencyLogoImgEl.style.display = "none";
+            agencyLogoFallbackEl.style.display = "flex";
+          };
+        } else {
+          agencyLogoImgEl.removeAttribute("src");
+          agencyLogoImgEl.style.display = "none";
+          agencyLogoFallbackEl.style.display = "flex";
+        }
+      }
+
       const ICON_AREA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
       const ICON_YEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M5 7h14v14H5z"/></svg>';
       const ICON_TYPE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>';
@@ -1031,9 +1036,24 @@
             "price_eur",
             "listed_at",
             "agency_name",
+            "agency_email",
+            "agency_phone",
             "property_type",
             "useful_area_m2",
+            "built_area_m2",
             "built_year",
+            "bedrooms",
+            "bathrooms",
+            "outdoor_space_type",
+            "outdoor_orientation",
+            "parking_type",
+            "storage_type",
+            "accessibility_features",
+            "energy_label",
+            "energy_label_status",
+            "energy_label_pending_until",
+            "availability",
+            "floor",
             "city",
             "neighborhood",
             "address_display",
@@ -1163,30 +1183,100 @@
         featuresGridEl.innerHTML = "";
 
         const dash = "—";
-        const vOrDash = (x) => (x == null || x === "" || (Array.isArray(x) && x.length === 0)) ? dash : String(x);
-        const arrText = (x) => Array.isArray(x) ? (x.length ? x.join(", ") : dash) : vOrDash(x);
+        const vOrDash = (x) => (x == null || x === "") ? dash : String(x);
 
-        const price = row.price_eur != null ? Number(row.price_eur) : null;
-        const usefulArea = row.useful_area_m2 != null ? Number(row.useful_area_m2) : null;
-        const builtArea = row.built_area_m2 != null ? Number(row.built_area_m2) : null;
+        const parseNum = (x) => {
+          const n = Number(x);
+          return Number.isFinite(n) ? n : null;
+        };
 
-        const pricePerUseful = (price != null && usefulArea && usefulArea > 0) ? Math.round(price / usefulArea) : null;
-        const pricePerBuilt = (price != null && builtArea && builtArea > 0) ? Math.round(price / builtArea) : null;
+        const yesNo = (x) => {
+          if (x === true) return "Sí";
+          if (x === false) return "No";
+          return dash;
+        };
 
-        const outdoorType = row.outdoor_space_type ? String(row.outdoor_space_type).toLowerCase() : "";
-        const accessibility = Array.isArray(row.accessibility_features) ? row.accessibility_features.map(String) : [];
+        const formatM2 = (x) => {
+          const n = parseNum(x);
+          return n == null ? dash : String(n) + " m²";
+        };
+
+        const formatMoney = (x) => {
+          const n = parseNum(x);
+          return n == null ? dash : euro(n);
+        };
+
+        const normalizeArray = (value) => {
+          if (Array.isArray(value)) return value.filter(Boolean).map(String);
+          if (typeof value === "string" && value.trim()) {
+            const cleaned = value.trim();
+            if (cleaned.startsWith("{") && cleaned.endsWith("}")) {
+              return cleaned
+                .slice(1, -1)
+                .split(",")
+                .map((v) => v.trim().replace(/^"(.*)"$/, "$1"))
+                .filter(Boolean);
+            }
+            return [cleaned];
+          }
+          return [];
+        };
+
+        const hasToken = (arr, tokens) => {
+          const normalized = arr.map((v) => String(v).toLowerCase());
+          return tokens.some((token) => normalized.some((v) => v.includes(token)));
+        };
+
+        const titleCaseList = (arr) => {
+          if (!arr.length) return dash;
+          return arr.map((item) => {
+            const s = String(item).replace(/[_-]+/g, " ").trim();
+            return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+          }).filter(Boolean).join(", ");
+        };
+
+        const price = parseNum(row.price_eur);
+        const usefulArea = parseNum(row.useful_area_m2);
+        const builtArea = parseNum(row.built_area_m2);
+        const bedrooms = parseNum(row.bedrooms);
+        const bathrooms = parseNum(row.bathrooms);
+
+        const pricePerUsefulM2 =
+          (price != null && usefulArea != null && usefulArea > 0)
+            ? Math.round(price / usefulArea)
+            : null;
+
+        const pricePerBuiltM2 =
+          (price != null && builtArea != null && builtArea > 0)
+            ? Math.round(price / builtArea)
+            : null;
+
+        const listedSince = row.listed_at ? fmtDate(row.listed_at) : dash;
+        const availability = row.availability === "available"
+          ? "Disponible"
+          : vOrDash(row.availability);
+
+        const outdoorOrientation = titleCaseList(normalizeArray(row.outdoor_orientation));
+        const accessibility = normalizeArray(row.accessibility_features);
+
+        const hasBalcony = row.outdoor_space_type ? /balc/i.test(String(row.outdoor_space_type)) : null;
+        const hasTerrace = row.outdoor_space_type ? /terra/i.test(String(row.outdoor_space_type)) : null;
+        const hasGarden = row.outdoor_space_type ? /jard[ií]n|garden/i.test(String(row.outdoor_space_type)) : null;
+        const hasPatio = row.outdoor_space_type ? /patio/i.test(String(row.outdoor_space_type)) : null;
+
+        const hasElevator = hasToken(accessibility, ["ascensor", "elevator"]);
+        const hasReducedMobility = hasToken(accessibility, ["movilidad reducida", "wheelchair", "adapt", "accessible", "accesib"]);
 
         const blocks = [
           makeFeatBlock("Descripción", [
-            ["Precio de venta", price != null ? euro(price) : dash],
-            ["Vivienda de segunda mano", dash],
-            ["Vivienda de obra nueva", dash],
-            ["Precio por m² útiles interiores", pricePerUseful != null ? euro(pricePerUseful) : dash],
-            ["Precio por m² construidos totales", pricePerBuilt != null ? euro(pricePerBuilt) : dash],
-            ["Disponible desde", row.listed_at ? fmtDate(row.listed_at) : dash]
+            ["Precio de venta", formatMoney(price)],
+            ["Impuestos compra", dash],
+            ["Precio por m² útiles interiores", pricePerUsefulM2 != null ? euro(pricePerUsefulM2) : dash],
+            ["Precio por m² construidos totales", pricePerBuiltM2 != null ? euro(pricePerBuiltM2) : dash],
+            ["Disponible desde", listedSince]
           ]),
           makeFeatBlock("Estado", [
-            ["Disponible", vOrDash(row.availability)],
+            ["Disponible", availability],
             ["Cuota de la asociación de propietarios", dash]
           ]),
           makeFeatBlock("Construcción", [
@@ -1196,44 +1286,44 @@
             ["Tipo de cubierta", dash]
           ]),
           makeFeatBlock("Superficies", [
-            ["Superficie útil interior", usefulArea != null ? `${usefulArea} m²` : dash],
+            ["Superficie útil interior", formatM2(usefulArea)],
             ["Superficie construida interior", dash],
-            ["Superficie construida total", builtArea != null ? `${builtArea} m²` : dash],
+            ["Superficie construida total", formatM2(builtArea)],
             ["Altura techo", dash]
           ]),
           makeFeatBlock("Distribución", [
-            ["Número de dormitorios", row.bedrooms != null ? String(row.bedrooms) : dash],
-            ["Numero de habitaciones", dash],
-            ["Número de baños", row.bathrooms != null ? String(row.bathrooms) : dash],
+            ["Número de dormitorios", bedrooms != null ? String(bedrooms) : dash],
+            ["Número de habitaciones", dash],
+            ["Número de baños", bathrooms != null ? String(bathrooms) : dash],
             ["Equipamiento del baño", dash],
             ["Ubicación en el edificio", vOrDash(row.floor)],
             ["Número de plantas", dash]
           ]),
           makeFeatBlock("Espacio exterior", [
-            ["Información de la ubicación", [row.neighborhood, row.city].filter(Boolean).join(", ") || dash],
-            ["Balcon", outdoorType.includes("balc") ? "Sí" : dash],
-            ["Terraza", outdoorType.includes("terra") ? "Sí" : dash],
-            ["Jardín", outdoorType.includes("jard") ? "Sí" : dash],
-            ["Patio", outdoorType.includes("patio") ? "Sí" : dash]
+            ["Información de la ubicación", outdoorOrientation],
+            ["Balcón", hasBalcony == null ? dash : yesNo(hasBalcony)],
+            ["Terraza", hasTerrace == null ? dash : yesNo(hasTerrace)],
+            ["Jardín", hasGarden == null ? dash : yesNo(hasGarden)],
+            ["Patio", hasPatio == null ? dash : yesNo(hasPatio)]
           ]),
           makeFeatBlock("Energía", [
             ["Etiqueta energética", vOrDash(row.energy_label)],
             ["Aislamiento", dash],
             ["Calefacción", dash],
             ["Agua caliente", dash],
-            ["información caldera", dash]
+            ["Información caldera", dash]
           ]),
           makeFeatBlock("Aparcamiento", [
             ["Aparcamiento", vOrDash(row.parking_type)],
             ["Cuota de mantenimiento mensual", dash]
           ]),
           makeFeatBlock("Accesibilidad", [
-            ["Ascensor", accessibility.some(v => v.toLowerCase().includes("ascen")) ? "Sí" : dash],
-            ["Adaptado a mobilidad reducida", arrText(row.accessibility_features)]
+            ["Ascensor", accessibility.length ? yesNo(hasElevator) : dash],
+            ["Adaptado a movilidad reducida", accessibility.length ? yesNo(hasReducedMobility) : dash]
           ])
         ];
 
-        blocks.forEach(block => featuresGridEl.appendChild(block));
+        blocks.forEach((block) => featuresGridEl.appendChild(block));
       }
 
       function renderDescription(row) {
@@ -1323,28 +1413,32 @@
 
         callBtn.disabled = !hasPhone;
         emailBtn.disabled = !hasEmail;
+        contactBtn.disabled = !hasEmail;
+        visitBtn.disabled = !hasEmail;
 
         stickyPhoneBtnEl.disabled = !hasPhone;
         stickyContactBtnEl.disabled = !hasEmail;
-
-        if (hasPhone || hasEmail){
-          contactMvpNoteEl.style.display = "none";
-        } else {
-          contactMvpNoteEl.style.display = "block";
-        }
-
         callBtn.onclick = () => {
           if (!hasPhone) return;
-          alert("Teléfono: " + String(phone));
+          window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
         };
         stickyPhoneBtnEl.onclick = () => {
           if (!hasPhone) return;
-          alert("Teléfono: " + String(phone));
+          window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
         };
 
         emailBtn.onclick = () => {
           if (!hasEmail) return;
           window.location.href = "mailto:" + String(email);
+        };
+        contactBtn.onclick = () => {
+          if (!hasEmail) return;
+          window.location.href = "mailto:" + String(email);
+        };
+        visitBtn.onclick = () => {
+          if (!hasEmail) return;
+          const subject = encodeURIComponent("Solicitud de visita");
+          window.location.href = "mailto:" + String(email) + "?subject=" + subject;
         };
         stickyContactBtnEl.onclick = () => {
           if (!hasEmail) return;
@@ -1414,8 +1508,7 @@
           stickyPriceEl.textContent = row.price_eur != null ? euro(row.price_eur) : "—";
 
           agencyEl.textContent = row.agency_name || "—";
-          setAgencyLogo(row.agency_name, row.agency_logo_url || null);
-
+          setAgencyLogo(row.agency_name, null);
           factsRowEl.innerHTML = "";
           if (row.useful_area_m2 != null) addFact(ICON_AREA, String(row.useful_area_m2) + " m² útiles");
           if (row.property_type) addFact(ICON_TYPE, row.property_type, true);
@@ -1438,9 +1531,7 @@
           ensureMainMap(lat, lng);
           updateGoogleMapsLink(lat, lng);
 
-          const phone = row.phone;
-          const email = row.email;
-          setContactButtons(phone, email);
+          setContactButtons(row.agency_phone || null, row.agency_email || null);
 
         } catch (e) {
           console.error(e);
