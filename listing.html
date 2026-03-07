@@ -404,10 +404,6 @@
         background:linear-gradient(135deg,#f0f1f3,#ffffff);
       }
 
-      #ubicacion{
-        grid-column:1 / -1;
-      }
-
       .contactBtns{
         display:grid;
         gap:10px;
@@ -433,6 +429,114 @@
       .cta[disabled]{
         opacity:0.55;
         cursor:not-allowed;
+      }
+
+
+      .agencyCard{
+        padding:0;
+      }
+      .agencyTop{
+        padding:18px 18px 16px;
+        background:#f4f4f5;
+        border-bottom:1px solid var(--border);
+      }
+      .agencyLogoWrap{
+        min-height:112px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+      .agencyLogoFrame{
+        width:110px;
+        height:110px;
+        border-radius:10px;
+        border:1px solid #d7d9de;
+        background:#fff;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        overflow:hidden;
+        box-shadow:0 1px 2px rgba(0,0,0,0.04);
+      }
+      .agencyLogoFrame img{
+        width:100%;
+        height:100%;
+        object-fit:contain;
+        display:block;
+        background:#fff;
+      }
+      .agencyLogoFallback{
+        width:100%;
+        height:100%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:12px;
+        text-align:center;
+        color:#6b7280;
+        font-weight:800;
+        font-size:24px;
+        letter-spacing:1px;
+        background:#fff;
+      }
+      .agencyBody{
+        padding:18px;
+      }
+      .agencyName{
+        margin:0 0 16px;
+        font-size:16px;
+        line-height:1.35;
+        font-weight:700;
+        color:#0b69c7;
+      }
+      .contactBtns{
+        display:grid;
+        gap:10px;
+      }
+      .cta{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:10px;
+        width:100%;
+        min-height:46px;
+        border-radius:10px;
+        cursor:pointer;
+        border:1px solid #d7d9de;
+        background:#fff;
+        font-size:15px;
+        color:#0b69c7;
+      }
+      .ctaPrimary{
+        background:#f79a1f;
+        color:#fff;
+        border-color:#f79a1f;
+        font-weight:700;
+      }
+      .ctaSecondary{
+        font-weight:600;
+      }
+      .cta[disabled]{
+        opacity:0.6;
+        cursor:not-allowed;
+      }
+      .ctaGhost{
+        justify-content:flex-start;
+        padding:0 14px;
+        text-align:left;
+        background:#fff;
+      }
+      .ctaIcon{
+        width:18px;
+        height:18px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        flex:0 0 auto;
+      }
+
+      .contentGrid > #ubicacion{
+        grid-column:1 / -1;
       }
 
       .gmapsBtn{
@@ -702,8 +806,6 @@
             <h2 class="h2 small">Características</h2>
             <div class="featuresGrid" id="featuresGrid"></div>
           </div>
-
-          </div>
         </div>
 
         <div>
@@ -716,51 +818,75 @@
               <div id="miniMap"></div>
             </div>
 
-            <div class="sideCard">
-              <div class="sideCardInner">
-                <p class="sideTitle">Contacto</p>
+            <div class="sideCard agencyCard">
+              <div class="agencyTop">
+                <div class="agencyLogoWrap">
+                  <div class="agencyLogoFrame">
+                    <img id="agencyLogoImg" alt="Logo de la agencia" style="display:none;" />
+                    <div class="agencyLogoFallback" id="agencyLogoFallback">AG</div>
+                  </div>
+                </div>
+              </div>
+              <div class="agencyBody">
+                <p class="agencyName" id="agency">—</p>
+
                 <div class="contactBtns">
-                  <button class="cta ctaPrimary" id="callBtn" type="button" disabled>Ver teléfono</button>
-                  <button class="cta" id="emailBtn" type="button" disabled>Contacto inmobiliaria</button>
-                </div>
-                <div style="height:10px;"></div>
-                <div class="kv">
-                  <div class="kvLine">
-                    <div class="k">Agencia</div>
-                    <div class="v" id="agency">—</div>
-                  </div>
-                  <div class="kvLine">
-                    <div class="k">Publicado</div>
-                    <div class="v" id="listedAt">—</div>
-                  </div>
-                  <div class="kvLine">
-                    <div class="k">Tipo</div>
-                    <div class="v" id="ptype">—</div>
-                  </div>
-                  <div class="kvLine">
-                    <div class="k">ID</div>
-                    <div class="v mono" id="id">—</div>
-                  </div>
-                </div>
-                <div style="height:10px;"></div>
-                <div class="p mutedP" style="font-size:13px;" id="contactMvpNote">
-                  MVP: botones de contacto se activarán cuando tengamos teléfono/email en la base de datos.
+                  <button class="cta ctaGhost" id="callBtn" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8.03 9.97a16 16 0 0 0 6 6l1.52-1.26a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
+                      </svg>
+                    </span>
+                    <span>Ver teléfono</span>
+                  </button>
+
+                  <button class="cta ctaGhost" id="emailBtn" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M4 4h16v16H4z"/>
+                        <path d="m4 7 8 6 8-6"/>
+                      </svg>
+                    </span>
+                    <span>Ver correo</span>
+                  </button>
+
+                  <button class="cta ctaPrimary" id="contactBtn" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M4 4h16v16H4z"/>
+                        <path d="m4 7 8 6 8-6"/>
+                      </svg>
+                    </span>
+                    <span>Ponerse en contacto</span>
+                  </button>
+
+                  <button class="cta ctaSecondary" id="visitBtn" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M8 2v4"/>
+                        <path d="M16 2v4"/>
+                        <path d="M3 10h18"/>
+                        <path d="M5 4h14v16H5z"/>
+                      </svg>
+                    </span>
+                    <span>Solicitar una visita</span>
+                  </button>
                 </div>
               </div>
             </div>
 
           </div>
         </div>
-          <div class="section" id="ubicacion">
-            <h2 class="h2 small">Ubicación</h2>
-            <div id="mainMap"></div>
 
-            <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
-              Calcular tiempo de viaje con Google Maps
-            </a>
+        <div class="section" id="ubicacion">
+          <h2 class="h2 small">Ubicación</h2>
+          <div id="mainMap"></div>
 
+          <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
+            Calcular tiempo de viaje con Google Maps
+          </a>
+        </div>
       </div>
-
     </div>
 
     <div id="bhFooter"></div>
@@ -790,9 +916,8 @@
       const subTitleEl = document.getElementById("subTitle");
       const priceEl = document.getElementById("price");
       const agencyEl = document.getElementById("agency");
-      const listedAtEl = document.getElementById("listedAt");
-      const idEl = document.getElementById("id");
-      const ptypeEl = document.getElementById("ptype");
+      const agencyLogoImgEl = document.getElementById("agencyLogoImg");
+      const agencyLogoFallbackEl = document.getElementById("agencyLogoFallback");
 
       const crumbsCityEl = document.getElementById("crumbCity");
       const crumbsNeighborhoodEl = document.getElementById("crumbNeighborhood");
@@ -1038,125 +1163,77 @@
         featuresGridEl.innerHTML = "";
 
         const dash = "—";
-        const vOrDash = (x) => {
-          if (x == null) return dash;
-          if (Array.isArray(x)) return x.length ? x.join(", ") : dash;
-          const s = String(x).trim();
-          return s ? s : dash;
-        };
+        const vOrDash = (x) => (x == null || x === "" || (Array.isArray(x) && x.length === 0)) ? dash : String(x);
+        const arrText = (x) => Array.isArray(x) ? (x.length ? x.join(", ") : dash) : vOrDash(x);
 
-        const toNum = (x) => {
-          const n = Number(x);
-          return Number.isFinite(n) ? n : null;
-        };
+        const price = row.price_eur != null ? Number(row.price_eur) : null;
+        const usefulArea = row.useful_area_m2 != null ? Number(row.useful_area_m2) : null;
+        const builtArea = row.built_area_m2 != null ? Number(row.built_area_m2) : null;
 
-        const price = toNum(row.price_eur);
-        const usefulArea = toNum(row.useful_area_m2);
-        const builtAreaTotal = toNum(row.built_area_m2);
+        const pricePerUseful = (price != null && usefulArea && usefulArea > 0) ? Math.round(price / usefulArea) : null;
+        const pricePerBuilt = (price != null && builtArea && builtArea > 0) ? Math.round(price / builtArea) : null;
 
-        const pricePerUsefulM2 =
-          (price != null && usefulArea != null && usefulArea > 0)
-            ? Math.round(price / usefulArea)
-            : null;
+        const outdoorType = row.outdoor_space_type ? String(row.outdoor_space_type).toLowerCase() : "";
+        const accessibility = Array.isArray(row.accessibility_features) ? row.accessibility_features.map(String) : [];
 
-        const pricePerBuiltM2 =
-          (price != null && builtAreaTotal != null && builtAreaTotal > 0)
-            ? Math.round(price / builtAreaTotal)
-            : null;
+        const blocks = [
+          makeFeatBlock("Descripción", [
+            ["Precio de venta", price != null ? euro(price) : dash],
+            ["Vivienda de segunda mano", dash],
+            ["Vivienda de obra nueva", dash],
+            ["Precio por m² útiles interiores", pricePerUseful != null ? euro(pricePerUseful) : dash],
+            ["Precio por m² construidos totales", pricePerBuilt != null ? euro(pricePerBuilt) : dash],
+            ["Disponible desde", row.listed_at ? fmtDate(row.listed_at) : dash]
+          ]),
+          makeFeatBlock("Estado", [
+            ["Disponible", vOrDash(row.availability)],
+            ["Cuota de la asociación de propietarios", dash]
+          ]),
+          makeFeatBlock("Construcción", [
+            ["Tipo de apartamento", vOrDash(row.property_type)],
+            ["Tipo de construcción", dash],
+            ["Año de construcción", row.built_year != null ? String(row.built_year) : dash],
+            ["Tipo de cubierta", dash]
+          ]),
+          makeFeatBlock("Superficies", [
+            ["Superficie útil interior", usefulArea != null ? `${usefulArea} m²` : dash],
+            ["Superficie construida interior", dash],
+            ["Superficie construida total", builtArea != null ? `${builtArea} m²` : dash],
+            ["Altura techo", dash]
+          ]),
+          makeFeatBlock("Distribución", [
+            ["Número de dormitorios", row.bedrooms != null ? String(row.bedrooms) : dash],
+            ["Numero de habitaciones", dash],
+            ["Número de baños", row.bathrooms != null ? String(row.bathrooms) : dash],
+            ["Equipamiento del baño", dash],
+            ["Ubicación en el edificio", vOrDash(row.floor)],
+            ["Número de plantas", dash]
+          ]),
+          makeFeatBlock("Espacio exterior", [
+            ["Información de la ubicación", [row.neighborhood, row.city].filter(Boolean).join(", ") || dash],
+            ["Balcon", outdoorType.includes("balc") ? "Sí" : dash],
+            ["Terraza", outdoorType.includes("terra") ? "Sí" : dash],
+            ["Jardín", outdoorType.includes("jard") ? "Sí" : dash],
+            ["Patio", outdoorType.includes("patio") ? "Sí" : dash]
+          ]),
+          makeFeatBlock("Energía", [
+            ["Etiqueta energética", vOrDash(row.energy_label)],
+            ["Aislamiento", dash],
+            ["Calefacción", dash],
+            ["Agua caliente", dash],
+            ["información caldera", dash]
+          ]),
+          makeFeatBlock("Aparcamiento", [
+            ["Aparcamiento", vOrDash(row.parking_type)],
+            ["Cuota de mantenimiento mensual", dash]
+          ]),
+          makeFeatBlock("Accesibilidad", [
+            ["Ascensor", accessibility.some(v => v.toLowerCase().includes("ascen")) ? "Sí" : dash],
+            ["Adaptado a mobilidad reducida", arrText(row.accessibility_features)]
+          ])
+        ];
 
-        const outdoorType = vOrDash(row.outdoor_space_type);
-        const outdoorOrientation = Array.isArray(row.outdoor_orientation) && row.outdoor_orientation.length
-          ? row.outdoor_orientation.join(", ")
-          : null;
-        const outdoorInfo = outdoorType === dash
-          ? dash
-          : (outdoorOrientation ? `${outdoorType} · ${outdoorOrientation}` : outdoorType);
-
-        const accessibility = Array.isArray(row.accessibility_features)
-          ? row.accessibility_features.map(v => String(v).toLowerCase())
-          : [];
-        const hasElevator = accessibility.some(v => v.includes("ascensor") || v.includes("elevator")) ? "Sí" : dash;
-        const adaptedReducedMobility = accessibility.some(v =>
-          v.includes("movilidad") || v.includes("reducida") || v.includes("wheelchair") || v.includes("accessible")
-        ) ? "Sí" : dash;
-
-        const energyValue = row.energy_label
-          ? String(row.energy_label)
-          : (row.energy_label_status === "pending" ? "Pendiente" : dash);
-
-        const descriptionBlock = makeFeatBlock("Descripción", [
-          ["Precio de venta", price != null ? euro(price) : dash],
-          ["Vivienda de segunda mano / obra nueva", dash],
-          ["Precio por m² útiles interiores", pricePerUsefulM2 != null ? euro(pricePerUsefulM2) : dash],
-          ["Precio por m² construidos totales", pricePerBuiltM2 != null ? euro(pricePerBuiltM2) : dash],
-          ["Disponible desde", row.listed_at ? fmtDate(row.listed_at) : dash]
-        ]);
-
-        const statusBlock = makeFeatBlock("Estado", [
-          ["Disponible", vOrDash(row.availability)],
-          ["Cuota de la asociación de propietarios", dash]
-        ]);
-
-        const constructionBlock = makeFeatBlock("Construcción", [
-          ["Tipo de apartamento", vOrDash(row.property_type)],
-          ["Tipo de construcción", dash],
-          ["Año de construcción", vOrDash(row.built_year)],
-          ["Tipo de cubierta", dash]
-        ]);
-
-        const surfacesBlock = makeFeatBlock("Superficies", [
-          ["Superficie útil interior", usefulArea != null ? `${usefulArea} m²` : dash],
-          ["Superficie construida interior", dash],
-          ["Superficie construida total", builtAreaTotal != null ? `${builtAreaTotal} m²` : dash],
-          ["Altura techo", dash]
-        ]);
-
-        const distributionBlock = makeFeatBlock("Distribución", [
-          ["Número de dormitorios", vOrDash(row.bedrooms)],
-          ["Número de habitaciones", dash],
-          ["Número de baños", vOrDash(row.bathrooms)],
-          ["Equipamiento del baño", dash],
-          ["Ubicación en el edificio", vOrDash(row.floor)],
-          ["Número de plantas", dash]
-        ]);
-
-        const exteriorBlock = makeFeatBlock("Espacio exterior", [
-          ["Información de la ubicación", outdoorInfo],
-          ["Balcón", outdoorType !== dash && outdoorType.toLowerCase().includes("balc") ? "Sí" : dash],
-          ["Terraza", outdoorType !== dash && outdoorType.toLowerCase().includes("terra") ? "Sí" : dash],
-          ["Jardín", outdoorType !== dash && outdoorType.toLowerCase().includes("jard") ? "Sí" : dash],
-          ["Patio", outdoorType !== dash && outdoorType.toLowerCase().includes("patio") ? "Sí" : dash]
-        ]);
-
-        const energyBlock = makeFeatBlock("Energía", [
-          ["Etiqueta energética", energyValue],
-          ["Aislamiento", dash],
-          ["Calefacción", dash],
-          ["Agua caliente", dash],
-          ["Información caldera", dash]
-        ]);
-
-        const parkingBlock = makeFeatBlock("Aparcamiento", [
-          ["Aparcamiento", vOrDash(row.parking_type)],
-          ["Cuota de mantenimiento mensual", dash]
-        ]);
-
-        const accessibilityBlock = makeFeatBlock("Accesibilidad", [
-          ["Ascensor", hasElevator],
-          ["Adaptado a movilidad reducida", adaptedReducedMobility]
-        ]);
-
-        [
-          descriptionBlock,
-          statusBlock,
-          constructionBlock,
-          surfacesBlock,
-          distributionBlock,
-          exteriorBlock,
-          energyBlock,
-          parkingBlock,
-          accessibilityBlock
-        ].forEach(block => featuresGridEl.appendChild(block));
+        blocks.forEach(block => featuresGridEl.appendChild(block));
       }
 
       function renderDescription(row) {
@@ -1318,7 +1395,6 @@
             showBanner("No hay fila en listing_detail_public para este id: " + listingId);
             titleEl.textContent = "Ficha no encontrada";
             stickyAddrEl.textContent = "Ficha no encontrada";
-            idEl.textContent = listingId;
             return;
           }
 
@@ -1338,9 +1414,7 @@
           stickyPriceEl.textContent = row.price_eur != null ? euro(row.price_eur) : "—";
 
           agencyEl.textContent = row.agency_name || "—";
-          listedAtEl.textContent = fmtDate(row.listed_at);
-          ptypeEl.textContent = row.property_type || "—";
-          idEl.textContent = row.listing_id || listingId;
+          setAgencyLogo(row.agency_name, row.agency_logo_url || null);
 
           factsRowEl.innerHTML = "";
           if (row.useful_area_m2 != null) addFact(ICON_AREA, String(row.useful_area_m2) + " m² útiles");
@@ -1364,7 +1438,9 @@
           ensureMainMap(lat, lng);
           updateGoogleMapsLink(lat, lng);
 
-          setContactButtons(null, null);
+          const phone = row.phone;
+          const email = row.email;
+          setContactButtons(phone, email);
 
         } catch (e) {
           console.error(e);
