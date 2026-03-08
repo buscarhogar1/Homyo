@@ -1820,6 +1820,11 @@
             if (!isMobileViewport()) return;
             openMobileGallery("photos");
           });
+          mediaBigEl.addEventListener("touchend", (ev) => {
+            if (!isMobileViewport()) return;
+            ev.preventDefault();
+            openMobileGallery("photos");
+          }, { passive: false });
         }
 
         if (mobileOpenFloorBtn){
