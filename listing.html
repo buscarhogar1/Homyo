@@ -609,6 +609,295 @@
         opacity:0;
       }
 
+
+      .mobileMediaEntry,
+      .mobileGalleryOverlay{
+        display:none;
+      }
+
+      @media (max-width: 980px){
+        .mediaTabs{
+          display:none;
+        }
+        .mediaSizer{
+          aspect-ratio: 1.28 / 1;
+          min-height:auto;
+          max-height:none;
+        }
+        .mediaGrid{
+          grid-template-columns:1fr;
+          gap:0;
+        }
+        .mediaBig{
+          min-height:0;
+          aspect-ratio: 1.28 / 1;
+          cursor:pointer;
+        }
+        .mediaSmallGrid{
+          display:none;
+        }
+        .mediaActions{
+          top:14px;
+          right:14px;
+        }
+        .actionBtn{
+          width:52px;
+          height:52px;
+          padding:0;
+          border-radius:12px;
+          box-shadow:0 10px 24px rgba(0,0,0,0.10);
+        }
+        .actionBtn span{
+          display:none;
+        }
+
+        .mobileMediaEntry{
+          display:grid;
+          grid-template-columns:repeat(3,1fr);
+          gap:14px;
+          padding:14px 0 4px;
+          border-bottom:1px solid var(--border);
+          margin-bottom:18px;
+        }
+        .mobileMediaTile{
+          border:0;
+          background:transparent;
+          padding:0;
+          margin:0;
+          cursor:pointer;
+          text-align:center;
+          color:#0b69c7;
+        }
+        .mobileMediaThumb{
+          height:92px;
+          border-radius:8px;
+          border:1px solid var(--border);
+          overflow:hidden;
+          background:linear-gradient(135deg,#f0f1f3,#ffffff);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          margin-bottom:10px;
+          position:relative;
+        }
+        .mobileMediaThumb::after{
+          content:"";
+          position:absolute;
+          inset:0;
+          background:linear-gradient(to top, rgba(0,0,0,0.08), rgba(0,0,0,0));
+          pointer-events:none;
+        }
+        .mobileMediaTileLabel{
+          font-size:14px;
+          line-height:1.2;
+        }
+        .mobileMediaIconBubble{
+          width:54px;
+          height:54px;
+          border-radius:999px;
+          background:rgba(20,20,20,0.58);
+          color:#fff;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          position:relative;
+          z-index:1;
+        }
+
+        .mobileGalleryOverlay{
+          position:fixed;
+          inset:0;
+          background:#fff;
+          z-index:2500;
+          overflow:auto;
+        }
+        .mobileGalleryOverlay[hidden]{
+          display:none !important;
+        }
+        .mobileGalleryTopbar{
+          position:sticky;
+          top:0;
+          z-index:5;
+          background:#fff;
+          border-bottom:1px solid var(--border);
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          padding:12px 14px;
+        }
+        .mobileGalleryTopbarLeft,
+        .mobileGalleryTopbarRight{
+          display:flex;
+          align-items:center;
+          gap:10px;
+        }
+        .mobileGalleryIconBtn,
+        .mobileGalleryCloseBtn{
+          border:0;
+          background:transparent;
+          color:#0b69c7;
+          padding:8px;
+          border-radius:10px;
+          cursor:pointer;
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+        }
+        .mobileGalleryCloseBtn{
+          color:#111;
+        }
+        .mobileGalleryBody{
+          padding:10px 0 86px;
+        }
+        .mobileGallerySection{
+          display:none;
+        }
+        .mobileGallerySection.isActive{
+          display:block;
+        }
+        .mobileGalleryGrid{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:6px;
+        }
+        .mobileGalleryHero{
+          grid-column:1 / -1;
+          aspect-ratio: 1.5 / 1;
+          background:linear-gradient(135deg,#f0f1f3,#ffffff);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          overflow:hidden;
+        }
+        .mobileGalleryHalf{
+          aspect-ratio: 1 / 1;
+          background:linear-gradient(135deg,#f0f1f3,#ffffff);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          overflow:hidden;
+        }
+        .mobileGalleryPanorama{
+          grid-column:1 / -1;
+          aspect-ratio: 1.75 / 1;
+          background:linear-gradient(135deg,#eef2f7,#ffffff);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          overflow:hidden;
+        }
+        .mobileGalleryItemText{
+          color:#8b93a0;
+          font-size:14px;
+        }
+        .mobileGalleryBottomNav{
+          position:fixed;
+          left:0;
+          right:0;
+          bottom:0;
+          z-index:6;
+          background:#fff;
+          border-top:1px solid #0b69c7;
+          display:grid;
+          grid-template-columns:repeat(4,1fr);
+        }
+        .mobileGalleryNavBtn{
+          min-height:58px;
+          border:0;
+          border-right:1px solid #0b69c7;
+          background:#fff;
+          color:#0b69c7;
+          font-size:14px;
+          cursor:pointer;
+        }
+        .mobileGalleryNavBtn:last-child{
+          border-right:0;
+        }
+        .mobileGalleryNavBtn.isActive{
+          background:#0b69c7;
+          color:#fff;
+        }
+        .mobileViewer360{
+          position:relative;
+          min-height:calc(100vh - 180px);
+          background:linear-gradient(180deg,#dfe8f2,#ffffff);
+          overflow:hidden;
+        }
+        .mobileViewer360Stage{
+          min-height:62vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          position:relative;
+          color:#fff;
+          background:linear-gradient(135deg,#cfd8e5,#f7f9fb);
+        }
+        .mobileViewer360Hint{
+          position:absolute;
+          inset:0;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          text-align:center;
+          color:rgba(255,255,255,0.96);
+          font-size:18px;
+          padding:24px;
+          background:linear-gradient(to bottom, rgba(0,0,0,0.10), rgba(0,0,0,0.12));
+        }
+        .mobileViewer360Arrow{
+          position:absolute;
+          top:50%;
+          transform:translateY(-50%);
+          width:42px;
+          height:42px;
+          border-radius:999px;
+          border:0;
+          background:rgba(255,255,255,0.22);
+          color:#fff;
+          font-size:24px;
+        }
+        .mobileViewer360Arrow.left{ left:14px; }
+        .mobileViewer360Arrow.right{ right:14px; }
+        .mobileViewer360Thumbs{
+          position:absolute;
+          left:0;
+          right:0;
+          bottom:70px;
+          display:flex;
+          gap:12px;
+          overflow:auto;
+          padding:0 12px 6px;
+        }
+        .mobileViewer360Thumb{
+          min-width:142px;
+          border-radius:10px;
+          overflow:hidden;
+          border:3px solid transparent;
+          background:rgba(17,17,17,0.72);
+          color:#fff;
+          padding:0;
+          text-align:left;
+        }
+        .mobileViewer360Thumb.isActive{
+          border-color:#49d2ff;
+        }
+        .mobileViewer360ThumbImage{
+          height:76px;
+          background:linear-gradient(135deg,#f0f1f3,#ffffff);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          color:#8b93a0;
+          font-size:12px;
+        }
+        .mobileViewer360ThumbLabel{
+          padding:8px 10px 10px;
+          font-size:12px;
+          font-weight:700;
+        }
+      }
+
+
       @media (max-width: 1200px){
         :root{ --bleed: 24px; }
       }
@@ -710,6 +999,47 @@
             </div>
           </div>
         </div>
+      </div>
+
+
+      <div class="mobileMediaEntry">
+        <button class="mobileMediaTile" type="button" id="mobileOpenFloor">
+          <div class="mobileMediaThumb">
+            <span class="mobileMediaIconBubble">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16v16H4z"/>
+                <path d="M4 10h16"/>
+                <path d="M10 10v10"/>
+              </svg>
+            </span>
+          </div>
+          <div class="mobileMediaTileLabel">Planta</div>
+        </button>
+
+        <button class="mobileMediaTile" type="button" id="mobileOpen360">
+          <div class="mobileMediaThumb">
+            <span class="mobileMediaIconBubble">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 12a10 10 0 0 0 20 0"/>
+                <path d="M2 12a10 10 0 0 1 20 0"/>
+                <path d="M8 12h8"/>
+              </svg>
+            </span>
+          </div>
+          <div class="mobileMediaTileLabel">360</div>
+        </button>
+
+        <button class="mobileMediaTile" type="button" id="mobileOpenVideo">
+          <div class="mobileMediaThumb">
+            <span class="mobileMediaIconBubble">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.5 8.5l6-3v13l-6-3"/>
+                <path d="M3 6h11v12H3z"/>
+              </svg>
+            </span>
+          </div>
+          <div class="mobileMediaTileLabel">Vídeo</div>
+        </button>
       </div>
 
       <div class="mediaTabs">
@@ -869,6 +1199,97 @@
 
     </div>
 
+
+    <div class="mobileGalleryOverlay" id="mobileGalleryOverlay" hidden>
+      <div class="mobileGalleryTopbar">
+        <div class="mobileGalleryTopbarLeft">
+          <button class="mobileGalleryIconBtn" type="button" id="mobileGalleryShare" aria-label="Compartir">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/>
+              <path d="M12 3v12"/>
+              <path d="M7 8l5-5 5 5"/>
+            </svg>
+          </button>
+          <button class="mobileGalleryIconBtn" type="button" id="mobileGallerySave" aria-label="Guardar">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="mobileGalleryTopbarRight">
+          <button class="mobileGalleryCloseBtn" type="button" id="mobileGalleryClose" aria-label="Cerrar">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25">
+              <path d="M18 6 6 18"/>
+              <path d="m6 6 12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="mobileGalleryBody">
+        <section class="mobileGallerySection isActive" id="mobileSectionPhotos" data-media-section="photos">
+          <div class="mobileGalleryGrid">
+            <div class="mobileGalleryHalf" id="mobilePhoto1"><span class="mobileGalleryItemText">Foto 1</span></div>
+            <div class="mobileGalleryHalf" id="mobilePhoto2"><span class="mobileGalleryItemText">Foto 2</span></div>
+            <div class="mobileGalleryHero" id="mobilePhoto3"><span class="mobileGalleryItemText">Foto 3</span></div>
+            <div class="mobileGalleryHalf" id="mobilePhoto4"><span class="mobileGalleryItemText">Foto 4</span></div>
+            <div class="mobileGalleryHalf" id="mobilePhoto5"><span class="mobileGalleryItemText">Foto 5</span></div>
+            <div class="mobileGalleryPanorama" id="mobilePhoto6"><span class="mobileGalleryItemText">Foto 6</span></div>
+          </div>
+        </section>
+
+        <section class="mobileGallerySection" id="mobileSectionFloor" data-media-section="floor">
+          <div class="mobileGalleryGrid">
+            <div class="mobileGalleryHero" id="mobileFloor1"><span class="mobileGalleryItemText">Plano 1</span></div>
+            <div class="mobileGalleryHero" id="mobileFloor2"><span class="mobileGalleryItemText">Plano 2</span></div>
+          </div>
+        </section>
+
+        <section class="mobileGallerySection" id="mobileSectionVideo" data-media-section="video">
+          <div class="mobileGalleryGrid">
+            <div class="mobileGalleryHero" id="mobileVideo1"><span class="mobileGalleryItemText">Vídeo principal</span></div>
+            <div class="mobileGalleryHero" id="mobileVideo2"><span class="mobileGalleryItemText">Vídeo 2</span></div>
+          </div>
+        </section>
+
+        <section class="mobileGallerySection" id="mobileSection360" data-media-section="pano">
+          <div class="mobileViewer360">
+            <div class="mobileViewer360Stage" id="mobilePanoStage">
+              <button class="mobileViewer360Arrow left" type="button" aria-label="Anterior">‹</button>
+              <div class="mobileGalleryHero" style="width:100%; height:100%; border-radius:0; border:0; background:linear-gradient(135deg,#edf2f7,#ffffff);">
+                <span class="mobileGalleryItemText">Vista 360</span>
+              </div>
+              <div class="mobileViewer360Hint">Desliza para explorar la vista 360</div>
+              <button class="mobileViewer360Arrow right" type="button" aria-label="Siguiente">›</button>
+            </div>
+
+            <div class="mobileViewer360Thumbs">
+              <button class="mobileViewer360Thumb isActive" type="button">
+                <div class="mobileViewer360ThumbImage">360 1</div>
+                <div class="mobileViewer360ThumbLabel">Estancia 1</div>
+              </button>
+              <button class="mobileViewer360Thumb" type="button">
+                <div class="mobileViewer360ThumbImage">360 2</div>
+                <div class="mobileViewer360ThumbLabel">Estancia 2</div>
+              </button>
+              <button class="mobileViewer360Thumb" type="button">
+                <div class="mobileViewer360ThumbImage">360 3</div>
+                <div class="mobileViewer360ThumbLabel">Estancia 3</div>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="mobileGalleryBottomNav">
+        <button class="mobileGalleryNavBtn isActive" type="button" data-target-section="photos">Fotos</button>
+        <button class="mobileGalleryNavBtn" type="button" data-target-section="floor">Planta</button>
+        <button class="mobileGalleryNavBtn" type="button" data-target-section="video">Vídeo</button>
+        <button class="mobileGalleryNavBtn" type="button" data-target-section="pano">360</button>
+      </div>
+    </div>
+
+
     <div id="bhFooter"></div>
 
     <script type="module">
@@ -914,6 +1335,14 @@
       const tab360 = document.getElementById("tab360");
       const tabVideo = document.getElementById("tabVideo");
       const tabAllMedia = document.getElementById("tabAllMedia");
+
+      const mobileOpenFloorBtn = document.getElementById("mobileOpenFloor");
+      const mobileOpen360Btn = document.getElementById("mobileOpen360");
+      const mobileOpenVideoBtn = document.getElementById("mobileOpenVideo");
+      const mobileGalleryOverlayEl = document.getElementById("mobileGalleryOverlay");
+      const mobileGalleryCloseEl = document.getElementById("mobileGalleryClose");
+      const mobileGalleryShareEl = document.getElementById("mobileGalleryShare");
+      const mobileGallerySaveEl = document.getElementById("mobileGallerySave");
 
       const photosCountEl = document.getElementById("photosCount");
       const floorCountEl = document.getElementById("floorCount");
@@ -1351,13 +1780,110 @@
         descToggleEl.textContent = "Leer más";
       }
 
+
+      function isMobileViewport(){
+        return window.matchMedia("(max-width: 980px)").matches;
+      }
+
+      function openMobileGallery(section){
+        if (!isMobileViewport() || !mobileGalleryOverlayEl) return;
+        mobileGalleryOverlayEl.hidden = false;
+        document.body.style.overflow = "hidden";
+        setMobileGallerySection(section || "photos");
+      }
+
+      function closeMobileGallery(){
+        if (!mobileGalleryOverlayEl) return;
+        mobileGalleryOverlayEl.hidden = true;
+        document.body.style.overflow = "";
+      }
+
+      function setMobileGallerySection(section){
+        const target = section || "photos";
+        document.querySelectorAll(".mobileGallerySection").forEach((node) => {
+          node.classList.toggle("isActive", node.dataset.mediaSection === target);
+        });
+        document.querySelectorAll(".mobileGalleryNavBtn").forEach((btn) => {
+          btn.classList.toggle("isActive", btn.dataset.targetSection === target);
+        });
+        if (target === "photos"){
+          const sec = document.getElementById("mobileSectionPhotos");
+          if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+
+      function wireMobileGallery(){
+        const mediaBigEl = document.getElementById("mediaBig");
+
+        if (mediaBigEl){
+          mediaBigEl.addEventListener("click", () => {
+            if (!isMobileViewport()) return;
+            openMobileGallery("photos");
+          });
+        }
+
+        if (mobileOpenFloorBtn){
+          mobileOpenFloorBtn.addEventListener("click", () => openMobileGallery("floor"));
+        }
+        if (mobileOpenVideoBtn){
+          mobileOpenVideoBtn.addEventListener("click", () => openMobileGallery("video"));
+        }
+        if (mobileOpen360Btn){
+          mobileOpen360Btn.addEventListener("click", () => openMobileGallery("pano"));
+        }
+        if (mobileGalleryCloseEl){
+          mobileGalleryCloseEl.addEventListener("click", closeMobileGallery);
+        }
+        if (mobileGalleryShareEl){
+          mobileGalleryShareEl.addEventListener("click", () => shareBtn.click());
+        }
+        if (mobileGallerySaveEl){
+          mobileGallerySaveEl.addEventListener("click", () => saveBtn.click());
+        }
+
+        document.querySelectorAll(".mobileGalleryNavBtn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            setMobileGallerySection(btn.dataset.targetSection || "photos");
+          });
+        });
+      }
+
+      function setMockMediaVisuals(){
+        const apply = (id, label) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.innerHTML = '<span class="mobileGalleryItemText">' + label + '</span>';
+        };
+
+        ["mobilePhoto1","mobilePhoto2","mobilePhoto3","mobilePhoto4","mobilePhoto5","mobilePhoto6"].forEach((id, idx) => apply(id, "Foto " + (idx + 1)));
+        ["mobileFloor1","mobileFloor2"].forEach((id, idx) => apply(id, "Plano " + (idx + 1)));
+        ["mobileVideo1","mobileVideo2"].forEach((id, idx) => apply(id, idx === 0 ? "Vídeo principal" : "Vídeo " + (idx + 1)));
+      }
+
+
       function wireMediaButtons() {
         const msg = "MVP: este botón abrirá la galería/visor cuando haya fotos/plano/vídeo.";
-        tabPhotos.addEventListener("click", () => alert(msg));
-        tabFloor.addEventListener("click", () => alert(msg));
-        tab360.addEventListener("click", () => alert(msg));
-        tabVideo.addEventListener("click", () => alert(msg));
-        tabAllMedia.addEventListener("click", () => alert(msg));
+
+        tabPhotos.addEventListener("click", () => {
+          if (isMobileViewport()) return openMobileGallery("photos");
+          alert(msg);
+        });
+        tabFloor.addEventListener("click", () => {
+          if (isMobileViewport()) return openMobileGallery("floor");
+          alert(msg);
+        });
+        tab360.addEventListener("click", () => {
+          if (isMobileViewport()) return openMobileGallery("pano");
+          alert(msg);
+        });
+        tabVideo.addEventListener("click", () => {
+          if (isMobileViewport()) return openMobileGallery("video");
+          alert(msg);
+        });
+        tabAllMedia.addEventListener("click", () => {
+          if (isMobileViewport()) return openMobileGallery("photos");
+          alert(msg);
+        });
       }
 
       function wireReadMore() {
@@ -1458,6 +1984,8 @@
       (async () => {
         wireBackLinks();
         wireMediaButtons();
+        wireMobileGallery();
+        setMockMediaVisuals();
         wireReadMore();
         wireSticky();
 
