@@ -242,37 +242,46 @@
 
       .factsRow{
         display:grid;
+        grid-template-columns:1fr;
         gap:10px;
-        margin-top:12px;
+        align-items:start;
+        margin-top:10px;
         color:#111;
+        font-size:15px;
       }
       .factsLine{
         display:grid;
-        align-items:center;
-        gap:12px 18px;
+        gap:14px;
+        align-items:start;
       }
       .factsLineTop{
-        grid-template-columns:repeat(3, minmax(0, max-content));
+        grid-template-columns:repeat(3, minmax(0, 1fr));
       }
       .factsLineBottom{
-        grid-template-columns:repeat(5, minmax(0, max-content));
+        grid-template-columns:repeat(5, minmax(0, 1fr));
       }
       .fact{
-        display:inline-flex;
-        align-items:center;
+        display:flex;
+        align-items:flex-start;
         gap:8px;
-        min-width:0;
         padding:0;
         border:0;
         background:transparent;
+        min-width:0;
       }
-      .fact .icon{
+      .factIcon{
         flex:0 0 auto;
+        width:18px;
+        height:18px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        margin-top:1px;
       }
-      .factValue{
-        font-size:15px;
+      .factText{
+        min-width:0;
         line-height:1.2;
-        white-space:nowrap;
+        word-break:break-word;
       }
       .factMuted{color:var(--muted);}
 
@@ -1017,6 +1026,32 @@
 }
 
 
+
+@media (max-width:768px){
+  .factsRow{
+    gap:10px;
+  }
+
+  .factsLineTop{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:10px;
+  }
+
+  .factsLineBottom{
+    grid-template-columns:repeat(5, minmax(0, 1fr));
+    gap:10px;
+  }
+
+  .fact{
+    gap:6px;
+  }
+
+  .factText{
+    font-size:13px;
+    line-height:1.15;
+  }
+}
+
 /* === MOBILE TYPOGRAPHY ADJUSTMENT === */
 @media (max-width:768px){
   .title{font-size:24px !important;}
@@ -1134,7 +1169,7 @@
 }
 
 
-/* === MOBILE SPACING + FACTS LAYOUT === */
+/* === MOBILE SPACING + MONTHLY LINK POSITION === */
 @media (max-width:768px){
   .mobileMediaEntry{
     margin-top:0 !important;
@@ -1150,14 +1185,9 @@
     margin-bottom:0 !important;
   }
 
-  .factsLineTop,
-  .factsLineBottom{
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:10px 14px;
-  }
-
-  .factValue{
-    font-size:14px;
+  .priceNoteBtn{
+    display:block !important;
+    margin-top:12px !important;
   }
 }
 
@@ -1643,58 +1673,26 @@
         }
       }
 
-      function parseNumericValue(x) {
-        const n = Number(x);
-        return Number.isFinite(n) ? n : null;
-      }
-
-      function formatFactM2(x) {
-        const n = parseNumericValue(x);
-        return n == null ? "—" : String(n) + " m²";
-      }
-
-      function formatFactCount(x) {
-        const n = parseNumericValue(x);
-        return n == null ? "—" : String(n);
-      }
-
-      function formatParkingFact(value) {
-        const raw = String(value ?? "").trim();
-        if (!raw) return "—";
-        if (/^no$/i.test(raw)) return "No";
-
-        const match = raw.match(/\d+/);
-        if (match) return match[0];
-
-        return "—";
-      }
-
       function getParam(name) {
         const u = new URL(window.location.href);
         return u.searchParams.get(name);
       }
 
-      function createFactsLine(className) {
-        const line = document.createElement("div");
-        line.className = "factsLine " + className;
-        return line;
-      }
-
-      function addFact(targetEl, iconSvg, text, muted=false) {
+      function addFact(container, iconSvg, text, muted=false) {
         const wrap = document.createElement("div");
         wrap.className = "fact";
 
         const icon = document.createElement("span");
-        icon.className = "icon";
+        icon.className = "factIcon";
         icon.innerHTML = iconSvg;
 
         const t = document.createElement("span");
-        t.className = "factValue" + (muted ? " factMuted" : "");
+        t.className = muted ? "factText factMuted" : "factText";
         t.textContent = text;
 
         wrap.appendChild(icon);
         wrap.appendChild(t);
-        targetEl.appendChild(wrap);
+        container.appendChild(wrap);
       }
 
       function getAgencyInitials(name){
@@ -1723,9 +1721,9 @@
         }
       }
 
-      const ICON_AREA_USEFUL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
-      const ICON_AREA_OUTDOOR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="16" height="12" rx="1"/><path d="M8 8V5"/><path d="M16 8V5"/><path d="M12 3v2"/><circle cx="18" cy="6" r="1.5"/></svg>';
-      const ICON_AREA_BUILT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V8l4-3 4 3v12"/><path d="M12 20V4l4 3v13"/><path d="M8 11h.01"/><path d="M8 15h.01"/><path d="M16 11h.01"/><path d="M16 15h.01"/></svg>';
+      const ICON_AREA_INTERIOR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
+      const ICON_AREA_EXTERIOR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16"/><path d="M12 4v16"/><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg>';
+      const ICON_AREA_BUILT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>';
       const ICON_YEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M5 7h14v14H5z"/></svg>';
       const ICON_BED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18"/><path d="M5 12V9h5a2 2 0 0 1 2 2v1"/><path d="M12 12V9h5a2 2 0 0 1 2 2v1"/><path d="M4 12v5"/><path d="M20 12v5"/><path d="M3 17h18"/></svg>';
       const ICON_ENERGY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>';
@@ -1745,6 +1743,7 @@
             "agency_phone",
             "property_type",
             "useful_area_m2",
+            "outdoor_area_m2",
             "built_area_m2",
             "built_year",
             "bedrooms",
@@ -1886,9 +1885,8 @@
         block.appendChild(list);
         return block;
       }
-    }
-  });
-}
+
+      
 
 function renderFeatures(row) {
         featuresGridEl.innerHTML = "";
@@ -2211,8 +2209,9 @@ function renderFeatures(row) {
         window.addEventListener("resize", updateMobileBottomCta);
         updateMobileBottomCta();
       }
-        }
-      }
+
+
+
 
       function wireSticky(){
         if (!stickySentinelEl) return;
@@ -2297,7 +2296,6 @@ function renderFeatures(row) {
         wireReadMore();
         wireSticky();
         wireMobileBottomCta();
-        positionMonthlyLinkMobile();
 
         const listingId = getParam("id");
         if (!listingId) {
@@ -2378,21 +2376,40 @@ function renderFeatures(row) {
           setAgencyLogo(row.agency_name, null);
           factsRowEl.innerHTML = "";
 
-          const factsTopEl = createFactsLine("factsLineTop");
-          const factsBottomEl = createFactsLine("factsLineBottom");
+          const factsTopEl = document.createElement("div");
+          factsTopEl.className = "factsLine factsLineTop";
 
-          addFact(factsTopEl, ICON_AREA_USEFUL, formatFactM2(row.useful_area_m2));
-          addFact(factsTopEl, ICON_AREA_OUTDOOR, "—");
-          addFact(factsTopEl, ICON_AREA_BUILT, formatFactM2(row.built_area_m2));
+          const factsBottomEl = document.createElement("div");
+          factsBottomEl.className = "factsLine factsLineBottom";
 
-          addFact(factsBottomEl, ICON_BED, formatFactCount(row.bedrooms), true);
-          addFact(factsBottomEl, ICON_BATH, formatFactCount(row.bathrooms), true);
-          addFact(factsBottomEl, ICON_CAR, formatParkingFact(row.parking_type), true);
-          addFact(factsBottomEl, ICON_YEAR, formatFactCount(row.built_year), true);
+          const usefulFact = row.useful_area_m2 != null ? String(row.useful_area_m2) + " m²" : "—";
+          const outdoorFact = row.outdoor_area_m2 != null ? String(row.outdoor_area_m2) + " m²" : "—";
+          const builtFact = row.built_area_m2 != null ? String(row.built_area_m2) + " m²" : "—";
+          const bedroomsFact = row.bedrooms != null ? String(row.bedrooms) : "—";
+          const bathroomsFact = row.bathrooms != null ? String(row.bathrooms) : "—";
 
+          let parkingFact = "No";
+          if (row.parking_type != null && String(row.parking_type).trim()) {
+            const parkingRaw = String(row.parking_type).trim();
+            const parkingNumMatch = parkingRaw.match(/\d+/);
+            if (parkingNumMatch) parkingFact = parkingNumMatch[0];
+            else if (/^no$/i.test(parkingRaw)) parkingFact = "No";
+            else parkingFact = "1";
+          }
+
+          const yearFact = row.built_year != null ? String(row.built_year) : "—";
           const energyFact = (row.energy_label && String(row.energy_label).trim())
             ? String(row.energy_label).trim()
             : "—";
+
+          addFact(factsTopEl, ICON_AREA_INTERIOR, usefulFact, true);
+          addFact(factsTopEl, ICON_AREA_EXTERIOR, outdoorFact, true);
+          addFact(factsTopEl, ICON_AREA_BUILT, builtFact, true);
+
+          addFact(factsBottomEl, ICON_BED, bedroomsFact, true);
+          addFact(factsBottomEl, ICON_BATH, bathroomsFact, true);
+          addFact(factsBottomEl, ICON_CAR, parkingFact, true);
+          addFact(factsBottomEl, ICON_YEAR, yearFact, true);
           addFact(factsBottomEl, ICON_ENERGY, energyFact, true);
 
           factsRowEl.appendChild(factsTopEl);
