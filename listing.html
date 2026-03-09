@@ -1007,6 +1007,18 @@
   .price{font-size:24px !important;}
 }
 
+
+/* === MOBILE ADJUSTMENTS REQUESTED === */
+@media (max-width:768px){
+  .mobileMediaTileLabel{
+    font-size:12px !important;
+  }
+
+  .subnav{
+    display:none !important;
+  }
+}
+
 </style>
   </head>
 
@@ -1096,7 +1108,7 @@
         </button>
         <button class="mobileMediaTile" type="button" id="mobileOpen360">
           <div class="mobileMediaThumb"><span class="mobileMediaIconBubble"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12a10 10 0 0 0 20 0"/><path d="M2 12a10 10 0 0 1 20 0"/><path d="M8 12h8"/></svg></span></div>
-          <div class="mobileMediaTileLabel">360</div>
+          <div class="mobileMediaTileLabel">360°</div>
         </button>
         <button class="mobileMediaTile" type="button" id="mobileOpenVideo">
           <div class="mobileMediaThumb"><span class="mobileMediaIconBubble"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 8.5l6-3v13l-6-3"/><path d="M3 6h11v12H3z"/></svg></span></div>
@@ -2062,8 +2074,7 @@
           factsRowEl.innerHTML = "";
           if (row.useful_area_m2 != null) addFact(ICON_AREA, String(row.useful_area_m2) + " m² útiles");
           if (row.property_type) addFact(ICON_TYPE, row.property_type, true);
-          if (row.built_year != null) addFact(ICON_YEAR, "Año " + row.built_year, true);
-          if (row.province) addFact(ICON_LOC, row.province, true);
+          if (row.built_year != null) addFact(ICON_YEAR, String(row.built_year), true);
 
           navHintEl.textContent = "Actualizado: " + fmtDate(row.listed_at);
 
