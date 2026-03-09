@@ -1163,33 +1163,6 @@
   }
 }
 
-
-/* === MOBILE EXTRA FIXES === */
-@media (max-width:768px){
-  .mediaOuter{
-    margin-bottom:10px !important;
-  }
-
-  .mobileMediaEntry{
-    padding-top:10px !important;
-    padding-bottom:10px !important;
-  }
-
-  .featV .priceMonthlyInline{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    width:100%;
-  }
-
-  .featV .priceMonthlyInline .priceNoteBtn{
-    margin:0 !important;
-    white-space:nowrap;
-    flex:0 0 auto;
-  }
-}
-
 </style>
   </head>
 
@@ -1981,7 +1954,7 @@ function renderFeatures(row) {
         const blocks = [
           makeFeatBlock("Descripción", [
             ["Precio de venta", formatMoney(price)],
-            [getPurchaseTaxInfo(row, price).label, getPurchaseTaxInfo(row, price).amount],
+            ["Impuestos compra", dash],
             ["Precio por m² útiles interiores", pricePerUsefulM2 != null ? euro(pricePerUsefulM2) : dash],
             ["Precio por m² construidos totales", pricePerBuiltM2 != null ? euro(pricePerBuiltM2) : dash],
             ["Disponible desde", listedSince]
@@ -2211,78 +2184,20 @@ function renderFeatures(row) {
         window.addEventListener("resize", updateMobileBottomCta);
         updateMobileBottomCta();
       }
-        }
-      }
 
 
-      function placeMonthlyLink(){
-        if (!monthlyBtn) return;
 
-        const isMobile = window.matchMedia("(max-width: 768px)").matches;
-        const priceRowEl = document.querySelector(".priceRow");
+      function positionMonthlyLinkMobile(){
+        if (!monthlyBtn || !factsRowEl) return;
 
-        if (!isMobile){
-          if (priceRowEl && monthlyBtn.parentElement !== priceRowEl){
-            priceRowEl.appendChild(monthlyBtn);
+        if (window.matchMedia("(max-width: 768px)").matches){
+          if (monthlyBtn.parentElement !== factsRowEl.parentElement){
+            factsRowEl.insertAdjacentElement("afterend", monthlyBtn);
+          } else if (monthlyBtn.previousElementSibling !== factsRowEl){
+            factsRowEl.insertAdjacentElement("afterend", monthlyBtn);
           }
-          return;
-        }
-
-        const priceLine = Array.from(document.querySelectorAll(".featLine")).find((line) => {
-          const key = line.querySelector(".featK");
-          return key && key.textContent.trim() === "Precio de venta";
-        });
-
-        if (!priceLine) return;
-
-        const valueCell = priceLine.querySelector(".featV");
-        if (!valueCell) return;
-
-        let inlineWrap = valueCell.querySelector(".priceMonthlyInline");
-        if (!inlineWrap){
-          const currentText = valueCell.textContent.trim();
-          valueCell.textContent = "";
-
-          inlineWrap = document.createElement("div");
-          inlineWrap.className = "priceMonthlyInline";
-
-          const priceText = document.createElement("span");
-          priceText.textContent = currentText;
-
-          inlineWrap.appendChild(priceText);
-          inlineWrap.appendChild(monthlyBtn);
-          valueCell.appendChild(inlineWrap);
-        } else if (!inlineWrap.querySelector("#monthlyLink")){
-          inlineWrap.appendChild(monthlyBtn);
         }
       }
-
-      function getPurchaseTaxInfo(row, price){
-        const province = String(row.province || "").trim().toLowerCase();
-        const city = String(row.city || "").trim().toLowerCase();
-        const propertyType = String(row.property_type || "").trim().toLowerCase();
-
-        const isNewBuild = propertyType.includes("obra nueva") || propertyType.includes("new build") || propertyType.includes("new construction");
-        if (isNewBuild){
-          const rate = 0.10;
-          return {
-            label: "IVA (10%)",
-            amount: price != null ? euro(Math.round(price * rate)) : "—"
-          };
-        }
-
-        let itpRate = 0.08; // fallback general
-        if (province.includes("murcia") || city.includes("murcia")){
-          itpRate = 0.0775;
-        }
-
-        const pct = (itpRate * 100).toLocaleString("es-ES", { maximumFractionDigits: 2 });
-        return {
-          label: "ITP (" + pct + "%)",
-          amount: price != null ? euro(Math.round(price * itpRate)) : "—"
-        };
-      }
-
 
       function wireSticky(){
         if (!stickySentinelEl) return;
@@ -2370,7 +2285,8 @@ function renderFeatures(row) {
         wireReadMore();
         wireSticky();
         wireMobileBottomCta();
-        window.addEventListener("resize", placeMonthlyLink);
+        positionMonthlyLinkMobile();
+        window.addEventListener("resize", positionMonthlyLinkMobile);
 
         const listingId = getParam("id");
         if (!listingId) {
@@ -2472,7 +2388,7 @@ function renderFeatures(row) {
 
           renderDescription(row);
           renderFeatures(row);
-placeMonthlyLink();
+placeMonthlyLinkInPrice();
 
           const lat = (row.lat != null) ? Number(row.lat) : null;
           const lng = (row.lng != null) ? Number(row.lng) : null;
