@@ -207,7 +207,8 @@ export function initAuth() {
 
   navAccountBtn?.addEventListener("click", (e) => {
     e.preventDefault();
-    alert("MVP: Mi cuenta.");
+    const root = window.BH_SITE_ROOT || "./";
+    window.location.href = root + "account.html";
   });
 
   navLogoutBtn?.addEventListener("click", async (e) => {
