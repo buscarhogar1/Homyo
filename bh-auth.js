@@ -195,13 +195,6 @@ export function initAuth() {
     openAuth();
   });
 
-  try {
-    if (sessionStorage.getItem("bh_open_auth_after_redirect") === "1") {
-      sessionStorage.removeItem("bh_open_auth_after_redirect");
-      setTimeout(() => openAuth(), 0);
-    }
-  } catch (_) {}
-
   closeAuth.addEventListener("click", closeAuthModal);
   overlay.addEventListener("click",(e)=>{ if(e.target === overlay) closeAuthModal(); });
   document.addEventListener("keydown",(e)=>{ if(overlay.classList.contains("open") && e.key === "Escape") closeAuthModal(); });
@@ -214,8 +207,7 @@ export function initAuth() {
 
   navAccountBtn?.addEventListener("click", (e) => {
     e.preventDefault();
-    const root = window.BH_SITE_ROOT || "/";
-    window.location.href = root + "account.html";
+    alert("MVP: Mi cuenta.");
   });
 
   navLogoutBtn?.addEventListener("click", async (e) => {
@@ -237,7 +229,7 @@ export function initAuth() {
       setMsg(authMsgStart, "");
       localStorage.setItem("bh_return_url", window.location.href);
 
-      const redirectTo = window.BH_CALLBACK_URL || (window.location.origin + "/auth/callback.html");
+      const redirectTo = window.BH_CALLBACK_URL || (window.location.origin + "/callback.html");
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -247,7 +239,7 @@ export function initAuth() {
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
     } catch(e){
-      setMsg(authMsgStart, "No se pudo iniciar sesión. Revisa que Google esté activado en Supabase y que exista auth/callback.html.");
+      setMsg(authMsgStart, "No se pudo iniciar sesión. Revisa que Google esté activado en Supabase y que exista callback.html.");
       console.error(e);
       setBusy(false);
     }
@@ -317,7 +309,7 @@ export function initAuth() {
       setBusy(true);
       setMsg(forgotPwMsg, "");
 
-      const redirectTo = (window.BH_BASE_URL || window.location.origin + "/") + "auth/reset-password.html";
+      const redirectTo = (window.BH_BASE_URL || window.location.origin + "/") + "reset-password.html";
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo
@@ -372,7 +364,7 @@ export function initAuth() {
       setBusy(true);
       setMsg(authMsgReg, "");
 
-      const redirectTo = window.BH_CALLBACK_URL || (window.location.origin + "/auth/callback.html");
+      const redirectTo = window.BH_CALLBACK_URL || (window.location.origin + "/callback.html");
 
       const { data, error } = await supabase.auth.signUp({
         email,

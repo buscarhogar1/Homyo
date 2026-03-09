@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Buscar Hogar – Ficha</title>
 
-    <link rel="stylesheet" href="/buscarhogardemo/bh-shared.css" />
+    <link rel="stylesheet" href="./bh-shared.css" />
 
     <link
       rel="stylesheet"
@@ -241,47 +241,21 @@
       .priceNoteBtn:hover{text-decoration:underline;}
 
       .factsRow{
-        display:grid;
-        grid-template-columns:1fr;
-        gap:10px;
-        align-items:start;
+        display:flex;
+        gap:18px;
+        flex-wrap:wrap;
+        align-items:center;
         margin-top:10px;
         color:#111;
         font-size:15px;
       }
-      .factsLine{
-        display:grid;
-        gap:14px;
-        align-items:start;
-      }
-      .factsLineTop{
-        grid-template-columns:repeat(3, minmax(0, 1fr));
-      }
-      .factsLineBottom{
-        grid-template-columns:repeat(5, minmax(0, 1fr));
-      }
       .fact{
-        display:flex;
-        align-items:flex-start;
+        display:inline-flex;
+        align-items:center;
         gap:8px;
         padding:0;
         border:0;
         background:transparent;
-        min-width:0;
-      }
-      .factIcon{
-        flex:0 0 auto;
-        width:18px;
-        height:18px;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        margin-top:1px;
-      }
-      .factText{
-        min-width:0;
-        line-height:1.2;
-        word-break:break-word;
       }
       .factMuted{color:var(--muted);}
 
@@ -1026,32 +1000,6 @@
 }
 
 
-
-@media (max-width:768px){
-  .factsRow{
-    gap:10px;
-  }
-
-  .factsLineTop{
-    grid-template-columns:repeat(3, minmax(0, 1fr));
-    gap:10px;
-  }
-
-  .factsLineBottom{
-    grid-template-columns:repeat(5, minmax(0, 1fr));
-    gap:10px;
-  }
-
-  .fact{
-    gap:6px;
-  }
-
-  .factText{
-    font-size:13px;
-    line-height:1.15;
-  }
-}
-
 /* === MOBILE TYPOGRAPHY ADJUSTMENT === */
 @media (max-width:768px){
   .title{font-size:24px !important;}
@@ -1561,8 +1509,8 @@
     <div id="bhFooter"></div>
 
     <script type="module">
-      import { initLayout } from "/buscarhogardemo/bh-layout.js";
-      import { initAuth } from "/buscarhogardemo/bh-auth.js";
+      import { initLayout } from "./bh-layout.js";
+      import { initAuth } from "./bh-auth.js";
 
       initLayout({ showMiniSearch: false });
       initAuth();
@@ -1596,6 +1544,7 @@
       const shareBtn = document.getElementById("shareBtn");
       const saveBtn = document.getElementById("saveBtn");
       const saveTextEl = document.getElementById("saveText");
+      const monthlyBtn = document.getElementById("monthlyLink");
 
       const tabPhotos = document.getElementById("tabPhotos");
       const tabFloor = document.getElementById("tabFloor");
@@ -1678,21 +1627,21 @@
         return u.searchParams.get(name);
       }
 
-      function addFact(container, iconSvg, text, muted=false) {
+      function addFact(iconSvg, text, muted=false) {
         const wrap = document.createElement("div");
         wrap.className = "fact";
 
         const icon = document.createElement("span");
-        icon.className = "factIcon";
+        icon.className = "icon";
         icon.innerHTML = iconSvg;
 
         const t = document.createElement("span");
-        t.className = muted ? "factText factMuted" : "factText";
         t.textContent = text;
+        if (muted) t.className = "factMuted";
 
         wrap.appendChild(icon);
         wrap.appendChild(t);
-        container.appendChild(wrap);
+        factsRowEl.appendChild(wrap);
       }
 
       function getAgencyInitials(name){
@@ -1721,9 +1670,7 @@
         }
       }
 
-      const ICON_AREA_INTERIOR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
-      const ICON_AREA_EXTERIOR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16"/><path d="M12 4v16"/><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg>';
-      const ICON_AREA_BUILT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>';
+      const ICON_AREA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
       const ICON_YEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M5 7h14v14H5z"/></svg>';
       const ICON_BED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18"/><path d="M5 12V9h5a2 2 0 0 1 2 2v1"/><path d="M12 12V9h5a2 2 0 0 1 2 2v1"/><path d="M4 12v5"/><path d="M20 12v5"/><path d="M3 17h18"/></svg>';
       const ICON_ENERGY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>';
@@ -1743,7 +1690,6 @@
             "agency_phone",
             "property_type",
             "useful_area_m2",
-            "outdoor_area_m2",
             "built_area_m2",
             "built_year",
             "bedrooms",
@@ -1887,6 +1833,35 @@
       }
 
       
+function placeMonthlyLinkInPrice(){
+  const btn = document.getElementById("monthlyLink");
+  if(!btn) return;
+
+  const rows = document.querySelectorAll(".featLine");
+  rows.forEach(r=>{
+    const k = r.querySelector(".featK");
+    if(k && k.textContent.trim()==="Precio de venta"){
+      const v = r.querySelector(".featV");
+      if(!v) return;
+
+      if(!v.querySelector("#monthlyLink")){
+        const wrap=document.createElement("div");
+        wrap.style.display="flex";
+        wrap.style.justifyContent="space-between";
+        wrap.style.alignItems="center";
+        wrap.style.gap="10px";
+
+        const price=document.createElement("span");
+        price.textContent=v.textContent;
+
+        v.textContent="";
+        wrap.appendChild(price);
+        wrap.appendChild(btn);
+        v.appendChild(wrap);
+      }
+    }
+  });
+}
 
 function renderFeatures(row) {
         featuresGridEl.innerHTML = "";
@@ -2212,6 +2187,17 @@ function renderFeatures(row) {
 
 
 
+      function positionMonthlyLinkMobile(){
+        if (!monthlyBtn || !factsRowEl) return;
+
+        if (window.matchMedia("(max-width: 768px)").matches){
+          if (monthlyBtn.parentElement !== factsRowEl.parentElement){
+            factsRowEl.insertAdjacentElement("afterend", monthlyBtn);
+          } else if (monthlyBtn.previousElementSibling !== factsRowEl){
+            factsRowEl.insertAdjacentElement("afterend", monthlyBtn);
+          }
+        }
+      }
 
       function wireSticky(){
         if (!stickySentinelEl) return;
@@ -2287,6 +2273,9 @@ function renderFeatures(row) {
         if (!ok) window.prompt("Copia el enlace:", window.location.href);
       });
 
+      monthlyBtn.addEventListener("click", () => {
+        alert("MVP: aquí conectaremos calculadora de mensualidad (hipoteca + gastos) con supuestos configurables.");
+      });
 
       (async () => {
         wireBackLinks();
@@ -2296,6 +2285,8 @@ function renderFeatures(row) {
         wireReadMore();
         wireSticky();
         wireMobileBottomCta();
+        positionMonthlyLinkMobile();
+        window.addEventListener("resize", positionMonthlyLinkMobile);
 
         const listingId = getParam("id");
         if (!listingId) {
@@ -2375,45 +2366,19 @@ function renderFeatures(row) {
           agencyEl.textContent = row.agency_name || "—";
           setAgencyLogo(row.agency_name, null);
           factsRowEl.innerHTML = "";
+          if (row.useful_area_m2 != null) addFact(ICON_AREA, String(row.useful_area_m2) + " m² útiles");
+          addFact(ICON_BED, row.bedrooms != null ? String(row.bedrooms) : "-", true);
 
-          const factsTopEl = document.createElement("div");
-          factsTopEl.className = "factsLine factsLineTop";
+          const hasParkingFact = !!(row.parking_type && String(row.parking_type).trim() && !/^no$/i.test(String(row.parking_type).trim()));
+          addFact(ICON_CAR, hasParkingFact ? "Sí" : "No", true);
 
-          const factsBottomEl = document.createElement("div");
-          factsBottomEl.className = "factsLine factsLineBottom";
+          addFact(ICON_BATH, row.bathrooms != null ? String(row.bathrooms) : "-", true);
 
-          const usefulFact = row.useful_area_m2 != null ? String(row.useful_area_m2) + " m²" : "—";
-          const outdoorFact = row.outdoor_area_m2 != null ? String(row.outdoor_area_m2) + " m²" : "—";
-          const builtFact = row.built_area_m2 != null ? String(row.built_area_m2) + " m²" : "—";
-          const bedroomsFact = row.bedrooms != null ? String(row.bedrooms) : "—";
-          const bathroomsFact = row.bathrooms != null ? String(row.bathrooms) : "—";
-
-          let parkingFact = "No";
-          if (row.parking_type != null && String(row.parking_type).trim()) {
-            const parkingRaw = String(row.parking_type).trim();
-            const parkingNumMatch = parkingRaw.match(/\d+/);
-            if (parkingNumMatch) parkingFact = parkingNumMatch[0];
-            else if (/^no$/i.test(parkingRaw)) parkingFact = "No";
-            else parkingFact = "1";
-          }
-
-          const yearFact = row.built_year != null ? String(row.built_year) : "—";
+          if (row.built_year != null) addFact(ICON_YEAR, String(row.built_year), true);
           const energyFact = (row.energy_label && String(row.energy_label).trim())
             ? String(row.energy_label).trim()
-            : "—";
-
-          addFact(factsTopEl, ICON_AREA_INTERIOR, usefulFact, true);
-          addFact(factsTopEl, ICON_AREA_EXTERIOR, outdoorFact, true);
-          addFact(factsTopEl, ICON_AREA_BUILT, builtFact, true);
-
-          addFact(factsBottomEl, ICON_BED, bedroomsFact, true);
-          addFact(factsBottomEl, ICON_BATH, bathroomsFact, true);
-          addFact(factsBottomEl, ICON_CAR, parkingFact, true);
-          addFact(factsBottomEl, ICON_YEAR, yearFact, true);
-          addFact(factsBottomEl, ICON_ENERGY, energyFact, true);
-
-          factsRowEl.appendChild(factsTopEl);
-          factsRowEl.appendChild(factsBottomEl);
+            : (String(row.energy_label_status || "").trim().toLowerCase() === "pending" ? "-" : "-");
+          addFact(ICON_ENERGY, energyFact, true);
 
           navHintEl.textContent = "Actualizado: " + fmtDate(row.listed_at);
 
@@ -2423,6 +2388,7 @@ function renderFeatures(row) {
 
           renderDescription(row);
           renderFeatures(row);
+placeMonthlyLinkInPrice();
 
           const lat = (row.lat != null) ? Number(row.lat) : null;
           const lng = (row.lng != null) ? Number(row.lng) : null;

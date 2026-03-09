@@ -2,11 +2,7 @@
 // Uso: initLayout({ showMiniSearch: true|false })
 
 function getSiteRoot() {
-  // GitHub Pages: /<repo>/...
-  // Ejemplo: /buscarhogardemo/legal/terminos.html -> "/buscarhogardemo/"
-  const parts = (window.location.pathname || "/").split("/");
-  const repo = parts.length > 1 ? parts[1] : "";
-  return repo ? `/${repo}/` : "/";
+  return "./";
 }
 
 function getBaseUrlFromRoot(root) {
@@ -65,11 +61,11 @@ function renderFooter({ root }) {
         <div class="footerLine2">
           <span>© ${year} Buscar Hogar</span>
           <span class="footerSep">·</span>
-          <a href="${root}legal/terminos.html">Términos de uso</a>
+          <a href="${root}terminos.html">Términos de uso</a>
           <span class="footerSep">·</span>
-          <a href="${root}legal/privacidad.html">Política de privacidad</a>
+          <a href="${root}privacidad.html">Política de privacidad</a>
           <span class="footerSep">·</span>
-          <a href="${root}legal/cookies.html">Política de cookies</a>
+          <a href="${root}cookies.html">Política de cookies</a>
         </div>
       </div>
     </footer>
@@ -150,7 +146,7 @@ function renderAuthModal({ root }) {
             <div class="bh-proline"></div>
             <div class="bh-protext">
               Profesional inmobiliario:
-              <a href="${root}pro/login.html">accede aquí</a>
+              <a href="#">accede aquí</a>
             </div>
           </div>
         </div>
@@ -180,7 +176,7 @@ export function initLayout(opts = {}) {
   const BASE_URL = getBaseUrlFromRoot(root);
   window.BH_SITE_ROOT = root;
   window.BH_BASE_URL = BASE_URL;
-  window.BH_CALLBACK_URL = BASE_URL + "auth/callback.html";
+  window.BH_CALLBACK_URL = BASE_URL + "callback.html";
 
   const miniSearchForm = document.getElementById("miniSearchForm");
   if (miniSearchForm) {
