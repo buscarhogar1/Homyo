@@ -404,6 +404,63 @@
         background:linear-gradient(135deg,#f0f1f3,#ffffff);
       }
 
+      .agencyCard{
+        padding:0;
+      }
+      .agencyTop{
+        padding:18px 18px 16px;
+        background:#f4f4f5;
+        border-bottom:1px solid var(--border);
+      }
+      .agencyLogoWrap{
+        min-height:112px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+      .agencyLogoFrame{
+        width:110px;
+        height:110px;
+        border-radius:10px;
+        border:1px solid #d7d9de;
+        background:#fff;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        overflow:hidden;
+        box-shadow:0 1px 2px rgba(0,0,0,0.04);
+      }
+      .agencyLogoFrame img{
+        width:100%;
+        height:100%;
+        object-fit:contain;
+        display:block;
+        background:#fff;
+      }
+      .agencyLogoFallback{
+        width:100%;
+        height:100%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:12px;
+        text-align:center;
+        color:#6b7280;
+        font-weight:800;
+        font-size:24px;
+        letter-spacing:1px;
+        background:#fff;
+      }
+      .agencyBody{
+        padding:18px;
+      }
+      .agencyName{
+        margin:0 0 16px;
+        font-size:16px;
+        line-height:1.35;
+        font-weight:700;
+        color:#0b69c7;
+      }
       .contactBtns{
         display:grid;
         gap:10px;
@@ -414,21 +471,45 @@
         justify-content:center;
         gap:10px;
         width:100%;
-        height:42px;
-        border-radius:12px;
+        min-height:46px;
+        border-radius:10px;
         cursor:pointer;
-        border:1px solid var(--border);
+        border:1px solid #d7d9de;
         background:#fff;
-        font-size:14px;
+        font-size:15px;
+        color:#0b69c7;
       }
       .ctaPrimary{
-        background:#111;
+        background:#f79a1f;
         color:#fff;
-        border-color:#111;
+        border-color:#f79a1f;
+        font-weight:700;
+      }
+      .ctaSecondary{
+        font-weight:600;
       }
       .cta[disabled]{
-        opacity:0.55;
+        opacity:0.6;
         cursor:not-allowed;
+      }
+      .ctaGhost{
+        justify-content:flex-start;
+        padding:0 14px;
+        text-align:left;
+        background:#fff;
+      }
+      .ctaIcon{
+        width:18px;
+        height:18px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        flex:0 0 auto;
+      }
+      .agencyMeta{
+        margin-top:16px;
+        padding-top:16px;
+        border-top:1px solid var(--border);
       }
 
       .gmapsBtn{
@@ -518,73 +599,6 @@
         cursor:not-allowed;
       }
 
-      .stickyBarMobile{
-        display:none;
-        position:fixed;
-        top:0;
-        left:0;
-        right:0;
-        z-index:1001;
-        background:#fff;
-        border-bottom:1px solid var(--border);
-        transform: translateY(-110%);
-        opacity:0;
-        transition: transform 300ms ease, opacity 300ms ease;
-      }
-      .stickyBarMobile.isVisible{
-        transform: translateY(0);
-        opacity:1;
-      }
-      .stickyMobileInner{
-        padding:10px 12px;
-        display:grid;
-        gap:10px;
-      }
-      .stickyMobileTop{
-        min-width:0;
-      }
-      .stickyMobileAddr{
-        font-size:13px;
-        font-weight:600;
-        white-space:nowrap;
-        overflow:hidden;
-        text-overflow:ellipsis;
-        margin:0;
-      }
-      .stickyMobilePrice{
-        font-size:14px;
-        font-weight:700;
-        margin:2px 0 0;
-      }
-      .stickyMobileActions{
-        display:grid;
-        grid-template-columns:repeat(3, minmax(0,1fr));
-        gap:8px;
-      }
-      .smbtn{
-        min-height:36px;
-        padding:0 10px;
-        border-radius:999px;
-        border:1px solid var(--border);
-        background:#fff;
-        cursor:pointer;
-        font-size:12px;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        gap:6px;
-        white-space:nowrap;
-      }
-      .smbtnPrimary{
-        background:#111;
-        color:#fff;
-        border-color:#111;
-      }
-      .smbtn[disabled]{
-        opacity:0.55;
-        cursor:not-allowed;
-      }
-
       #stickySentinel{
         position:absolute;
         left:0;
@@ -597,54 +611,48 @@
 
 
       .mobileMediaEntry,
-      .mobileMapButton,
-      .mobileMapOverlay{
+      .mobileGalleryOverlay{
         display:none;
       }
 
       @media (max-width: 980px){
-        .wrap{
-          padding:0 16px 64px;
-        }
-        .topRow,
-        .crumbs{
-          display:none;
-        }
-        .mediaOuter{
-          margin-left:-16px;
-          margin-right:-16px;
-          margin-top:0;
-          margin-bottom:0;
-        }
-        .mediaBlock{
-          border-radius:0;
-        }
+        .mediaTabs{ display:none; }
         .mediaSizer{
-          aspect-ratio:auto;
+          aspect-ratio: 1.28 / 1;
           min-height:auto;
           max-height:none;
         }
         .mediaGrid{
           grid-template-columns:1fr;
-          height:auto;
+          gap:0;
         }
         .mediaBig{
           min-height:0;
-          aspect-ratio:1.28 / 1;
+          aspect-ratio: 1.28 / 1;
+          cursor:pointer;
+          position:relative;
         }
-        .mediaSmallGrid{
-          display:none !important;
+        .mediaSmallGrid{ display:none; }
+        .mediaActions{
+          top:14px;
+          right:14px;
         }
-        .mediaTabs{
-          display:none;
+        .actionBtn{
+          width:52px;
+          height:52px;
+          padding:0;
+          border-radius:12px;
+          box-shadow:0 10px 24px rgba(0,0,0,0.10);
         }
+        .actionBtn span{ display:none; }
+
         .mobileMediaEntry{
           display:grid;
-          grid-template-columns:repeat(4,1fr);
-          gap:12px;
-          padding:12px 0 10px;
-          margin-bottom:14px;
+          grid-template-columns:repeat(3,1fr);
+          gap:14px;
+          padding:14px 0 4px;
           border-bottom:1px solid var(--border);
+          margin-bottom:18px;
         }
         .mobileMediaTile{
           border:0;
@@ -656,7 +664,7 @@
           color:#0b69c7;
         }
         .mobileMediaThumb{
-          height:84px;
+          height:92px;
           border-radius:8px;
           border:1px solid var(--border);
           overflow:hidden;
@@ -664,7 +672,7 @@
           display:flex;
           align-items:center;
           justify-content:center;
-          margin-bottom:8px;
+          margin-bottom:10px;
           position:relative;
         }
         .mobileMediaThumb::after{
@@ -674,11 +682,15 @@
           background:linear-gradient(to top, rgba(0,0,0,0.08), rgba(0,0,0,0));
           pointer-events:none;
         }
+        .mobileMediaTileLabel{
+          font-size:14px;
+          line-height:1.2;
+        }
         .mobileMediaIconBubble{
-          width:50px;
-          height:50px;
+          width:54px;
+          height:54px;
           border-radius:999px;
-          background:rgba(20,20,20,0.55);
+          background:rgba(20,20,20,0.58);
           color:#fff;
           display:flex;
           align-items:center;
@@ -686,96 +698,191 @@
           position:relative;
           z-index:1;
         }
-        .mobileMediaTileLabel{
-          font-size:13px;
-          line-height:1.15;
-        }
 
-        .mobileSummaryStack .mobileMapCard{
-          display:none !important;
-        }
-
-        .mobileTitleRow{
-          display:flex;
-          align-items:flex-start;
-          justify-content:space-between;
-          gap:14px;
-          margin-top:14px;
-        }
-        .mobileMapButton{
-          display:flex;
-          width:86px;
-          min-width:86px;
-          flex-direction:column;
-          align-items:center;
-          gap:8px;
-          border:0;
-          background:transparent;
-          padding:0;
-          cursor:pointer;
-          color:#0b69c7;
-        }
-        .mobileMapButtonIcon{
-          width:74px;
-          height:74px;
-          border-radius:14px;
-          border:1px solid var(--border);
-          background:linear-gradient(135deg,#f2f4f7,#ffffff);
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          color:#f79a1f;
-          box-shadow:0 1px 2px rgba(0,0,0,0.04);
-        }
-        .mobileMapButtonText{
-          font-size:14px;
-          line-height:1;
-          color:#0b69c7;
-        }
-
-        .mobileMapOverlay{
+        .mobileGalleryOverlay{
           position:fixed;
           inset:0;
-          z-index:2600;
           background:#fff;
+          z-index:2500;
+          overflow:auto;
         }
-        .mobileMapOverlay[hidden]{
-          display:none !important;
-        }
-        .mobileMapTopbar{
-          height:56px;
+        .mobileGalleryOverlay[hidden]{ display:none !important; }
+        .mobileGalleryTopbar{
+          position:sticky;
+          top:0;
+          z-index:5;
+          background:#fff;
           border-bottom:1px solid var(--border);
           display:flex;
           align-items:center;
           justify-content:space-between;
-          padding:0 12px;
-          background:#fff;
+          padding:12px 14px;
         }
-        .mobileMapTopbarTitle{
-          font-size:15px;
-          font-weight:700;
+        .mobileGalleryTopbarLeft,.mobileGalleryTopbarRight{
+          display:flex;
+          align-items:center;
+          gap:10px;
         }
-        .mobileMapClose{
+        .mobileGalleryIconBtn,.mobileGalleryCloseBtn{
           border:0;
           background:transparent;
-          width:40px;
-          height:40px;
+          color:#0b69c7;
+          padding:8px;
           border-radius:10px;
+          cursor:pointer;
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+        }
+        .mobileGalleryCloseBtn{ color:#111; }
+        .mobileGalleryBody{ padding:10px 0 86px; }
+        .mobileGallerySection{ display:none; }
+        .mobileGallerySection.isActive{ display:block; }
+        .mobileGalleryGrid{
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:6px;
+        }
+        .mobileGalleryHero{
+          grid-column:1 / -1;
+          aspect-ratio: 1.5 / 1;
+          background:linear-gradient(135deg,#f0f1f3,#ffffff);
           display:flex;
           align-items:center;
           justify-content:center;
+          overflow:hidden;
+        }
+        .mobileGalleryHalf{
+          aspect-ratio: 1 / 1;
+          background:linear-gradient(135deg,#f0f1f3,#ffffff);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          overflow:hidden;
+        }
+        .mobileGalleryPanorama{
+          grid-column:1 / -1;
+          aspect-ratio: 1.75 / 1;
+          background:linear-gradient(135deg,#eef2f7,#ffffff);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          overflow:hidden;
+        }
+        .mobileGalleryItemText{
+          color:#8b93a0;
+          font-size:14px;
+        }
+        .mobileGalleryBottomNav{
+          position:fixed;
+          left:0;
+          right:0;
+          bottom:0;
+          z-index:6;
+          background:#fff;
+          border-top:1px solid #0b69c7;
+          display:grid;
+          grid-template-columns:repeat(4,1fr);
+        }
+        .mobileGalleryNavBtn{
+          min-height:58px;
+          border:0;
+          border-right:1px solid #0b69c7;
+          background:#fff;
+          color:#0b69c7;
+          font-size:14px;
           cursor:pointer;
         }
-        #mobileOnlyMap{
-          width:100%;
-          height:calc(100vh - 56px);
+        .mobileGalleryNavBtn:last-child{ border-right:0; }
+        .mobileGalleryNavBtn.isActive{
+          background:#0b69c7;
+          color:#fff;
+        }
+        .mobileViewer360{
+          position:relative;
+          min-height:calc(100vh - 180px);
+          background:linear-gradient(180deg,#dfe8f2,#ffffff);
+          overflow:hidden;
+        }
+        .mobileViewer360Stage{
+          min-height:62vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          position:relative;
+          color:#fff;
+          background:linear-gradient(135deg,#cfd8e5,#f7f9fb);
+        }
+        .mobileViewer360Hint{
+          position:absolute;
+          inset:0;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          text-align:center;
+          color:rgba(255,255,255,0.96);
+          font-size:18px;
+          padding:24px;
+          background:linear-gradient(to bottom, rgba(0,0,0,0.10), rgba(0,0,0,0.12));
+        }
+        .mobileViewer360Arrow{
+          position:absolute;
+          top:50%;
+          transform:translateY(-50%);
+          width:42px;
+          height:42px;
+          border-radius:999px;
+          border:0;
+          background:rgba(255,255,255,0.22);
+          color:#fff;
+          font-size:24px;
+        }
+        .mobileViewer360Arrow.left{ left:14px; }
+        .mobileViewer360Arrow.right{ right:14px; }
+        .mobileViewer360Thumbs{
+          position:absolute;
+          left:0;
+          right:0;
+          bottom:70px;
+          display:flex;
+          gap:12px;
+          overflow:auto;
+          padding:0 12px 6px;
+        }
+        .mobileViewer360Thumb{
+          min-width:142px;
+          border-radius:10px;
+          overflow:hidden;
+          border:3px solid transparent;
+          background:rgba(17,17,17,0.72);
+          color:#fff;
+          padding:0;
+          text-align:left;
+        }
+        .mobileViewer360Thumb.isActive{ border-color:#49d2ff; }
+        .mobileViewer360ThumbImage{
+          height:76px;
           background:linear-gradient(135deg,#f0f1f3,#ffffff);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          color:#8b93a0;
+          font-size:12px;
+        }
+        .mobileViewer360ThumbLabel{
+          padding:8px 10px 10px;
+          font-size:12px;
+          font-weight:700;
         }
       }
 
       @media (max-width: 1200px){
         :root{ --bleed: 24px; }
       }
+      #ubicacion{
+        grid-column:1 / -1;
+      }
+
       @media (max-width: 980px){
         .mediaOuter{ margin-left: 0; margin-right: 0; }
         .mediaSizer{aspect-ratio:auto; min-height:0; max-height:none;}
@@ -787,8 +894,6 @@
         .sideSticky{position:static;}
         .featLine{grid-template-columns: 1fr; gap:4px;}
         #stickySentinel{ top: 0; }
-        .stickyBar{ display:none; }
-        .stickyBarMobile{ display:block; }
       }
       @media (max-width: 560px){
         .mediaSmallGrid{grid-template-columns:1fr;}
@@ -824,23 +929,9 @@
       </div>
     </div>
 
-    <div class="stickyBarMobile" id="stickyBarMobile" aria-hidden="true">
-      <div class="stickyMobileInner">
-        <div class="stickyMobileTop">
-          <p class="stickyMobileAddr" id="stickyAddrMobile">—</p>
-          <p class="stickyMobilePrice" id="stickyPriceMobile">—</p>
-        </div>
-        <div class="stickyMobileActions">
-          <button class="smbtn" id="stickySaveBtnMobile" type="button" title="Guardar en favoritos">Guardar</button>
-          <button class="smbtn" id="stickyPhoneBtnMobile" type="button" title="Ver teléfono" disabled>Teléfono</button>
-          <button class="smbtn smbtnPrimary" id="stickyContactBtnMobile" type="button" title="Contactar" disabled>Contacto</button>
-        </div>
-      </div>
-    </div>
-
     <div class="wrap">
       <div class="topRow">
-        <a class="back" id="backBtn" href="./">Volver al mapa</a>
+        <a class="back" id="backBtn" href="./map.html">Volver al mapa</a>
       </div>
 
       <div id="banner" class="banner"></div>
@@ -891,39 +982,16 @@
 
       <div class="mobileMediaEntry">
         <button class="mobileMediaTile" type="button" id="mobileOpenFloor">
-          <div class="mobileMediaThumb">
-            <span class="mobileMediaIconBubble">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>
-            </span>
-          </div>
-          <div class="mobileMediaTileLabel">Floor plan</div>
+          <div class="mobileMediaThumb"><span class="mobileMediaIconBubble"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg></span></div>
+          <div class="mobileMediaTileLabel">Planta</div>
         </button>
-
         <button class="mobileMediaTile" type="button" id="mobileOpen360">
-          <div class="mobileMediaThumb">
-            <span class="mobileMediaIconBubble">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12a10 10 0 0 0 20 0"/><path d="M2 12a10 10 0 0 1 20 0"/><path d="M8 12h8"/></svg>
-            </span>
-          </div>
-          <div class="mobileMediaTileLabel">360° photo</div>
+          <div class="mobileMediaThumb"><span class="mobileMediaIconBubble"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12a10 10 0 0 0 20 0"/><path d="M2 12a10 10 0 0 1 20 0"/><path d="M8 12h8"/></svg></span></div>
+          <div class="mobileMediaTileLabel">360</div>
         </button>
-
         <button class="mobileMediaTile" type="button" id="mobileOpenVideo">
-          <div class="mobileMediaThumb">
-            <span class="mobileMediaIconBubble">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 8.5l6-3v13l-6-3"/><path d="M3 6h11v12H3z"/></svg>
-            </span>
-          </div>
-          <div class="mobileMediaTileLabel">Video</div>
-        </button>
-
-        <button class="mobileMediaTile" type="button" id="mobileOpenTour3d">
-          <div class="mobileMediaThumb">
-            <span class="mobileMediaIconBubble">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 7l9 5 9-5-9-5Z"/><path d="M3 17l9 5 9-5"/><path d="M3 12l9 5 9-5"/></svg>
-            </span>
-          </div>
-          <div class="mobileMediaTileLabel">3D tour</div>
+          <div class="mobileMediaThumb"><span class="mobileMediaIconBubble"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 8.5l6-3v13l-6-3"/><path d="M3 6h11v12H3z"/></svg></span></div>
+          <div class="mobileMediaTileLabel">Vídeo</div>
         </button>
       </div>
 
@@ -971,31 +1039,12 @@
 
       <div class="contentGrid">
         <div>
-          <div class="mobileTitleRow">
-            <div style="flex:1 1 auto; min-width:0;">
-              <h1 class="title" id="title">Dirección</h1>
-              <p class="subTitle" id="subTitle">—</p>
+          <h1 class="title" id="title">Dirección</h1>
+          <p class="subTitle" id="subTitle">—</p>
 
-              <div class="priceRow">
-                <div>
-                  <p class="price" id="price">—</p>
-                  <button class="priceNoteBtn" type="button" id="monthlyLink">¿Cuánto pagaré al mes?</button>
-                </div>
-
-                <button class="mobileMapButton" id="mobileMapOpenBtn" type="button">
-                  <span class="mobileMapButtonIcon">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" aria-hidden="true">
-                      <path d="M3 6.5 9 3l6 3.5L21 3v14l-6 3.5L9 17l-6 3.5v-14Z"/>
-                      <path d="M9 3v14"/>
-                      <path d="M15 6.5v14"/>
-                      <path d="M12 12.5s3-1.8 3-4.3a3 3 0 0 0-6 0c0 2.5 3 4.3 3 4.3Z"/>
-                      <circle cx="12" cy="8.2" r="0.8"/>
-                    </svg>
-                  </span>
-                  <span class="mobileMapButtonText">Mapa</span>
-                </button>
-              </div>
-            </div>
+          <div class="priceRow">
+            <p class="price" id="price">—</p>
+            <button class="priceNoteBtn" type="button" id="monthlyLink">¿Cuánto pagaré al mes?</button>
           </div>
 
           <div class="factsRow" id="factsRow"></div>
@@ -1018,14 +1067,6 @@
             <div class="featuresGrid" id="featuresGrid"></div>
           </div>
 
-          <div class="section" id="ubicacion">
-            <h2 class="h2 small">Ubicación</h2>
-            <div id="mainMap"></div>
-
-            <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
-              Calcular tiempo de viaje con Google Maps
-            </a>
-          </div>
         </div>
 
         <div>
@@ -1038,56 +1079,142 @@
               <div id="miniMap"></div>
             </div>
 
-            <div class="sideCard">
-              <div class="sideCardInner">
-                <p class="sideTitle">Contacto</p>
+            <div class="sideCard agencyCard">
+              <div class="agencyTop">
+                <div class="agencyLogoWrap">
+                  <div class="agencyLogoFrame" id="agencyLogoFrame">
+                    <img id="agencyLogoImg" alt="Logo de la agencia" style="display:none;" />
+                    <div class="agencyLogoFallback" id="agencyLogoFallback">AG</div>
+                  </div>
+                </div>
+              </div>
+              <div class="agencyBody">
+                <p class="agencyName" id="agency">—</p>
+
                 <div class="contactBtns">
-                  <button class="cta ctaPrimary" id="callBtn" type="button" disabled>Ver teléfono</button>
-                  <button class="cta" id="emailBtn" type="button" disabled>Contacto inmobiliaria</button>
-                </div>
-                <div style="height:10px;"></div>
-                <div class="kv">
-                  <div class="kvLine">
-                    <div class="k">Agencia</div>
-                    <div class="v" id="agency">—</div>
-                  </div>
-                  <div class="kvLine">
-                    <div class="k">Publicado</div>
-                    <div class="v" id="listedAt">—</div>
-                  </div>
-                  <div class="kvLine">
-                    <div class="k">Tipo</div>
-                    <div class="v" id="ptype">—</div>
-                  </div>
-                  <div class="kvLine">
-                    <div class="k">ID</div>
-                    <div class="v mono" id="id">—</div>
-                  </div>
-                </div>
-                <div style="height:10px;"></div>
-                <div class="p mutedP" style="font-size:13px;" id="contactMvpNote">
-                  MVP: botones de contacto se activarán cuando tengamos teléfono/email en la base de datos.
+                  <button class="cta ctaGhost" id="callBtn" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8.03 9.97a16 16 0 0 0 6 6l1.52-1.26a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
+                      </svg>
+                    </span>
+                    <span>Ver teléfono</span>
+                  </button>
+
+                  <button class="cta ctaGhost" id="emailBtn" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M4 4h16v16H4z"/>
+                        <path d="m4 7 8 6 8-6"/>
+                      </svg>
+                    </span>
+                    <span>Ver correo</span>
+                  </button>
+
+                  <button class="cta ctaPrimary" id="contactBtn" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M4 4h16v16H4z"/>
+                        <path d="m4 7 8 6 8-6"/>
+                      </svg>
+                    </span>
+                    <span>Ponerse en contacto</span>
+                  </button>
+
+                  <button class="cta ctaSecondary" id="visitBtn" type="button" disabled>
+                    <span class="ctaIcon">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M8 2v4"/>
+                        <path d="M16 2v4"/>
+                        <path d="M3 10h18"/>
+                        <path d="M5 4h14v16H5z"/>
+                      </svg>
+                    </span>
+                    <span>Solicitar una visita</span>
+                  </button>
                 </div>
               </div>
             </div>
 
           </div>
         </div>
+
+        <div class="section" id="ubicacion">
+          <h2 class="h2 small">Ubicación</h2>
+          <div id="mainMap"></div>
+
+          <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
+            Calcular tiempo de viaje con Google Maps
+          </a>
+        </div>
+
       </div>
 
     </div>
 
 
-    <div class="mobileMapOverlay" id="mobileMapOverlay" hidden>
-      <div class="mobileMapTopbar">
-        <div class="mobileMapTopbarTitle">Mapa</div>
-        <button class="mobileMapClose" id="mobileMapCloseBtn" type="button" aria-label="Cerrar mapa">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-        </button>
+    <div class="mobileGalleryOverlay" id="mobileGalleryOverlay" hidden>
+      <div class="mobileGalleryTopbar">
+        <div class="mobileGalleryTopbarLeft">
+          <button class="mobileGalleryIconBtn" type="button" id="mobileGalleryShare" aria-label="Compartir">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/></svg>
+          </button>
+          <button class="mobileGalleryIconBtn" type="button" id="mobileGallerySave" aria-label="Guardar">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          </button>
+        </div>
+        <div class="mobileGalleryTopbarRight">
+          <button class="mobileGalleryCloseBtn" type="button" id="mobileGalleryClose" aria-label="Cerrar">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
       </div>
-      <div id="mobileOnlyMap"></div>
+      <div class="mobileGalleryBody">
+        <section class="mobileGallerySection isActive" id="mobileSectionPhotos" data-media-section="photos">
+          <div class="mobileGalleryGrid">
+            <div class="mobileGalleryHalf" id="mobilePhoto1"><span class="mobileGalleryItemText">Foto 1</span></div>
+            <div class="mobileGalleryHalf" id="mobilePhoto2"><span class="mobileGalleryItemText">Foto 2</span></div>
+            <div class="mobileGalleryHero" id="mobilePhoto3"><span class="mobileGalleryItemText">Foto 3</span></div>
+            <div class="mobileGalleryHalf" id="mobilePhoto4"><span class="mobileGalleryItemText">Foto 4</span></div>
+            <div class="mobileGalleryHalf" id="mobilePhoto5"><span class="mobileGalleryItemText">Foto 5</span></div>
+            <div class="mobileGalleryPanorama" id="mobilePhoto6"><span class="mobileGalleryItemText">Foto 6</span></div>
+          </div>
+        </section>
+        <section class="mobileGallerySection" id="mobileSectionFloor" data-media-section="floor">
+          <div class="mobileGalleryGrid">
+            <div class="mobileGalleryHero" id="mobileFloor1"><span class="mobileGalleryItemText">Plano 1</span></div>
+            <div class="mobileGalleryHero" id="mobileFloor2"><span class="mobileGalleryItemText">Plano 2</span></div>
+          </div>
+        </section>
+        <section class="mobileGallerySection" id="mobileSectionVideo" data-media-section="video">
+          <div class="mobileGalleryGrid">
+            <div class="mobileGalleryHero" id="mobileVideo1"><span class="mobileGalleryItemText">Vídeo principal</span></div>
+            <div class="mobileGalleryHero" id="mobileVideo2"><span class="mobileGalleryItemText">Vídeo 2</span></div>
+          </div>
+        </section>
+        <section class="mobileGallerySection" id="mobileSection360" data-media-section="pano">
+          <div class="mobileViewer360">
+            <div class="mobileViewer360Stage" id="mobilePanoStage">
+              <button class="mobileViewer360Arrow left" type="button" aria-label="Anterior">‹</button>
+              <div class="mobileGalleryHero" style="width:100%; height:100%; border-radius:0; border:0; background:linear-gradient(135deg,#edf2f7,#ffffff);"><span class="mobileGalleryItemText">Vista 360</span></div>
+              <div class="mobileViewer360Hint">Desliza para explorar la vista 360</div>
+              <button class="mobileViewer360Arrow right" type="button" aria-label="Siguiente">›</button>
+            </div>
+            <div class="mobileViewer360Thumbs">
+              <button class="mobileViewer360Thumb isActive" type="button"><div class="mobileViewer360ThumbImage">360 1</div><div class="mobileViewer360ThumbLabel">Estancia 1</div></button>
+              <button class="mobileViewer360Thumb" type="button"><div class="mobileViewer360ThumbImage">360 2</div><div class="mobileViewer360ThumbLabel">Estancia 2</div></button>
+              <button class="mobileViewer360Thumb" type="button"><div class="mobileViewer360ThumbImage">360 3</div><div class="mobileViewer360ThumbLabel">Estancia 3</div></button>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="mobileGalleryBottomNav">
+        <button class="mobileGalleryNavBtn isActive" type="button" data-target-section="photos">Fotos</button>
+        <button class="mobileGalleryNavBtn" type="button" data-target-section="floor">Planta</button>
+        <button class="mobileGalleryNavBtn" type="button" data-target-section="video">Vídeo</button>
+        <button class="mobileGalleryNavBtn" type="button" data-target-section="pano">360</button>
+      </div>
     </div>
-
 
     <div id="bhFooter"></div>
 
@@ -1116,10 +1243,8 @@
       const subTitleEl = document.getElementById("subTitle");
       const priceEl = document.getElementById("price");
       const agencyEl = document.getElementById("agency");
-      const listedAtEl = document.getElementById("listedAt");
-      const idEl = document.getElementById("id");
-      const ptypeEl = document.getElementById("ptype");
-
+      const agencyLogoImgEl = document.getElementById("agencyLogoImg");
+      const agencyLogoFallbackEl = document.getElementById("agencyLogoFallback");
       const crumbsCityEl = document.getElementById("crumbCity");
       const crumbsNeighborhoodEl = document.getElementById("crumbNeighborhood");
       const crumbsAddressEl = document.getElementById("crumbAddress");
@@ -1136,6 +1261,13 @@
       const tab360 = document.getElementById("tab360");
       const tabVideo = document.getElementById("tabVideo");
       const tabAllMedia = document.getElementById("tabAllMedia");
+      const mobileOpenFloorBtn = document.getElementById("mobileOpenFloor");
+      const mobileOpen360Btn = document.getElementById("mobileOpen360");
+      const mobileOpenVideoBtn = document.getElementById("mobileOpenVideo");
+      const mobileGalleryOverlayEl = document.getElementById("mobileGalleryOverlay");
+      const mobileGalleryCloseEl = document.getElementById("mobileGalleryClose");
+      const mobileGalleryShareEl = document.getElementById("mobileGalleryShare");
+      const mobileGallerySaveEl = document.getElementById("mobileGallerySave");
 
       const photosCountEl = document.getElementById("photosCount");
       const floorCountEl = document.getElementById("floorCount");
@@ -1151,8 +1283,8 @@
 
       const callBtn = document.getElementById("callBtn");
       const emailBtn = document.getElementById("emailBtn");
-      const contactMvpNoteEl = document.getElementById("contactMvpNote");
-
+      const contactBtn = document.getElementById("contactBtn");
+      const visitBtn = document.getElementById("visitBtn");
       const gmapsBtnEl = document.getElementById("gmapsBtn");
 
       const backBtnEl = document.getElementById("backBtn");
@@ -1164,12 +1296,6 @@
       const stickySaveTextEl = document.getElementById("stickySaveText");
       const stickyPhoneBtnEl = document.getElementById("stickyPhoneBtn");
       const stickyContactBtnEl = document.getElementById("stickyContactBtn");
-      const stickyBarMobileEl = document.getElementById("stickyBarMobile");
-      const stickyAddrMobileEl = document.getElementById("stickyAddrMobile");
-      const stickyPriceMobileEl = document.getElementById("stickyPriceMobile");
-      const stickySaveBtnMobileEl = document.getElementById("stickySaveBtnMobile");
-      const stickyPhoneBtnMobileEl = document.getElementById("stickyPhoneBtnMobile");
-      const stickyContactBtnMobileEl = document.getElementById("stickyContactBtnMobile");
       const stickySentinelEl = document.getElementById("stickySentinel");
 
       let miniMap = null;
@@ -1177,8 +1303,6 @@
 
       let mainMap = null;
       let mainMarker = null;
-      let mobileOnlyMap = null;
-      let mobileOnlyMarker = null;
 
       function showBanner(msg) {
         bannerEl.style.display = "block";
@@ -1226,6 +1350,32 @@
         factsRowEl.appendChild(wrap);
       }
 
+      function getAgencyInitials(name){
+        const text = String(name || "").trim();
+        if (!text) return "AG";
+        const parts = text.split(/\s+/).filter(Boolean).slice(0, 2);
+        return parts.map(p => p[0]).join("").toUpperCase() || "AG";
+      }
+
+      function setAgencyLogo(name, logoUrl){
+        const hasLogo = !!(logoUrl && String(logoUrl).trim());
+        agencyLogoFallbackEl.textContent = getAgencyInitials(name);
+
+        if (hasLogo){
+          agencyLogoImgEl.src = String(logoUrl);
+          agencyLogoImgEl.style.display = "block";
+          agencyLogoFallbackEl.style.display = "none";
+          agencyLogoImgEl.onerror = () => {
+            agencyLogoImgEl.style.display = "none";
+            agencyLogoFallbackEl.style.display = "flex";
+          };
+        } else {
+          agencyLogoImgEl.removeAttribute("src");
+          agencyLogoImgEl.style.display = "none";
+          agencyLogoFallbackEl.style.display = "flex";
+        }
+      }
+
       const ICON_AREA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
       const ICON_YEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M5 7h14v14H5z"/></svg>';
       const ICON_TYPE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>';
@@ -1240,9 +1390,24 @@
             "price_eur",
             "listed_at",
             "agency_name",
+            "agency_email",
+            "agency_phone",
             "property_type",
             "useful_area_m2",
+            "built_area_m2",
             "built_year",
+            "bedrooms",
+            "bathrooms",
+            "outdoor_space_type",
+            "outdoor_orientation",
+            "parking_type",
+            "storage_type",
+            "accessibility_features",
+            "energy_label",
+            "energy_label_status",
+            "energy_label_pending_until",
+            "availability",
+            "floor",
             "city",
             "neighborhood",
             "address_display",
@@ -1374,35 +1539,145 @@
         const dash = "—";
         const vOrDash = (x) => (x == null || x === "") ? dash : String(x);
 
-        const price = row.price_eur != null ? Number(row.price_eur) : null;
-        const area = row.useful_area_m2 != null ? Number(row.useful_area_m2) : null;
+        const parseNum = (x) => {
+          const n = Number(x);
+          return Number.isFinite(n) ? n : null;
+        };
 
-        const pricePerM2 =
-          (price != null && area != null && isFinite(price) && isFinite(area) && area > 0)
-            ? Math.round(price / area)
+        const yesNo = (x) => {
+          if (x === true) return "Sí";
+          if (x === false) return "No";
+          return dash;
+        };
+
+        const formatM2 = (x) => {
+          const n = parseNum(x);
+          return n == null ? dash : String(n) + " m²";
+        };
+
+        const formatMoney = (x) => {
+          const n = parseNum(x);
+          return n == null ? dash : euro(n);
+        };
+
+        const normalizeArray = (value) => {
+          if (Array.isArray(value)) return value.filter(Boolean).map(String);
+          if (typeof value === "string" && value.trim()) {
+            const cleaned = value.trim();
+            if (cleaned.startsWith("{") && cleaned.endsWith("}")) {
+              return cleaned
+                .slice(1, -1)
+                .split(",")
+                .map((v) => v.trim().replace(/^"(.*)"$/, "$1"))
+                .filter(Boolean);
+            }
+            return [cleaned];
+          }
+          return [];
+        };
+
+        const hasToken = (arr, tokens) => {
+          const normalized = arr.map((v) => String(v).toLowerCase());
+          return tokens.some((token) => normalized.some((v) => v.includes(token)));
+        };
+
+        const titleCaseList = (arr) => {
+          if (!arr.length) return dash;
+          return arr.map((item) => {
+            const s = String(item).replace(/[_-]+/g, " ").trim();
+            return s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+          }).filter(Boolean).join(", ");
+        };
+
+        const price = parseNum(row.price_eur);
+        const usefulArea = parseNum(row.useful_area_m2);
+        const builtArea = parseNum(row.built_area_m2);
+        const bedrooms = parseNum(row.bedrooms);
+        const bathrooms = parseNum(row.bathrooms);
+
+        const pricePerUsefulM2 =
+          (price != null && usefulArea != null && usefulArea > 0)
+            ? Math.round(price / usefulArea)
             : null;
 
-        const offeredSince = row.listed_at ? fmtDate(row.listed_at) : dash;
-        const askingPrice = (price != null) ? euro(price) : dash;
+        const pricePerBuiltM2 =
+          (price != null && builtArea != null && builtArea > 0)
+            ? Math.round(price / builtArea)
+            : null;
 
-        const b1 = makeFeatBlock("Transacción", [
-          ["En venta desde", offeredSince],
-          ["Aceptación", dash],
-          ["Precio de venta", askingPrice],
-          ["Precio por m²", pricePerM2 != null ? euro(pricePerM2) : dash],
-          ["Estado", dash],
-          ["Cuota de comunidad", dash]
-        ]);
+        const listedSince = row.listed_at ? fmtDate(row.listed_at) : dash;
+        const availability = row.availability === "available"
+          ? "Disponible"
+          : vOrDash(row.availability);
 
-        const b2 = makeFeatBlock("Construcción", [
-          ["Tipo de vivienda", vOrDash(row.property_type)],
-          ["Tipo de construcción", dash],
-          ["Año de construcción", row.built_year != null ? String(row.built_year) : dash],
-          ["Tipo de cubierta", dash]
-        ]);
+        const outdoorOrientation = titleCaseList(normalizeArray(row.outdoor_orientation));
+        const accessibility = normalizeArray(row.accessibility_features);
 
-        featuresGridEl.appendChild(b1);
-        featuresGridEl.appendChild(b2);
+        const hasBalcony = row.outdoor_space_type ? /balc/i.test(String(row.outdoor_space_type)) : null;
+        const hasTerrace = row.outdoor_space_type ? /terra/i.test(String(row.outdoor_space_type)) : null;
+        const hasGarden = row.outdoor_space_type ? /jard[ií]n|garden/i.test(String(row.outdoor_space_type)) : null;
+        const hasPatio = row.outdoor_space_type ? /patio/i.test(String(row.outdoor_space_type)) : null;
+
+        const hasElevator = hasToken(accessibility, ["ascensor", "elevator"]);
+        const hasReducedMobility = hasToken(accessibility, ["movilidad reducida", "wheelchair", "adapt", "accessible", "accesib"]);
+
+        const blocks = [
+          makeFeatBlock("Descripción", [
+            ["Precio de venta", formatMoney(price)],
+            ["Impuestos compra", dash],
+            ["Precio por m² útiles interiores", pricePerUsefulM2 != null ? euro(pricePerUsefulM2) : dash],
+            ["Precio por m² construidos totales", pricePerBuiltM2 != null ? euro(pricePerBuiltM2) : dash],
+            ["Disponible desde", listedSince]
+          ]),
+          makeFeatBlock("Estado", [
+            ["Disponible", availability],
+            ["Cuota de la asociación de propietarios", dash]
+          ]),
+          makeFeatBlock("Construcción", [
+            ["Tipo de apartamento", vOrDash(row.property_type)],
+            ["Tipo de construcción", dash],
+            ["Año de construcción", row.built_year != null ? String(row.built_year) : dash],
+            ["Tipo de cubierta", dash]
+          ]),
+          makeFeatBlock("Superficies", [
+            ["Superficie útil interior", formatM2(usefulArea)],
+            ["Superficie construida interior", dash],
+            ["Superficie construida total", formatM2(builtArea)],
+            ["Altura techo", dash]
+          ]),
+          makeFeatBlock("Distribución", [
+            ["Número de dormitorios", bedrooms != null ? String(bedrooms) : dash],
+            ["Número de habitaciones", dash],
+            ["Número de baños", bathrooms != null ? String(bathrooms) : dash],
+            ["Equipamiento del baño", dash],
+            ["Ubicación en el edificio", vOrDash(row.floor)],
+            ["Número de plantas", dash]
+          ]),
+          makeFeatBlock("Espacio exterior", [
+            ["Información de la ubicación", outdoorOrientation],
+            ["Balcón", hasBalcony == null ? dash : yesNo(hasBalcony)],
+            ["Terraza", hasTerrace == null ? dash : yesNo(hasTerrace)],
+            ["Jardín", hasGarden == null ? dash : yesNo(hasGarden)],
+            ["Patio", hasPatio == null ? dash : yesNo(hasPatio)]
+          ]),
+          makeFeatBlock("Energía", [
+            ["Etiqueta energética", vOrDash(row.energy_label)],
+            ["Aislamiento", dash],
+            ["Calefacción", dash],
+            ["Agua caliente", dash],
+            ["Información caldera", dash]
+          ]),
+          makeFeatBlock("Aparcamiento", [
+            ["Aparcamiento", vOrDash(row.parking_type)],
+            ["Cuota de mantenimiento mensual", dash]
+          ]),
+          makeFeatBlock("Accesibilidad", [
+            ["Ascensor", accessibility.length ? yesNo(hasElevator) : dash],
+            ["Adaptado a movilidad reducida", accessibility.length ? yesNo(hasReducedMobility) : dash]
+          ])
+        ];
+
+        blocks.forEach((block) => featuresGridEl.appendChild(block));
       }
 
       function renderDescription(row) {
@@ -1431,59 +1706,90 @@
       }
 
 
-      function openMobileMapOverlay(){
-        if (!window.matchMedia("(max-width: 980px)").matches || !mobileMapOverlayEl) return;
-        mobileMapOverlayEl.hidden = false;
-        document.body.style.overflow = "hidden";
-        setTimeout(() => {
-          if (mobileOnlyMap) mobileOnlyMap.invalidateSize();
-        }, 50);
+      function isMobileViewport(){
+        return window.matchMedia("(max-width: 980px)").matches;
       }
 
-      function closeMobileMapOverlay(){
-        if (!mobileMapOverlayEl) return;
-        mobileMapOverlayEl.hidden = true;
+      function openMobileGallery(section){
+        if (!isMobileViewport() || !mobileGalleryOverlayEl) return;
+        mobileGalleryOverlayEl.hidden = false;
+        document.body.style.overflow = "hidden";
+        setMobileGallerySection(section || "photos");
+      }
+
+      function closeMobileGallery(){
+        if (!mobileGalleryOverlayEl) return;
+        mobileGalleryOverlayEl.hidden = true;
         document.body.style.overflow = "";
       }
 
-      function ensureMobileOnlyMap(lat, lng){
-        const hasCoords = (typeof lat === "number" && typeof lng === "number" && isFinite(lat) && isFinite(lng));
-        if (!hasCoords) return;
-
-        if (!mobileOnlyMap){
-          mobileOnlyMap = L.map("mobileOnlyMap", {
-            zoomControl: true,
-            attributionControl: false,
-            scrollWheelZoom: false
-          }).setView([lat, lng], 16);
-          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(mobileOnlyMap);
-        } else {
-          mobileOnlyMap.setView([lat, lng], 16);
-        }
-
-        if (mobileOnlyMarker) mobileOnlyMarker.setLatLng([lat, lng]);
-        else mobileOnlyMarker = L.marker([lat, lng]).addTo(mobileOnlyMap);
+      function setMobileGallerySection(section){
+        const target = section || "photos";
+        document.querySelectorAll(".mobileGallerySection").forEach((node) => {
+          node.classList.toggle("isActive", node.dataset.mediaSection === target);
+        });
+        document.querySelectorAll(".mobileGalleryNavBtn").forEach((btn) => {
+          btn.classList.toggle("isActive", btn.dataset.targetSection === target);
+        });
       }
 
-      function wireMobileTopControls(){
-        if (mobileMapOpenBtn) mobileMapOpenBtn.onclick = openMobileMapOverlay;
-        if (mobileMapCloseBtnEl) mobileMapCloseBtnEl.onclick = closeMobileMapOverlay;
+      function wireMobileGallery(){
+        const mediaBigEl = document.getElementById("mediaBig");
+        if (mediaBigEl){
+          mediaBigEl.onclick = (ev) => {
+            if (!isMobileViewport()) return;
+            ev.preventDefault();
+            ev.stopPropagation();
+            openMobileGallery("photos");
+          };
+          mediaBigEl.style.touchAction = "manipulation";
+        }
+        if (mobileOpenFloorBtn) mobileOpenFloorBtn.onclick = () => openMobileGallery("floor");
+        if (mobileOpenVideoBtn) mobileOpenVideoBtn.onclick = () => openMobileGallery("video");
+        if (mobileOpen360Btn) mobileOpen360Btn.onclick = () => openMobileGallery("pano");
+        if (mobileGalleryCloseEl) mobileGalleryCloseEl.onclick = closeMobileGallery;
+        if (mobileGalleryShareEl) mobileGalleryShareEl.onclick = () => shareBtn.click();
+        if (mobileGallerySaveEl) mobileGallerySaveEl.onclick = () => saveBtn.click();
 
-        const noop = () => alert("MVP: este contenido multimedia se conectará cuando tengamos los ficheros reales.");
-        if (mobileOpenFloorBtn) mobileOpenFloorBtn.onclick = noop;
-        if (mobileOpen360Btn) mobileOpen360Btn.onclick = noop;
-        if (mobileOpenVideoBtn) mobileOpenVideoBtn.onclick = noop;
-        if (mobileOpenTour3dBtn) mobileOpenTour3dBtn.onclick = noop;
+        document.querySelectorAll(".mobileGalleryNavBtn").forEach((btn) => {
+          btn.onclick = () => setMobileGallerySection(btn.dataset.targetSection || "photos");
+        });
+      }
+
+      function setMockMediaVisuals(){
+        const apply = (id, label) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.innerHTML = '<span class="mobileGalleryItemText">' + label + '</span>';
+        };
+        ["mobilePhoto1","mobilePhoto2","mobilePhoto3","mobilePhoto4","mobilePhoto5","mobilePhoto6"].forEach((id, idx) => apply(id, "Foto " + (idx + 1)));
+        ["mobileFloor1","mobileFloor2"].forEach((id, idx) => apply(id, "Plano " + (idx + 1)));
+        ["mobileVideo1","mobileVideo2"].forEach((id, idx) => apply(id, idx === 0 ? "Vídeo principal" : "Vídeo " + (idx + 1)));
       }
 
 
       function wireMediaButtons() {
         const msg = "MVP: este botón abrirá la galería/visor cuando haya fotos/plano/vídeo.";
-        tabPhotos.addEventListener("click", () => alert(msg));
-        tabFloor.addEventListener("click", () => alert(msg));
-        tab360.addEventListener("click", () => alert(msg));
-        tabVideo.addEventListener("click", () => alert(msg));
-        tabAllMedia.addEventListener("click", () => alert(msg));
+        tabPhotos.addEventListener("click", () => {
+          if (isMobileViewport()) return openMobileGallery("photos");
+          alert(msg);
+        });
+        tabFloor.addEventListener("click", () => {
+          if (isMobileViewport()) return openMobileGallery("floor");
+          alert(msg);
+        });
+        tab360.addEventListener("click", () => {
+          if (isMobileViewport()) return openMobileGallery("pano");
+          alert(msg);
+        });
+        tabVideo.addEventListener("click", () => {
+          if (isMobileViewport()) return openMobileGallery("video");
+          alert(msg);
+        });
+        tabAllMedia.addEventListener("click", () => {
+          if (isMobileViewport()) return openMobileGallery("photos");
+          alert(msg);
+        });
       }
 
       function wireReadMore() {
@@ -1539,28 +1845,32 @@
 
         callBtn.disabled = !hasPhone;
         emailBtn.disabled = !hasEmail;
+        contactBtn.disabled = !hasEmail;
+        visitBtn.disabled = !hasEmail;
 
         stickyPhoneBtnEl.disabled = !hasPhone;
         stickyContactBtnEl.disabled = !hasEmail;
-
-        if (hasPhone || hasEmail){
-          contactMvpNoteEl.style.display = "none";
-        } else {
-          contactMvpNoteEl.style.display = "block";
-        }
-
         callBtn.onclick = () => {
           if (!hasPhone) return;
-          alert("Teléfono: " + String(phone));
+          window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
         };
         stickyPhoneBtnEl.onclick = () => {
           if (!hasPhone) return;
-          alert("Teléfono: " + String(phone));
+          window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
         };
 
         emailBtn.onclick = () => {
           if (!hasEmail) return;
           window.location.href = "mailto:" + String(email);
+        };
+        contactBtn.onclick = () => {
+          if (!hasEmail) return;
+          window.location.href = "mailto:" + String(email);
+        };
+        visitBtn.onclick = () => {
+          if (!hasEmail) return;
+          const subject = encodeURIComponent("Solicitud de visita");
+          window.location.href = "mailto:" + String(email) + "?subject=" + subject;
         };
         stickyContactBtnEl.onclick = () => {
           if (!hasEmail) return;
@@ -1580,7 +1890,8 @@
       (async () => {
         wireBackLinks();
         wireMediaButtons();
-        wireMobileTopControls();
+        wireMobileGallery();
+        setMockMediaVisuals();
         wireReadMore();
         wireSticky();
 
@@ -1604,11 +1915,6 @@
         stickySaveBtnEl.addEventListener("click", () => {
           saveBtn.click();
         });
-        if (stickySaveBtnMobileEl) {
-          stickySaveBtnMobileEl.addEventListener("click", () => {
-            saveBtn.click();
-          });
-        }
 
         try {
           const row = await fetchDetail(listingId);
@@ -1617,7 +1923,6 @@
             showBanner("No hay fila en listing_detail_public para este id: " + listingId);
             titleEl.textContent = "Ficha no encontrada";
             stickyAddrEl.textContent = "Ficha no encontrada";
-            idEl.textContent = listingId;
             return;
           }
 
@@ -1627,7 +1932,6 @@
 
           titleEl.textContent = row.address_display || "Dirección";
           stickyAddrEl.textContent = row.address_display || "Dirección";
-          if (stickyAddrMobileEl) stickyAddrMobileEl.textContent = row.address_display || "Dirección";
 
           subTitleEl.textContent =
             (row.postcode ? (row.postcode + " ") : "") +
@@ -1636,13 +1940,9 @@
 
           priceEl.textContent = row.price_eur != null ? euro(row.price_eur) : "—";
           stickyPriceEl.textContent = row.price_eur != null ? euro(row.price_eur) : "—";
-          if (stickyPriceMobileEl) stickyPriceMobileEl.textContent = row.price_eur != null ? euro(row.price_eur) : "—";
 
           agencyEl.textContent = row.agency_name || "—";
-          listedAtEl.textContent = fmtDate(row.listed_at);
-          ptypeEl.textContent = row.property_type || "—";
-          idEl.textContent = row.listing_id || listingId;
-
+          setAgencyLogo(row.agency_name, null);
           factsRowEl.innerHTML = "";
           if (row.useful_area_m2 != null) addFact(ICON_AREA, String(row.useful_area_m2) + " m² útiles");
           if (row.property_type) addFact(ICON_TYPE, row.property_type, true);
@@ -1663,19 +1963,15 @@
 
           ensureMiniMap(lat, lng);
           ensureMainMap(lat, lng);
-          ensureMobileOnlyMap(lat, lng);
           updateGoogleMapsLink(lat, lng);
 
-          const phone = row.phone;
-          const email = row.email;
-          setContactButtons(phone, email);
+          setContactButtons(row.agency_phone || null, row.agency_email || null);
 
         } catch (e) {
           console.error(e);
           showBanner(String(e && e.message ? e.message : e));
           titleEl.textContent = "Error cargando ficha";
           stickyAddrEl.textContent = "Error cargando ficha";
-          if (stickyAddrMobileEl) stickyAddrMobileEl.textContent = "Error cargando ficha";
         }
       })();
     </script>
