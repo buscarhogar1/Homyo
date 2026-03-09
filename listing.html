@@ -898,7 +898,32 @@
       @media (max-width: 560px){
         .mediaSmallGrid{grid-template-columns:1fr;}
       }
-    </style>
+    
+/* ===== MOBILE: imagen pegada al header ===== */
+@media (max-width: 768px) {
+
+  .wrap {
+    padding-top: 0 !important;
+  }
+
+  .topRow {
+    display: none !important;
+  }
+
+  .crumbs {
+    display: none !important;
+  }
+
+  .hero,
+  .hero img,
+  .gallery-main,
+  .gallery-main img {
+    margin-top: 0 !important;
+  }
+
+}
+
+</style>
   </head>
 
   <body>
