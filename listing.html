@@ -2059,17 +2059,27 @@
       }
 
 
-      function wireMobileBottomCta(){
-        if (!mobileBottomCtaEl || !stickySentinelEl) return;
+            function wireMobileBottomCta(){
+        if (!mobileBottomCtaEl) return;
 
-        const obs = new IntersectionObserver((entries) => {
-          const e = entries[0];
-          const show = window.matchMedia("(max-width: 768px)").matches && (!e.isIntersecting && e.boundingClientRect.top < 0);
+        const mediaOuterEl = document.querySelector(".mediaOuter");
+
+        const updateMobileBottomCta = () => {
+          if (!window.matchMedia("(max-width: 768px)").matches || !mediaOuterEl){
+            mobileBottomCtaEl.classList.remove("isVisible");
+            return;
+          }
+
+          const rect = mediaOuterEl.getBoundingClientRect();
+          const show = rect.bottom <= 0;
           mobileBottomCtaEl.classList.toggle("isVisible", show);
-        }, { root: null, threshold: 0 });
+        };
 
-        obs.observe(stickySentinelEl);
+        window.addEventListener("scroll", updateMobileBottomCta, { passive: true });
+        window.addEventListener("resize", updateMobileBottomCta);
+        updateMobileBottomCta();
       }
+
 
       function wireSticky(){
         if (!stickySentinelEl) return;
