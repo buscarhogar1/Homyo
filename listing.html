@@ -1116,6 +1116,29 @@
   }
 }
 
+
+/* === MOBILE SPACING + MONTHLY LINK POSITION === */
+@media (max-width:768px){
+  .mobileMediaEntry{
+    margin-top:0 !important;
+    padding-top:0 !important;
+    padding-bottom:5px !important;
+  }
+
+  .contentGrid{
+    margin-top:15px !important;
+  }
+
+  .priceRow{
+    margin-bottom:0 !important;
+  }
+
+  .priceNoteBtn{
+    display:block !important;
+    margin-top:12px !important;
+  }
+}
+
 </style>
   </head>
 
@@ -2106,6 +2129,19 @@
       }
 
 
+
+      function positionMonthlyLinkMobile(){
+        if (!monthlyBtn || !factsRowEl) return;
+
+        if (window.matchMedia("(max-width: 768px)").matches){
+          if (monthlyBtn.parentElement !== factsRowEl.parentElement){
+            factsRowEl.insertAdjacentElement("afterend", monthlyBtn);
+          } else if (monthlyBtn.previousElementSibling !== factsRowEl){
+            factsRowEl.insertAdjacentElement("afterend", monthlyBtn);
+          }
+        }
+      }
+
       function wireSticky(){
         if (!stickySentinelEl) return;
 
@@ -2192,6 +2228,8 @@
         wireReadMore();
         wireSticky();
         wireMobileBottomCta();
+        positionMonthlyLinkMobile();
+        window.addEventListener("resize", positionMonthlyLinkMobile);
 
         const listingId = getParam("id");
         if (!listingId) {
