@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Buscar Hogar – Ficha</title>
 
-    <link rel="stylesheet" href="./bh-shared.css" />
+    <link rel="stylesheet" href="/buscarhogardemo/bh-shared.css" />
 
     <link
       rel="stylesheet"
@@ -1309,7 +1309,7 @@
 
           <div class="priceRow">
             <p class="price" id="price">—</p>
-
+            <button class="priceNoteBtn" type="button" id="monthlyLink">¿Cuánto pagaré al mes?</button>
           </div>
 
           <div class="factsRow" id="factsRow"></div>
@@ -1509,8 +1509,8 @@
     <div id="bhFooter"></div>
 
     <script type="module">
-      import { initLayout } from "./bh-layout.js?v=20260309b";
-      import { initAuth } from "./bh-auth.js?v=20260309b";
+      import { initLayout } from "/buscarhogardemo/bh-layout.js";
+      import { initAuth } from "/buscarhogardemo/bh-auth.js";
 
       initLayout({ showMiniSearch: false });
       initAuth();
