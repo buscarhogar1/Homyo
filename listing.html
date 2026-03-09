@@ -1163,6 +1163,33 @@
   }
 }
 
+
+/* === MOBILE EXTRA FIXES === */
+@media (max-width:768px){
+  .mediaOuter{
+    margin-bottom:10px !important;
+  }
+
+  .mobileMediaEntry{
+    padding-top:10px !important;
+    padding-bottom:10px !important;
+  }
+
+  .featV .priceMonthlyInline{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    width:100%;
+  }
+
+  .featV .priceMonthlyInline .priceNoteBtn{
+    margin:0 !important;
+    white-space:nowrap;
+    flex:0 0 auto;
+  }
+}
+
 </style>
   </head>
 
@@ -1674,6 +1701,8 @@
       const ICON_YEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M5 7h14v14H5z"/></svg>';
       const ICON_BED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18"/><path d="M5 12V9h5a2 2 0 0 1 2 2v1"/><path d="M12 12V9h5a2 2 0 0 1 2 2v1"/><path d="M4 12v5"/><path d="M20 12v5"/><path d="M3 17h18"/></svg>';
       const ICON_ENERGY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>';
+      const ICON_CAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13l2-5a2 2 0 0 1 1.9-1.3h10.2A2 2 0 0 1 19 8l2 5"/><path d="M5 13h14v5H5z"/><circle cx="7.5" cy="18" r="1.5"/><circle cx="16.5" cy="18" r="1.5"/></svg>';
+      const ICON_BATH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13h16"/><path d="M6 13V7a2 2 0 0 1 4 0v1"/><path d="M4 13v2a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4v-2"/><path d="M8 19v2"/><path d="M16 19v2"/></svg>';
 
       async function fetchDetail(listingId) {
         const params = new URLSearchParams();
@@ -1952,7 +1981,7 @@ function renderFeatures(row) {
         const blocks = [
           makeFeatBlock("Descripción", [
             ["Precio de venta", formatMoney(price)],
-            ["Impuestos compra", dash],
+            [getPurchaseTaxInfo(row, price).label, getPurchaseTaxInfo(row, price).amount],
             ["Precio por m² útiles interiores", pricePerUsefulM2 != null ? euro(pricePerUsefulM2) : dash],
             ["Precio por m² construidos totales", pricePerBuiltM2 != null ? euro(pricePerBuiltM2) : dash],
             ["Disponible desde", listedSince]
@@ -2182,20 +2211,78 @@ function renderFeatures(row) {
         window.addEventListener("resize", updateMobileBottomCta);
         updateMobileBottomCta();
       }
-
-
-
-      function positionMonthlyLinkMobile(){
-        if (!monthlyBtn || !factsRowEl) return;
-
-        if (window.matchMedia("(max-width: 768px)").matches){
-          if (monthlyBtn.parentElement !== factsRowEl.parentElement){
-            factsRowEl.insertAdjacentElement("afterend", monthlyBtn);
-          } else if (monthlyBtn.previousElementSibling !== factsRowEl){
-            factsRowEl.insertAdjacentElement("afterend", monthlyBtn);
-          }
         }
       }
+
+
+      function placeMonthlyLink(){
+        if (!monthlyBtn) return;
+
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        const priceRowEl = document.querySelector(".priceRow");
+
+        if (!isMobile){
+          if (priceRowEl && monthlyBtn.parentElement !== priceRowEl){
+            priceRowEl.appendChild(monthlyBtn);
+          }
+          return;
+        }
+
+        const priceLine = Array.from(document.querySelectorAll(".featLine")).find((line) => {
+          const key = line.querySelector(".featK");
+          return key && key.textContent.trim() === "Precio de venta";
+        });
+
+        if (!priceLine) return;
+
+        const valueCell = priceLine.querySelector(".featV");
+        if (!valueCell) return;
+
+        let inlineWrap = valueCell.querySelector(".priceMonthlyInline");
+        if (!inlineWrap){
+          const currentText = valueCell.textContent.trim();
+          valueCell.textContent = "";
+
+          inlineWrap = document.createElement("div");
+          inlineWrap.className = "priceMonthlyInline";
+
+          const priceText = document.createElement("span");
+          priceText.textContent = currentText;
+
+          inlineWrap.appendChild(priceText);
+          inlineWrap.appendChild(monthlyBtn);
+          valueCell.appendChild(inlineWrap);
+        } else if (!inlineWrap.querySelector("#monthlyLink")){
+          inlineWrap.appendChild(monthlyBtn);
+        }
+      }
+
+      function getPurchaseTaxInfo(row, price){
+        const province = String(row.province || "").trim().toLowerCase();
+        const city = String(row.city || "").trim().toLowerCase();
+        const propertyType = String(row.property_type || "").trim().toLowerCase();
+
+        const isNewBuild = propertyType.includes("obra nueva") || propertyType.includes("new build") || propertyType.includes("new construction");
+        if (isNewBuild){
+          const rate = 0.10;
+          return {
+            label: "IVA (10%)",
+            amount: price != null ? euro(Math.round(price * rate)) : "—"
+          };
+        }
+
+        let itpRate = 0.08; // fallback general
+        if (province.includes("murcia") || city.includes("murcia")){
+          itpRate = 0.0775;
+        }
+
+        const pct = (itpRate * 100).toLocaleString("es-ES", { maximumFractionDigits: 2 });
+        return {
+          label: "ITP (" + pct + "%)",
+          amount: price != null ? euro(Math.round(price * itpRate)) : "—"
+        };
+      }
+
 
       function wireSticky(){
         if (!stickySentinelEl) return;
@@ -2283,8 +2370,7 @@ function renderFeatures(row) {
         wireReadMore();
         wireSticky();
         wireMobileBottomCta();
-        positionMonthlyLinkMobile();
-        window.addEventListener("resize", positionMonthlyLinkMobile);
+        window.addEventListener("resize", placeMonthlyLink);
 
         const listingId = getParam("id");
         if (!listingId) {
@@ -2366,6 +2452,12 @@ function renderFeatures(row) {
           factsRowEl.innerHTML = "";
           if (row.useful_area_m2 != null) addFact(ICON_AREA, String(row.useful_area_m2) + " m² útiles");
           addFact(ICON_BED, row.bedrooms != null ? String(row.bedrooms) : "-", true);
+
+          const hasParkingFact = !!(row.parking_type && String(row.parking_type).trim() && !/^no$/i.test(String(row.parking_type).trim()));
+          addFact(ICON_CAR, hasParkingFact ? "Sí" : "No", true);
+
+          addFact(ICON_BATH, row.bathrooms != null ? String(row.bathrooms) : "-", true);
+
           if (row.built_year != null) addFact(ICON_YEAR, String(row.built_year), true);
           const energyFact = (row.energy_label && String(row.energy_label).trim())
             ? String(row.energy_label).trim()
@@ -2380,7 +2472,7 @@ function renderFeatures(row) {
 
           renderDescription(row);
           renderFeatures(row);
-placeMonthlyLinkInPrice();
+placeMonthlyLink();
 
           const lat = (row.lat != null) ? Number(row.lat) : null;
           const lng = (row.lng != null) ? Number(row.lng) : null;
