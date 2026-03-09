@@ -899,31 +899,104 @@
         .mediaSmallGrid{grid-template-columns:1fr;}
       }
     
-/* ===== MOBILE TYPOGRAPHY (FUNDA STYLE) ===== */
-@media (max-width: 768px){
-
-  .title{
-    font-size:28px !important;
-    line-height:1.15 !important;
-    font-weight:700 !important;
+/* ===== MOBILE AJUSTES HERO ===== */
+@media (max-width: 768px) {
+  .wrap{
+    padding-top: 0 !important;
   }
 
-  .price{
-    font-size:30px !important;
-    line-height:1.1 !important;
+  .topRow,
+  .crumbs{
+    display: none !important;
   }
 
-  .subtitle,
-  .location,
-  .addressSub{
-    font-size:15px !important;
+  .mediaOuter{
+    margin-left: -16px !important;
+    margin-right: -16px !important;
+    margin-top: 0 !important;
+    margin-bottom: 15px !important;
   }
 
-  .facts,
-  .keyFacts{
-    font-size:14px !important;
+  .mediaBlock{
+    border-radius: 0 !important;
   }
 
+  .mediaSizer{
+    width: 100% !important;
+    height: 250px !important;
+    min-height: 250px !important;
+    max-height: 250px !important;
+    aspect-ratio: auto !important;
+  }
+
+  .mediaGrid{
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    height: 250px !important;
+  }
+
+  .mediaBig{
+    width: 100% !important;
+    height: 250px !important;
+    min-height: 250px !important;
+    max-height: 250px !important;
+  }
+
+  .mediaSmallGrid{
+    display: none !important;
+  }
+
+  .mediaActions{
+    top: 12px !important;
+    right: 12px !important;
+    gap: 8px !important;
+    z-index: 10 !important;
+  }
+
+  .actionBtn{
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    background: rgba(255,255,255,0.96) !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12) !important;
+  }
+
+  .actionBtn span{
+    display: none !important;
+  }
+
+  .mobileMediaEntry{
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
+
+
+/* ===== MOBILE BUTTON TWEAKS ===== */
+@media (max-width: 768px) {
+  .mediaActions .actionBtn {
+    box-shadow: none !important;
+  }
+
+  #saveBtn.isFav svg,
+  #saveBtn[aria-pressed="true"] svg {
+    fill: #dc2626 !important;
+    stroke: #dc2626 !important;
+  }
+
+  .mobileMediaThumb {
+    height: 69px !important;
+  }
+
+  .mobileMediaEntry {
+    margin-left: -16px !important;
+    margin-right: -16px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
 }
 
 </style>
@@ -1835,6 +1908,13 @@
       function setSavedUI(isSaved){
         saveTextEl.textContent = isSaved ? "Guardado" : "Guardar";
         stickySaveTextEl.textContent = isSaved ? "Guardado" : "Guardar";
+        syncMobileFavoriteVisual(isSaved);
+      }
+
+      function syncMobileFavoriteVisual(isSaved){
+        if (!saveBtn) return;
+        saveBtn.classList.toggle("isFav", !!isSaved);
+        saveBtn.setAttribute("aria-pressed", isSaved ? "true" : "false");
       }
 
       function getBackUrl(){
@@ -2003,6 +2083,24 @@
         }
       })();
     </script>
-  </body>
+  
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  if (window.innerWidth <= 768){
+    const title = document.querySelector("h1");
+    if(title){
+      const txt = title.textContent;
+      const parts = txt.split(",");
+      if(parts.length > 1){
+        title.textContent = parts[0];
+      }
+    }
+  }
+
+});
+</script>
+
+</body>
 </html>
 
