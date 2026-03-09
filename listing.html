@@ -1139,6 +1139,30 @@
   }
 }
 
+
+/* === MOBILE FACTS + SPACING TWEAKS === */
+@media (max-width:768px){
+  .mobileMediaEntry{
+    padding-top:10px !important;
+  }
+
+  .contentGrid{
+    margin-top:10px !important;
+  }
+}
+
+
+@media (max-width:768px){
+  /* space between main photo and media buttons */
+  .mediaOuter{margin-bottom:10px !important;}
+
+  /* spacing around first grey divider area */
+  .mobileMediaEntry{
+    padding-top:10px !important;
+    padding-bottom:10px !important;
+  }
+}
+
 </style>
   </head>
 
@@ -1285,7 +1309,7 @@
 
           <div class="priceRow">
             <p class="price" id="price">—</p>
-            <button class="priceNoteBtn" type="button" id="monthlyLink">¿Cuánto pagaré al mes?</button>
+
           </div>
 
           <div class="factsRow" id="factsRow"></div>
@@ -1648,8 +1672,10 @@
 
       const ICON_AREA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
       const ICON_YEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M5 7h14v14H5z"/></svg>';
-      const ICON_TYPE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>';
-      const ICON_LOC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-4.5 7-11a7 7 0 0 0-14 0c0 6.5 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></svg>';
+      const ICON_BED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18"/><path d="M5 12V9h5a2 2 0 0 1 2 2v1"/><path d="M12 12V9h5a2 2 0 0 1 2 2v1"/><path d="M4 12v5"/><path d="M20 12v5"/><path d="M3 17h18"/></svg>';
+      const ICON_ENERGY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>';
+      const ICON_CAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13l2-5a2 2 0 0 1 1.9-1.3h10.2A2 2 0 0 1 19 8l2 5"/><path d="M5 13h14v5H5z"/><circle cx="7.5" cy="18" r="1.5"/><circle cx="16.5" cy="18" r="1.5"/></svg>';
+      const ICON_BATH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13h16"/><path d="M6 13V7a2 2 0 0 1 4 0v1"/><path d="M4 13v2a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4v-2"/><path d="M8 19v2"/><path d="M16 19v2"/></svg>';
 
       async function fetchDetail(listingId) {
         const params = new URLSearchParams();
@@ -1806,7 +1832,38 @@
         return block;
       }
 
-      function renderFeatures(row) {
+      
+function placeMonthlyLinkInPrice(){
+  const btn = document.getElementById("monthlyLink");
+  if(!btn) return;
+
+  const rows = document.querySelectorAll(".featLine");
+  rows.forEach(r=>{
+    const k = r.querySelector(".featK");
+    if(k && k.textContent.trim()==="Precio de venta"){
+      const v = r.querySelector(".featV");
+      if(!v) return;
+
+      if(!v.querySelector("#monthlyLink")){
+        const wrap=document.createElement("div");
+        wrap.style.display="flex";
+        wrap.style.justifyContent="space-between";
+        wrap.style.alignItems="center";
+        wrap.style.gap="10px";
+
+        const price=document.createElement("span");
+        price.textContent=v.textContent;
+
+        v.textContent="";
+        wrap.appendChild(price);
+        wrap.appendChild(btn);
+        v.appendChild(wrap);
+      }
+    }
+  });
+}
+
+function renderFeatures(row) {
         featuresGridEl.innerHTML = "";
 
         const dash = "—";
@@ -2310,8 +2367,18 @@
           setAgencyLogo(row.agency_name, null);
           factsRowEl.innerHTML = "";
           if (row.useful_area_m2 != null) addFact(ICON_AREA, String(row.useful_area_m2) + " m² útiles");
-          if (row.property_type) addFact(ICON_TYPE, row.property_type, true);
+          addFact(ICON_BED, row.bedrooms != null ? String(row.bedrooms) : "-", true);
+
+          const hasParkingFact = !!(row.parking_type && String(row.parking_type).trim() && !/^no$/i.test(String(row.parking_type).trim()));
+          addFact(ICON_CAR, hasParkingFact ? "Sí" : "No", true);
+
+          addFact(ICON_BATH, row.bathrooms != null ? String(row.bathrooms) : "-", true);
+
           if (row.built_year != null) addFact(ICON_YEAR, String(row.built_year), true);
+          const energyFact = (row.energy_label && String(row.energy_label).trim())
+            ? String(row.energy_label).trim()
+            : (String(row.energy_label_status || "").trim().toLowerCase() === "pending" ? "-" : "-");
+          addFact(ICON_ENERGY, energyFact, true);
 
           navHintEl.textContent = "Actualizado: " + fmtDate(row.listed_at);
 
@@ -2321,6 +2388,7 @@
 
           renderDescription(row);
           renderFeatures(row);
+placeMonthlyLinkInPrice();
 
           const lat = (row.lat != null) ? Number(row.lat) : null;
           const lng = (row.lng != null) ? Number(row.lng) : null;
