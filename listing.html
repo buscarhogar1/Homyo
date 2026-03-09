@@ -1019,6 +1019,81 @@
   }
 }
 
+
+/* === MOBILE BOTTOM CTA BAR === */
+.mobileBottomCta{
+  display:none;
+}
+
+@media (max-width:768px){
+  .wrap{
+    padding-bottom: 96px !important;
+  }
+
+  .mobileBottomCta{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:1200;
+    display:flex;
+    gap:8px;
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+    background:#fff;
+    border-top:1px solid var(--border);
+    box-shadow:0 -4px 16px rgba(0,0,0,0.08);
+    transform:translateY(120%);
+    opacity:0;
+    pointer-events:none;
+    transition:transform 280ms ease, opacity 280ms ease;
+  }
+
+  .mobileBottomCta.isVisible{
+    transform:translateY(0);
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  .mobileBottomCtaBtn{
+    height:54px;
+    border-radius:10px;
+    border:1px solid #d7d9de;
+    background:#fff;
+    color:#0b69c7;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    font-size:15px;
+    cursor:pointer;
+    flex:0 0 auto;
+  }
+
+  .mobileBottomCtaBtnPrimary{
+    flex:1 1 auto;
+    min-width:0;
+    background:#f79a1f;
+    color:#fff;
+    border-color:#f79a1f;
+    font-weight:700;
+  }
+
+  .mobileBottomCtaBtnSquare{
+    width:72px;
+    min-width:72px;
+    padding:0;
+  }
+
+  .mobileBottomCtaBtn svg{
+    width:20px;
+    height:20px;
+  }
+
+  .mobileBottomCtaBtnSquare .mobileBottomCtaText{
+    display:none;
+  }
+}
+
 </style>
   </head>
 
@@ -1337,6 +1412,31 @@
       </div>
     </div>
 
+
+    <div class="mobileBottomCta" id="mobileBottomCta">
+      <button class="mobileBottomCtaBtn mobileBottomCtaBtnPrimary" id="mobileBottomContactBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 4h16v16H4z"/>
+          <path d="m4 7 8 6 8-6"/>
+        </svg>
+        <span class="mobileBottomCtaText">Contacto</span>
+      </button>
+
+      <button class="mobileBottomCtaBtn mobileBottomCtaBtnSquare" id="mobileBottomPhoneBtn" type="button" aria-label="Ver teléfono">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8.03 9.97a16 16 0 0 0 6 6l1.52-1.26a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <span class="mobileBottomCtaText">Teléfono</span>
+      </button>
+
+      <button class="mobileBottomCtaBtn mobileBottomCtaBtnSquare" id="mobileBottomFavBtn" type="button" aria-label="Guardar en favoritos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+        </svg>
+        <span class="mobileBottomCtaText">Guardar</span>
+      </button>
+    </div>
+
     <div id="bhFooter"></div>
 
     <script type="module">
@@ -1418,6 +1518,10 @@
       const stickyPhoneBtnEl = document.getElementById("stickyPhoneBtn");
       const stickyContactBtnEl = document.getElementById("stickyContactBtn");
       const stickySentinelEl = document.getElementById("stickySentinel");
+      const mobileBottomCtaEl = document.getElementById("mobileBottomCta");
+      const mobileBottomContactBtnEl = document.getElementById("mobileBottomContactBtn");
+      const mobileBottomPhoneBtnEl = document.getElementById("mobileBottomPhoneBtn");
+      const mobileBottomFavBtnEl = document.getElementById("mobileBottomFavBtn");
 
       let miniMap = null;
       let miniMarker = null;
@@ -1954,6 +2058,19 @@
         crumbsNeighborhoodEl.href = backUrl;
       }
 
+
+      function wireMobileBottomCta(){
+        if (!mobileBottomCtaEl || !stickySentinelEl) return;
+
+        const obs = new IntersectionObserver((entries) => {
+          const e = entries[0];
+          const show = window.matchMedia("(max-width: 768px)").matches && (!e.isIntersecting && e.boundingClientRect.top < 0);
+          mobileBottomCtaEl.classList.toggle("isVisible", show);
+        }, { root: null, threshold: 0 });
+
+        obs.observe(stickySentinelEl);
+      }
+
       function wireSticky(){
         if (!stickySentinelEl) return;
 
@@ -1978,6 +2095,9 @@
 
         stickyPhoneBtnEl.disabled = !hasPhone;
         stickyContactBtnEl.disabled = !hasEmail;
+
+        if (mobileBottomPhoneBtnEl) mobileBottomPhoneBtnEl.disabled = !hasPhone;
+        if (mobileBottomContactBtnEl) mobileBottomContactBtnEl.disabled = !hasEmail;
         callBtn.onclick = () => {
           if (!hasPhone) return;
           window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
@@ -2004,6 +2124,20 @@
           if (!hasEmail) return;
           window.location.href = "mailto:" + String(email);
         };
+
+        if (mobileBottomPhoneBtnEl){
+          mobileBottomPhoneBtnEl.onclick = () => {
+            if (!hasPhone) return;
+            window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
+          };
+        }
+
+        if (mobileBottomContactBtnEl){
+          mobileBottomContactBtnEl.onclick = () => {
+            if (!hasEmail) return;
+            window.location.href = "mailto:" + String(email);
+          };
+        }
       }
 
       shareBtn.addEventListener("click", async () => {
@@ -2022,6 +2156,7 @@
         setMockMediaVisuals();
         wireReadMore();
         wireSticky();
+        wireMobileBottomCta();
 
         const listingId = getParam("id");
         if (!listingId) {
@@ -2043,6 +2178,12 @@
         stickySaveBtnEl.addEventListener("click", () => {
           saveBtn.click();
         });
+
+        if (mobileBottomFavBtnEl){
+          mobileBottomFavBtnEl.addEventListener("click", () => {
+            saveBtn.click();
+          });
+        }
 
         try {
           const row = await fetchDetail(listingId);
