@@ -2046,24 +2046,8 @@
           crumbsNeighborhoodEl.textContent = row.neighborhood || "Barrio";
           crumbsAddressEl.textContent = row.address_display || "Dirección";
 
-          function buildCleanTitle(row){
-            const rawStreet = String(row.street_name || "").trim();
-            const street = rawStreet.replace(/^(calle|avenida|av\.?|plaza|paseo|camino|ronda|carretera|carrer|rua|ru\.)\s+/i, "").trim();
-            const number = String(row.street_number || "").trim();
-            const floor = String(row.floor || "").trim();
-            const door = String(row.door || "").trim();
-
-            let clean = street || "";
-            if (number) clean += (clean ? " " : "") + number;
-            if (floor) clean += (clean ? ", " : "") + floor;
-            if (door) clean += (clean ? " " : "") + door;
-
-            return clean || row.address_display || "Dirección";
-          }
-
-          const cleanTitle = buildCleanTitle(row);
-          titleEl.textContent = cleanTitle;
-          stickyAddrEl.textContent = cleanTitle;
+          titleEl.textContent = row.address_display || "Dirección";
+          stickyAddrEl.textContent = row.address_display || "Dirección";
 
           subTitleEl.textContent =
             (row.postcode ? (row.postcode + " ") : "") +
@@ -2108,7 +2092,53 @@
       })();
     </script>
   
+<script>
+document.addEventListener("DOMContentLoaded", function(){
 
+  if (window.innerWidth <= 768){
+    const title = document.querySelector("h1");
+    if(title){
+      const txt = title.textContent;
+      const parts = txt.split(",");
+      if(parts.length > 1){
+        title.textContent = parts[0];
+      }
+    }
+  }
+
+});
+</script>
+
+
+<script>
+function cleanStreetTitle(street, number, floor, door){
+  if(!street) return "";
+  // remove common prefixes
+  street = street.replace(/^(calle|avenida|av\.?|plaza|paseo|camino)\s+/i,'');
+
+  let t = street;
+  if(number) t += " " + number;
+  if(floor) t += ", " + floor;
+  if(door) t += " " + door;
+  return t.trim();
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+
+  if(typeof listingData !== "undefined"){
+    const titleEl = document.querySelector(".title");
+    if(titleEl && listingData){
+      titleEl.textContent = cleanStreetTitle(
+        listingData.street_name,
+        listingData.street_number,
+        listingData.floor,
+        listingData.door
+      );
+    }
+  }
+
+});
+</script>
 
 </body>
 </html>
