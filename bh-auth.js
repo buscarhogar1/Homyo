@@ -195,6 +195,13 @@ export function initAuth() {
     openAuth();
   });
 
+  try {
+    if (sessionStorage.getItem("bh_open_auth_after_redirect") === "1") {
+      sessionStorage.removeItem("bh_open_auth_after_redirect");
+      setTimeout(() => openAuth(), 0);
+    }
+  } catch (_) {}
+
   closeAuth.addEventListener("click", closeAuthModal);
   overlay.addEventListener("click",(e)=>{ if(e.target === overlay) closeAuthModal(); });
   document.addEventListener("keydown",(e)=>{ if(overlay.classList.contains("open") && e.key === "Escape") closeAuthModal(); });
@@ -207,7 +214,8 @@ export function initAuth() {
 
   navAccountBtn?.addEventListener("click", (e) => {
     e.preventDefault();
-    alert("MVP: Mi cuenta.");
+    const root = window.BH_SITE_ROOT || "/";
+    window.location.href = root + "account.html";
   });
 
   navLogoutBtn?.addEventListener("click", async (e) => {

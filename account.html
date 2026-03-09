@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mi cuenta · Buscar Hogar</title>
+
+    <link rel="stylesheet" href="./bh-shared.css" />
+
+    <style>
+      :root{
+        --accountBg:#f5f5f6;
+        --accountCardBorder:#dcdfe4;
+        --accountCardHover:#cfd4db;
+      }
+
+      body{
+        background:var(--accountBg);
+      }
+
+      .accountPage{
+        min-height:calc(100vh - 56px);
+        padding:40px 16px 72px;
+        box-sizing:border-box;
+      }
+
+      .accountWrap{
+        width:min(1120px, 100%);
+        margin:0 auto;
+      }
+
+      .accountIntro{
+        margin-bottom:40px;
+      }
+
+      .accountTitle{
+        margin:0;
+        font-size:58px;
+        line-height:1.02;
+        letter-spacing:-1.2px;
+        font-weight:800;
+        color:#1b1b1d;
+      }
+
+      .accountEmail{
+        margin:14px 0 0;
+        font-size:30px;
+        line-height:1.25;
+        color:#62676f;
+      }
+
+      .accountLine{
+        width:58px;
+        height:5px;
+        border-radius:999px;
+        background:var(--terra);
+        margin-top:24px;
+      }
+
+      .accountGrid{
+        display:grid;
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        gap:28px;
+      }
+
+      .accountCard{
+        display:flex;
+        gap:18px;
+        align-items:flex-start;
+        min-height:156px;
+        padding:28px 26px;
+        background:#fff;
+        border:1px solid var(--accountCardBorder);
+        border-radius:6px;
+        box-sizing:border-box;
+        text-decoration:none;
+        color:inherit;
+        transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+      }
+
+      .accountCard:hover{
+        border-color:var(--accountCardHover);
+        box-shadow:0 10px 28px rgba(0,0,0,.06);
+        transform:translateY(-1px);
+      }
+
+      .accountIcon{
+        width:34px;
+        height:34px;
+        flex:0 0 34px;
+        color:#1877c9;
+      }
+
+      .accountCardBody{
+        min-width:0;
+      }
+
+      .accountCardTitle{
+        margin:0 0 12px;
+        font-size:19px;
+        line-height:1.2;
+        font-weight:750;
+        color:#0d6fbe;
+      }
+
+      .accountCardText{
+        margin:0;
+        font-size:17px;
+        line-height:1.5;
+        color:#5d636b;
+      }
+
+      .accountStatus{
+        margin-top:18px;
+        font-size:14px;
+        color:#6b7280;
+      }
+
+      @media (max-width: 900px){
+        .accountPage{
+          padding-top:30px;
+        }
+
+        .accountTitle{
+          font-size:44px;
+        }
+
+        .accountEmail{
+          font-size:24px;
+        }
+      }
+
+      @media (max-width: 680px){
+        .accountPage{
+          padding:22px 14px 46px;
+        }
+
+        .accountIntro{
+          margin-bottom:26px;
+        }
+
+        .accountTitle{
+          font-size:34px;
+          line-height:1.08;
+        }
+
+        .accountEmail{
+          font-size:19px;
+          margin-top:10px;
+          word-break:break-word;
+        }
+
+        .accountLine{
+          width:48px;
+          height:4px;
+          margin-top:18px;
+        }
+
+        .accountGrid{
+          grid-template-columns:1fr;
+          gap:16px;
+        }
+
+        .accountCard{
+          min-height:auto;
+          padding:22px 18px;
+          gap:14px;
+        }
+
+        .accountIcon{
+          width:30px;
+          height:30px;
+          flex-basis:30px;
+        }
+
+        .accountCardTitle{
+          font-size:18px;
+          margin-bottom:8px;
+        }
+
+        .accountCardText{
+          font-size:15px;
+          line-height:1.45;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="accountPage">
+      <div class="accountWrap">
+        <section class="accountIntro" aria-labelledby="accountTitle">
+          <h1 class="accountTitle" id="accountTitle">Hola</h1>
+          <p class="accountEmail" id="accountEmail">Cargando…</p>
+          <div class="accountLine" aria-hidden="true"></div>
+          <div class="accountStatus" id="accountStatus" aria-live="polite"></div>
+        </section>
+
+        <section class="accountGrid" aria-label="Opciones de la cuenta">
+          <a class="accountCard" href="#" data-account-action="favoritos">
+            <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M12 20.5s-6.7-4.3-8.8-8C1.6 9.7 2.4 6.7 5.1 5.4c2.2-1.1 4.5-.4 5.9 1.3 1.4-1.7 3.7-2.4 5.9-1.3 2.7 1.3 3.5 4.3 1.9 7.1C18.7 16.2 12 20.5 12 20.5Z"></path>
+            </svg>
+            <div class="accountCardBody">
+              <h2 class="accountCardTitle">Favoritos</h2>
+              <p class="accountCardText">Ver y gestionar las viviendas que has guardado.</p>
+            </div>
+          </a>
+
+          <a class="accountCard" href="#" data-account-action="busquedas">
+            <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M6 4.5h12a1.5 1.5 0 0 1 1.5 1.5v13l-7.5-3-7.5 3V6A1.5 1.5 0 0 1 6 4.5Z"></path>
+            </svg>
+            <div class="accountCardBody">
+              <h2 class="accountCardTitle">Búsquedas guardadas</h2>
+              <p class="accountCardText">Ver y gestionar tus búsquedas guardadas.</p>
+            </div>
+          </a>
+
+          <a class="accountCard" href="#" data-account-action="login">
+            <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <rect x="5" y="10" width="14" height="10" rx="2"></rect>
+              <path d="M8 10V7.8A4 4 0 0 1 12 4a4 4 0 0 1 4 3.8V10"></path>
+            </svg>
+            <div class="accountCardBody">
+              <h2 class="accountCardTitle">Detalles de acceso</h2>
+              <p class="accountCardText">Gestionar el email, la contraseña y los datos de inicio de sesión.</p>
+            </div>
+          </a>
+
+          <a class="accountCard" href="#" data-account-action="correo">
+            <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <rect x="3.5" y="5.5" width="17" height="13" rx="2"></rect>
+              <path d="m4.5 7 7.5 6L19.5 7"></path>
+            </svg>
+            <div class="accountCardBody">
+              <h2 class="accountCardTitle">Ajustes de correo</h2>
+              <p class="accountCardText">Gestionar qué avisos y con qué frecuencia quieres recibirlos.</p>
+            </div>
+          </a>
+        </section>
+      </div>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js";
+      import { initAuth } from "./bh-auth.js";
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+      const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
+      const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+
+      const titleEl = document.getElementById("accountTitle");
+      const emailEl = document.getElementById("accountEmail");
+      const statusEl = document.getElementById("accountStatus");
+      const accountActionEls = document.querySelectorAll("[data-account-action]");
+
+      function getUserDisplayName(user) {
+        const fullName = String(user?.user_metadata?.full_name || "").trim();
+        if (fullName) return fullName;
+
+        const email = String(user?.email || "").trim();
+        if (!email) return "usuario";
+
+        return email.split("@")[0] || "usuario";
+      }
+
+      function setUser(user) {
+        const name = getUserDisplayName(user);
+        titleEl.textContent = `Hola ${name}`;
+        emailEl.textContent = user?.email || "";
+        statusEl.textContent = "";
+      }
+
+      function goToHomeAndOpenLogin() {
+        try {
+          sessionStorage.setItem("bh_open_auth_after_redirect", "1");
+        } catch (_) {}
+        window.location.href = window.BH_SITE_ROOT || "./";
+      }
+
+      async function requireSession() {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+
+        const session = data?.session || null;
+        if (!session?.user) {
+          goToHomeAndOpenLogin();
+          return null;
+        }
+
+        setUser(session.user);
+        return session;
+      }
+
+      window.addEventListener("bh:auth-changed", (event) => {
+        const session = event?.detail?.session || null;
+        if (!session?.user) {
+          goToHomeAndOpenLogin();
+          return;
+        }
+        setUser(session.user);
+      });
+
+      for (const el of accountActionEls) {
+        el.addEventListener("click", (event) => {
+          event.preventDefault();
+          const key = el.getAttribute("data-account-action");
+
+          const messages = {
+            favoritos: "Pendiente: aquí irá la gestión de favoritos.",
+            busquedas: "Pendiente: aquí irá la gestión de búsquedas guardadas.",
+            login: "Pendiente: aquí irán los detalles de acceso.",
+            correo: "Pendiente: aquí irán los ajustes de correo."
+          };
+
+          statusEl.textContent = messages[key] || "Pendiente.";
+        });
+      }
+
+      requireSession().catch((error) => {
+        console.error(error);
+        statusEl.textContent = "No se pudo cargar la cuenta.";
+      });
+    </script>
+  </body>
+</html>
