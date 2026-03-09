@@ -1139,6 +1139,18 @@
   }
 }
 
+
+/* === MOBILE FACTS + SPACING TWEAKS === */
+@media (max-width:768px){
+  .mobileMediaEntry{
+    padding-top:10px !important;
+  }
+
+  .contentGrid{
+    margin-top:10px !important;
+  }
+}
+
 </style>
   </head>
 
@@ -1648,8 +1660,8 @@
 
       const ICON_AREA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
       const ICON_YEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M5 7h14v14H5z"/></svg>';
-      const ICON_TYPE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>';
-      const ICON_LOC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-4.5 7-11a7 7 0 0 0-14 0c0 6.5 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></svg>';
+      const ICON_BED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v10"/><path d="M21 11v6"/><path d="M3 13h18"/><path d="M7 11V9a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v2"/><path d="M21 17H3"/></svg>';
+      const ICON_ENERGY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>';
 
       async function fetchDetail(listingId) {
         const params = new URLSearchParams();
@@ -2310,8 +2322,12 @@
           setAgencyLogo(row.agency_name, null);
           factsRowEl.innerHTML = "";
           if (row.useful_area_m2 != null) addFact(ICON_AREA, String(row.useful_area_m2) + " m² útiles");
-          if (row.property_type) addFact(ICON_TYPE, row.property_type, true);
+          addFact(ICON_BED, row.bedrooms != null ? String(row.bedrooms) + " dormitorios" : "-", true);
           if (row.built_year != null) addFact(ICON_YEAR, String(row.built_year), true);
+          const energyFact = (row.energy_label && String(row.energy_label).trim())
+            ? String(row.energy_label).trim()
+            : (String(row.energy_label_status || "").trim().toLowerCase() === "pending" ? "-" : "-");
+          addFact(ICON_ENERGY, energyFact, true);
 
           navHintEl.textContent = "Actualizado: " + fmtDate(row.listed_at);
 
