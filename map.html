@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Buscar Hogar – Mapa</title>
 
-    <link rel="stylesheet" href="/buscarhogardemo/bh-shared.css" />
+    <link rel="stylesheet" href="./bh-shared.css" />
 
     <link
       rel="stylesheet"
@@ -14,13 +14,27 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="/buscarhogardemo/bh-map.css" />
+    <link rel="stylesheet" href="./bh-map.css" />
   </head>
 
   <body>
     <div id="bhHeader"></div>
 
     <!-- Contenedor general de la página del mapa -->
+
+    <div class="mobileTopRow" aria-hidden="true">
+      <a href="index.html" class="mobileBack" aria-label="Volver">←</a>
+      <div class="mobileSearchShell">
+        <span class="mobileSearchIcon" aria-hidden="true">⌕</span>
+        <input id="mobileSearchInput" class="mobileSearchInput" type="text" placeholder="Buscar zona..." />
+      </div>
+    </div>
+
+    <div class="mobileActionsRow" aria-hidden="true">
+      <button id="mobileFiltersBtn" class="mobileActionBtn" type="button">Filtros</button>
+      <button id="mobileListBtn" class="mobileActionBtn" type="button">Listado</button>
+    </div>
+
     <div class="page">
       <div class="mapShell">
 
@@ -42,10 +56,10 @@
 
               <!-- Menú desplegable de orden -->
               <div id="orderMenu" class="orderMenu" aria-hidden="true">
-                <button class="orderItem" type="button" data-order="date_desc">Fecha de publicación: más reciente a más antiguo</button>
-                <button class="orderItem" type="button" data-order="date_asc">Fecha de publicación: más antiguo a más reciente</button>
-                <button class="orderItem" type="button" data-order="price_desc">Precio: mayor a menor</button>
+                <button class="orderItem" type="button" data-order="date_desc">Fecha de publicación: más recientes</button>
+                <button class="orderItem" type="button" data-order="date_asc">Fecha de publicación: más antiguos</button>
                 <button class="orderItem" type="button" data-order="price_asc">Precio: menor a mayor</button>
+                <button class="orderItem" type="button" data-order="price_desc">Precio: mayor a menor</button>
                 <button class="orderItem" type="button" data-order="size_asc">Tamaño: menor a mayor</button>
                 <button class="orderItem" type="button" data-order="size_desc">Tamaño: mayor a menor</button>
               </div>
@@ -57,6 +71,10 @@
         <div class="grid3" id="grid3">
           <!-- Columna filtros (scroll interno) -->
           <aside class="col colFilters" id="filtersCol">
+            <div class="mobilePanelHead">
+              <div class="mobilePanelTitle">Filtros</div>
+              <button id="mobileFiltersCloseBtn" class="mobilePanelClose" type="button" aria-label="Cerrar filtros">×</button>
+            </div>
             <div id="filtersBarMount"></div>
           </aside>
 
@@ -143,6 +161,21 @@
 
           <!-- Columna listado (scroll interno) -->
           <aside class="col colList" id="listCol">
+            <div class="mobilePanelHead">
+              <div class="mobilePanelTitle">Listado</div>
+              <div class="mobilePanelHeadActions">
+                <button id="mobileOrderBtn" class="mobilePanelActionBtn" type="button" aria-label="Ordenar listado">Ordenar por</button>
+                <button id="mobileListCloseBtn" class="mobilePanelClose" type="button" aria-label="Cerrar listado">×</button>
+              </div>
+              <div id="mobileOrderMenu" class="mobileOrderMenu" aria-hidden="true">
+                <button class="orderItem" type="button" data-order="date_desc">Fecha de publicación: más recientes</button>
+                <button class="orderItem" type="button" data-order="date_asc">Fecha de publicación: más antiguos</button>
+                <button class="orderItem" type="button" data-order="price_asc">Precio: menor a mayor</button>
+                <button class="orderItem" type="button" data-order="price_desc">Precio: mayor a menor</button>
+                <button class="orderItem" type="button" data-order="size_asc">Tamaño: menor a mayor</button>
+                <button class="orderItem" type="button" data-order="size_desc">Tamaño: mayor a menor</button>
+              </div>
+            </div>
             <div id="listMount" class="listMount">
               <div id="listItems" class="listItems"></div>
             </div>
@@ -150,6 +183,13 @@
         </div>
       </div>
     </div>
+
+
+    <nav class="mobileBottomNav" aria-hidden="true">
+      <a href="index.html" class="mobileBottomItem">Inicio</a>
+      <a href="#" class="mobileBottomItem">Favoritos</a>
+      <a href="#" class="mobileBottomItem">Perfil</a>
+    </nav>
 
     <div id="bhFooter"></div>
 
@@ -162,10 +202,10 @@
     <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
 
     <script type="module">
-      import { initLayout } from "/buscarhogardemo/bh-layout.js";
-      import { initAuth } from "/buscarhogardemo/bh-auth.js";
-      import { initFiltersBar } from "/buscarhogardemo/bh-map-filters.js";
-      import { initMap } from "/buscarhogardemo/bh-map-core.js";
+      import { initLayout } from "./bh-layout.js?v=20260309b";
+      import { initAuth } from "./bh-auth.js?v=20260309b";
+      import { initFiltersBar } from "./bh-map-filters.js";
+      import { initMap } from "./bh-map-core.js";
 
       // Header / auth
       initLayout({ showMiniSearch: true });
@@ -178,6 +218,28 @@
       const grid = document.getElementById("grid3");
       const btnFilters = document.getElementById("toggleFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
+      const mobileFiltersBtn = document.getElementById("mobileFiltersBtn");
+      const mobileListBtn = document.getElementById("mobileListBtn");
+      const mobileFiltersCloseBtn = document.getElementById("mobileFiltersCloseBtn");
+      const mobileListCloseBtn = document.getElementById("mobileListCloseBtn");
+      const mobileOrderBtn = document.getElementById("mobileOrderBtn");
+      const mobileOrderMenu = document.getElementById("mobileOrderMenu");
+
+      function closeMobilePanels() {
+        document.body.classList.remove("mobileFiltersOpen");
+        document.body.classList.remove("mobileListOpen");
+        notifyLayoutResize();
+      }
+
+      function openMobileFilters() {
+        document.body.classList.remove("mobileListOpen");
+        document.body.classList.add("mobileFiltersOpen");
+      }
+
+      function openMobileList() {
+        document.body.classList.remove("mobileFiltersOpen");
+        document.body.classList.add("mobileListOpen");
+      }
 
       function applyToggleTexts() {
         const filtersHidden = grid.classList.contains("hideFilters");
@@ -187,19 +249,10 @@
       }
 
       function notifyLayoutResize() {
-        // Leaflet necesita invalidateSize tras cambios de layout.
-        // bh-map-core.js escucha este evento, pero reforzamos con doble tick.
+        // Leaflet necesita invalidateSize; bh-map-core.js escucha este evento
         window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-        setTimeout(() => window.dispatchEvent(new CustomEvent("bh:layout-resize")), 50);
-
-        // Si el core expone el mapa, forzamos también invalidateSize.
-        try{
-          if (window.__bhMap && typeof window.__bhMap.invalidateSize === "function") {
-            window.__bhMap.invalidateSize(true);
-            setTimeout(() => window.__bhMap.invalidateSize(true), 60);
-          }
-        }catch(_e){}
       }
+
       btnFilters.addEventListener("click", () => {
         grid.classList.toggle("hideFilters");
         applyToggleTexts();
@@ -208,13 +261,29 @@
 
       btnList.addEventListener("click", () => {
         grid.classList.toggle("hideList");
-        applyToggleTexts();
-        notifyLayoutResize();
+          notifyLayoutResize();
+      });
+
+
+      mobileFiltersBtn?.addEventListener("click", () => {
+        openMobileFilters();
+      });
+
+      mobileListBtn?.addEventListener("click", () => {
+        openMobileList();
+      });
+
+      mobileFiltersCloseBtn?.addEventListener("click", () => {
+        closeMobilePanels();
+      });
+
+      mobileListCloseBtn?.addEventListener("click", () => {
+        closeMobilePanels();
       });
 
       applyToggleTexts();
 
-      // Orden: abre/cierra menú. El core lee window.__bhListOrder
+      // Orden: escritorio + móvil
       const orderBtn = document.getElementById("orderBtn");
       const orderMenu = document.getElementById("orderMenu");
 
@@ -227,7 +296,19 @@
         orderMenu.setAttribute("aria-hidden", "false");
       }
 
+      function closeMobileOrderMenu() {
+        if (!mobileOrderMenu) return;
+        mobileOrderMenu.style.display = "none";
+        mobileOrderMenu.setAttribute("aria-hidden", "true");
+      }
+      function openMobileOrderMenu() {
+        if (!mobileOrderMenu) return;
+        mobileOrderMenu.style.display = "block";
+        mobileOrderMenu.setAttribute("aria-hidden", "false");
+      }
+
       closeOrderMenu();
+      closeMobileOrderMenu();
 
       orderBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -236,13 +317,32 @@
         else openOrderMenu();
       });
 
-      document.addEventListener("click", () => closeOrderMenu());
+      mobileOrderBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = mobileOrderMenu?.getAttribute("aria-hidden") === "false";
+        if (open) closeMobileOrderMenu();
+        else openMobileOrderMenu();
+      });
+
+      document.addEventListener("click", () => {
+        closeOrderMenu();
+        closeMobileOrderMenu();
+      });
 
       orderMenu.querySelectorAll(".orderItem").forEach((b) => {
         b.addEventListener("click", () => {
           const v = b.getAttribute("data-order");
           window.__bhListOrder = v || "date_desc";
           closeOrderMenu();
+          window.dispatchEvent(new CustomEvent("bh:list-order-changed"));
+        });
+      });
+
+      mobileOrderMenu?.querySelectorAll(".orderItem").forEach((b) => {
+        b.addEventListener("click", () => {
+          const v = b.getAttribute("data-order");
+          window.__bhListOrder = v || "date_desc";
+          closeMobileOrderMenu();
           window.dispatchEvent(new CustomEvent("bh:list-order-changed"));
         });
       });
