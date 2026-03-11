@@ -1389,9 +1389,10 @@ export function initMap(){
 
   function initHoursRow(){
     const frag = document.createDocumentFragment();
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
     for (let h = 0; h < 24; h++) {
       const s = document.createElement("span");
-      s.textContent = String(h).padStart(2,"0");
+      s.textContent = isMobile ? String(h) : String(h).padStart(2,"0");
       frag.appendChild(s);
     }
     sunHoursRowEl.innerHTML = "";
@@ -1544,7 +1545,10 @@ export function initMap(){
 
   map.on("moveend", () => { if (sunEnabled) updateSunOverlay(); });
   map.on("zoomend", () => { if (sunEnabled) updateSunOverlay(); });
-  window.addEventListener("resize", () => { if (sunEnabled) updateSunOverlay(); });
+  window.addEventListener("resize", () => {
+    initHoursRow();
+    if (sunEnabled) updateSunOverlay();
+  });
 
   // Cuando cambia layout (ocultar/mostrar columnas) Leaflet necesita invalidateSize
   function safeInvalidate(){

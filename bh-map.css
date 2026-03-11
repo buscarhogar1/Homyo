@@ -1440,3 +1440,45 @@ body{
     max-width: 170px;
   }
 }
+
+
+
+/* ===== AJUSTES SOL + STATUS SOLO EN MÓVIL ===== */
+@media (max-width: 768px){
+  #status{
+    display: none !important;
+  }
+
+  .sunOverlayLabel{
+    display: none !important;
+  }
+
+  .sunDateDock{
+    top: 10px !important;
+    bottom: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    z-index: 2210 !important;
+  }
+
+  .sunDateDockInner{
+    padding: 8px 10px !important;
+    gap: 8px !important;
+  }
+
+  .sunTimebar{
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    z-index: 2200 !important;
+  }
+
+  .sunHoursRow{
+    font-size: 9.5px !important;
+  }
+
+  .sunHoursRow span{
+    transform: none !important;
+  }
+}
