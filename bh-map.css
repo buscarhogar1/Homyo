@@ -1482,12 +1482,3 @@ body{
     transform: none !important;
   }
 }
-
-
-/* ===== ICONOS DERECHA MAPA 20% MÁS PEQUEÑOS (SOLO MÓVIL) ===== */
-@media (max-width:768px){
-  .leaflet-top.leaflet-right .leaflet-control{
-    transform: scale(0.8);
-    transform-origin: right top;
-  }
-}
