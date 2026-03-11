@@ -1485,44 +1485,9 @@ body{
 
 
 /* ===== ICONOS DERECHA MAPA 20% MÁS PEQUEÑOS (SOLO MÓVIL) ===== */
-
-
-/* ===== ICONOS DERECHA MAPA EN PARTE INFERIOR (SOLO MÓVIL) ===== */
 @media (max-width:768px){
-  .leaflet-top.leaflet-right{
-    top: auto !important;
-    bottom: 90px !important;
-  }
-
-  /* botones 10% más grandes que antes (0.8 → 0.88) */
   .leaflet-top.leaflet-right .leaflet-control{
-    transform: scale(0.88);
-    transform-origin: right bottom;
-    margin-bottom: 10px !important;
-  }
-
-  .leaflet-top.leaflet-right .leaflet-control:last-child{
-    margin-bottom: 0 !important;
-  }
-}
-
-
-/* CONTROLES DERECHA DEL MAPA – SOLO MOVIL */
-@media (max-width:768px){
-
-  .leaflet-top.leaflet-right{
-    top:10px !important;
-    right:10px !important;
-  }
-
-  .leaflet-top.leaflet-right .leaflet-control{
-    transform: scale(0.88) !important;
+    transform: scale(0.8);
     transform-origin: right top;
-    margin-bottom:10px !important;
   }
-
-  .leaflet-top.leaflet-right .leaflet-control:last-child{
-    margin-bottom:0 !important;
-  }
-
 }
