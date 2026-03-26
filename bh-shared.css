@@ -2,7 +2,7 @@
   --bg:#ffffff;
   --text:#111;
   --muted:#6b7280;
-  --terra:#a3472f;
+  --terra:#E8821B;
   --btn:#1a73e8;
   --btnText:#fff;
   --border:#111;
@@ -40,26 +40,19 @@ html,body{
 .brand{
   display:flex;
   align-items:center;
-  gap:10px;
   text-decoration:none;
   color:#fff;
-  font-weight:800;
-  letter-spacing:-0.2px;
+  flex:0 0 auto;
 }
 
-.logoMark{
-  width:34px;
-  height:28px;
-  border-radius:6px;
-  background:rgba(255,255,255,0.18);
-  border:1px solid rgba(255,255,255,0.25);
-  display:grid;
-  place-items:center;
-}
-
-.logoMark span{
-  font-size:12px;
-  font-weight:900;
+.brandWord{
+  display:inline-block;
+  color:#fff;
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+  font-size:30px;
+  font-weight:700;
+  letter-spacing:-0.05em;
+  line-height:1;
 }
 
 .miniSearch{
@@ -119,6 +112,32 @@ html,body{
 
 .rightGroup a:hover{
   background:rgba(255,255,255,0.14);
+}
+
+.navLink{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+.navItemIcon{
+  width:16px;
+  height:16px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+}
+
+.navItemIcon svg{
+  width:16px;
+  height:16px;
+  display:block;
+}
+
+.navItemLabel{
+  display:inline-block;
+  line-height:1;
 }
 
 .navUserArea{
@@ -220,109 +239,110 @@ html,body{
 }
 
 .modal{
-  width:min(760px,100%);
-  background:#fff;
-  border-radius:16px;
-  padding:28px;
-  box-shadow:var(--shadow);
-  max-height:86vh;
+  width:min(420px, 100%);
+  max-height:90vh;
   overflow:auto;
+  background:#fff;
+  border-radius:18px;
+  padding:22px;
+  box-sizing:border-box;
   position:relative;
+  box-shadow:var(--shadow);
 }
 
 .close{
   position:absolute;
-  top:14px;
-  right:14px;
+  top:10px;
+  right:12px;
+  border:0;
   background:transparent;
-  border:none;
-  font-size:26px;
+  font-size:28px;
+  line-height:1;
   cursor:pointer;
 }
 
 .bh-brand{
-  text-align:center;
-  opacity:.8;
-  margin-bottom:14px;
+  font-size:14px;
+  font-weight:700;
+  color:#3c4043;
+  margin-bottom:8px;
 }
 
 .bh-title{
-  text-align:center;
-  font-size:22px;
-  margin:0 0 10px;
+  margin:0 0 6px;
+  font-size:26px;
+  line-height:1.15;
 }
 
 .bh-subtitle{
-  text-align:center;
   margin:0 0 18px;
-  opacity:.8;
+  color:#5f6368;
+  font-size:14px;
 }
 
 .bh-actions{
-  width:min(380px,100%);
-  margin:0 auto;
+  display:grid;
+  gap:12px;
 }
 
 .bh-btn{
   width:100%;
-  padding:12px 14px;
-  border-radius:10px;
-  border:1px solid #d0d0d0;
+  min-height:46px;
+  border-radius:12px;
+  border:1px solid #dadce0;
   background:#fff;
-  margin-top:10px;
-  font-size:14px;
   cursor:pointer;
+  font-size:14px;
+  font-weight:700;
   display:flex;
+  align-items:center;
   justify-content:center;
   gap:10px;
 }
 
 .bh-primary{
-  background:#1f2937;
+  background:#111;
   color:#fff;
-  border:none;
-}
-
-.bh-divider{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin:18px 0 6px;
-  font-size:13px;
-}
-
-.bh-divider::before,
-.bh-divider::after{
-  content:"";
-  height:1px;
-  background:#e5e5e5;
-  flex:1;
+  border-color:#111;
 }
 
 .bh-input{
   width:100%;
-  padding:12px;
-  border:1px solid #d0d0d0;
-  border-radius:10px;
-  margin-top:10px;
+  min-height:46px;
+  border:1px solid #dadce0;
+  border-radius:12px;
+  padding:0 14px;
+  box-sizing:border-box;
   font-size:14px;
 }
 
 .bh-msg{
-  margin-top:14px;
   font-size:13px;
-  text-align:center;
+  color:#444;
 }
 
 .bh-hidden{
   display:none !important;
 }
 
+.bh-divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#777;
+  font-size:12px;
+}
+
+.bh-divider::before,
+.bh-divider::after{
+  content:"";
+  height:1px;
+  background:#eee;
+  flex:1 1 auto;
+}
+
 .bh-probox{
-  margin-top:22px;
-  font-size:13px;
-  opacity:.9;
-  text-align:center;
+  margin-top:6px;
 }
 
 .bh-proline{
@@ -353,10 +373,47 @@ html,body{
 @media (max-width:720px){
   .miniSearch{ display:none; }
 
+  .topbar{
+    height:64px;
+    padding:0 12px;
+  }
+
+  .topbarInner{
+    gap:10px;
+  }
+
+  .brandWord{
+    font-size:28px;
+  }
+
   .navUserBtn,
   .navLogoutBtn,
   .rightGroup a{
-    padding:8px 8px;
+    padding:6px 6px;
+  }
+
+  .navLink{
+    flex-direction:column;
+    justify-content:center;
+    gap:3px;
+    min-width:54px;
+  }
+
+  .navItemIcon{
+    width:18px;
+    height:18px;
+  }
+
+  .navItemIcon svg{
+    width:18px;
+    height:18px;
+  }
+
+  .navItemLabel{
+    font-size:10px;
+    line-height:1;
+    text-align:center;
+    white-space:nowrap;
   }
 }
 
@@ -368,7 +425,11 @@ html,body{
   }
 
   .rightGroup{
-    gap:4px;
+    gap:2px;
+  }
+
+  .brandWord{
+    font-size:26px;
   }
 
   .navUserLabel{
