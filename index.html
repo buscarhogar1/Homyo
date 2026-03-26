@@ -11,7 +11,7 @@
       /* CSS específico de index (solo lo que no es común) */
 
       .wrap{
-        min-height: calc(100% - 56px);
+        min-height: calc(100% - 51px);
         display:grid;
         grid-template-rows: 1fr auto;
       }
@@ -97,6 +97,49 @@
         background: var(--btn);
       }
 
+      .searchBox{
+        width: min(720px, 100%);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 10px;
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        background:#fff;
+        box-sizing: border-box;
+      }
+
+      .searchIcon{
+        width: 22px;
+        height: 22px;
+        color: var(--muted);
+        flex: 0 0 auto;
+        margin-left: 10px;
+      }
+
+      .input{
+        border:0;
+        outline:0;
+        font-size: 18px;
+        flex: 1 1 auto;
+        padding: 12px 6px;
+        background: transparent;
+      }
+
+      .btn{
+        border:0;
+        background: var(--btn);
+        color: var(--btnText);
+        padding: 12px 18px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 650;
+        margin-right: 10px;
+      }
+
+      .btn:active{ transform: translateY(1px); }
+
       .subTag{
         width: min(720px, 100%);
         font-size: 14px;
@@ -131,6 +174,33 @@
         .pill{
           font-size: 14px;
           padding: 8px 12px;
+        }
+
+        .searchBox{
+          width: 100%;
+          flex-direction: column;
+          align-items: stretch;
+          border-radius: 20px;
+          padding: 12px;
+          gap: 8px;
+        }
+
+        .searchIcon{
+          display: none;
+        }
+
+        .input{
+          font-size: 16px;
+          padding: 12px;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        .btn{
+          width: 100%;
+          margin: 0;
+          padding: 14px;
+          font-size: 16px;
         }
 
         .subTag{
@@ -176,6 +246,22 @@
             </label>
           </div>
 
+          <form id="form" class="searchBox" autocomplete="off">
+            <svg class="searchIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M21 21l-4.3-4.3"></path>
+            </svg>
+
+            <input
+              id="q"
+              class="input"
+              placeholder="Escribe una ciudad o zona (ej. Murcia)"
+              aria-label="Buscar ciudad o zona"
+            />
+
+            <button class="btn" type="submit">Buscar</button>
+          </form>
+
           <div class="subTag">Una vivienda, un anuncio.</div>
         </div>
       </main>
@@ -202,6 +288,16 @@
         params.set("mode", getSelectedMode());
         window.location.href = "./map.html?" + params.toString();
       };
+
+      const form = document.getElementById("form");
+      const q = document.getElementById("q");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const city = (q.value || "").trim();
+        if(!city) return;
+        window.BH_goToMap(city);
+      });
     </script>
   </body>
 </html>
