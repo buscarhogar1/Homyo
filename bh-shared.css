@@ -2,7 +2,7 @@
   --bg:#ffffff;
   --text:#111;
   --muted:#6b7280;
-  --terra:#FFFFFF;
+  --terra:#F6931E;
   --btn:#1a73e8;
   --btnText:#fff;
   --border:#111;
@@ -20,14 +20,13 @@ html,body{
 
 /* ===== Header ===== */
 .topbar{
-  height:51px;
+  height:54px;
   background:var(--terra);
-  color:#111;
+  color:#fff;
   display:flex;
   align-items:center;
   padding:0 16px;
   box-sizing:border-box;
-  border-bottom:1px solid #e9e9e9;
 }
 
 .topbarInner{
@@ -42,12 +41,12 @@ html,body{
   display:flex;
   align-items:center;
   text-decoration:none;
-  color:#111;
+  color:#fff;
   flex:0 0 auto;
 }
 
 .brandText{
-  color:#111;
+  color:#fff;
   font-family: Georgia, "Times New Roman", serif;
   font-size:29px;
   font-weight:700;
@@ -60,8 +59,8 @@ html,body{
   display:flex;
   align-items:center;
   gap:10px;
-  border:1px solid rgba(0,0,0,0.18);
-  background:rgba(0,0,0,0.03);
+  border:1px solid rgba(255,255,255,0.30);
+  background:rgba(255,255,255,0.10);
   border-radius:999px;
   padding:5px 10px;
   min-width:280px;
@@ -80,13 +79,13 @@ html,body{
 }
 
 .miniSearch input::placeholder{
-  color:rgba(17,17,17,0.60);
+  color:rgba(255,255,255,0.80);
 }
 
 .miniSearch button{
   border:0;
   background:transparent;
-  color:#111;
+  color:#fff;
   cursor:pointer;
 }
 
@@ -103,7 +102,7 @@ html,body{
 }
 
 .navActionLink{
-  color:#111;
+  color:#fff;
   text-decoration:none;
   font-size:14px;
   font-weight:650;
@@ -115,7 +114,7 @@ html,body{
 }
 
 .navActionLink:hover{
-  background:rgba(0,0,0,0.06);
+  background:rgba(255,255,255,0.14);
 }
 
 .navActionIcon{
@@ -128,7 +127,7 @@ html,body{
   flex:0 0 auto;
   font-size:15px;
   line-height:1;
-  color:#111;
+  color:#fff;
 }
 
 .navActionText{
@@ -147,7 +146,7 @@ html,body{
   appearance:none;
   border:0;
   background:transparent;
-  color:#111;
+  color:#fff;
   cursor:pointer;
   font-size:14px;
   font-weight:650;
@@ -157,7 +156,7 @@ html,body{
 
 .navUserBtn:hover,
 .navLogoutBtn:hover{
-  background:rgba(0,0,0,0.06);
+  background:rgba(255,255,255,0.14);
 }
 
 .navUserBtn{
@@ -170,8 +169,8 @@ html,body{
   width:24px;
   height:24px;
   border-radius:999px;
-  background:rgba(0,0,0,0.06);
-  border:1px solid rgba(0,0,0,0.14);
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.28);
   display:grid;
   place-items:center;
   font-size:12px;
@@ -185,10 +184,10 @@ html,body{
 
 /* ===== Footer ===== */
 .footer{
-  padding:14px 16px;
+  padding:12px 12px;
   border-top:1px solid #f0f1f3;
   color:var(--muted);
-  font-size:12.5px;
+  font-size:11.5px;
   display:flex;
   justify-content:center;
 }
@@ -197,16 +196,18 @@ html,body{
   width:min(1120px,100%);
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:4px;
   align-items:center;
   text-align:center;
 }
 
 .footerLine2{
   display:flex;
-  gap:10px;
-  flex-wrap:wrap;
+  gap:8px;
+  flex-wrap:nowrap;
   justify-content:center;
+  align-items:center;
+  white-space:nowrap;
 }
 
 .footerLine2 a{
@@ -373,7 +374,7 @@ html,body{
   .miniSearch{ display:none; }
 
   .topbar{
-    height:51px;
+    height:54px;
     padding:0 12px;
   }
 
@@ -444,5 +445,24 @@ html,body{
   .navUserBtn,
   .navLogoutBtn{
     padding:6px 8px;
+  }
+
+  .footer{
+    padding:10px 8px;
+    font-size:9px;
+  }
+
+  .footerInner{
+    width:100%;
+  }
+
+  .footerLine2{
+    gap:4px;
+    flex-wrap:nowrap;
+    white-space:nowrap;
+  }
+
+  .footerSep{
+    opacity:.45;
   }
 }
