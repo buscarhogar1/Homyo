@@ -38,14 +38,26 @@ function renderHeader({ showMiniSearch, root }) {
           </a>
 
           <a href="#" id="navLogin" class="navActionLink">
-            <span class="navActionIcon" aria-hidden="true">👤</span>
-            <span class="navActionText">Iniciar sesión</span>
+            <span class="navActionIcon navActionIconSvg" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4.5 19.5c2.1-3.7 12.9-3.7 15 0"></path>
+                <circle cx="18.1" cy="18.1" r="3.1"></circle>
+                <path d="M16.9 16.9l2.4 2.4"></path>
+              </svg>
+            </span>
+            <span class="navActionText">Cuenta</span>
           </a>
 
           <div id="navUserArea" class="navUserArea bh-hidden" aria-label="Usuario conectado">
             <button type="button" id="navAccountBtn" class="navUserBtn">
-              <span id="navUserAvatar" class="navAvatar" aria-hidden="true">U</span>
-              <span id="navUserLabel" class="navUserLabel">Mi cuenta</span>
+              <span id="navUserAvatar" class="navAvatar navAvatarSvg" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="8" r="4"></circle>
+                  <path d="M4.5 19.5c2.1-3.7 12.9-3.7 15 0"></path>
+                </svg>
+              </span>
+              <span id="navUserLabel" class="navUserLabel">Cuenta</span>
             </button>
 
             <button type="button" id="navLogoutBtn" class="navLogoutBtn">Cerrar sesión</button>

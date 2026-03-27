@@ -2,7 +2,7 @@
   --bg:#ffffff;
   --text:#111;
   --muted:#6b7280;
-  --terra:#F6931E;
+  --terra:#a3472f;
   --btn:#1a73e8;
   --btnText:#fff;
   --border:#111;
@@ -20,7 +20,7 @@ html,body{
 
 /* ===== Header ===== */
 .topbar{
-  height:54px;
+  height:56px;
   background:var(--terra);
   color:#fff;
   display:flex;
@@ -40,19 +40,26 @@ html,body{
 .brand{
   display:flex;
   align-items:center;
+  gap:10px;
   text-decoration:none;
   color:#fff;
-  flex:0 0 auto;
+  font-weight:800;
+  letter-spacing:-0.2px;
 }
 
-.brandText{
-  color:#fff;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size:29px;
-  font-weight:700;
-  letter-spacing:-0.6px;
-  line-height:1;
-  text-transform:lowercase;
+.logoMark{
+  width:34px;
+  height:28px;
+  border-radius:6px;
+  background:rgba(255,255,255,0.18);
+  border:1px solid rgba(255,255,255,0.25);
+  display:grid;
+  place-items:center;
+}
+
+.logoMark span{
+  font-size:12px;
+  font-weight:900;
 }
 
 .miniSearch{
@@ -62,7 +69,7 @@ html,body{
   border:1px solid rgba(255,255,255,0.30);
   background:rgba(255,255,255,0.10);
   border-radius:999px;
-  padding:5px 10px;
+  padding:6px 10px;
   min-width:280px;
   max-width:460px;
   margin-left:34px;
@@ -90,8 +97,8 @@ html,body{
 }
 
 .miniIcon{
-  width:20px;
-  height:20px;
+  width:22px;
+  height:22px;
 }
 
 .rightGroup{
@@ -101,38 +108,17 @@ html,body{
   align-items:center;
 }
 
-.navActionLink{
+.rightGroup a{
   color:#fff;
   text-decoration:none;
   font-size:14px;
   font-weight:650;
-  padding:6px 10px;
+  padding:8px 10px;
   border-radius:999px;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
 }
 
-.navActionLink:hover{
+.rightGroup a:hover{
   background:rgba(255,255,255,0.14);
-}
-
-.navActionIcon{
-  width:16px;
-  min-width:16px;
-  height:16px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  flex:0 0 auto;
-  font-size:15px;
-  line-height:1;
-  color:#fff;
-}
-
-.navActionText{
-  display:inline-block;
-  line-height:1;
 }
 
 .navUserArea{
@@ -150,7 +136,7 @@ html,body{
   cursor:pointer;
   font-size:14px;
   font-weight:650;
-  padding:6px 10px;
+  padding:8px 10px;
   border-radius:999px;
 }
 
@@ -169,7 +155,7 @@ html,body{
   width:24px;
   height:24px;
   border-radius:999px;
-  background:rgba(255,255,255,0.14);
+  background:rgba(255,255,255,0.18);
   border:1px solid rgba(255,255,255,0.28);
   display:grid;
   place-items:center;
@@ -178,16 +164,25 @@ html,body{
   line-height:1;
 }
 
-.navUserLabel{
-  display:inline-block;
+.navAvatarSvg{
+  background:transparent;
+  border:0;
+  width:24px;
+  height:24px;
+}
+
+.navAvatarSvg svg{
+  width:24px;
+  height:24px;
+  display:block;
 }
 
 /* ===== Footer ===== */
 .footer{
-  padding:12px 12px;
+  padding:14px 16px;
   border-top:1px solid #f0f1f3;
   color:var(--muted);
-  font-size:11.5px;
+  font-size:12.5px;
   display:flex;
   justify-content:center;
 }
@@ -196,18 +191,16 @@ html,body{
   width:min(1120px,100%);
   display:flex;
   flex-direction:column;
-  gap:4px;
+  gap:8px;
   align-items:center;
   text-align:center;
 }
 
 .footerLine2{
   display:flex;
-  gap:8px;
-  flex-wrap:nowrap;
+  gap:10px;
+  flex-wrap:wrap;
   justify-content:center;
-  align-items:center;
-  white-space:nowrap;
 }
 
 .footerLine2 a{
@@ -373,49 +366,10 @@ html,body{
 @media (max-width:720px){
   .miniSearch{ display:none; }
 
-  .topbar{
-    height:54px;
-    padding:0 12px;
-  }
-
-  .topbarInner{
-    gap:10px;
-  }
-
-  .brandText{
-    font-size:27px;
-  }
-
-  .rightGroup{
-    gap:2px;
-  }
-
-  .navActionLink{
-    min-width:56px;
-    padding:4px 4px;
-    border-radius:10px;
-    flex-direction:column;
-    gap:2px;
-    justify-content:center;
-    text-align:center;
-  }
-
-  .navActionIcon{
-    width:16px;
-    min-width:16px;
-    height:16px;
-    font-size:15px;
-  }
-
-  .navActionText{
-    font-size:9px;
-    line-height:1.05;
-  }
-
   .navUserBtn,
   .navLogoutBtn,
   .rightGroup a{
-    padding:6px 8px;
+    padding:8px 8px;
   }
 }
 
@@ -426,43 +380,11 @@ html,body{
     max-height:92vh;
   }
 
-  .topbarInner{
-    gap:8px;
-  }
-
-  .brandText{
-    font-size:25px;
-  }
-
   .rightGroup{
-    gap:0;
+    gap:4px;
   }
 
   .navUserLabel{
     display:none;
-  }
-
-  .navUserBtn,
-  .navLogoutBtn{
-    padding:6px 8px;
-  }
-
-  .footer{
-    padding:10px 8px;
-    font-size:9px;
-  }
-
-  .footerInner{
-    width:100%;
-  }
-
-  .footerLine2{
-    gap:4px;
-    flex-wrap:nowrap;
-    white-space:nowrap;
-  }
-
-  .footerSep{
-    opacity:.45;
   }
 }
