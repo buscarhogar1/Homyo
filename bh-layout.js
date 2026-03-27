@@ -33,7 +33,11 @@ function renderHeader({ showMiniSearch, root }) {
 
         <div class="rightGroup" aria-label="Acciones">
           <a href="#" id="navFavoritos" class="navActionLink">
-            <span class="navActionIcon" aria-hidden="true">♡</span>
+            <span class="navActionIcon navActionIconSvg" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 21s-6.8-4.4-9.1-8.4C1.2 9.6 2.6 5.8 6.3 5c2-.4 4 .4 5.1 2 1.1-1.6 3.1-2.4 5.1-2 3.7.8 5.1 4.6 3.4 7.6C18.8 16.6 12 21 12 21z"></path>
+              </svg>
+            </span>
             <span class="navActionText">Favoritos</span>
           </a>
 
