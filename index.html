@@ -7,7 +7,6 @@
 
     <link rel="stylesheet" href="./bh-shared.css" />
 
-    
     <style>
       body{
         background:#FFFFFF;
@@ -23,8 +22,8 @@
         display:flex;
         align-items:flex-start;
         justify-content:center;
-        padding:0 16px 14px;
-        box-sizing:border-box;
+        padding: 0 16px 12px;
+        box-sizing: border-box;
       }
 
       .center{
@@ -34,62 +33,67 @@
         text-align:center;
       }
 
+      /* El espacio grande venía del propio lienzo de la PNG.
+         Aquí la recortamos visualmente sin tocar el archivo. */
       .heroWrap{
         width:100%;
-        margin:7px 0 2px;
+        margin:7px 0 0;
+      }
+
+      .heroCrop{
+        width:100%;
+        overflow:hidden;
+        line-height:0;
       }
 
       .heroImage{
         width:100%;
         height:auto;
         display:block;
+        margin-top:-6%;
+        margin-bottom:-6%;
       }
 
       .headline{
-        font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,Segoe UI,Roboto,sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, Segoe UI, Roboto, sans-serif;
         font-weight:700;
         letter-spacing:-0.4px;
         font-size:24px;
         line-height:1.08;
         color:#111;
-        margin:0 0 14px;
-        text-wrap:balance;
+        margin:0;
       }
 
       .controlsWrap{
-        width:min(760px,100%);
-        display:grid;
-        gap:10px;
+        width:min(720px,100%);
+        margin-top:8px;
+        box-sizing:border-box;
       }
 
       .modeRow{
         width:100%;
-        display:grid;
-        grid-template-columns:repeat(4, minmax(0, 1fr));
-        gap:10px;
-        align-items:stretch;
+        display:flex;
+        justify-content:center;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:8px;
       }
 
       .pill{
         position:relative;
-        display:flex;
+        display:inline-flex;
         align-items:center;
         justify-content:center;
-        min-height:48px;
-        padding:0 10px;
-        border-radius:8px;
+        min-height:42px;
+        padding:10px 14px;
+        border-radius:6px;
         background:#fff;
         color:#111;
-        font-size:13px;
-        font-weight:600;
+        font-size:14px;
         line-height:1;
-        text-transform:uppercase;
-        letter-spacing:0.22px;
         cursor:pointer;
         user-select:none;
         box-sizing:border-box;
-        transition:background .15s ease, color .15s ease, transform .15s ease;
-        white-space:nowrap;
       }
 
       .pill input{
@@ -100,99 +104,79 @@
       }
 
       .pill span{
-        color:inherit;
+        position:relative;
+        z-index:1;
       }
 
       .pill:has(input:checked){
-        background:#9e2f0d;
-        color:#fff;
-      }
-
-      .searchShell{
-        width:100%;
-        background:#F6931E;
-        border-radius:16px;
-        padding:3px;
-        box-sizing:border-box;
+        background:#ffe0bf;
       }
 
       .searchBox{
         width:100%;
         display:flex;
         align-items:center;
-        background:#fff;
-        border-radius:12px;
-        padding:0 14px;
+        gap:8px;
+        background:#F6931E;
+        border-radius:18px;
+        padding:10px;
         box-sizing:border-box;
-        min-height:54px;
       }
 
       .input{
-        width:100%;
         border:0;
         outline:0;
-        background:transparent;
-        padding:0;
-        font-size:15px;
+        font-size:14px;
         line-height:1.2;
+        flex:1 1 auto;
+        min-width:0;
+        padding:12px 14px;
+        background:#fff;
         color:#222;
+        border-radius:10px;
       }
 
       .input::placeholder{
-        color:#7c7c7c;
+        color:#7a7a7a;
+      }
+
+      .btn{
+        border:0;
+        background:#F6931E;
+        color:#fff;
+        width:34px;
+        min-width:34px;
+        height:34px;
+        border-radius:8px;
+        cursor:pointer;
+        font-size:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:0;
+      }
+
+      .btn::before{
+        content:"";
+        width:16px;
+        height:16px;
+        display:block;
+        background-repeat:no-repeat;
+        background-position:center;
+        background-size:16px 16px;
+        background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239e2f0d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3'/></svg>");
+      }
+
+      .btn:active{
+        transform:translateY(1px);
       }
 
       .subTag{
-        width:min(760px,100%);
+        width:min(720px,100%);
         font-size:13px;
         color:#666;
         text-align:center;
-        margin-top:10px;
-      }
-
-      @media (min-width: 721px){
-        .heroWrap{
-          max-width:1120px;
-        }
-
-        .headline{
-          font-size:30px;
-          margin:2px 0 16px;
-        }
-
-        .controlsWrap{
-          width:min(820px,100%);
-        }
-
-        .modeRow{
-          gap:12px;
-        }
-
-        .pill{
-          min-height:50px;
-          font-size:14px;
-        }
-
-        .searchShell{
-          border-radius:18px;
-          padding:3px;
-        }
-
-        .searchBox{
-          min-height:58px;
-          border-radius:13px;
-          padding:0 18px;
-        }
-
-        .input{
-          font-size:17px;
-        }
-
-        .subTag{
-          width:min(820px,100%);
-          font-size:14px;
-          margin-top:12px;
-        }
+        margin-top:8px;
       }
 
       @media (max-width: 720px){
@@ -204,45 +188,56 @@
           width:min(100%, 560px);
         }
 
-        .heroWrap{
-          margin:7px 0 2px;
+        .heroImage{
+          margin-top:-8%;
+          margin-bottom:-8%;
         }
 
         .headline{
-          font-size:22px;
+          font-size:21px;
           line-height:1.1;
-          margin:0 0 12px;
         }
 
         .controlsWrap{
           width:100%;
-          gap:8px;
+          margin-top:8px;
         }
 
         .modeRow{
           gap:8px;
+          margin-bottom:8px;
         }
 
         .pill{
-          min-height:44px;
-          font-size:11px;
-          padding:0 6px;
-          border-radius:7px;
-        }
-
-        .searchShell{
-          border-radius:14px;
-          padding:3px;
+          min-height:40px;
+          font-size:13px;
+          padding:10px 12px;
+          border-radius:6px;
         }
 
         .searchBox{
-          min-height:48px;
-          border-radius:10px;
-          padding:0 12px;
+          padding:10px;
+          gap:6px;
+          border-radius:16px;
         }
 
         .input{
           font-size:13px;
+          padding:10px 12px;
+          border-radius:8px;
+        }
+
+        .btn{
+          width:32px;
+          min-width:32px;
+          height:32px;
+          border-radius:8px;
+        }
+
+        .btn::before{
+          width:15px;
+          height:15px;
+          background-size:15px 15px;
         }
 
         .subTag{
@@ -252,7 +247,6 @@
         }
       }
     </style>
-
   </head>
 
   <body>
@@ -277,36 +271,35 @@
             <div class="modeRow" aria-label="Tipo de búsqueda">
               <label class="pill">
                 <input type="radio" name="mode" value="buy" checked />
-                <span>COMPRAR</span>
+                <span>Comprar</span>
               </label>
 
               <label class="pill">
                 <input type="radio" name="mode" value="rent" />
-                <span>ALQUILAR</span>
+                <span>Alquilar</span>
               </label>
 
               <label class="pill">
                 <input type="radio" name="mode" value="room" />
-                <span>HABITACIÓN</span>
+                <span>Habitación</span>
               </label>
 
               <label class="pill">
                 <input type="radio" name="mode" value="new_build" />
-                <span>OBRA NUEVA</span>
+                <span>Obra nueva</span>
               </label>
             </div>
 
-            <div class="searchShell">
-              <form id="form" class="searchBox" autocomplete="off">
-                <input
-                  id="q"
-                  class="input"
-                  placeholder="Escribe una ciudad o zona (ej. Murcia)"
-                  aria-label="Buscar ciudad o zona"
-                  enterkeyhint="search"
-                />
-              </form>
-            </div>
+            <form id="form" class="searchBox" autocomplete="off">
+              <input
+                id="q"
+                class="input"
+                placeholder="Escribe una ciudad o zona (ej. Murcia)"
+                aria-label="Buscar ciudad o zona"
+              />
+
+              <button class="btn" type="submit" aria-label="Buscar"></button>
+            </form>
           </div>
 
           <div class="subTag">Una vivienda, un anuncio.</div>
