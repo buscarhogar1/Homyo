@@ -105,7 +105,7 @@ html,body{
   color:#fff;
   text-decoration:none;
   font-size:14px;
-  font-weight:650;
+  font-weight:400;
   padding:6px 10px;
   border-radius:999px;
   display:inline-flex;
@@ -162,7 +162,7 @@ html,body{
   color:#fff;
   cursor:pointer;
   font-size:14px;
-  font-weight:650;
+  font-weight:400;
   padding:6px 10px;
   border-radius:999px;
 }
