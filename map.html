@@ -15,6 +15,28 @@
     />
 
     <link rel="stylesheet" href="./bh-map.css" />
+
+    <style>
+      @media (max-width: 720px){
+        #bhHeader{
+          display:block !important;
+          position:relative !important;
+          z-index:10020 !important;
+        }
+
+        #bhHeader .topbar{
+          display:flex !important;
+          visibility:visible !important;
+          opacity:1 !important;
+          position:relative !important;
+          z-index:10021 !important;
+        }
+
+        .mobileBottomNav{
+          display:none !important;
+        }
+      }
+    </style>
   </head>
 
   <body>
@@ -185,11 +207,6 @@
     </div>
 
 
-    <nav class="mobileBottomNav" aria-hidden="true">
-      <a href="index.html" class="mobileBottomItem">Inicio</a>
-      <a href="#" class="mobileBottomItem">Favoritos</a>
-      <a href="#" class="mobileBottomItem">Perfil</a>
-    </nav>
 
     <div id="bhFooter"></div>
 
