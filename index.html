@@ -22,42 +22,32 @@
         display:flex;
         align-items:flex-start;
         justify-content:center;
-        padding: 0 16px 12px;
-        box-sizing: border-box;
+        padding:0 16px 12px;
+        box-sizing:border-box;
       }
 
       .center{
-        width:min(1180px, 100%);
+        width:min(1180px,100%);
         display:grid;
         justify-items:center;
         text-align:center;
       }
 
-      /* El espacio grande venía del propio lienzo de la PNG.
-         Aquí la recortamos visualmente sin tocar el archivo. */
       .heroWrap{
         width:100%;
         margin:7px 0 0;
       }
 
-      .heroCrop{
-        width:100%;
-        overflow:hidden;
-        line-height:0;
-      }
-
       .heroImage{
         width:100%;
-        height:auto;
         display:block;
-        margin-top:-6%;
-        margin-bottom:-6%;
+        height:auto;
       }
 
       .headline{
-        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, Segoe UI, Roboto, sans-serif;
+        font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,Segoe UI,Roboto,sans-serif;
         font-weight:700;
-        letter-spacing:-0.4px;
+        letter-spacing:-0.3px;
         font-size:24px;
         line-height:1.08;
         color:#111;
@@ -74,9 +64,10 @@
         width:100%;
         display:flex;
         justify-content:center;
+        align-items:center;
         gap:8px;
-        flex-wrap:wrap;
-        margin-bottom:8px;
+        flex-wrap:nowrap;
+        margin-bottom:10px;
       }
 
       .pill{
@@ -85,15 +76,19 @@
         align-items:center;
         justify-content:center;
         min-height:42px;
-        padding:10px 14px;
+        padding:10px 10px;
         border-radius:6px;
         background:#fff;
         color:#111;
-        font-size:14px;
+        font-size:12px;
         line-height:1;
+        text-transform:uppercase;
+        letter-spacing:0.3px;
         cursor:pointer;
         user-select:none;
         box-sizing:border-box;
+        flex:1 1 0;
+        min-width:0;
       }
 
       .pill input{
@@ -106,20 +101,24 @@
       .pill span{
         position:relative;
         z-index:1;
+        display:block;
+        width:100%;
+        text-align:center;
+        white-space:nowrap;
       }
 
       .pill:has(input:checked){
-        background:#ffe0bf;
+        background:#f3dcc0;
       }
 
       .searchBox{
         width:100%;
         display:flex;
+        justify-content:center;
         align-items:center;
-        gap:8px;
         background:#F6931E;
         border-radius:18px;
-        padding:10px;
+        padding:10px 18px;
         box-sizing:border-box;
       }
 
@@ -128,7 +127,8 @@
         outline:0;
         font-size:14px;
         line-height:1.2;
-        flex:1 1 auto;
+        flex:0 1 82%;
+        width:82%;
         min-width:0;
         padding:12px 14px;
         background:#fff;
@@ -140,43 +140,50 @@
         color:#7a7a7a;
       }
 
-      .btn{
-        border:0;
-        background:#F6931E;
-        color:#fff;
-        width:34px;
-        min-width:34px;
-        height:34px;
-        border-radius:8px;
-        cursor:pointer;
-        font-size:0;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:0;
-      }
-
-      .btn::before{
-        content:"";
-        width:16px;
-        height:16px;
-        display:block;
-        background-repeat:no-repeat;
-        background-position:center;
-        background-size:16px 16px;
-        background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239e2f0d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3'/></svg>");
-      }
-
-      .btn:active{
-        transform:translateY(1px);
-      }
-
       .subTag{
         width:min(720px,100%);
-        font-size:13px;
+        font-size:12px;
         color:#666;
         text-align:center;
         margin-top:8px;
+      }
+
+      @media (min-width: 721px){
+        .headline{
+          font-size:30px;
+        }
+
+        .controlsWrap{
+          width:min(820px,100%);
+        }
+
+        .modeRow{
+          gap:10px;
+          margin-bottom:12px;
+        }
+
+        .pill{
+          min-height:46px;
+          font-size:14px;
+          padding:12px 14px;
+        }
+
+        .searchBox{
+          padding:12px 28px;
+          border-radius:20px;
+        }
+
+        .input{
+          width:76%;
+          flex:0 1 76%;
+          font-size:16px;
+          padding:13px 16px;
+          border-radius:10px;
+        }
+
+        .subTag{
+          font-size:13px;
+        }
       }
 
       @media (max-width: 720px){
@@ -185,16 +192,11 @@
         }
 
         .center{
-          width:min(100%, 560px);
-        }
-
-        .heroImage{
-          margin-top:-8%;
-          margin-bottom:-8%;
+          width:min(100%,560px);
         }
 
         .headline{
-          font-size:21px;
+          font-size:23px;
           line-height:1.1;
         }
 
@@ -204,20 +206,22 @@
         }
 
         .modeRow{
-          gap:8px;
+          gap:6px;
           margin-bottom:8px;
+          flex-wrap:nowrap;
         }
 
         .pill{
-          min-height:40px;
-          font-size:13px;
-          padding:10px 12px;
+          min-height:38px;
+          font-size:11px;
+          padding:10px 6px;
           border-radius:6px;
+          flex:1 1 0;
+          min-width:0;
         }
 
         .searchBox{
-          padding:10px;
-          gap:6px;
+          padding:10px 20px;
           border-radius:16px;
         }
 
@@ -225,19 +229,8 @@
           font-size:13px;
           padding:10px 12px;
           border-radius:8px;
-        }
-
-        .btn{
-          width:32px;
-          min-width:32px;
-          height:32px;
-          border-radius:8px;
-        }
-
-        .btn::before{
-          width:15px;
-          height:15px;
-          background-size:15px 15px;
+          width:78%;
+          flex:0 1 78%;
         }
 
         .subTag{
@@ -256,13 +249,11 @@
       <main class="main">
         <div class="center">
           <div class="heroWrap">
-            <div class="heroCrop">
-              <img
-                src="/buscarhogardemo/index-hero.png?v=3"
-                alt="Ilustración de varios tipos de viviendas"
-                class="heroImage"
-              />
-            </div>
+            <img
+              src="/buscarhogardemo/index-hero.png?v=3"
+              alt="Ilustración de varios tipos de viviendas"
+              class="heroImage"
+            />
           </div>
 
           <h1 class="headline">Anuncios publicados únicamente por profesionales inmobiliarios</h1>
@@ -271,22 +262,22 @@
             <div class="modeRow" aria-label="Tipo de búsqueda">
               <label class="pill">
                 <input type="radio" name="mode" value="buy" checked />
-                <span>Comprar</span>
+                <span>COMPRAR</span>
               </label>
 
               <label class="pill">
                 <input type="radio" name="mode" value="rent" />
-                <span>Alquilar</span>
+                <span>ALQUILAR</span>
               </label>
 
               <label class="pill">
                 <input type="radio" name="mode" value="room" />
-                <span>Habitación</span>
+                <span>HABITACIÓN</span>
               </label>
 
               <label class="pill">
                 <input type="radio" name="mode" value="new_build" />
-                <span>Obra nueva</span>
+                <span>OBRA NUEVA</span>
               </label>
             </div>
 
@@ -296,9 +287,8 @@
                 class="input"
                 placeholder="Escribe una ciudad o zona (ej. Murcia)"
                 aria-label="Buscar ciudad o zona"
+                enterkeyhint="search"
               />
-
-              <button class="btn" type="submit" aria-label="Buscar"></button>
             </form>
           </div>
 
