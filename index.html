@@ -29,17 +29,32 @@
       }
 
       .center{
-        width:min(980px, 100%);
+        width:min(1180px, 100%);
         display:grid;
         justify-items:center;
         text-align:center;
       }
 
+      .heroWrap{
+        width:min(1180px, 100%);
+        margin: 0 auto 18px;
+        display:flex;
+        justify-content:center;
+      }
+
+      .heroImage{
+        width:100%;
+        max-width:1180px;
+        height:auto;
+        display:block;
+        image-rendering:auto;
+      }
+
       .headline{
         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, Segoe UI, Roboto, sans-serif;
-        font-weight: 300;
+        font-weight: 400;
         letter-spacing: -0.6px;
-        font-size: 29px;
+        font-size: 32px;
         line-height: 1.05;
         color: #111;
         margin: 0 0 14px 0;
@@ -116,34 +131,29 @@
       }
 
       .searchIcon{
-        width: 20px;
-        height: 20px;
-        color: #9aa0a6;
+        width: 22px;
+        height: 22px;
+        color: var(--muted);
         flex: 0 0 auto;
-        margin-left: 2px;
+        margin-left: 8px;
       }
 
       .input{
         border:0;
         outline:0;
-        font-size: 17px;
+        font-size: 18px;
         flex: 1 1 auto;
-        padding: 11px 4px;
+        padding: 12px 6px;
         background: transparent;
-        color:#202124;
-      }
-
-      .input::placeholder{
-        color:#5f6368;
       }
 
       .btn{
         border:0;
         background: #F6931E;
         color: #fff;
-        width: 44px;
-        height: 44px;
-        border-radius: 999px;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
         cursor: pointer;
         font-size: 0;
         font-weight: 650;
@@ -151,17 +161,17 @@
         display:flex;
         align-items:center;
         justify-content:center;
-        flex: 0 0 44px;
+        flex: 0 0 48px;
       }
 
       .btn::before{
         content:"";
-        width: 18px;
-        height: 18px;
+        width: 20px;
+        height: 20px;
         display:block;
         background-repeat:no-repeat;
         background-position:center;
-        background-size:18px 18px;
+        background-size:20px 20px;
         background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3'/></svg>");
       }
 
@@ -185,8 +195,12 @@
           width: min(100%, 560px);
         }
 
+        .heroWrap{
+          margin-bottom: 14px;
+        }
+
         .headline{
-          font-size: 22px;
+          font-size: 24px;
           line-height: 1.15;
           margin-bottom: 18px;
         }
@@ -199,8 +213,8 @@
         }
 
         .pill{
-          font-size: 13px;
-          padding: 9px 14px;
+          font-size: 14px;
+          padding: 8px 12px;
         }
 
         .searchBox{
@@ -208,7 +222,7 @@
           flex-direction: row;
           align-items: center;
           border-radius: 999px;
-          padding: 7px 10px 7px 12px;
+          padding: 8px 10px;
           gap: 8px;
         }
 
@@ -218,15 +232,15 @@
 
         .input{
           font-size: 16px;
-          padding: 10px 4px;
+          padding: 12px 6px;
           width: auto;
           box-sizing: border-box;
         }
 
         .btn{
-          width: 42px;
-          min-width: 42px;
-          height: 42px;
+          width: 48px;
+          min-width: 48px;
+          height: 48px;
           margin: 0;
           padding: 0;
           font-size: 0;
@@ -247,26 +261,38 @@
     <div class="wrap">
       <main class="main">
         <div class="center">
+          <div class="heroWrap">
+            <img
+              src="./index-hero.png"
+              alt="Ilustración de varios tipos de viviendas"
+              class="heroImage"
+            />
+          </div>
+
           <h1 class="headline">Anuncios publicados únicamente por profesionales inmobiliarios</h1>
 
           <div class="modeRow" aria-label="Tipo de búsqueda">
             <label class="pill">
               <input type="radio" name="mode" value="buy" checked />
+              <span class="dot" aria-hidden="true"></span>
               <span>Comprar</span>
             </label>
 
             <label class="pill">
               <input type="radio" name="mode" value="rent" />
+              <span class="dot" aria-hidden="true"></span>
               <span>Alquilar</span>
             </label>
 
             <label class="pill">
               <input type="radio" name="mode" value="room" />
+              <span class="dot" aria-hidden="true"></span>
               <span>Habitación</span>
             </label>
 
             <label class="pill">
               <input type="radio" name="mode" value="new_build" />
+              <span class="dot" aria-hidden="true"></span>
               <span>Obra nueva</span>
             </label>
           </div>
