@@ -890,10 +890,19 @@ body{
 
   .cardGrid{
     grid-template-columns: 1fr;
-    height: 320px;
+    grid-template-rows: 210px auto;
+    height: auto;
   }
-  .mediaSide{ height: 210px; }
-  .textSide{ height: calc(320px - 210px); }
+  .mediaSide{
+    height: 210px;
+    min-height: 210px;
+  }
+  .textSide{
+    height: auto;
+    min-height: 0;
+    padding: 14px;
+    overflow: visible;
+  }
   .addrTop{ padding-right: 0; }
 }
 /* Filtros: estilo “tarjeta” similar a tu versión anterior */
@@ -1264,7 +1273,7 @@ body{
 
   .card{
     left: 50%;
-    bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+    bottom: 14px;
     width: calc(100% - 20px);
     max-width: none;
     border-radius: 14px;
@@ -1272,7 +1281,7 @@ body{
 
   .sunDateDock,
   .sunTimebar{
-    bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+    bottom: 14px;
   }
 
   #status{
@@ -1306,7 +1315,7 @@ body{
     background:#fff;
     color:#111;
     font-size:13px;
-    white-space:nowrap;
+    white-space:normal;
   }
 
   .mobileOrderMenu{
