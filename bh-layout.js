@@ -26,7 +26,7 @@ function renderHeader({ showMiniSearch, root }) {
     <header class="topbar">
       <div class="topbarInner">
         <a class="brand" href="${root}" aria-label="Ir a inicio">
-          <span class="brandText">inmo</span>
+          <span class="brandText">HOMYO</span>
         </a>
 
         ${mini}

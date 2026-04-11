@@ -78,11 +78,11 @@
         justify-content:center;
         min-height:48px;
         padding:0 10px;
-        border-radius:8px;
-        background:#fff;
-        color:#666;
+        border-radius:999px;
+        background:transparent;
+        color:#444;
         font-size:13px;
-        font-weight:600;
+        font-weight:500;
         line-height:1;
         text-transform:uppercase;
         letter-spacing:0.22px;
@@ -104,8 +104,12 @@
         color:inherit;
       }
 
+      .pill:hover{
+        background:#f1f3f4;
+      }
+
       .pill:has(input:checked){
-        background:#9e2f0d;
+        background:#098b8f;
         color:#fff;
       }
 
@@ -117,13 +121,21 @@
         box-sizing:border-box;
       }
 
-      
       .searchIcon{
         color:#7c7c7c;
-        font-size:16px;
-        margin-right:8px;
+        width:18px;
+        min-width:18px;
+        height:18px;
+        margin-right:10px;
         display:flex;
         align-items:center;
+        justify-content:center;
+      }
+
+      .searchIcon svg{
+        width:18px;
+        height:18px;
+        display:block;
       }
 
       .searchBox{
@@ -196,15 +208,6 @@
           padding:0;
         }
 
-        
-      .searchIcon{
-        color:#7c7c7c;
-        font-size:16px;
-        margin-right:8px;
-        display:flex;
-        align-items:center;
-      }
-
       .searchBox{
           min-height:58px;
           border-radius:999px;
@@ -224,14 +227,15 @@
 
       @media (max-width: 720px){
         .main{
-          padding:25px 16px 10px;
+          padding:0 0 10px;
         }
 
         .center{
-          width:min(100%, 560px);
+          width:100%;
         }
 
         .heroWrap{
+          width:100%;
           margin:0 0 15px;
         }
 
@@ -260,15 +264,6 @@
         .searchShell{
           padding:0;
         }
-
-        
-      .searchIcon{
-        color:#7c7c7c;
-        font-size:16px;
-        margin-right:8px;
-        display:flex;
-        align-items:center;
-      }
 
       .searchBox{
           min-height:50px;
@@ -333,7 +328,12 @@
 
             <div class="searchShell">
               <form id="form" class="searchBox" autocomplete="off">
-                <span class="searchIcon">🔍</span>
+                <span class="searchIcon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="M21 21l-4.3-4.3"></path>
+                  </svg>
+                </span>
                 <input
                   id="q"
                   class="input"
