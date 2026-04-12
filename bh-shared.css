@@ -2,7 +2,7 @@
   --bg:#ffffff;
   --text:#111;
   --muted:#6b7280;
-  --terra:#E8E4DA;
+  --terra:#F2E9D8;
   --btn:#1a73e8;
   --btnText:#fff;
   --border:#111;
@@ -102,7 +102,7 @@ html,body{
 }
 
 .navActionLink{
-  color:#fff;
+  color:#8A1F2D;
   text-decoration:none;
   font-size:14px;
   font-weight:400;
@@ -118,6 +118,7 @@ html,body{
 }
 
 .navActionIcon{
+  color:#8A1F2D;
   width:16px;
   min-width:16px;
   height:16px;
@@ -145,7 +146,7 @@ html,body{
 .navActionText{
   display:inline-block;
   line-height:1;
-  color:#fff;
+  color:#8A1F2D;
 }
 
 .navUserArea{
@@ -159,7 +160,7 @@ html,body{
   appearance:none;
   border:0;
   background:transparent;
-  color:#fff;
+  color:#8A1F2D;
   cursor:pointer;
   font-size:14px;
   font-weight:400;
