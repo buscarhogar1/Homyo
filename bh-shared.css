@@ -2,7 +2,7 @@
   --bg:#ffffff;
   --text:#111;
   --muted:#6b7280;
-  --terra:#E8E4DA;
+  --terra:#8C3F1F;
   --btn:#1a73e8;
   --btnText:#fff;
   --border:#111;
@@ -46,7 +46,7 @@ html,body{
 }
 
 .brandText{
-  color:#8C1F2D;
+  color:#fff;
   font-family: Georgia, "Times New Roman", serif;
   font-size:29px;
   font-weight:700;
