@@ -250,17 +250,17 @@ body{
   width: 14px;
   height: 14px;
   border-radius: 999px;
-  background: #ffb100;
+  background: #8C1F2D;
   border: 3px solid #ffffff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.25);
   transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
 }
 .dot:hover { transform: scale(1.12); }
 
-/* Anuncio visto: blanco con borde naranja (pedido) */
+/* Anuncio visto: blanco con borde dorado */
 .dot.seen{
   background: #ffffff;
-  border-color: #ffb100;
+  border-color: #C4962A;
 }
 
 /* Hover desde listado */

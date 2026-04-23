@@ -1,11 +1,13 @@
 :root{
-  --bg:#ffffff;
+  --bg:#FFFDFA;
   --text:#111;
   --muted:#6b7280;
   --terra:#FFFDFA;
-  --btn:#1a73e8;
+  --granate:#8C1F2D;
+  --dorado:#C4962A;
+  --btn:#8C1F2D;
   --btnText:#fff;
-  --border:#111;
+  --border:#ddd;
   --softBorder:#e6e7eb;
   --shadow: 0 10px 30px rgba(0,0,0,0.10);
 }
@@ -22,11 +24,12 @@ html,body{
 .topbar{
   height:54px;
   background:var(--terra);
-  color:#fff;
+  color:#8C1F2D;
   display:flex;
   align-items:center;
   padding:0 16px;
   box-sizing:border-box;
+  border:none;
 }
 
 .topbarInner{
@@ -47,51 +50,64 @@ html,body{
 
 .brandText{
   color:#8C1F2D;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size:29px;
-  font-weight:700;
-  letter-spacing:-0.6px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size:15px;
+  font-weight:400;
+  letter-spacing:5px;
   line-height:1;
-  text-transform:lowercase;
+  text-transform:uppercase;
 }
 
 .miniSearch{
   display:flex;
   align-items:center;
-  gap:10px;
-  border:1px solid rgba(255,255,255,0.30);
-  background:rgba(255,255,255,0.10);
+  gap:8px;
+  border:1px solid rgba(140,31,45,0.12);
+  background:#fff;
   border-radius:999px;
-  padding:5px 10px;
-  min-width:280px;
-  max-width:460px;
-  margin-left:34px;
+  padding:0 14px;
+  min-width:200px;
+  max-width:420px;
+  height:34px;
+  margin-left:24px;
   flex:1 1 auto;
+  box-shadow:0 1px 6px rgba(0,0,0,.07);
+  transition:box-shadow .18s ease, border-color .18s ease;
+}
+
+.miniSearch:hover,
+.miniSearch:focus-within{
+  box-shadow:0 2px 10px rgba(140,31,45,.12);
+  border-color:rgba(140,31,45,0.25);
 }
 
 .miniSearch input{
   border:0;
   outline:0;
   background:transparent;
-  color:#fff;
-  font-size:13.5px;
+  color:#222;
+  font-size:13px;
   width:100%;
 }
 
 .miniSearch input::placeholder{
-  color:rgba(255,255,255,0.80);
+  color:#aaa;
 }
 
 .miniSearch button{
   border:0;
   background:transparent;
-  color:#fff;
+  color:#aaa;
   cursor:pointer;
+  display:flex;
+  align-items:center;
 }
 
 .miniIcon{
-  width:20px;
-  height:20px;
+  width:16px;
+  height:16px;
+  color:#aaa;
+  flex-shrink:0;
 }
 
 .rightGroup{
@@ -118,7 +134,7 @@ html,body{
 }
 
 .navActionIcon{
-  color:#8A1F2D;
+  color:#8C1F2D;
   width:16px;
   min-width:16px;
   height:16px;
@@ -128,7 +144,6 @@ html,body{
   flex:0 0 auto;
   font-size:15px;
   line-height:1;
-  color:#fff;
 }
 
 .navActionIconSvg{

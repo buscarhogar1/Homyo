@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Buscar Hogar</title>
 
-    <link rel="stylesheet" href="./bh-shared.css" />
+    <link rel="stylesheet" href="./bh-shared.css?v=3" />
+    <style>
+      .topbar { border: none !important; box-shadow: none !important; }
+    </style>
 
     
     <style>
@@ -19,11 +22,39 @@
         grid-template-rows: 1fr auto;
       }
 
+      /* ---- Hero full-bleed ---- */
+      .heroWrap{
+        position:relative;
+        width:100%;
+        margin:0;
+        overflow:hidden;
+        line-height:0;
+      }
+
+      .heroImage{
+        width:100%;
+        height:auto;
+        display:block;
+        margin-top:-8%;
+      }
+
+      /* Gradiente superior: funde el header con la imagen */
+      .heroWrap::before{
+        content:'';
+        position:absolute;
+        top:0; left:0; right:0;
+        height:38%;
+        background:linear-gradient(to bottom, #FFFDFA 0%, rgba(255,253,250,0) 100%);
+        pointer-events:none;
+        z-index:1;
+      }
+
+      /* ---- Layout principal ---- */
       .main{
         display:flex;
-        align-items:flex-start;
-        justify-content:center;
-        padding:0 16px 14px;
+        flex-direction:column;
+        align-items:center;
+        padding:0 16px 24px;
         box-sizing:border-box;
       }
 
@@ -32,43 +63,58 @@
         display:grid;
         justify-items:center;
         text-align:center;
+        padding-top:28px;
       }
 
-      .heroWrap{
-        width:100%;
-        margin:7px 0 2px;
-      }
-
-      .heroImage{
-        width:100%;
-        height:auto;
-        display:block;
-      }
-
+      /* ---- Headline ---- */
       .headline{
-        margin:5px 0 18px;
-        font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,Segoe UI,Roboto,sans-serif;
+        font-family: Georgia, "Times New Roman", serif;
         font-weight:700;
-        letter-spacing:-0.4px;
-        font-size:24px;
-        line-height:1.08;
-        color:#666;
-        margin:0 0 14px;
+        letter-spacing:-0.3px;
+        font-size:34px;
+        line-height:1.15;
+        color:#8C1F2D;
+        margin:0 0 20px;
         text-wrap:balance;
       }
 
+      /* ---- Tagline ---- */
+      .tagline{
+        display:flex;
+        align-items:center;
+        gap:14px;
+        margin:0 0 28px;
+        color:#8C1F2D;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:1.2px;
+        text-transform:uppercase;
+      }
+
+      .tagline::before,
+      .tagline::after{
+        content:'';
+        height:1px;
+        width:36px;
+        background:#C4962A;
+        flex-shrink:0;
+      }
+
+      /* ---- Controls ---- */
       .controlsWrap{
         width:min(760px,100%);
         display:grid;
-        gap:10px;
+        gap:16px;
       }
 
+      /* ---- Pills: estilo línea/pestaña ---- */
       .modeRow{
         width:100%;
         display:grid;
         grid-template-columns:repeat(4, minmax(0, 1fr));
-        gap:10px;
+        gap:0;
         align-items:stretch;
+        border-bottom:2px solid #e8e0d5;
       }
 
       .pill{
@@ -76,21 +122,23 @@
         display:flex;
         align-items:center;
         justify-content:center;
-        min-height:48px;
-        padding:0 10px;
-        border-radius:999px;
+        min-height:44px;
+        padding:0 8px;
+        border-radius:0;
         background:transparent;
-        color:#444;
-        font-size:13px;
+        color:#888;
+        font-size:12px;
         font-weight:500;
         line-height:1;
         text-transform:uppercase;
-        letter-spacing:0.22px;
+        letter-spacing:0.6px;
         cursor:pointer;
         user-select:none;
         box-sizing:border-box;
-        transition:background .15s ease, color .15s ease, transform .15s ease;
+        transition:color .15s ease;
         white-space:nowrap;
+        border-bottom:2px solid transparent;
+        margin-bottom:-2px;
       }
 
       .pill input{
@@ -100,29 +148,28 @@
         pointer-events:none;
       }
 
-      .pill span{
-        color:inherit;
-      }
+      .pill span{ color:inherit; }
 
       .pill:hover{
-        background:#f1f3f4;
+        color:#8C1F2D;
       }
 
       .pill:has(input:checked){
-        background:#098b8f;
-        color:#fff;
+        color:#8C1F2D;
+        font-weight:700;
+        border-bottom:2px solid #8C1F2D;
       }
 
+      /* ---- Search ---- */
       .searchShell{
         width:100%;
         background:transparent;
         padding:0;
-        margin-top:0px;
         box-sizing:border-box;
       }
 
       .searchIcon{
-        color:#7c7c7c;
+        color:#aaa;
         width:18px;
         min-width:18px;
         height:18px;
@@ -132,11 +179,7 @@
         justify-content:center;
       }
 
-      .searchIcon svg{
-        width:18px;
-        height:18px;
-        display:block;
-      }
+      .searchIcon svg{ width:18px; height:18px; display:block; }
 
       .searchBox{
         width:100%;
@@ -144,16 +187,18 @@
         align-items:center;
         background:#fff;
         border-radius:999px;
-        padding:0 18px;
+        padding:0 20px;
         box-sizing:border-box;
-        min-height:54px;
-        box-shadow:0 1px 6px rgba(32,33,36,.28);
+        min-height:56px;
+        box-shadow:0 2px 12px rgba(0,0,0,.10);
         transition:box-shadow .18s ease;
+        border:1px solid rgba(140,31,45,0.12);
       }
 
       .searchBox:hover,
       .searchBox:focus-within{
-        box-shadow:0 2px 10px rgba(32,33,36,.32);
+        box-shadow:0 4px 18px rgba(140,31,45,.14);
+        border-color:rgba(140,31,45,0.25);
       }
 
       .input{
@@ -167,118 +212,61 @@
         color:#222;
       }
 
-      .input::placeholder{
-        color:#7c7c7c;
-      }
+      .input::placeholder{ color:#aaa; }
 
+      /* ---- Subetiqueta ---- */
       .subTag{
         width:min(760px,100%);
-        font-size:13px;
-        color:#666;
+        font-size:11.5px;
+        color:#aaa;
+        letter-spacing:0.4px;
         text-align:center;
-        margin-top:10px;
+        margin-top:12px;
       }
 
+      /* ---- Desktop ---- */
       @media (min-width: 721px){
-        .heroWrap{
-          max-width:806px; /* reduced additional 10% */
-          margin:0 0 5px; /* closer to header */
-        }
+        .center{ padding-top:32px; }
 
-        .headline{
-          margin:5px 0 20px;
-          font-size:30px;
-        }
+        .headline{ font-size:42px; margin-bottom:20px; }
 
-        .controlsWrap{
-          width:min(820px,100%);
-          gap:25px;
-        }
+        .tagline{ font-size:12px; margin-bottom:32px; }
 
-        .modeRow{
-          gap:12px;
-        }
+        .controlsWrap{ width:min(820px,100%); gap:0; }
 
-        .pill{
-          min-height:50px;
-          font-size:14px;
-        }
+        .modeRow{ margin-bottom:20px; }
 
-        .searchShell{
-          padding:0;
-        }
+        .pill{ min-height:46px; font-size:12px; padding:0 12px; }
 
-      .searchBox{
-          min-height:58px;
-          border-radius:999px;
-          padding:0 20px;
-        }
+        .searchBox{ min-height:60px; padding:0 22px; }
 
-        .input{
-          font-size:17px;
-        }
+        .input{ font-size:17px; }
 
-        .subTag{
-          width:min(820px,100%);
-          font-size:14px;
-          margin-top:10px;
-        }
+        .subTag{ width:min(820px,100%); font-size:12px; margin-top:14px; }
       }
 
+      /* ---- Mobile ---- */
       @media (max-width: 720px){
-        .main{
-          padding:0 0 10px;
-        }
+        .main{ padding:0 14px 20px; }
 
-        .center{
-          width:100%;
-        }
+        .center{ width:100%; padding-top:20px; }
 
-        .heroWrap{
-          margin:0 0 15px;
-        }
+        .headline{ font-size:22px; margin-bottom:8px; }
 
-        .headline{
-          margin:0 0 25px;
-          font-size:22px;
-          line-height:1.1;
-        }
+        .tagline{ font-size:10px; letter-spacing:0.8px; margin-bottom:22px; }
+        .tagline::before, .tagline::after{ width:24px; }
 
-        .controlsWrap{
-          width:100%;
-          gap:25px;
-        }
+        .controlsWrap{ width:100%; gap:0; }
 
-        .modeRow{
-          gap:8px;
-        }
+        .modeRow{ margin-bottom:16px; }
 
-        .pill{
-          min-height:44px;
-          font-size:11px;
-          padding:0 6px;
-          border-radius:7px;
-        }
+        .pill{ min-height:40px; font-size:10px; padding:0 4px; }
 
-        .searchShell{
-          padding:0;
-        }
+        .searchBox{ min-height:50px; padding:0 16px; }
 
-      .searchBox{
-          min-height:50px;
-          border-radius:999px;
-          padding:0 16px;
-        }
+        .input{ font-size:14px; }
 
-        .input{
-          font-size:13px;
-        }
-
-        .subTag{
-          width:100%;
-          font-size:12px;
-          margin-top:10px;
-        }
+        .subTag{ width:100%; font-size:11px; margin-top:10px; }
       }
     </style>
 
@@ -289,39 +277,38 @@
 
     <div class="wrap">
       <main class="main">
-        <div class="center">
-          <div class="heroWrap">
-            <div class="heroCrop">
-              <img
-                src="/buscarhogardemo/index-hero.png?v=3"
-                alt="Ilustración de varios tipos de viviendas"
-                class="heroImage"
-              />
-            </div>
-          </div>
 
+        <!-- Hero full-bleed fuera del .center -->
+        <div class="heroWrap">
+          <img
+            src="./index-hero.png"
+            alt="Ilustración de varios tipos de viviendas"
+            class="heroImage"
+          />
+        </div>
+
+        <div class="center">
           <h1 class="headline">Solo anuncios de profesionales</h1>
+
+          <div class="tagline">Encuentra tu hogar</div>
 
           <div class="controlsWrap">
             <div class="modeRow" aria-label="Tipo de búsqueda">
               <label class="pill">
                 <input type="radio" name="mode" value="buy" checked />
-                <span>COMPRAR</span>
+                <span>Comprar</span>
               </label>
-
               <label class="pill">
                 <input type="radio" name="mode" value="rent" />
-                <span>ALQUILAR</span>
+                <span>Alquilar</span>
               </label>
-
               <label class="pill">
                 <input type="radio" name="mode" value="room" />
-                <span>HABITACIÓN</span>
+                <span>Habitación</span>
               </label>
-
               <label class="pill">
                 <input type="radio" name="mode" value="new_build" />
-                <span>OBRA NUEVA</span>
+                <span>Obra nueva</span>
               </label>
             </div>
 
@@ -336,7 +323,7 @@
                 <input
                   id="q"
                   class="input"
-                  placeholder="Escribe una ciudad, zona, CP..."
+                  placeholder="Escribe una ciudad, zona o código postal..."
                   aria-label="Buscar ciudad o zona"
                   enterkeyhint="search"
                 />
@@ -344,7 +331,7 @@
             </div>
           </div>
 
-          <div class="subTag">Una vivienda, un anuncio.</div>
+          <div class="subTag">Una vivienda · Un anuncio</div>
         </div>
       </main>
 
