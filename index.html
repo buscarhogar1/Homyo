@@ -3,273 +3,279 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Buscar Hogar</title>
+    <title>Homyo — Solo anuncios de profesionales</title>
 
     <link rel="stylesheet" href="./bh-shared.css?v=3" />
-    <style>
-      .topbar { border: none !important; box-shadow: none !important; }
-    </style>
 
-    
     <style>
-      body{
-        background:#FFFDFA;
+      html, body { overflow-x: hidden; max-width: 100%; }
+      body { background:#FFFDFA; }
+
+      /* ── Header modificado: logo centrado, solo icono usuario ── */
+      .topbar { border: none !important; box-shadow: none !important; }
+
+      /* Sobreescribir layout del topbarInner para centrar el brand */
+      #bhHeader .topbarInner {
+        position: relative;
+        justify-content: center;
       }
 
-      .wrap{
+      /* Logo centrado absolutamente */
+      #bhHeader .brand {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      /* Eliminar favoritos y texto de cuenta */
+      #navFavoritos { display: none !important; }
+      #navLogin .navActionText { display: none !important; }
+
+      /* Solo mostrar el icono de cuenta */
+      #navLogin {
+        padding: 6px 8px;
+      }
+
+      /* rightGroup empuja a la derecha con margin-left auto */
+      #bhHeader .rightGroup {
+        margin-left: auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Cuando el usuario está logueado: ocultar label y solo mostrar avatar */
+      #navUserLabel { display: none !important; }
+      #navLogoutBtn { display: none !important; }
+
+      .wrap {
         min-height: calc(100% - 54px);
         display:grid;
         grid-template-rows: 1fr auto;
+        overflow-x: hidden;
       }
 
-      /* ---- Hero full-bleed ---- */
-      .heroWrap{
-        position:relative;
-        width:100%;
-        margin:0;
-        overflow:hidden;
-        line-height:0;
+      .main {
+        display:flex;
+        flex-direction:column;
+        align-items:stretch;
+        padding-bottom:56px;
+        overflow-x: hidden;
       }
 
-      .heroImage{
-        width:100%;
-        height:auto;
-        display:block;
-        margin-top:-8%;
-      }
-
-      /* Gradiente superior: funde el header con la imagen */
-      .heroWrap::before{
-        content:'';
-        position:absolute;
-        top:0; left:0; right:0;
-        height:38%;
-        background:linear-gradient(to bottom, #FFFDFA 0%, rgba(255,253,250,0) 100%);
-        pointer-events:none;
-        z-index:1;
-      }
-
-      /* ---- Layout principal ---- */
-      .main{
+      /* ── Contenido ── */
+      .content {
         display:flex;
         flex-direction:column;
         align-items:center;
-        padding:0 16px 24px;
+        padding:32px 20px 40px;
+        text-align:center;
+      }
+
+      /* Bloque de búsqueda arriba */
+      .searchBlock {
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        width:100%;
+        padding:28px 20px 0;
         box-sizing:border-box;
       }
 
-      .center{
-        width:min(1180px, 100%);
-        display:grid;
-        justify-items:center;
-        text-align:center;
-        padding-top:28px;
-      }
-
-      /* ---- Headline ---- */
-      .headline{
+      /* Headline principal */
+      .headline {
         font-family: Georgia, "Times New Roman", serif;
         font-weight:700;
-        letter-spacing:-0.3px;
         font-size:34px;
         line-height:1.15;
+        letter-spacing:-0.3px;
         color:#8C1F2D;
-        margin:0 0 20px;
+        margin:0 0 12px;
         text-wrap:balance;
       }
 
-      /* ---- Tagline ---- */
-      .tagline{
-        display:flex;
+      /* Tagline con líneas doradas */
+      .tagline {
+        display:inline-flex;
         align-items:center;
         gap:14px;
-        margin:0 0 28px;
-        color:#8C1F2D;
+        color:#555;
         font-size:12px;
-        font-weight:600;
-        letter-spacing:1.2px;
+        font-weight:500;
+        letter-spacing:1.4px;
         text-transform:uppercase;
+        margin-bottom:32px;
+        font-family: Georgia, serif;
+        font-style:italic;
       }
-
-      .tagline::before,
-      .tagline::after{
+      .tagline::before, .tagline::after {
         content:'';
         height:1px;
         width:36px;
-        background:#C4962A;
+        background:linear-gradient(to right, transparent, #C4962A);
         flex-shrink:0;
       }
+      .tagline::after { background:linear-gradient(to left, transparent, #C4962A); }
 
-      /* ---- Controls ---- */
-      .controlsWrap{
-        width:min(760px,100%);
+      /* Pestañas de modo */
+      .modeRow {
         display:grid;
-        gap:16px;
+        grid-template-columns:repeat(4, minmax(0,1fr));
+        width:min(680px,100%);
+        border-bottom:1.5px solid #e8e0d5;
+        margin-bottom:22px;
       }
 
-      /* ---- Pills: estilo línea/pestaña ---- */
-      .modeRow{
-        width:100%;
-        display:grid;
-        grid-template-columns:repeat(4, minmax(0, 1fr));
-        gap:0;
-        align-items:stretch;
-        border-bottom:2px solid #e8e0d5;
-      }
-
-      .pill{
+      .pill {
         position:relative;
         display:flex;
         align-items:center;
         justify-content:center;
         min-height:44px;
         padding:0 8px;
-        border-radius:0;
         background:transparent;
-        color:#888;
-        font-size:12px;
+        color:#c0b8b0;
+        font-size:11px;
         font-weight:500;
-        line-height:1;
+        letter-spacing:1px;
         text-transform:uppercase;
-        letter-spacing:0.6px;
         cursor:pointer;
         user-select:none;
-        box-sizing:border-box;
-        transition:color .15s ease;
-        white-space:nowrap;
         border-bottom:2px solid transparent;
-        margin-bottom:-2px;
+        margin-bottom:-1.5px;
+        transition:color .15s;
+        white-space:nowrap;
       }
+      .pill input { position:absolute; inset:0; opacity:0; pointer-events:none; }
+      .pill span { color:inherit; }
+      .pill:hover { color:#8C1F2D; }
+      .pill:has(input:checked) { color:#8C1F2D; font-weight:700; border-bottom-color:#8C1F2D; }
 
-      .pill input{
-        position:absolute;
-        inset:0;
-        opacity:0;
-        pointer-events:none;
-      }
+      /* Buscador */
+      .searchWrap { width:min(680px,100%); }
 
-      .pill span{ color:inherit; }
-
-      .pill:hover{
-        color:#8C1F2D;
-      }
-
-      .pill:has(input:checked){
-        color:#8C1F2D;
-        font-weight:700;
-        border-bottom:2px solid #8C1F2D;
-      }
-
-      /* ---- Search ---- */
-      .searchShell{
-        width:100%;
-        background:transparent;
-        padding:0;
-        box-sizing:border-box;
-      }
-
-      .searchIcon{
-        color:#aaa;
-        width:18px;
-        min-width:18px;
-        height:18px;
-        margin-right:10px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-      }
-
-      .searchIcon svg{ width:18px; height:18px; display:block; }
-
-      .searchBox{
+      .searchBox {
         width:100%;
         display:flex;
         align-items:center;
         background:#fff;
         border-radius:999px;
-        padding:0 20px;
+        padding:0 22px;
+        min-height:58px;
         box-sizing:border-box;
-        min-height:56px;
-        box-shadow:0 2px 12px rgba(0,0,0,.10);
-        transition:box-shadow .18s ease;
-        border:1px solid rgba(140,31,45,0.12);
+        box-shadow:0 2px 20px rgba(140,31,45,.07);
+        border:1px solid rgba(140,31,45,.09);
+        transition:box-shadow .18s, border-color .18s;
+      }
+      .searchBox:focus-within {
+        box-shadow:0 4px 28px rgba(140,31,45,.14);
+        border-color:rgba(140,31,45,.25);
+      }
+      .searchIcon { color:#ddd; width:18px; min-width:18px; height:18px; margin-right:12px; display:flex; align-items:center; justify-content:center; transition:color .18s; }
+      .searchBox:focus-within .searchIcon { color:#8C1F2D; }
+      .searchIcon svg { width:18px; height:18px; display:block; }
+      .input { width:100%; border:0; outline:0; background:transparent; font-size:16px; color:#222; line-height:1.2; }
+      .input::placeholder { color:#ccc; }
+
+      .subTagline {
+        margin-top:18px;
+        font-family:Georgia, serif;
+        font-size:13px;
+        font-style:italic;
+        color:#C4962A;
+        letter-spacing:0.3px;
+        opacity:0.85;
       }
 
-      .searchBox:hover,
-      .searchBox:focus-within{
-        box-shadow:0 4px 18px rgba(140,31,45,.14);
-        border-color:rgba(140,31,45,0.25);
-      }
-
-      .input{
-        width:100%;
-        border:0;
-        outline:0;
-        background:transparent;
-        padding:0;
-        font-size:15px;
-        line-height:1.2;
-        color:#222;
-      }
-
-      .input::placeholder{ color:#aaa; }
-
-      /* ---- Subetiqueta ---- */
-      .subTag{
-        width:min(760px,100%);
-        font-size:11.5px;
-        color:#aaa;
-        letter-spacing:0.4px;
+      /* ── Titular ── */
+      .headlines {
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        padding:32px 20px 0;
         text-align:center;
-        margin-top:12px;
       }
 
-      /* ---- Desktop ---- */
-      @media (min-width: 721px){
-        .center{ padding-top:32px; }
-
-        .headline{ font-size:42px; margin-bottom:20px; }
-
-        .tagline{ font-size:12px; margin-bottom:32px; }
-
-        .controlsWrap{ width:min(820px,100%); gap:0; }
-
-        .modeRow{ margin-bottom:20px; }
-
-        .pill{ min-height:46px; font-size:12px; padding:0 12px; }
-
-        .searchBox{ min-height:60px; padding:0 22px; }
-
-        .input{ font-size:17px; }
-
-        .subTag{ width:min(820px,100%); font-size:12px; margin-top:14px; }
+      /* ── Carrusel de frases ── */
+      .carouselCard {
+        width:min(680px, calc(100% - 40px));
+        margin:28px auto 0;
+        align-self:center;
+        background:#faf7f2;
+        border-radius:18px;
+        box-shadow:0 2px 18px rgba(140,31,45,.06), 0 1px 4px rgba(0,0,0,.04);
+        border:1px solid rgba(196,150,42,.12);
+        overflow:hidden;
+        padding:28px 0;
+        box-sizing:border-box;
+        max-width:100%;
       }
 
-      /* ---- Mobile ---- */
-      @media (max-width: 720px){
-        .main{ padding:0 14px 20px; }
+      .carouselTrack {
+        display:flex;
+        gap:0;
+        width:max-content;
+        animation: carouselScroll 28s linear infinite;
+        will-change: transform;
+      }
 
-        .center{ width:100%; padding-top:20px; }
+      .carouselTrack:hover {
+        animation-play-state: paused;
+      }
 
-        .headline{ font-size:22px; margin-bottom:8px; }
+      .carouselItem {
+        display:inline-flex;
+        align-items:center;
+        gap:18px;
+        padding:0 36px;
+        white-space:nowrap;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size:16px;
+        font-style:italic;
+        color:#555;
+        letter-spacing:0.2px;
+      }
 
-        .tagline{ font-size:10px; letter-spacing:0.8px; margin-bottom:22px; }
-        .tagline::before, .tagline::after{ width:24px; }
+      .carouselDot {
+        width:4px;
+        height:4px;
+        border-radius:50%;
+        background:#C4962A;
+        opacity:0.55;
+        flex-shrink:0;
+      }
 
-        .controlsWrap{ width:100%; gap:0; }
+      @keyframes carouselScroll {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
 
-        .modeRow{ margin-bottom:16px; }
+      /* ── Desktop ── */
+      @media (min-width:721px) {
+        .headline { font-size:40px; }
+        .tagline { font-size:12px; margin-bottom:36px; }
+        .searchBlock { padding:32px 20px 0; }
+        .headlines { padding:36px 20px 0; }
+      }
 
-        .pill{ min-height:40px; font-size:10px; padding:0 4px; }
-
-        .searchBox{ min-height:50px; padding:0 16px; }
-
-        .input{ font-size:14px; }
-
-        .subTag{ width:100%; font-size:11px; margin-top:10px; }
+      /* ── Mobile ── */
+      @media (max-width:720px) {
+        .searchBlock { padding:20px 16px 0; }
+        .headlines { padding:24px 16px 0; }
+        .headline { font-size:26px; margin-bottom:10px; }
+        .tagline { font-size:10px; letter-spacing:1px; margin-bottom:24px; }
+        .tagline::before, .tagline::after { width:22px; }
+        .modeRow { margin-bottom:16px; }
+        .pill { font-size:9.5px; min-height:38px; padding:0 4px; letter-spacing:0.4px; }
+        .searchBox { min-height:50px; padding:0 16px; }
+        .input { font-size:14px; }
+        .subTagline { font-size:12px; margin-top:14px; }
+        .carouselCard { margin:24px auto 0; width:calc(100% - 32px); max-width:100%; }
+        .carouselItem { font-size:14px; padding:0 24px; gap:14px; }
+      }
+      @media (max-width:480px) {
+        .pill { font-size:8.5px; padding:0 3px; }
       }
     </style>
-
   </head>
 
   <body>
@@ -278,61 +284,63 @@
     <div class="wrap">
       <main class="main">
 
-        <!-- Hero full-bleed fuera del .center -->
-        <div class="heroWrap">
-          <img
-            src="./index-hero.png"
-            alt="Ilustración de varios tipos de viviendas"
-            class="heroImage"
-          />
-        </div>
+        <!-- Bloque de búsqueda — justo debajo del header -->
+        <div class="searchBlock">
 
-        <div class="center">
-          <h1 class="headline">Solo anuncios de profesionales</h1>
-
-          <div class="tagline">Encuentra tu hogar</div>
-
-          <div class="controlsWrap">
-            <div class="modeRow" aria-label="Tipo de búsqueda">
-              <label class="pill">
-                <input type="radio" name="mode" value="buy" checked />
-                <span>Comprar</span>
-              </label>
-              <label class="pill">
-                <input type="radio" name="mode" value="rent" />
-                <span>Alquilar</span>
-              </label>
-              <label class="pill">
-                <input type="radio" name="mode" value="room" />
-                <span>Habitación</span>
-              </label>
-              <label class="pill">
-                <input type="radio" name="mode" value="new_build" />
-                <span>Obra nueva</span>
-              </label>
-            </div>
-
-            <div class="searchShell">
-              <form id="form" class="searchBox" autocomplete="off">
-                <span class="searchIcon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="7"></circle>
-                    <path d="M21 21l-4.3-4.3"></path>
-                  </svg>
-                </span>
-                <input
-                  id="q"
-                  class="input"
-                  placeholder="Escribe una ciudad, zona o código postal..."
-                  aria-label="Buscar ciudad o zona"
-                  enterkeyhint="search"
-                />
-              </form>
-            </div>
+          <div class="modeRow" aria-label="Tipo de búsqueda">
+            <label class="pill">
+              <input type="radio" name="mode" value="buy" checked />
+              <span>Comprar</span>
+            </label>
+            <label class="pill">
+              <input type="radio" name="mode" value="rent" />
+              <span>Alquilar</span>
+            </label>
+            <label class="pill">
+              <input type="radio" name="mode" value="room" />
+              <span>Habitación</span>
+            </label>
+            <label class="pill">
+              <input type="radio" name="mode" value="new_build" />
+              <span>Obra nueva</span>
+            </label>
           </div>
 
-          <div class="subTag">Una vivienda · Un anuncio</div>
+          <div class="searchWrap">
+            <form id="form" class="searchBox" autocomplete="off">
+              <span class="searchIcon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="M21 21l-4.3-4.3"></path>
+                </svg>
+              </span>
+              <input
+                id="q"
+                class="input"
+                placeholder="Ciudad, zona o código postal..."
+                aria-label="Buscar ciudad o zona"
+                enterkeyhint="search"
+              />
+            </form>
+          </div>
+
+          <div class="subTagline">Una vivienda · Un anuncio · Una decisión</div>
+
         </div>
+
+        <!-- Titular principal — debajo del buscador -->
+        <div class="headlines">
+          <div class="tagline">Solo anuncios de profesionales</div>
+          <h1 class="headline">ENCUENTRA TU HOGAR</h1>
+        </div>
+
+        <!-- Carrusel de frases -->
+        <div class="carouselCard" aria-label="Valores de la plataforma">
+          <div class="carouselTrack" id="carouselTrack">
+            <!-- Las frases se duplican en JS para el loop infinito -->
+          </div>
+        </div>
+
       </main>
 
       <div id="bhFooter"></div>
@@ -345,12 +353,45 @@
       initLayout({ showMiniSearch: false });
       initAuth();
 
-      function getSelectedMode(){
+      // ── Carrusel de frases ──
+      const phrases = [
+        "Información clara, sin sorpresas",
+        "Superficie útil real, sin trucos",
+        "Una vivienda, un anuncio",
+        "Sin duplicados, sin ruido",
+        "Decisiones más rápidas",
+        "Solo profesionales verificados",
+        "Transparencia en cada detalle",
+      ];
+
+      const track = document.getElementById("carouselTrack");
+      if (track) {
+        // Duplicamos para el loop infinito sin saltos
+        const buildItems = () => phrases.map(text => `
+          <span class="carouselItem">
+            <span class="carouselDot" aria-hidden="true"></span>
+            ${text}
+          </span>
+        `).join("");
+
+        track.innerHTML = buildItems() + buildItems();
+
+        // Ajustar duración según ancho real del track (mitad = 1 vuelta)
+        requestAnimationFrame(() => {
+          const halfW = track.scrollWidth / 2;
+          // ~40px por segundo, suave y lento
+          const duration = Math.round(halfW / 38);
+          track.style.animationDuration = duration + "s";
+        });
+      }
+
+      // ── Búsqueda ──
+      function getSelectedMode() {
         const el = document.querySelector('input[name="mode"]:checked');
         return el ? el.value : "buy";
       }
 
-      window.BH_goToMap = function(city){
+      window.BH_goToMap = function(city) {
         const params = new URLSearchParams();
         params.set("city", city);
         params.set("mode", getSelectedMode());
@@ -363,9 +404,237 @@
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         const city = (q.value || "").trim();
-        if(!city) return;
+        if (!city) return;
         window.BH_goToMap(city);
       });
+    </script>
+    <!-- Botón preview responsive -->
+    <style>
+      #previewToggle {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #fff;
+        border: 1px solid rgba(140,31,45,.18);
+        border-radius: 999px;
+        padding: 6px 14px 6px 10px;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        color: #8C1F2D;
+        cursor: pointer;
+        box-shadow: 0 2px 12px rgba(0,0,0,.10);
+        transition: box-shadow .15s, background .15s;
+        user-select: none;
+      }
+      #previewToggle:hover {
+        background: #fdf5f5;
+        box-shadow: 0 4px 18px rgba(140,31,45,.13);
+      }
+      #previewToggle svg {
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
+      }
+
+      /* Overlay de simulación móvil */
+      #mobileSimOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: #d6d2cd;
+        z-index: 99990;
+        align-items: center;
+        justify-content: center;
+      }
+      #mobileSimOverlay.active {
+        display: flex;
+      }
+
+      /* Marco del teléfono — dimensiones y escala controladas 100% por JS */
+      .sim-phone-wrap {
+        position: relative;
+        flex-shrink: 0;
+      }
+      .sim-phone-bezel {
+        position: absolute;
+        inset: 0;
+        background: transparent;
+        border: 8px solid #1c1c1e;
+        border-radius: 48px;
+        box-shadow: 0 0 0 2px #3a3a3c, 0 24px 64px rgba(0,0,0,.5);
+        pointer-events: none;
+        z-index: 3;
+        box-sizing: border-box;
+      }
+      .sim-phone-island {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1c1c1e;
+        border-radius: 20px;
+        z-index: 3;
+        pointer-events: none;
+      }
+      .sim-phone-screen {
+        position: absolute;
+        border-radius: 42px;
+        overflow: hidden;
+        background: #FFFDFA;
+        z-index: 1;
+      }
+      .sim-phone-content {
+        width: 375px;
+        transform-origin: top left;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #FFFDFA;
+      }
+      .sim-clone-inner {
+        width: 375px;
+        background: #FFFDFA;
+      }
+    </style>
+
+    <button id="previewToggle" title="Ver en móvil">
+      <svg id="ptIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2"></rect>
+        <circle cx="12" cy="17" r="1"></circle>
+      </svg>
+      <span id="ptLabel">Móvil</span>
+    </button>
+
+    <!-- Overlay simulación móvil -->
+    <div id="mobileSimOverlay">
+      <div class="sim-phone-wrap" id="simPhoneWrap">
+        <div class="sim-phone-bezel"></div>
+        <div class="sim-phone-island"></div>
+        <div class="sim-phone-screen">
+          <div class="sim-phone-content" id="simContent"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        const btn     = document.getElementById('previewToggle');
+        const overlay = document.getElementById('mobileSimOverlay');
+        const wrap    = document.getElementById('simPhoneWrap');
+        const bezel   = wrap.querySelector('.sim-phone-bezel');
+        const island  = wrap.querySelector('.sim-phone-island');
+        const screen  = wrap.querySelector('.sim-phone-screen');
+        const content = document.getElementById('simContent');
+        const icon    = document.getElementById('ptIcon');
+        const label   = document.getElementById('ptLabel');
+
+        const ICON_MOBILE  = `<rect x="5" y="2" width="14" height="20" rx="2"></rect><circle cx="12" cy="17" r="1"></circle>`;
+        const ICON_DESKTOP = `<rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path>`;
+
+        // Dimensiones base del teléfono (sin escalar)
+        const PW = 393, PH = 852; // tamaño del bezel
+        const INSET = 10;          // grosor del marco alrededor de la pantalla
+        const SIM_W = 375;         // ancho del viewport a simular
+
+        let active = false;
+        let cloned = false;
+
+        function computeScale() {
+          const margin = 40;
+          return Math.min(
+            (window.innerWidth  - margin * 2) / PW,
+            (window.innerHeight - margin * 2) / PH,
+            1
+          );
+        }
+
+        function applyScale() {
+          const s = computeScale();
+
+          // Tamaño total del teléfono
+          const tw = PW * s;
+          const th = PH * s;
+          wrap.style.width  = tw + 'px';
+          wrap.style.height = th + 'px';
+
+          // Bezel llena el wrap
+          bezel.style.borderRadius = (48 * s) + 'px';
+
+          // Island
+          island.style.top    = (14 * s) + 'px';
+          island.style.width  = (110 * s) + 'px';
+          island.style.height = (30 * s) + 'px';
+          island.style.borderRadius = (20 * s) + 'px';
+
+          // Pantalla: inset del bezel
+          const si = INSET * s;
+          const sw = tw - si * 2;
+          const sh = th - si * 2;
+          screen.style.left   = si + 'px';
+          screen.style.top    = si + 'px';
+          screen.style.width  = sw + 'px';
+          screen.style.height = sh + 'px';
+          screen.style.borderRadius = (42 * s) + 'px';
+
+          // Contenido: escalar 375px al ancho de la pantalla
+          const cs = sw / SIM_W;
+          content.style.transform = `scale(${cs})`;
+          content.style.width  = SIM_W + 'px';
+          content.style.height = (sh / cs) + 'px';
+        }
+
+        function buildClone() {
+          if (cloned) return;
+          cloned = true;
+
+          const header  = document.getElementById('bhHeader');
+          const pageWrap = document.querySelector('.wrap');
+          const inner = document.createElement('div');
+          inner.className = 'sim-clone-inner';
+
+          if (header)   inner.appendChild(header.cloneNode(true));
+          if (pageWrap) {
+            const wc = pageWrap.cloneNode(true);
+            const fc = wc.querySelector('#bhFooter');
+            if (fc) fc.innerHTML = '';
+            inner.appendChild(wc);
+          }
+
+          // Limpiar scripts e ids duplicados
+          inner.querySelectorAll('script').forEach(el => el.remove());
+          inner.querySelectorAll('[id]').forEach(el => {
+            el.setAttribute('data-sim-id', el.id);
+            el.removeAttribute('id');
+          });
+
+          content.appendChild(inner);
+        }
+
+        function open() {
+          buildClone();
+          applyScale();
+          overlay.classList.add('active');
+          icon.innerHTML = ICON_DESKTOP;
+          label.textContent = 'Web';
+          btn.title = 'Volver a vista web';
+          active = true;
+        }
+
+        function close() {
+          overlay.classList.remove('active');
+          icon.innerHTML = ICON_MOBILE;
+          label.textContent = 'Móvil';
+          btn.title = 'Ver en móvil';
+          active = false;
+        }
+
+        btn.addEventListener('click', () => active ? close() : open());
+        window.addEventListener('resize', () => { if (active) applyScale(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && active) close(); });
+      })();
     </script>
   </body>
 </html>
