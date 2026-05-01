@@ -48,14 +48,16 @@ html,body{
   flex:0 0 auto;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap');
+
 .brandText{
   color:#8C1F2D;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size:29px;
-  font-weight:700;
-  letter-spacing:-0.6px;
+  font-family: 'Raleway', 'Montserrat', system-ui, sans-serif;
+  font-size:31px;
+  font-weight:300;
+  letter-spacing:0.35em;
   line-height:1;
-  text-transform:lowercase;
+  text-transform:uppercase;
 }
 
 .miniSearch{

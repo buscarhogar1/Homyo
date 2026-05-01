@@ -6,46 +6,12 @@
     <title>Homyo — Solo anuncios de profesionales</title>
 
     <link rel="stylesheet" href="./bh-shared.css?v=3" />
+    <link rel="stylesheet" href="./bh-header-overrides.css" />
 
     <style>
       html, body { overflow-x: hidden; max-width: 100%; }
       body { background:#FFFDFA; }
 
-      /* ── Header modificado: logo centrado, solo icono usuario ── */
-      .topbar { border: none !important; box-shadow: none !important; }
-
-      /* Sobreescribir layout del topbarInner para centrar el brand */
-      #bhHeader .topbarInner {
-        position: relative;
-        justify-content: center;
-      }
-
-      /* Logo centrado absolutamente */
-      #bhHeader .brand {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-
-      /* Eliminar favoritos y texto de cuenta */
-      #navFavoritos { display: none !important; }
-      #navLogin .navActionText { display: none !important; }
-
-      /* Solo mostrar el icono de cuenta */
-      #navLogin {
-        padding: 6px 8px;
-      }
-
-      /* rightGroup empuja a la derecha con margin-left auto */
-      #bhHeader .rightGroup {
-        margin-left: auto;
-        position: relative;
-        z-index: 1;
-      }
-
-      /* Cuando el usuario está logueado: ocultar label y solo mostrar avatar */
-      #navUserLabel { display: none !important; }
-      #navLogoutBtn { display: none !important; }
 
       .wrap {
         min-height: calc(100% - 54px);

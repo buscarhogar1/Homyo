@@ -6,6 +6,7 @@
     <title>Buscar Hogar – Mapa</title>
 
     <link rel="stylesheet" href="./bh-shared.css" />
+    <link rel="stylesheet" href="./bh-header-overrides.css" />
 
     <link
       rel="stylesheet"
@@ -368,6 +369,17 @@
       initMap();
     </script>
   
+
+    <script>
+      if (new URLSearchParams(location.search).get('sim')) {
+        document.addEventListener('DOMContentLoaded', function() {
+          var t = document.getElementById('previewToggle');
+          var o = document.getElementById('mobileSimOverlay');
+          if (t) t.style.display = 'none';
+          if (o) o.style.display = 'none';
+        });
+      }
+    </script>
     <!-- Botón preview responsive -->
     <style>
       #previewToggle {
@@ -474,6 +486,7 @@
       </div>
     </div>
 
+
     <script>
       (function() {
         const btn     = document.getElementById('previewToggle');
@@ -482,7 +495,6 @@
         const bezel   = wrap.querySelector('.sim-phone-bezel');
         const island  = wrap.querySelector('.sim-phone-island');
         const screen  = wrap.querySelector('.sim-phone-screen');
-        const content = document.getElementById('simContent');
         const icon    = document.getElementById('ptIcon');
         const label   = document.getElementById('ptLabel');
 
@@ -494,7 +506,7 @@
         const SIM_W = 375;
 
         let active = false;
-        let cloned = false;
+        let frameCreated = false;
 
         function computeScale() {
           const margin = 40;
@@ -524,36 +536,30 @@
           screen.style.width  = sw + 'px';
           screen.style.height = sh + 'px';
           screen.style.borderRadius = (42 * s) + 'px';
+          // Escalar iframe al viewport simulado
           const cs = sw / SIM_W;
-          content.style.transform = `scale(${cs})`;
-          content.style.width  = SIM_W + 'px';
-          content.style.height = (sh / cs) + 'px';
+          const frame = screen.querySelector('iframe');
+          if (frame) {
+            frame.style.transform = `scale(${cs})`;
+            frame.style.transformOrigin = 'top left';
+            frame.style.width  = SIM_W + 'px';
+            frame.style.height = (sh / cs) + 'px';
+          }
         }
 
-        function buildClone() {
-          if (cloned) return;
-          cloned = true;
-          const header   = document.getElementById('bhHeader');
-          const pageWrap = document.querySelector('.wrap') || document.querySelector('main') || document.body;
-          const inner = document.createElement('div');
-          inner.className = 'sim-clone-inner';
-          if (header)   inner.appendChild(header.cloneNode(true));
-          if (pageWrap) {
-            const wc = pageWrap.cloneNode(true);
-            const fc = wc.querySelector('#bhFooter');
-            if (fc) fc.innerHTML = '';
-            inner.appendChild(wc);
-          }
-          inner.querySelectorAll('script').forEach(el => el.remove());
-          inner.querySelectorAll('[id]').forEach(el => {
-            el.setAttribute('data-sim-id', el.id);
-            el.removeAttribute('id');
-          });
-          content.appendChild(inner);
+        function createFrame() {
+          if (frameCreated) return;
+          frameCreated = true;
+          const frame = document.createElement('iframe');
+          frame.src = location.href + (location.search ? '&' : '?') + 'sim=1';
+          frame.style.border = 'none';
+          frame.style.display = 'block';
+          frame.setAttribute('title', 'Vista móvil');
+          screen.appendChild(frame);
         }
 
         function open() {
-          buildClone();
+          createFrame();
           applyScale();
           overlay.classList.add('active');
           icon.innerHTML = ICON_DESKTOP;

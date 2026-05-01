@@ -1,0 +1,36 @@
+/* =====================================================
+   HOMYO — Header overrides globales
+   Logo centrado · Solo icono usuario · Sin favoritos
+   ===================================================== */
+
+.topbar { border: none !important; box-shadow: none !important; }
+
+/* Centrar el logo horizontalmente */
+.topbarInner {
+  position: relative;
+  justify-content: center;
+}
+
+.brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Ocultar favoritos completamente */
+#navFavoritos { display: none !important; }
+
+/* Solo icono de cuenta, sin texto */
+#navLogin .navActionText  { display: none !important; }
+#navLogin { padding: 6px 8px; }
+
+/* Usuario logueado: solo avatar, sin label ni logout */
+#navUserLabel  { display: none !important; }
+#navLogoutBtn  { display: none !important; }
+
+/* rightGroup a la derecha con z-index sobre el brand absoluto */
+.rightGroup {
+  margin-left: auto;
+  position: relative;
+  z-index: 1;
+}

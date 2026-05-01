@@ -2,7 +2,7 @@
   --bg:#ffffff;
   --text:#111;
   --muted:#6b7280;
-  --terra:#a3472f;
+  --terra:#FFFDFA;
   --btn:#1a73e8;
   --btnText:#fff;
   --border:#111;
@@ -71,31 +71,40 @@ body{
 .topCellRight{ justify-content: flex-end; position: relative; }
 
 .topToggleBtn{
-  height: 36px;
-  padding: 0 12px;
+  height: 34px;
+  padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid rgba(0,0,0,0.14);
-  background: rgba(255,255,255,0.96);
+  border: 1px solid rgba(140,31,45,0.22);
+  background: #fff;
   cursor: pointer;
-  font-size: 13px;
-  color: rgba(0,0,0,0.86);
+  font-size: 12.5px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #8C1F2D;
+  letter-spacing: 0.01em;
+  transition: background 0.13s, border-color 0.13s, box-shadow 0.13s;
 }
 
 .topToggleBtn:hover{
-  background: #fff;
+  background: rgba(140,31,45,0.05);
+  border-color: rgba(140,31,45,0.38);
+  box-shadow: 0 2px 8px rgba(140,31,45,0.08);
 }
 
 .placeLabel{
   max-width: 100%;
-  padding: 8px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.92);
-  border: 1px solid rgba(0,0,0,0.10);
-  font-size: 13px;
-  color: rgba(0,0,0,0.78);
+  background: #fff;
+  border: 1px solid rgba(140,31,45,0.18);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: inherit;
+  color: rgba(0,0,0,0.72);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: 0.01em;
   /* Alineación a la izquierda sobre el mapa (pedido) */
   justify-self: start;
 }
@@ -1054,7 +1063,6 @@ body{
     background: #fff;
   }
 
-  #bhHeader,
   #bhFooter,
   .topRow{
     display: none !important;
@@ -1119,21 +1127,29 @@ body{
     gap: 0;
     padding: 0;
     background: #fff;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
+    border-bottom: 1px solid rgba(140,31,45,0.10);
   }
 
   .mobileActionBtn{
     height: 52px;
     border: 0;
-    border-right: 1px solid rgba(0,0,0,0.08);
+    border-right: 1px solid rgba(140,31,45,0.10);
     background: #fff;
-    font-size: 15px;
-    color: #111;
+    font-size: 13.5px;
+    font-family: inherit;
+    font-weight: 500;
+    color: #8C1F2D;
+    letter-spacing: 0.01em;
     cursor: pointer;
+    transition: background 0.13s;
   }
 
   .mobileActionBtn:last-child{
     border-right: 0;
+  }
+
+  .mobileActionBtn:active{
+    background: rgba(140,31,45,0.05);
   }
 
   .page{
@@ -1308,14 +1324,24 @@ body{
   }
 
   .mobilePanelActionBtn{
-    height:36px;
-    padding:0 12px;
-    border-radius:999px;
-    border:1px solid rgba(0,0,0,0.12);
-    background:#fff;
-    color:#111;
-    font-size:13px;
-    white-space:normal;
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(140,31,45,0.22);
+    background: #fff;
+    color: #8C1F2D;
+    font-size: 12.5px;
+    font-family: inherit;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.13s, border-color 0.13s;
+  }
+
+  .mobilePanelActionBtn:active{
+    background: rgba(140,31,45,0.05);
+    border-color: rgba(140,31,45,0.38);
   }
 
   .mobileOrderMenu{
