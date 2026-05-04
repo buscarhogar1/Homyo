@@ -199,11 +199,6 @@ export function initAuth() {
   overlay.addEventListener("click",(e)=>{ if(e.target === overlay) closeAuthModal(); });
   document.addEventListener("keydown",(e)=>{ if(overlay.classList.contains("open") && e.key === "Escape") closeAuthModal(); });
 
-  $("navFavoritos")?.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    alert("MVP: Favoritos (requiere registro).");
-  });
 
   navAccountBtn?.addEventListener("click", (e) => {
     e.preventDefault();

@@ -75,11 +75,13 @@ export function initMap(){
   cardCloseBtn.addEventListener("click", closeCard);
 
   let heartOn = false;
-  heartBtn.addEventListener("click", () => {
-    heartOn = !heartOn;
-    heartBtn.style.borderColor = heartOn ? "rgba(26,115,232,0.55)" : "rgba(0,0,0,0.18)";
-    heartBtn.style.boxShadow = heartOn ? "0 6px 18px rgba(26,115,232,0.18)" : "none";
-  });
+  if (heartBtn) {
+    heartBtn.addEventListener("click", () => {
+      heartOn = !heartOn;
+      heartBtn.style.borderColor = heartOn ? "rgba(26,115,232,0.55)" : "rgba(0,0,0,0.18)";
+      heartBtn.style.boxShadow = heartOn ? "0 6px 18px rgba(26,115,232,0.18)" : "none";
+    });
+  }
 
   function setPhoto(url) {
     if (!url) {

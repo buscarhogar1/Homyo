@@ -23,7 +23,7 @@ html,body{
 /* ===== Header ===== */
 .topbar{
   height:84px;
-  background:var(--terra);
+  background:var(--bg);
   color:#8C1F2D;
   display:flex;
   align-items:center;
@@ -31,7 +31,7 @@ html,body{
   box-sizing:border-box;
   border:none;
   box-shadow:none;
-  border-bottom:1px solid #eee3d3;
+  border-bottom:0;
 }
 
 .topbarInner{
