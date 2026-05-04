@@ -1,638 +1,482 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Homyo — Preview index</title>
-  <style>
-    :root{
-      --bg:#FFFDFA;
-      --granate:#8C1F2D;
-      --dorado:#C4962A;
-      --muted:#6b7280;
-      --terra:#FFFDFA;
-    }
-    *{ box-sizing:border-box; }
-    html,body{
-      height:100%;
-      margin:0;
-      background:var(--bg);
-      color:#111;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      overflow-x:hidden;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Homyo — Solo anuncios de profesionales</title>
 
-    .topbar{
-      height:59px;
-      background:var(--terra);
-      color:var(--granate);
-      display:flex;
-      align-items:center;
-      padding:0 16px;
-      border:none;
-      box-shadow:none;
-    }
-    .topbarInner{
-      width:min(1120px,100%);
-      margin:0 auto;
-      display:flex;
-      align-items:center;
-      position:relative;
-      justify-content:center;
-    }
-    .brand{
-      position:absolute;
-      left:50%;
-      transform:translateX(-50%);
-      text-decoration:none;
-      color:var(--granate);
-      display:flex;
-      align-items:center;
-    }
-    .brandText{
-      color:var(--granate);
-      font-family:Raleway,Montserrat,system-ui,sans-serif;
-      font-size:43px;
-      font-weight:600;
-      letter-spacing:.35em;
-      line-height:1;
-      text-transform:uppercase;
-    }
-    .rightGroup{
-      margin-left:auto;
-      position:relative;
-      z-index:1;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .navActionLink{
-      color:#8A1F2D;
-      text-decoration:none;
-      font-size:14px;
-      font-weight:400;
-      padding:6px 8px;
-      border-radius:999px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-    }
-    .navActionIconSvg,
-    .navActionIconSvg svg{ width:22px; height:22px; display:block; }
-    .navActionText{ display:none; }
+    <link rel="stylesheet" href="./bh-shared.css?v=4" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=4" />
 
-    .wrap{
-      min-height:calc(100% - 59px);
-      display:grid;
-      grid-template-rows:1fr auto;
-      overflow-x:hidden;
-    }
-    .main{
-      display:flex;
-      flex-direction:column;
-      align-items:stretch;
-      padding-bottom:56px;
-      overflow-x:hidden;
-    }
-    .searchBlock{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      width:100%;
-      padding:28px 20px 0;
-    }
-    .modeRow{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      width:min(680px,100%);
-      border-bottom:1.5px solid #e8e0d5;
-      margin-bottom:37px;
-    }
-    .pill{
-      position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:44px;
-      padding:0 8px;
-      background:transparent;
-      color:#c0b8b0;
-      font-size:16px;
-      font-weight:500;
-      letter-spacing:1px;
-      text-transform:uppercase;
-      cursor:pointer;
-      border-bottom:2px solid transparent;
-      margin-bottom:-1.5px;
-      white-space:nowrap;
-      transition:color .15s;
-      font-weight:500;
-      letter-spacing:1px;
-      text-transform:uppercase;
-      cursor:pointer;
-      border-bottom:2px solid transparent;
-      margin-bottom:-1.5px;
-      white-space:nowrap;
-      transition:color .15s;
-    }
-    .pill input{ position:absolute; inset:0; opacity:0; pointer-events:none; }
-    .pill:hover{ color:var(--granate); }
-    .pill:has(input:checked){ color:var(--granate); font-weight:700; border-bottom-color:var(--granate); }
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --dorado:#C4962A;
+        --muted:#6b7280;
+        --terra:#FFFDFA;
+      }
 
-    .searchWrap{ width:min(680px,100%); }
-    .searchBox{
-      width:100%;
-      display:flex;
-      align-items:center;
-      background:#fff;
-      border-radius:999px;
-      padding:0 22px;
-      min-height:58px;
-      box-shadow:0 2px 20px rgba(196,150,42,.12);
-      border:1px solid rgba(196,150,42,.18);
-      transition:box-shadow .18s,border-color .18s;
-    }
-    .searchBox:focus-within{
-      box-shadow:0 4px 28px rgba(196,150,42,.16);
-      border-color:rgba(196,150,42,.28);
-    }
-    .searchIcon{
-      color:#ddd;
-      width:18px;
-      min-width:18px;
-      height:18px;
-      margin-right:12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      transition:color .18s;
-    }
-    .searchBox:focus-within .searchIcon{ color:#555; }
-    .searchIcon svg{ width:18px; height:18px; display:block; }
-    .input{
-      width:100%;
-      border:0;
-      outline:0;
-      background:transparent;
-      font-size:17px;
-      color:#222;
-      line-height:1.2;
-    }
-    .input::placeholder{ color:#ccc; }
-    .subTagline{
-      margin-top:28px;
-      font-family:Georgia,serif;
-      font-size:15px;
-      font-style:italic;
-      color:var(--dorado);
-      letter-spacing:.3px;
-      opacity:.85;
-    }
+      *{
+        box-sizing:border-box;
+      }
 
-    .midDot{
-      display:inline-block;
-      margin:0 6px;
-    }
+      html,body{
+        width:100%;
+        height:100%;
+        min-height:100%;
+        margin:0;
+        background:var(--bg);
+        color:#111;
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+        overflow-x:hidden;
+      }
 
-    .wordGap{
-      display:inline-block;
-      width:6px;
-    }
-    .headlines{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:32px 20px 0;
-      text-align:center;
-    }
-    .tagline{
-      margin-top:33px;
-      display:inline-flex;
-      align-items:center;
-      gap:14px;
-      color:#555;
-      font-size:20px;
-      font-weight:500;
-      letter-spacing:2.4px;
-      word-spacing:6px;
-      text-transform:uppercase;
-      margin-bottom:52px;
-      font-family:Georgia,serif;
-      font-style:italic;
-    }
-    .tagline:before,
-    .tagline:after{
-      content:"";
-      height:1px;
-      width:36px;
-      background:linear-gradient(to right,transparent,var(--dorado));
-      flex-shrink:0;
-    }
-    .tagline:after{ background:linear-gradient(to left,transparent,var(--dorado)); }
-    .headline{
-      font-family:Georgia,"Times New Roman",serif;
-      font-weight:700;
-      font-size:34px;
-      line-height:1.15;
-      letter-spacing:-.3px;
-      color:var(--granate);
-      margin:0 0 12px;
-      text-wrap:balance;
-    }
-    .midBannerPhrase{
-      margin:20px 0 10px;
-      display:inline-block;
-      padding:8px 18px;
-      background:#F2E9D8;
-      border:1px solid var(--dorado);
-      border-radius:999px;
-      font-size:14px;
-      font-weight:500;
-      color:var(--granate);
-      text-align:center;
-    }
+      body{
+        min-height:100vh;
+      }
 
-    .midBannerPhrase:before,
-    .midBannerPhrase:after{ content:none; }
+      .wrap{
+        min-height:calc(100vh - 84px);
+        display:grid;
+        grid-template-rows:1fr auto;
+        overflow-x:hidden;
+      }
 
-    .midBannerPhrase:before,
-    .midBannerPhrase:after{
-      content:"";
-      height:1px;
-      width:36px;
-      background:linear-gradient(to right,transparent,var(--dorado));
-      flex-shrink:0;
-    }
-    .midBannerPhrase:after{ background:linear-gradient(to left,transparent,var(--dorado)); }
+      .main{
+        display:flex;
+        flex-direction:column;
+        align-items:stretch;
+        padding-bottom:56px;
+        overflow-x:hidden;
+      }
 
-    .carouselCard{
-      width:min(680px,calc(100% - 40px));
-      margin: auto auto 20px;
-      align-self:center;
-      background:#faf7f2;
-      border-radius:18px;
-      box-shadow:0 2px 18px rgba(140,31,45,.06),0 1px 4px rgba(0,0,0,.04);
-      border:1px solid rgba(196,150,42,.12);
-      overflow:hidden;
-      padding:33px 0;
-    }
-    .carouselTrack{
-      display:flex;
-      width:max-content;
-      animation:carouselScroll 32s linear infinite;
-      will-change:transform;
-    }
-    .carouselTrack:hover{ animation-play-state:paused; }
-    .carouselItem{
-      display:inline-flex;
-      align-items:center;
-      gap:18px;
-      padding:0 36px;
-      white-space:nowrap;
-      font-family:Georgia,"Times New Roman",serif;
-      font-size:16px;
-      font-style:italic;
-      color:#555;
-      letter-spacing:.2px;
-    }
-    .carouselDot{
-      width:5px;
-      height:5px;
-      border-radius:50%;
-      background:var(--dorado);
-      opacity:.55;
-      flex-shrink:0;
-    }
-    @keyframes carouselScroll{
-      0%{ transform:translateX(0); }
-      100%{ transform:translateX(-50%); }
-    }
-    .footer{
-      padding:12px;
-      border-top:1px solid #f0f1f3;
-      color:var(--muted);
-      font-size:11.5px;
-      display:flex;
-      justify-content:center;
-    }
-    .footerInner{
-      width:min(1120px,100%);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      text-align:center;
-    }
-    .footerLine2{
-      display:flex;
-      gap:8px;
-      flex-wrap:nowrap;
-      justify-content:center;
-      align-items:center;
-      white-space:nowrap;
-    }
-    .footerLine2 a{ color:inherit; text-decoration:none; }
-    .footerSep{ opacity:.6; }
+      .searchBlock{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        width:100%;
+        padding:28px 20px 0;
+      }
 
-    #previewToggle{
-      position:fixed;
-      top:12px;
-      left:12px;
-      z-index:99999;
-      display:flex;
-      align-items:center;
-      gap:6px;
-      background:#fff;
-      border:1px solid rgba(140,31,45,.18);
-      border-radius:999px;
-      padding:6px 14px 6px 10px;
-      font-size:12px;
-      font-weight:500;
-      color:var(--granate);
-      cursor:pointer;
-      box-shadow:0 2px 12px rgba(0,0,0,.10);
-      user-select:none;
-    }
-    #previewToggle svg{ width:15px; height:15px; }
-    #mobileSimOverlay{
-      display:none;
-      position:fixed;
-      inset:0;
-      background:#d6d2cd;
-      z-index:99990;
-      align-items:center;
-      justify-content:center;
-    }
-    #mobileSimOverlay.active{ display:flex; }
-    .sim-phone-wrap{ position:relative; flex-shrink:0; }
-    .sim-phone-bezel{
-      position:absolute;
-      inset:0;
-      background:transparent;
-      border:8px solid #1c1c1e;
-      border-radius:48px;
-      box-shadow:0 0 0 2px #3a3a3c,0 24px 64px rgba(0,0,0,.5);
-      pointer-events:none;
-      z-index:3;
-    }
-    .sim-phone-island{
-      position:absolute;
-      left:50%;
-      transform:translateX(-50%);
-      background:#1c1c1e;
-      border-radius:20px;
-      z-index:3;
-      pointer-events:none;
-    }
-    .sim-phone-screen{
-      position:absolute;
-      border-radius:42px;
-      overflow:hidden;
-      background:var(--bg);
-      z-index:1;
-    }
-    .sim-phone-content{
-      width:375px;
-      transform-origin:top left;
-      overflow-y:auto;
-      overflow-x:hidden;
-      background:var(--bg);
-    }
-    .sim-clone-inner{ width:375px; background:var(--bg); }
+      .tagline{
+        margin-top:33px;
+        display:inline-flex;
+        align-items:center;
+        gap:14px;
+        color:#555;
+        font-size:20px;
+        font-weight:500;
+        letter-spacing:2.4px;
+        word-spacing:6px;
+        text-transform:uppercase;
+        margin-bottom:52px;
+        font-family:Georgia,serif;
+        font-style:italic;
+      }
 
-    @media (max-width:720px){
+      .tagline::before,
+      .tagline::after{
+        content:"";
+        height:1px;
+        width:36px;
+        background:linear-gradient(to right,transparent,var(--dorado));
+        flex-shrink:0;
+      }
+
+      .tagline::after{
+        background:linear-gradient(to left,transparent,var(--dorado));
+      }
+
       .modeRow{
-        grid-template-columns:repeat(2,1fr);
+        display:grid;
+        grid-template-columns:repeat(4,minmax(0,1fr));
+        width:min(680px,100%);
+        border-bottom:1.5px solid #e8e0d5;
+        margin-bottom:37px;
       }
-      .searchBlock{ padding:20px 16px 0; }
-      .headlines{ padding:24px 16px 0; }
-      .headline{ font-size:20px; margin-bottom:10px; }
-      .tagline{ font-size:11px; letter-spacing:1px; word-spacing:6px; margin-bottom:44px; }
-      .tagline:before,.tagline:after{ width:22px; }
-      .modeRow{ margin-bottom:31px; }
-      .pill{ font-size:14.5px; min-height:38px; padding:0 4px; letter-spacing:.4px; }
-      .searchBox{ min-height:50px; padding:0 16px; }
-      .input{ font-size:14px; }
-      .subTagline{ font-size:14px; margin-top:24px; }
-      .carouselCard{ margin:auto auto 20px; width:calc(100% - 32px); }
-      .carouselItem{ font-size:14px; padding:0 24px; gap:14px; }
-      .brandText{ font-size:37px; }
-      .carouselItem{ font-size:14px; padding:0 24px; gap:14px; }
-      .brandText{ font-size:32px; }
-    }
-    @media (max-width:480px){ .pill{ font-size:8.5px; padding:0 3px; } }
-  </style>
-</head>
-<body>
-  <div id="bhHeader">
-    <header class="topbar">
-      <div class="topbarInner">
-        <a class="brand" href="./" aria-label="Ir a inicio"><span class="brandText">HOMYO</span></a>
-        <div class="rightGroup" aria-label="Acciones">
-          <a href="#" id="navLogin" class="navActionLink">
-            <span class="navActionIcon navActionIconSvg" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="8" r="4"></circle>
-                <path d="M4.5 19.5c2.1-3.7 12.9-3.7 15 0"></path>
-                <circle cx="18.1" cy="18.1" r="3.1"></circle>
-                <path d="M16.9 16.9l2.4 2.4"></path>
-              </svg>
-            </span>
-            <span class="navActionText">Cuenta</span>
-          </a>
-        </div>
-      </div>
-    </header>
-  </div>
 
-  <div class="wrap">
-    <main class="main">
-      <div class="searchBlock">
-        <div class="tagline">Solo anuncios de profesionales</div>
-        <div class="modeRow" aria-label="Tipo de búsqueda">
-          <label class="pill"><input type="radio" name="mode" value="buy" checked /><span>Comprar</span></label>
-          <label class="pill"><input type="radio" name="mode" value="new_build" /><span>Obra nueva</span></label>
-          <label class="pill"><input type="radio" name="mode" value="rent" /><span>Alquilar</span></label>
-          <label class="pill"><input type="radio" name="mode" value="room" /><span>Habitación</span></label>
-        </div>
-
-        <div class="searchWrap">
-          <form id="form" class="searchBox" autocomplete="off">
-            <span class="searchIcon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="7"></circle>
-                <path d="M21 21l-4.3-4.3"></path>
-              </svg>
-            </span>
-            <input id="q" class="input" placeholder="Ciudad, zona o código postal..." aria-label="Buscar ciudad o zona" enterkeyhint="search" />
-          </form>
-        </div>
-
-        <div class="subTagline">Una<span class="wordGap"></span>vivienda <span class="midDot">·</span> Un<span class="wordGap"></span>anuncio</div>
-      </div>
-
-      
-
-      <div class="carouselCard" aria-label="Valores de la plataforma">
-        <div class="carouselTrack" id="carouselTrack"></div>
-      </div>
-    </main>
-
-    <div id="bhFooter">
-      <footer class="footer">
-        <div class="footerInner">
-          <div class="footerLine2">
-            <span>© 2026 Buscar Hogar</span>
-            <span class="footerSep">·</span>
-            <a href="terminos.html">Términos de uso</a>
-            <span class="footerSep">·</span>
-            <a href="privacidad.html">Política de privacidad</a>
-            <span class="footerSep">·</span>
-            <a href="cookies.html">Política de cookies</a>
-          </div>
-        </div>
-      </footer>
-    </div>
-  </div>
-
-  <button id="previewToggle" title="Ver en móvil">
-    <svg id="ptIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="5" y="2" width="14" height="20" rx="2"></rect>
-      <circle cx="12" cy="17" r="1"></circle>
-    </svg>
-    <span id="ptLabel">Móvil</span>
-  </button>
-
-  <div id="mobileSimOverlay">
-    <div class="sim-phone-wrap" id="simPhoneWrap">
-      <div class="sim-phone-bezel"></div>
-      <div class="sim-phone-island"></div>
-      <div class="sim-phone-screen">
-        <div class="sim-phone-content" id="simContent"></div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const phrases = ["Metros de vivienda útiles",
-      "Sin anuncios duplicados",
-      "Sin anuncios de particulares",      "Filtros por fecha de construcción",
-      "Posición del sol durante el año",
-      "Plano siempre disponible"
-    ];
-    const track = document.getElementById("carouselTrack");
-    if (track) {
-      const buildItems = () => phrases.map(text => `<span class="carouselItem"><span class="carouselDot" aria-hidden="true"></span>${text}</span>`).join("");
-      track.innerHTML = buildItems() + buildItems();
-      requestAnimationFrame(() => {
-        const halfW = track.scrollWidth / 2;
-        track.style.animationDuration = Math.round(halfW / 38) + "s";
-      });
-    }
-
-    function getSelectedMode(){
-      const el = document.querySelector('input[name="mode"]:checked');
-      return el ? el.value : "buy";
-    }
-    window.BH_goToMap = function(city){
-      const params = new URLSearchParams();
-      params.set("city", city);
-      params.set("mode", getSelectedMode());
-      alert("Preview: navegaría a ./map.html?" + params.toString());
-    };
-    document.getElementById("form").addEventListener("submit", e => {
-      e.preventDefault();
-      const city = (document.getElementById("q").value || "").trim();
-      if (!city) return;
-      window.BH_goToMap(city);
-    });
-    
-    document.getElementById("navLogin").addEventListener("click", e => {
-      e.preventDefault();
-      alert("Preview: abriría el modal de cuenta");
-    });
-
-    (function(){
-      const btn = document.getElementById("previewToggle");
-      const overlay = document.getElementById("mobileSimOverlay");
-      const wrap = document.getElementById("simPhoneWrap");
-      const bezel = wrap.querySelector(".sim-phone-bezel");
-      const island = wrap.querySelector(".sim-phone-island");
-      const screen = wrap.querySelector(".sim-phone-screen");
-      const content = document.getElementById("simContent");
-      const icon = document.getElementById("ptIcon");
-      const label = document.getElementById("ptLabel");
-      const ICON_MOBILE = `<rect x="5" y="2" width="14" height="20" rx="2"></rect><circle cx="12" cy="17" r="1"></circle>`;
-      const ICON_DESKTOP = `<rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M8 21h8M12 17v4"></path>`;
-      const PW = 393, PH = 852, INSET = 10, SIM_W = 375;
-      let active = false;
-      let cloned = false;
-
-      function computeScale(){
-        const margin = 40;
-        return Math.min((window.innerWidth - margin * 2) / PW, (window.innerHeight - margin * 2) / PH, 1);
+      .pill{
+        position:relative;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        min-height:44px;
+        padding:0 8px;
+        background:transparent;
+        color:#c0b8b0;
+        font-size:16px;
+        font-weight:500;
+        letter-spacing:1px;
+        text-transform:uppercase;
+        cursor:pointer;
+        user-select:none;
+        border-bottom:2px solid transparent;
+        margin-bottom:-1.5px;
+        white-space:nowrap;
+        transition:color .15s;
       }
-      function applyScale(){
-        const s = computeScale();
-        const tw = PW * s, th = PH * s;
-        wrap.style.width = tw + "px";
-        wrap.style.height = th + "px";
-        bezel.style.borderRadius = (48 * s) + "px";
-        island.style.top = (14 * s) + "px";
-        island.style.width = (110 * s) + "px";
-        island.style.height = (30 * s) + "px";
-        island.style.borderRadius = (20 * s) + "px";
-        const si = INSET * s, sw = tw - si * 2, sh = th - si * 2;
-        screen.style.left = si + "px";
-        screen.style.top = si + "px";
-        screen.style.width = sw + "px";
-        screen.style.height = sh + "px";
-        screen.style.borderRadius = (42 * s) + "px";
-        const cs = sw / SIM_W;
-        content.style.transform = `scale(${cs})`;
-        content.style.width = SIM_W + "px";
-        content.style.height = (sh / cs) + "px";
+
+      .pill input{
+        position:absolute;
+        inset:0;
+        opacity:0;
+        pointer-events:none;
       }
-      function buildClone(){
-        if (cloned) return;
-        cloned = true;
-        const header = document.getElementById("bhHeader");
-        const pageWrap = document.querySelector(".wrap");
-        const inner = document.createElement("div");
-        inner.className = "sim-clone-inner";
-        if (header) inner.appendChild(header.cloneNode(true));
-        if (pageWrap) {
-          const wc = pageWrap.cloneNode(true);
-          const fc = wc.querySelector("#bhFooter");
-          if (fc) fc.innerHTML = "";
-          inner.appendChild(wc);
+
+      .pill span{
+        color:inherit;
+      }
+
+      .pill:hover{
+        color:var(--granate);
+      }
+
+      .pill:has(input:checked){
+        color:var(--granate);
+        font-weight:700;
+        border-bottom-color:var(--granate);
+      }
+
+      .searchWrap{
+        width:min(680px,100%);
+      }
+
+      .searchBox{
+        width:100%;
+        display:flex;
+        align-items:center;
+        background:#fff;
+        border-radius:999px;
+        padding:0 22px;
+        min-height:58px;
+        box-shadow:0 2px 20px rgba(196,150,42,.12);
+        border:1px solid rgba(196,150,42,.18);
+        transition:box-shadow .18s,border-color .18s;
+      }
+
+      .searchBox:focus-within{
+        box-shadow:0 4px 28px rgba(196,150,42,.16);
+        border-color:rgba(196,150,42,.28);
+      }
+
+      .searchIcon{
+        color:#ddd;
+        width:18px;
+        min-width:18px;
+        height:18px;
+        margin-right:12px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        transition:color .18s;
+      }
+
+      .searchBox:focus-within .searchIcon{
+        color:#555;
+      }
+
+      .searchIcon svg{
+        width:18px;
+        height:18px;
+        display:block;
+      }
+
+      .input{
+        width:100%;
+        border:0;
+        outline:0;
+        background:transparent;
+        font-size:17px;
+        color:#222;
+        line-height:1.2;
+      }
+
+      .input::placeholder{
+        color:#ccc;
+      }
+
+      .subTagline{
+        margin-top:28px;
+        font-family:Georgia,serif;
+        font-size:15px;
+        font-style:italic;
+        color:var(--dorado);
+        letter-spacing:.3px;
+        opacity:.85;
+      }
+
+      .midDot{
+        display:inline-block;
+        margin:0 6px;
+      }
+
+      .wordGap{
+        display:inline-block;
+        width:6px;
+      }
+
+      .carouselCard{
+        width:min(680px,calc(100% - 40px));
+        margin:auto auto 20px;
+        align-self:center;
+        background:#faf7f2;
+        border-radius:18px;
+        box-shadow:0 2px 18px rgba(140,31,45,.06),0 1px 4px rgba(0,0,0,.04);
+        border:1px solid rgba(196,150,42,.12);
+        overflow:hidden;
+        padding:33px 0;
+      }
+
+      .carouselTrack{
+        display:flex;
+        width:max-content;
+        animation:carouselScroll 32s linear infinite;
+        will-change:transform;
+      }
+
+      .carouselTrack:hover{
+        animation-play-state:paused;
+      }
+
+      .carouselItem{
+        display:inline-flex;
+        align-items:center;
+        gap:18px;
+        padding:0 36px;
+        white-space:nowrap;
+        font-family:Georgia,"Times New Roman",serif;
+        font-size:16px;
+        font-style:italic;
+        color:#555;
+        letter-spacing:.2px;
+      }
+
+      .carouselDot{
+        width:5px;
+        height:5px;
+        border-radius:50%;
+        background:var(--dorado);
+        opacity:.55;
+        flex-shrink:0;
+      }
+
+      @keyframes carouselScroll{
+        0%{ transform:translateX(0); }
+        100%{ transform:translateX(-50%); }
+      }
+
+      @media (max-width:720px){
+        .wrap{
+          min-height:calc(100vh - 69px);
+          grid-template-rows:1fr auto;
         }
-        inner.querySelectorAll("script").forEach(el => el.remove());
-        inner.querySelectorAll("[id]").forEach(el => {
-          el.setAttribute("data-sim-id", el.id);
-          el.removeAttribute("id");
+
+        .main{
+          padding-bottom:24px;
+        }
+
+        .searchBlock{
+          padding:22px 18px 0;
+        }
+
+        .tagline{
+          margin-top:24px;
+          margin-bottom:38px;
+          max-width:100%;
+          display:flex;
+          justify-content:center;
+          text-align:center;
+          font-size:13px;
+          line-height:1.5;
+          letter-spacing:1.4px;
+          word-spacing:3px;
+          white-space:normal;
+        }
+
+        .tagline::before,
+        .tagline::after{
+          width:24px;
+        }
+
+        .modeRow{
+          grid-template-columns:repeat(2,minmax(0,1fr));
+          width:100%;
+          max-width:420px;
+          margin-bottom:31px;
+        }
+
+        .pill{
+          min-width:0;
+          min-height:42px;
+          padding:0 8px;
+          font-size:12.5px;
+          letter-spacing:.55px;
+          overflow:hidden;
+          text-overflow:ellipsis;
+        }
+
+        .searchWrap{
+          width:100%;
+          max-width:420px;
+        }
+
+        .searchBox{
+          min-height:54px;
+          padding:0 16px;
+        }
+
+        .input{
+          font-size:15px;
+          min-width:0;
+        }
+
+        .subTagline{
+          font-size:15px;
+          margin-top:24px;
+          text-align:center;
+          white-space:nowrap;
+        }
+
+        .carouselCard{
+          width:calc(100% - 36px);
+          max-width:420px;
+          margin:auto auto 20px;
+          padding:30px 0;
+        }
+
+        .carouselItem{
+          font-size:15px;
+          padding:0 28px;
+          gap:14px;
+        }
+      }
+
+      @media (max-width:420px){
+        .tagline{
+          font-size:12px;
+          letter-spacing:1.1px;
+        }
+
+        .pill{
+          font-size:11.5px;
+          letter-spacing:.35px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <div class="wrap">
+      <main class="main">
+        <div class="searchBlock">
+          <div class="tagline">Solo anuncios de profesionales</div>
+
+          <div class="modeRow" aria-label="Tipo de búsqueda">
+            <label class="pill">
+              <input type="radio" name="mode" value="buy" checked />
+              <span>Comprar</span>
+            </label>
+            <label class="pill">
+              <input type="radio" name="mode" value="new_build" />
+              <span>Obra nueva</span>
+            </label>
+            <label class="pill">
+              <input type="radio" name="mode" value="rent" />
+              <span>Alquilar</span>
+            </label>
+            <label class="pill">
+              <input type="radio" name="mode" value="room" />
+              <span>Habitación</span>
+            </label>
+          </div>
+
+          <div class="searchWrap">
+            <form id="form" class="searchBox" autocomplete="off">
+              <span class="searchIcon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="M21 21l-4.3-4.3"></path>
+                </svg>
+              </span>
+              <input
+                id="q"
+                class="input"
+                placeholder="Ciudad, zona o código postal..."
+                aria-label="Buscar ciudad o zona"
+                enterkeyhint="search"
+              />
+            </form>
+          </div>
+
+          <div class="subTagline">Una<span class="wordGap"></span>vivienda <span class="midDot">·</span> Un<span class="wordGap"></span>anuncio</div>
+        </div>
+
+        <div class="carouselCard" aria-label="Valores de la plataforma">
+          <div class="carouselTrack" id="carouselTrack"></div>
+        </div>
+      </main>
+
+      <div id="bhFooter"></div>
+    </div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260309b";
+      import { initAuth } from "./bh-auth.js?v=20260309b";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+
+      const phrases = [
+        "Metros de vivienda útiles",
+        "Sin anuncios duplicados",
+        "Sin anuncios de particulares",
+        "Filtros por fecha de construcción",
+        "Posición del sol durante el año",
+        "Plano siempre disponible"
+      ];
+
+      const track = document.getElementById("carouselTrack");
+      if (track) {
+        const buildItems = () => phrases.map(text => `
+          <span class="carouselItem">
+            <span class="carouselDot" aria-hidden="true"></span>
+            ${text}
+          </span>
+        `).join("");
+
+        track.innerHTML = buildItems() + buildItems();
+
+        requestAnimationFrame(() => {
+          const halfW = track.scrollWidth / 2;
+          const duration = Math.round(halfW / 38);
+          track.style.animationDuration = duration + "s";
         });
-        content.appendChild(inner);
       }
-      function open(){
-        buildClone();
-        applyScale();
-        overlay.classList.add("active");
-        icon.innerHTML = ICON_DESKTOP;
-        label.textContent = "Web";
-        btn.title = "Volver a vista web";
-        active = true;
+
+      function getSelectedMode() {
+        const el = document.querySelector('input[name="mode"]:checked');
+        return el ? el.value : "buy";
       }
-      function close(){
-        overlay.classList.remove("active");
-        icon.innerHTML = ICON_MOBILE;
-        label.textContent = "Móvil";
-        btn.title = "Ver en móvil";
-        active = false;
-      }
-      btn.addEventListener("click", () => active ? close() : open());
-      window.addEventListener("resize", () => { if (active) applyScale(); });
-      document.addEventListener("keydown", e => { if (e.key === "Escape" && active) close(); });
-    })();
-  </script>
-</body>
+
+      window.BH_goToMap = function(city) {
+        const params = new URLSearchParams();
+        params.set("city", city);
+        params.set("mode", getSelectedMode());
+        window.location.href = "./map.html?" + params.toString();
+      };
+
+      const form = document.getElementById("form");
+      const q = document.getElementById("q");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const city = (q.value || "").trim();
+        if (!city) return;
+        window.BH_goToMap(city);
+      });
+    </script>
+  </body>
 </html>
