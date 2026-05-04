@@ -61,7 +61,7 @@
         align-items:center;
         gap:14px;
         color:#555;
-        font-size:20px;
+        font-size:21px;
         font-weight:500;
         letter-spacing:2.4px;
         word-spacing:6px;
@@ -87,6 +87,7 @@
         grid-template-columns:repeat(4,minmax(0,1fr));
         width:min(680px,100%);
         border-bottom:1.5px solid #e8e0d5;
+        margin-top:10px;
         margin-bottom:37px;
       }
 
@@ -99,7 +100,7 @@
         padding:0 8px;
         background:transparent;
         color:#c0b8b0;
-        font-size:16px;
+        font-size:17px;
         font-weight:500;
         letter-spacing:1px;
         text-transform:uppercase;
@@ -196,8 +197,8 @@
       .wordGap{ display:inline-block; width:6px; }
 
       .carouselCard{
-        width:min(680px,calc(100% - 40px));
-        margin:auto auto 20px;
+        width:min(935px,calc(100% - 40px));
+        margin:95px auto 20px;
         align-self:center;
         background:#faf7f2;
         border-radius:18px;
@@ -243,6 +244,11 @@
         100%{ transform:translateX(-50%); }
       }
 
+
+      /* Ajustes globales del header aplicados desde index */
+      #navFavoritos{ display:none !important; }
+      #bhHeader .topbar{ border-bottom:none !important; }
+
       @media (max-width:720px){
         .wrap{
           min-height:calc(100vh - 69px);
@@ -260,7 +266,7 @@
           display:flex;
           justify-content:center;
           text-align:center;
-          font-size:11px;
+          font-size:12px;
           line-height:1.2;
           letter-spacing:.75px;
           word-spacing:1px;
@@ -274,20 +280,24 @@
           grid-template-columns:repeat(2,minmax(0,1fr));
           width:100%;
           max-width:380px;
-          gap:12px;
+          column-gap:30px;
+          row-gap:20px;
           border-bottom:0;
+          margin-top:15px;
           margin-bottom:31px;
         }
 
         .pill{
           min-width:0;
           min-height:42px;
-          padding:0 8px;
+          padding:0 5.2px;
           background:#fff;
           color:#6b6b6b;
           font-size:12.5px;
           font-weight:500;
-          letter-spacing:.55px;
+          letter-spacing:.17em;
+          font-family:Raleway,Montserrat,system-ui,sans-serif;
+          text-transform:uppercase;
           border:1px solid #e7dfd2;
           border-radius:10px;
           margin-bottom:0;
@@ -334,7 +344,7 @@
         }
 
         .subTagline{
-          font-size:15px;
+          font-size:14px;
           margin-top:24px;
           text-align:center;
           white-space:nowrap;
@@ -343,7 +353,7 @@
         .carouselCard{
           width:calc(100% - 36px);
           max-width:420px;
-          margin:auto auto 20px;
+          margin:50px auto 20px;
           padding:30px 0;
         }
 
@@ -356,14 +366,14 @@
 
       @media (max-width:420px){
         .tagline{
-          font-size:10.5px;
+          font-size:12px;
           letter-spacing:.55px;
           word-spacing:0;
         }
 
         .pill{
           font-size:11.5px;
-          letter-spacing:.35px;
+          letter-spacing:.17em;
         }
       }
     </style>
@@ -457,6 +467,16 @@
 
       const form = document.getElementById("form");
       const q = document.getElementById("q");
+
+      function updateSearchPlaceholder() {
+        if (!q) return;
+        q.placeholder = window.matchMedia("(max-width:720px)").matches
+          ? "Ciudad, zona..."
+          : "Ciudad, zona o código postal...";
+      }
+
+      updateSearchPlaceholder();
+      window.addEventListener("resize", updateSearchPlaceholder);
 
       form.addEventListener("submit", (e) => {
         e.preventDefault();
