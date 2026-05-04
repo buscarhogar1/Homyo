@@ -1,9 +1,6 @@
 /* =====================================================
    HOMYO — Header overrides globales
    -----------------------------------------------------
-   El header común vive en bh-shared.css para que afecte
-   a todas las páginas, incluidas las que no importan este
-   archivo. Este archivo se mantiene por compatibilidad.
+   El header común vive en bh-shared.css.
+   Este archivo queda por compatibilidad y no debe pisarlo.
    ===================================================== */
-
-/* Sin reglas adicionales: no pisar bh-shared.css. */

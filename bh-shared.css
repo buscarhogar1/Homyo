@@ -22,7 +22,7 @@ html,body{
 
 /* ===== Header ===== */
 .topbar{
-  height:54px;
+  height:84px;
   background:var(--terra);
   color:#8C1F2D;
   display:flex;
@@ -30,6 +30,8 @@ html,body{
   padding:0 16px;
   box-sizing:border-box;
   border:none;
+  box-shadow:none;
+  border-bottom:1px solid #eee3d3;
 }
 
 .topbarInner{
@@ -38,23 +40,29 @@ html,body{
   display:flex;
   align-items:center;
   gap:12px;
+  position:relative;
+  justify-content:center;
 }
 
 .brand{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
   display:flex;
   align-items:center;
   text-decoration:none;
-  color:#fff;
+  color:#8C1F2D;
   flex:0 0 auto;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap');
 
 .brandText{
+  margin-top:5px;
   color:#8C1F2D;
-  font-family: 'Raleway', 'Montserrat', system-ui, sans-serif;
-  font-size:31px;
-  font-weight:300;
+  font-family:'Raleway','Montserrat',system-ui,sans-serif;
+  font-size:43px;
+  font-weight:600;
   letter-spacing:0.35em;
   line-height:1;
   text-transform:uppercase;
@@ -104,6 +112,9 @@ html,body{
   display:flex;
   gap:10px;
   align-items:center;
+  position:relative;
+  z-index:1;
+  transform:translateX(-30px);
 }
 
 .navActionLink{
@@ -111,7 +122,7 @@ html,body{
   text-decoration:none;
   font-size:14px;
   font-weight:400;
-  padding:6px 10px;
+  padding:6px 8px;
   border-radius:999px;
   display:inline-flex;
   align-items:center;
@@ -124,31 +135,32 @@ html,body{
 
 .navActionIcon{
   color:#8C1F2D;
-  width:16px;
-  min-width:16px;
-  height:16px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   flex:0 0 auto;
-  font-size:15px;
   line-height:1;
 }
 
 .navActionIconSvg{
-  width:22px;
-  min-width:22px;
-  height:22px;
+  width:28px;
+  min-width:28px;
+  height:28px;
+  margin-top:5px;
 }
 
 .navActionIconSvg svg{
-  width:22px;
-  height:22px;
+  width:28px;
+  height:28px;
   display:block;
 }
 
+.navActionIconSvg svg *{
+  stroke-width:1.7;
+}
+
 .navActionText{
-  display:inline-block;
+  display:none;
   line-height:1;
   color:#8A1F2D;
 }
@@ -168,7 +180,7 @@ html,body{
   cursor:pointer;
   font-size:14px;
   font-weight:400;
-  padding:6px 10px;
+  padding:6px 8px;
   border-radius:999px;
 }
 
@@ -184,21 +196,22 @@ html,body{
 }
 
 .navAvatar{
-  width:24px;
-  height:24px;
+  width:28px;
+  height:28px;
   border-radius:999px;
-  background:rgba(255,255,255,0.18);
-  border:1px solid rgba(255,255,255,0.28);
+  background:transparent;
+  border:0;
   display:grid;
   place-items:center;
   font-size:12px;
   font-weight:800;
   line-height:1;
+  margin-top:5px;
 }
 
 .navAvatarSvg{
-  width:24px;
-  height:24px;
+  width:28px;
+  height:28px;
   background:transparent;
   border:0;
   display:inline-flex;
@@ -207,13 +220,73 @@ html,body{
 }
 
 .navAvatarSvg svg{
-  width:24px;
-  height:24px;
+  width:28px;
+  height:28px;
   display:block;
 }
 
-.navUserLabel{
-  display:inline-block;
+.navAvatarSvg svg *{
+  stroke-width:1.7;
+}
+
+.navUserLabel,
+#navUserLabel,
+#navLogoutBtn{
+  display:none !important;
+}
+
+@media (max-width:720px){
+  .topbar{
+    height:69px;
+    padding:0 14px;
+  }
+
+  .topbarInner{
+    width:100%;
+  }
+
+  .brandText{
+    margin-top:5px;
+    font-size:32px;
+    letter-spacing:.24em;
+  }
+
+  .rightGroup{
+    transform:translateX(-20px);
+  }
+
+  .navActionLink,
+  .navUserBtn,
+  .navLogoutBtn{
+    padding:6px 0;
+  }
+
+  .navActionIconSvg,
+  .navActionIconSvg svg,
+  .navAvatar,
+  .navAvatarSvg,
+  .navAvatarSvg svg{
+    width:22px;
+    min-width:22px;
+    height:22px;
+  }
+
+  .navActionIconSvg,
+  .navAvatar{
+    margin-top:5px;
+  }
+
+  .navActionIconSvg svg *,
+  .navAvatarSvg svg *{
+    stroke-width:1.45;
+  }
+}
+
+@media (max-width:420px){
+  .brandText{
+    font-size:30px;
+    letter-spacing:.22em;
+  }
 }
 
 /* ===== Footer ===== */
@@ -404,69 +477,6 @@ html,body{
   height:18px;
 }
 
-@media (max-width:720px){
-  .miniSearch{ display:none; }
-
-  .topbar{
-    height:54px;
-    padding:0 12px;
-  }
-
-  .topbarInner{
-    gap:8px;
-  }
-
-  .brandText{
-    font-size:25px;
-  }
-
-  .rightGroup{
-    gap:8px;
-  }
-
-  .navActionLink{
-    min-width:68px;
-    padding:4px 2px;
-    border-radius:10px;
-    flex-direction:column;
-    gap:2px;
-    justify-content:center;
-    text-align:center;
-  }
-
-  .navActionIconSvg{
-    width:18px;
-    min-width:18px;
-    height:18px;
-  }
-
-  .navActionIconSvg svg{
-    width:18px;
-    height:18px;
-  }
-
-  .navActionText{
-    font-size:10px;
-    line-height:1.05;
-    white-space:nowrap;
-  }
-
-  .navUserBtn,
-  .navLogoutBtn{
-    padding:6px 8px;
-  }
-
-  .navAvatarSvg{
-    width:18px;
-    height:18px;
-  }
-
-  .navAvatarSvg svg{
-    width:18px;
-    height:18px;
-  }
-}
-
 @media (max-width:520px){
   .modal{
     padding:18px;
@@ -497,128 +507,3 @@ html,body{
     display:none;
   }
 }
-
-
-/* ===== HOMYO GLOBAL HEADER SYSTEM =====
-   Header común para todas las páginas.
-   Desktop y móvil tienen ajustes propios.
-   Se usa !important para imponerse sobre CSS específico de página.
-===================================================== */
-:root{
-  --bh-header-h:59px;
-  --bh-header-logo-size:43px;
-  --bh-header-logo-weight:600;
-  --bh-header-logo-letter:.35em;
-  --bh-header-logo-y:15px;
-  --bh-header-border:#eee3d3;
-}
-
-.topbar{
-  height:var(--bh-header-h) !important;
-  min-height:var(--bh-header-h) !important;
-  background:#FFFDFA !important;
-  color:#8C1F2D !important;
-  display:flex !important;
-  align-items:center !important;
-  padding:0 16px !important;
-  box-sizing:border-box !important;
-  border:0 !important;
-  border-bottom:1px solid var(--bh-header-border) !important;
-  box-shadow:none !important;
-}
-
-.topbarInner{
-  width:min(1120px,100%) !important;
-  margin:0 auto !important;
-  display:flex !important;
-  align-items:center !important;
-  gap:12px !important;
-  position:relative !important;
-  justify-content:center !important;
-}
-
-.brand{
-  position:absolute !important;
-  left:50% !important;
-  transform:translate(-50%, var(--bh-header-logo-y)) !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  text-decoration:none !important;
-  color:#8C1F2D !important;
-  flex:0 0 auto !important;
-}
-
-.brandText{
-  margin:0 !important;
-  color:#8C1F2D !important;
-  font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
-  font-size:var(--bh-header-logo-size) !important;
-  font-weight:var(--bh-header-logo-weight) !important;
-  letter-spacing:var(--bh-header-logo-letter) !important;
-  line-height:1 !important;
-  text-transform:uppercase !important;
-}
-
-#navFavoritos{
-  display:none !important;
-}
-
-#navLogin .navActionText{
-  display:none !important;
-}
-
-#navLogin{
-  padding:6px 8px !important;
-}
-
-#navUserLabel,
-#navLogoutBtn{
-  display:none !important;
-}
-
-.rightGroup{
-  margin-left:auto !important;
-  position:relative !important;
-  z-index:1 !important;
-  display:flex !important;
-  align-items:center !important;
-  gap:10px !important;
-}
-
-.navActionIconSvg,
-.navActionIconSvg svg{
-  width:22px !important;
-  min-width:22px !important;
-  height:22px !important;
-  display:block !important;
-}
-
-@media (max-width:720px){
-  :root{
-    --bh-header-h:64px;
-    --bh-header-logo-size:32px;
-    --bh-header-logo-letter:.24em;
-    --bh-header-logo-y:5px;
-  }
-
-  .topbar{
-    padding:0 14px !important;
-  }
-
-  .topbarInner{
-    width:100% !important;
-  }
-
-  #navLogin{
-    padding:6px 0 !important;
-  }
-}
-
-@media (max-width:420px){
-  :root{
-    --bh-header-logo-size:30px;
-    --bh-header-logo-letter:.22em;
-  }
-}
-
