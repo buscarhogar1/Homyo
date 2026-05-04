@@ -497,3 +497,128 @@ html,body{
     display:none;
   }
 }
+
+
+/* ===== HOMYO GLOBAL HEADER SYSTEM =====
+   Header común para todas las páginas.
+   Desktop y móvil tienen ajustes propios.
+   Se usa !important para imponerse sobre CSS específico de página.
+===================================================== */
+:root{
+  --bh-header-h:59px;
+  --bh-header-logo-size:43px;
+  --bh-header-logo-weight:600;
+  --bh-header-logo-letter:.35em;
+  --bh-header-logo-y:15px;
+  --bh-header-border:#eee3d3;
+}
+
+.topbar{
+  height:var(--bh-header-h) !important;
+  min-height:var(--bh-header-h) !important;
+  background:#FFFDFA !important;
+  color:#8C1F2D !important;
+  display:flex !important;
+  align-items:center !important;
+  padding:0 16px !important;
+  box-sizing:border-box !important;
+  border:0 !important;
+  border-bottom:1px solid var(--bh-header-border) !important;
+  box-shadow:none !important;
+}
+
+.topbarInner{
+  width:min(1120px,100%) !important;
+  margin:0 auto !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  position:relative !important;
+  justify-content:center !important;
+}
+
+.brand{
+  position:absolute !important;
+  left:50% !important;
+  transform:translate(-50%, var(--bh-header-logo-y)) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-decoration:none !important;
+  color:#8C1F2D !important;
+  flex:0 0 auto !important;
+}
+
+.brandText{
+  margin:0 !important;
+  color:#8C1F2D !important;
+  font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size:var(--bh-header-logo-size) !important;
+  font-weight:var(--bh-header-logo-weight) !important;
+  letter-spacing:var(--bh-header-logo-letter) !important;
+  line-height:1 !important;
+  text-transform:uppercase !important;
+}
+
+#navFavoritos{
+  display:none !important;
+}
+
+#navLogin .navActionText{
+  display:none !important;
+}
+
+#navLogin{
+  padding:6px 8px !important;
+}
+
+#navUserLabel,
+#navLogoutBtn{
+  display:none !important;
+}
+
+.rightGroup{
+  margin-left:auto !important;
+  position:relative !important;
+  z-index:1 !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+}
+
+.navActionIconSvg,
+.navActionIconSvg svg{
+  width:22px !important;
+  min-width:22px !important;
+  height:22px !important;
+  display:block !important;
+}
+
+@media (max-width:720px){
+  :root{
+    --bh-header-h:64px;
+    --bh-header-logo-size:32px;
+    --bh-header-logo-letter:.24em;
+    --bh-header-logo-y:5px;
+  }
+
+  .topbar{
+    padding:0 14px !important;
+  }
+
+  .topbarInner{
+    width:100% !important;
+  }
+
+  #navLogin{
+    padding:6px 0 !important;
+  }
+}
+
+@media (max-width:420px){
+  :root{
+    --bh-header-logo-size:30px;
+    --bh-header-logo-letter:.22em;
+  }
+}
+
