@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Buscar Hogar – Ficha</title>
 
-    <link rel="stylesheet" href="./bh-shared.css?v=3" />
-    <link rel="stylesheet" href="./bh-header-overrides.css" />
+    <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
 
     <link
       rel="stylesheet"
@@ -1164,6 +1164,20 @@
   }
 }
 
+
+
+/* === HIDE FAVORITE BUTTONS REQUESTED === */
+#saveBtn,
+#stickySaveBtn,
+#mobileGallerySave{
+  display:none !important;
+}
+
+#bhHeader .topbar{
+  background:var(--bg) !important;
+  border-bottom:none !important;
+  box-shadow:none !important;
+}
 </style>
   </head>
 
@@ -1506,8 +1520,8 @@
     <div id="bhFooter"></div>
 
     <script type="module">
-      import { initLayout } from "./bh-layout.js?v=20260309b";
-      import { initAuth } from "./bh-auth.js?v=20260309b";
+      import { initLayout } from "./bh-layout.js?v=20260504";
+      import { initAuth } from "./bh-auth.js?v=20260504";
 
       initLayout({ showMiniSearch: false });
       initAuth();
@@ -2503,7 +2517,21 @@ placeMonthlyLinkInPrice();
         width: 375px;
         background: #FFFDFA;
       }
-    </style>
+    
+
+/* === HIDE FAVORITE BUTTONS REQUESTED === */
+#saveBtn,
+#stickySaveBtn,
+#mobileGallerySave{
+  display:none !important;
+}
+
+#bhHeader .topbar{
+  background:var(--bg) !important;
+  border-bottom:none !important;
+  box-shadow:none !important;
+}
+</style>
 
     <button id="previewToggle" title="Ver en móvil">
       <svg id="ptIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

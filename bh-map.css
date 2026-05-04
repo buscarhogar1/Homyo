@@ -1060,7 +1060,7 @@ body{
 
   body{
     overflow: hidden;
-    background: #fff;
+    background: var(--bg);
   }
 
   #bhFooter,
@@ -1075,7 +1075,7 @@ body{
     padding: calc(env(safe-area-inset-top, 0px) + 10px) 12px 12px;
     min-height: 72px;
     box-sizing: border-box;
-    background: #fff;
+    background: var(--bg);
     border-bottom: 1px solid rgba(0,0,0,0.08);
   }
 
@@ -1516,4 +1516,13 @@ body{
   .sunHoursRow span{
     transform: none !important;
   }
+}
+
+
+/* ===== Ajustes solicitados header/map ===== */
+.heartBtn{ display:none !important; }
+@media (max-width:768px){
+  body{ background:var(--bg) !important; }
+  .mobileTopRow{ background:var(--bg) !important; border-bottom:none !important; }
+  .mobileBack{ display:none !important; }
 }

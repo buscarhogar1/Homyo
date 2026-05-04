@@ -3,72 +3,92 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Buscar Hogar</title>
+    <title>Homyo — Solo anuncios de profesionales</title>
 
-    <link rel="stylesheet" href="./bh-shared.css" />
+    <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
 
-    
     <style>
-      body{
-        background:#FFFFFF;
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --dorado:#C4962A;
+        --muted:#6b7280;
+        --terra:#FFFDFA;
       }
 
+      *{ box-sizing:border-box; }
+
+      html,body{
+        width:100%;
+        height:100%;
+        min-height:100%;
+        margin:0;
+        background:var(--bg);
+        color:#111;
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+        overflow-x:hidden;
+      }
+
+      body{ min-height:100vh; }
+
       .wrap{
-        min-height: calc(100% - 54px);
+        min-height:calc(100vh - 84px);
         display:grid;
-        grid-template-rows: 1fr auto;
+        grid-template-rows:1fr auto;
+        overflow-x:hidden;
       }
 
       .main{
         display:flex;
-        align-items:flex-start;
-        justify-content:center;
-        padding:0 16px 14px;
-        box-sizing:border-box;
+        flex-direction:column;
+        align-items:stretch;
+        padding-bottom:56px;
+        overflow-x:hidden;
       }
 
-      .center{
-        width:min(1180px, 100%);
-        display:grid;
-        justify-items:center;
-        text-align:center;
-      }
-
-      .heroWrap{
+      .searchBlock{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
         width:100%;
-        margin:7px 0 2px;
+        padding:28px 20px 0;
       }
 
-      .heroImage{
-        width:100%;
-        height:auto;
-        display:block;
+      .tagline{
+        margin-top:33px;
+        display:inline-flex;
+        align-items:center;
+        gap:14px;
+        color:#555;
+        font-size:21px;
+        font-weight:500;
+        letter-spacing:2.4px;
+        word-spacing:6px;
+        text-transform:uppercase;
+        margin-bottom:52px;
+        font-family:Georgia,serif;
+        font-style:italic;
       }
 
-      .headline{
-        margin:5px 0 18px;
-        font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,Segoe UI,Roboto,sans-serif;
-        font-weight:700;
-        letter-spacing:-0.4px;
-        font-size:24px;
-        line-height:1.08;
-        color:#666;
-        margin:0 0 14px;
-        text-wrap:balance;
+      .tagline:before,
+      .tagline:after{
+        content:"";
+        height:1px;
+        width:36px;
+        background:linear-gradient(to right,transparent,var(--dorado));
+        flex-shrink:0;
       }
 
-      .controlsWrap{
-        width:min(760px,100%);
-        display:grid;
-        gap:10px;
-      }
+      .tagline:after{ background:linear-gradient(to left,transparent,var(--dorado)); }
 
       .modeRow{
-        width:100%;
         display:grid;
-        grid-template-columns:repeat(4, minmax(0, 1fr));
-        gap:10px;
-        align-items:stretch;
+        grid-template-columns:repeat(4,minmax(0,1fr));
+        width:min(680px,100%);
+        border-bottom:1.5px solid #e8e0d5;
+        margin-top:10px;
+        margin-bottom:37px;
       }
 
       .pill{
@@ -76,55 +96,27 @@
         display:flex;
         align-items:center;
         justify-content:center;
-        min-height:48px;
-        padding:0 10px;
-        border-radius:8px;
-        background:#fff;
-        color:#666;
-        font-size:13px;
-        font-weight:600;
-        line-height:1;
-        text-transform:uppercase;
-        letter-spacing:0.22px;
-        cursor:pointer;
-        user-select:none;
-        box-sizing:border-box;
-        transition:background .15s ease, color .15s ease, transform .15s ease;
-        white-space:nowrap;
-      }
-
-      .pill input{
-        position:absolute;
-        inset:0;
-        opacity:0;
-        pointer-events:none;
-      }
-
-      .pill span{
-        color:inherit;
-      }
-
-      .pill:has(input:checked){
-        background:#9e2f0d;
-        color:#fff;
-      }
-
-      .searchShell{
-        width:100%;
+        min-height:44px;
+        padding:0 8px;
         background:transparent;
-        padding:0;
-        margin-top:0px;
-        box-sizing:border-box;
+        color:#c0b8b0;
+        font-size:17px;
+        font-weight:500;
+        letter-spacing:1px;
+        text-transform:uppercase;
+        cursor:pointer;
+        border-bottom:2px solid transparent;
+        margin-bottom:-1.5px;
+        white-space:nowrap;
+        transition:color .15s;
       }
 
-      
-      .searchIcon{
-        color:#7c7c7c;
-        font-size:16px;
-        margin-right:8px;
-        display:flex;
-        align-items:center;
-      }
+      .pill input{ position:absolute; inset:0; opacity:0; pointer-events:none; }
+      .pill:hover{ color:var(--granate); }
+      .pill:has(input:checked){ color:var(--granate); font-weight:700; border-bottom-color:var(--granate); }
+      .pill:has(input:checked) span{ color:var(--granate); }
+
+      .searchWrap{ width:min(680px,100%); }
 
       .searchBox{
         width:100%;
@@ -132,162 +124,259 @@
         align-items:center;
         background:#fff;
         border-radius:999px;
-        padding:0 18px;
-        box-sizing:border-box;
-        min-height:54px;
-        box-shadow:0 1px 6px rgba(32,33,36,.28);
-        transition:box-shadow .18s ease;
+        padding:0 12px 0 22px;
+        min-height:58px;
+        box-shadow:0 2px 20px rgba(196,150,42,.12);
+        border:1px solid rgba(196,150,42,.18);
+        gap:10px;
+        transition:box-shadow .18s,border-color .18s;
       }
 
-      .searchBox:hover,
       .searchBox:focus-within{
-        box-shadow:0 2px 10px rgba(32,33,36,.32);
+        box-shadow:0 4px 28px rgba(196,150,42,.16);
+        border-color:rgba(196,150,42,.28);
       }
+
+      .searchIcon{
+        color:#ddd;
+        width:18px;
+        min-width:18px;
+        height:18px;
+        margin-right:12px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        transition:color .18s;
+      }
+
+      .searchBox:focus-within .searchIcon{ color:#555; }
+      .searchIcon svg{ width:18px; height:18px; display:block; }
 
       .input{
         width:100%;
+        min-width:0;
         border:0;
         outline:0;
         background:transparent;
-        padding:0;
-        font-size:15px;
-        line-height:1.2;
+        font-size:17px;
         color:#222;
+        line-height:1.2;
       }
 
-      .input::placeholder{
-        color:#7c7c7c;
+      .input::placeholder{ color:#ccc; }
+
+      .searchBtn{
+        background:var(--granate);
+        color:#fff;
+        border:none;
+        border-radius:999px;
+        padding:10px 18px;
+        font-size:14px;
+        font-weight:600;
+        cursor:pointer;
+        white-space:nowrap;
+        transition:all .18s ease;
       }
 
-      .subTag{
-        width:min(760px,100%);
-        font-size:13px;
-        color:#666;
-        text-align:center;
-        margin-top:10px;
+      .searchBtn:hover{
+        opacity:.9;
+        transform:translateY(-1px);
       }
 
-      @media (min-width: 721px){
-        .heroWrap{
-          max-width:806px; /* reduced additional 10% */
-          margin:20px 0 5px; /* closer to header */
+      .subTagline{
+        margin-top:28px;
+        font-family:Georgia,serif;
+        font-size:15px;
+        font-style:italic;
+        color:var(--dorado);
+        letter-spacing:.3px;
+        opacity:.85;
+      }
+
+      .midDot{ display:inline-block; margin:0 6px; }
+      .wordGap{ display:inline-block; width:6px; }
+
+      .carouselCard{
+        width:min(935px,calc(100% - 40px));
+        margin:95px auto 20px;
+        align-self:center;
+        background:#faf7f2;
+        border-radius:18px;
+        box-shadow:0 2px 18px rgba(140,31,45,.06),0 1px 4px rgba(0,0,0,.04);
+        border:1px solid rgba(196,150,42,.12);
+        overflow:hidden;
+        padding:33px 0;
+      }
+
+      .carouselTrack{
+        display:flex;
+        width:max-content;
+        animation:carouselScroll 32s linear infinite;
+        will-change:transform;
+      }
+
+      .carouselTrack:hover{ animation-play-state:paused; }
+
+      .carouselItem{
+        display:inline-flex;
+        align-items:center;
+        gap:18px;
+        padding:0 36px;
+        white-space:nowrap;
+        font-family:Georgia,"Times New Roman",serif;
+        font-size:16px;
+        font-style:italic;
+        color:#555;
+        letter-spacing:.2px;
+      }
+
+      .carouselDot{
+        width:5px;
+        height:5px;
+        border-radius:50%;
+        background:var(--dorado);
+        opacity:.55;
+        flex-shrink:0;
+      }
+
+      @keyframes carouselScroll{
+        0%{ transform:translateX(0); }
+        100%{ transform:translateX(-50%); }
+      }
+
+
+      /* Ajustes globales del header aplicados desde index */
+      #navFavoritos{ display:none !important; }
+      #bhHeader .topbar{ background:var(--bg) !important; border-bottom:none !important; box-shadow:none !important; }
+
+      @media (max-width:720px){
+        .wrap{
+          min-height:calc(100vh - 69px);
+          grid-template-rows:1fr auto;
         }
 
-        .headline{
-          margin:5px 0 20px;
-          font-size:30px;
+        .main{ padding-bottom:24px; }
+
+        .searchBlock{ padding:22px 18px 0; }
+
+        .tagline{
+          margin-top:24px;
+          margin-bottom:38px;
+          max-width:100%;
+          display:flex;
+          justify-content:center;
+          text-align:center;
+          font-size:12px;
+          line-height:1.2;
+          letter-spacing:.75px;
+          word-spacing:1px;
+          white-space:nowrap;
         }
 
-        .controlsWrap{
-          width:min(820px,100%);
-          gap:25px;
-        }
+        .tagline:before,
+        .tagline:after{ width:18px; }
 
         .modeRow{
-          gap:12px;
-        }
-
-        .pill{
-          min-height:50px;
-          font-size:14px;
-        }
-
-        .searchShell{
-          padding:0;
-        }
-
-        
-      .searchIcon{
-        color:#7c7c7c;
-        font-size:16px;
-        margin-right:8px;
-        display:flex;
-        align-items:center;
-      }
-
-      .searchBox{
-          min-height:58px;
-          border-radius:999px;
-          padding:0 20px;
-        }
-
-        .input{
-          font-size:17px;
-        }
-
-        .subTag{
-          width:min(820px,100%);
-          font-size:14px;
-          margin-top:10px;
-        }
-      }
-
-      @media (max-width: 720px){
-        .main{
-          padding:25px 16px 10px;
-        }
-
-        .center{
-          width:min(100%, 560px);
-        }
-
-        .heroWrap{
-          margin:0 0 15px;
-        }
-
-        .headline{
-          margin:0 0 25px;
-          font-size:22px;
-          line-height:1.1;
-        }
-
-        .controlsWrap{
+          grid-template-columns:repeat(2,minmax(0,1fr));
           width:100%;
-          gap:25px;
-        }
-
-        .modeRow{
-          gap:8px;
+          max-width:380px;
+          column-gap:30px;
+          row-gap:20px;
+          border-bottom:0;
+          margin-top:15px;
+          margin-bottom:31px;
         }
 
         .pill{
-          min-height:44px;
-          font-size:11px;
-          padding:0 6px;
-          border-radius:7px;
+          min-width:0;
+          min-height:42px;
+          padding:0 5.2px;
+          background:#fff;
+          color:#6b6b6b;
+          font-size:12.5px;
+          font-weight:500;
+          letter-spacing:.17em;
+          font-family:Raleway,Montserrat,system-ui,sans-serif;
+          text-transform:uppercase;
+          border:1px solid #e7dfd2;
+          border-radius:10px;
+          margin-bottom:0;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          box-shadow:0 1px 6px rgba(0,0,0,.04);
+          transition:all .18s ease;
         }
 
-        .searchShell{
-          padding:0;
+        .pill:hover{
+          color:var(--granate);
+          border-color:rgba(140,31,45,.35);
+          box-shadow:0 2px 10px rgba(140,31,45,.08);
         }
 
-        
-      .searchIcon{
-        color:#7c7c7c;
-        font-size:16px;
-        margin-right:8px;
-        display:flex;
-        align-items:center;
-      }
-
-      .searchBox{
-          min-height:50px;
-          border-radius:999px;
-          padding:0 16px;
+        .pill:has(input:checked){
+          background:var(--granate);
+          color:#fff;
+          font-weight:600;
+          border-color:var(--dorado);
+          box-shadow:0 4px 14px rgba(140,31,45,.18);
         }
 
-        .input{
+        .pill:has(input:checked) span{ color:#fff; }
+
+        .searchWrap{
+          width:100%;
+          max-width:420px;
+        }
+
+        .searchBox{
+          min-height:54px;
+          padding:0 10px 0 14px;
+        }
+
+        .searchBtn{
+          padding:8px 14px;
           font-size:13px;
         }
 
-        .subTag{
-          width:100%;
+        .input{
+          font-size:15px;
+          min-width:0;
+        }
+
+        .subTagline{
+          font-size:14px;
+          margin-top:24px;
+          text-align:center;
+          white-space:nowrap;
+        }
+
+        .carouselCard{
+          width:calc(100% - 36px);
+          max-width:420px;
+          margin:50px auto 20px;
+          padding:30px 0;
+        }
+
+        .carouselItem{
+          font-size:15px;
+          padding:0 28px;
+          gap:14px;
+        }
+      }
+
+      @media (max-width:420px){
+        .tagline{
           font-size:12px;
-          margin-top:10px;
+          letter-spacing:.55px;
+          word-spacing:0;
+        }
+
+        .pill{
+          font-size:11.5px;
+          letter-spacing:.17em;
         }
       }
     </style>
-
   </head>
 
   <body>
@@ -295,57 +384,34 @@
 
     <div class="wrap">
       <main class="main">
-        <div class="center">
-          <div class="heroWrap">
-            <div class="heroCrop">
-              <img
-                src="/buscarhogardemo/index-hero.png?v=3"
-                alt="Ilustración de varios tipos de viviendas"
-                class="heroImage"
-              />
-            </div>
+        <div class="searchBlock">
+          <div class="tagline">Solo anuncios de profesionales</div>
+
+          <div class="modeRow" aria-label="Tipo de búsqueda">
+            <label class="pill"><input type="radio" name="mode" value="buy" checked /><span>Comprar</span></label>
+            <label class="pill"><input type="radio" name="mode" value="new_build" /><span>Obra nueva</span></label>
+            <label class="pill"><input type="radio" name="mode" value="rent" /><span>Alquilar</span></label>
+            <label class="pill"><input type="radio" name="mode" value="room" /><span>Habitación</span></label>
           </div>
 
-          <h1 class="headline">Solo anuncios de profesionales</h1>
-
-          <div class="controlsWrap">
-            <div class="modeRow" aria-label="Tipo de búsqueda">
-              <label class="pill">
-                <input type="radio" name="mode" value="buy" checked />
-                <span>COMPRAR</span>
-              </label>
-
-              <label class="pill">
-                <input type="radio" name="mode" value="rent" />
-                <span>ALQUILAR</span>
-              </label>
-
-              <label class="pill">
-                <input type="radio" name="mode" value="room" />
-                <span>HABITACIÓN</span>
-              </label>
-
-              <label class="pill">
-                <input type="radio" name="mode" value="new_build" />
-                <span>OBRA NUEVA</span>
-              </label>
-            </div>
-
-            <div class="searchShell">
-              <form id="form" class="searchBox" autocomplete="off">
-                <span class="searchIcon">🔍</span>
-                <input
-                  id="q"
-                  class="input"
-                  placeholder="Escribe una ciudad, zona, CP..."
-                  aria-label="Buscar ciudad o zona"
-                  enterkeyhint="search"
-                />
-              </form>
-            </div>
+          <div class="searchWrap">
+            <form id="form" class="searchBox" autocomplete="off">
+              <span class="searchIcon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="M21 21l-4.3-4.3"></path>
+                </svg>
+              </span>
+              <input id="q" class="input" placeholder="Ciudad, zona o código postal..." aria-label="Buscar ciudad o zona" enterkeyhint="search" />
+              <button class="searchBtn" type="submit">Buscar</button>
+            </form>
           </div>
 
-          <div class="subTag">Una vivienda, un anuncio.</div>
+          <div class="subTagline">Una<span class="wordGap"></span>vivienda <span class="midDot">·</span> Un<span class="wordGap"></span>anuncio</div>
+        </div>
+
+        <div class="carouselCard" aria-label="Valores de la plataforma">
+          <div class="carouselTrack" id="carouselTrack"></div>
         </div>
       </main>
 
@@ -353,18 +419,46 @@
     </div>
 
     <script type="module">
-      import { initLayout } from "./bh-layout.js?v=20260309b";
-      import { initAuth } from "./bh-auth.js?v=20260309b";
+      import { initLayout } from "./bh-layout.js?v=20260504";
+      import { initAuth } from "./bh-auth.js?v=20260504";
 
       initLayout({ showMiniSearch: false });
       initAuth();
 
-      function getSelectedMode(){
+      const phrases = [
+        "Metros de vivienda útiles",
+        "Precio por metro cuadrado útil",
+        "Sin anuncios duplicados",
+        "Sin anuncios de particulares",
+        "Filtros por fecha de construcción",
+        "Posición del sol durante el año",
+        "Plano siempre disponible"
+      ];
+
+      const track = document.getElementById("carouselTrack");
+      if (track) {
+        const buildItems = () => phrases.map(text => `
+          <span class="carouselItem">
+            <span class="carouselDot" aria-hidden="true"></span>
+            ${text}
+          </span>
+        `).join("");
+
+        track.innerHTML = buildItems() + buildItems();
+
+        requestAnimationFrame(() => {
+          const halfW = track.scrollWidth / 2;
+          const duration = Math.round(halfW / 38);
+          track.style.animationDuration = duration + "s";
+        });
+      }
+
+      function getSelectedMode() {
         const el = document.querySelector('input[name="mode"]:checked');
         return el ? el.value : "buy";
       }
 
-      window.BH_goToMap = function(city){
+      window.BH_goToMap = function(city) {
         const params = new URLSearchParams();
         params.set("city", city);
         params.set("mode", getSelectedMode());
@@ -374,10 +468,20 @@
       const form = document.getElementById("form");
       const q = document.getElementById("q");
 
+      function updateSearchPlaceholder() {
+        if (!q) return;
+        q.placeholder = window.matchMedia("(max-width:720px)").matches
+          ? "Ciudad, zona..."
+          : "Ciudad, zona o código postal...";
+      }
+
+      updateSearchPlaceholder();
+      window.addEventListener("resize", updateSearchPlaceholder);
+
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         const city = (q.value || "").trim();
-        if(!city) return;
+        if (!city) return;
         window.BH_goToMap(city);
       });
     </script>

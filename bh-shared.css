@@ -31,7 +31,7 @@ html,body{
   box-sizing:border-box;
   border:none;
   box-shadow:none;
-  border-bottom:0;
+  border-bottom:none !important;
 }
 
 .topbarInner{
@@ -506,4 +506,17 @@ html,body{
   .navUserLabel{
     display:none;
   }
+}
+
+
+/* ===== Ajustes globales solicitados ===== */
+#navFavoritos{
+  display:none !important;
+}
+
+#bhHeader .topbar,
+.topbar{
+  background:var(--bg) !important;
+  border-bottom:none !important;
+  box-shadow:none !important;
 }

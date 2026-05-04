@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Buscar Hogar – Mapa</title>
 
-    <link rel="stylesheet" href="./bh-shared.css" />
-    <link rel="stylesheet" href="./bh-header-overrides.css" />
+    <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
 
     <link
       rel="stylesheet"
@@ -15,7 +15,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css" />
+    <link rel="stylesheet" href="./bh-map.css?v=20260504" />
 
     <style>
       @media (max-width: 720px){
@@ -46,7 +46,6 @@
     <!-- Contenedor general de la página del mapa -->
 
     <div class="mobileTopRow" aria-hidden="true">
-      <a href="index.html" class="mobileBack" aria-label="Volver">←</a>
       <div class="mobileSearchShell">
         <span class="mobileSearchIcon" aria-hidden="true">⌕</span>
         <input id="mobileSearchInput" class="mobileSearchInput" type="text" placeholder="Buscar zona..." />
@@ -214,8 +213,8 @@
     <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
 
     <script type="module">
-      import { initLayout } from "./bh-layout.js?v=20260309b";
-      import { initAuth } from "./bh-auth.js?v=20260309b";
+      import { initLayout } from "./bh-layout.js?v=20260504";
+      import { initAuth } from "./bh-auth.js?v=20260504";
       import { initFiltersBar } from "./bh-map-filters.js";
       import { initMap } from "./bh-map-core.js";
 
