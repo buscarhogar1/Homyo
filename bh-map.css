@@ -54,7 +54,7 @@ body{
 .topRow{
   height: var(--topRowH);
   display: grid;
-  grid-template-columns: 1fr var(--sideW);
+  grid-template-columns: var(--sideW) 1fr var(--sideW);
   gap: var(--gap);
   align-items: center;
   margin-bottom: var(--gap);
@@ -66,7 +66,7 @@ body{
   align-items: center;
 }
 
-.topCellLeft{ display:none !important; }
+.topCellLeft{ justify-content: flex-start; }
 .topCellCenter{ justify-content: center; }
 .topCellRight{ justify-content: flex-end; position: relative; }
 
@@ -1067,52 +1067,7 @@ body{
   .topRow{
     display: none !important;
   }
-
-  .mobileTopRow{
-    display: none !important;
-  }
-
-  .mobileBack{
-    width: 40px;
-    height: 40px;
-    display: grid;
-    place-items: center;
-    border-radius: 999px;
-    text-decoration: none;
-    color: #111;
-    font-size: 26px;
-    line-height: 1;
-    flex: 0 0 auto;
-  }
-
-  .mobileSearchShell{
-    flex: 1 1 auto;
-    height: 46px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(0,0,0,0.14);
-    background: #fff;
-    padding: 0 14px;
-    box-sizing: border-box;
-  }
-
-  .mobileSearchIcon{
-    font-size: 18px;
-    color: rgba(0,0,0,0.55);
-    flex: 0 0 auto;
-  }
-
-  .mobileSearchInput{
-    flex: 1 1 auto;
-    border: 0;
-    outline: none;
-    background: transparent;
-    font-size: 16px;
-    color: #111;
-    min-width: 0;
-  }
+  .mobileTopRow{ display:none !important; }
 
   .mobileActionsRow{
     display: grid;
@@ -1146,7 +1101,7 @@ body{
   }
 
   .page{
-    height: calc(100dvh - 69px - 52px - 64px - env(safe-area-inset-bottom, 0px));
+    height: calc(100dvh - 60px - 52px);
     padding: 0;
     overflow: hidden;
   }
@@ -1517,5 +1472,11 @@ body{
 @media (max-width:768px){
   body{ background:var(--bg) !important; }
   .mobileTopRow{ display:none !important; }
-  .mobileBack{ display:none !important; }
+}
+
+
+/* ===== ELIMINADO: botón preview móvil/web ===== */
+#previewToggle,
+#mobileSimOverlay{
+  display:none !important;
 }
