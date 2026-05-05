@@ -38,13 +38,13 @@ body{
 
 .page{
   height: calc(100% - var(--headerH));
-  padding: 10px 8px 10px;
+  padding: 10px 15px 10px;
   box-sizing: border-box;
 }
 
 .mapShell{
-  width: min(1400px, 100%);
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   height: 100%;
   box-sizing: border-box;
   position: relative;
@@ -259,31 +259,30 @@ body{
   width: 14px;
   height: 14px;
   border-radius: 999px;
-  background: #8A1F2D;
-  border: 3px solid #FFFDFA;
+  background: #ffb100;
+  border: 3px solid #ffffff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
 }
 .dot:hover { transform: scale(1.12); }
 
-/* Anuncio visto: crema con borde dorado */
+/* Anuncio visto: blanco con borde naranja (pedido) */
 .dot.seen{
-  background: #F2E9D8;
-  border-color: #E2B84C;
+  background: #ffffff;
+  border-color: #ffb100;
 }
 
 /* Hover desde listado */
 .dot.hover{
   transform: scale(1.22);
-  box-shadow: 0 10px 24px rgba(138,31,45,0.18);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
 }
 
-/* Seleccionado: dorado con borde granate */
+/* Seleccionado: azul (mantener) */
 .dot.active {
-  background: #E2B84C;
-  border-color: #8A1F2D;
+  background: #1a73e8;
+  border-color: #0b3d91;
   transform: scale(1.18);
-  box-shadow: 0 0 0 4px rgba(138,31,45,0.14), 0 8px 22px rgba(0,0,0,0.22);
 }
 
 /* Tarjeta (ahora dentro del mapa, en la parte inferior y centrada respecto al mapa) */
@@ -1526,4 +1525,19 @@ body{
   body{ background:var(--bg) !important; }
   .mobileTopRow{ background:var(--bg) !important; border-bottom:none !important; }
   .mobileBack{ display:none !important; }
+}
+
+
+/* === DESKTOP CLEANUP: hide mobile-only trigger/button if present === */
+@media (min-width: 721px){
+  #mobileBtn,
+  #mobileModeBtn,
+  #mobileToggleBtn,
+  #mobileViewBtn,
+  .mobileBtn,
+  .mobileModeBtn,
+  .mobileToggleBtn,
+  .mobileViewBtn{
+    display:none !important;
+  }
 }
