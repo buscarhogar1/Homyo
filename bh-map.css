@@ -268,17 +268,17 @@ body{
   width: 14px;
   height: 14px;
   border-radius: 999px;
-  background: #F2E9D8;
-  border: 3px solid #8A1F2D;
+  background: #E2B84C;
+  border: 3px solid #F2E9D8;
   box-shadow: 0 1px 4px rgba(0,0,0,0.25);
   transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
 }
 .dot:hover { transform: scale(1.12); }
 
-/* Anuncio visto: dorado con borde crema */
+/* Anuncio visto: crema con borde dorado */
 .dot.seen{
-  background: #E2B84C;
-  border-color: #F2E9D8;
+  background: #F2E9D8;
+  border-color: #E2B84C;
 }
 
 /* Hover desde listado */
