@@ -259,30 +259,31 @@ body{
   width: 14px;
   height: 14px;
   border-radius: 999px;
-  background: #ffb100;
-  border: 3px solid #ffffff;
+  background: #8A1F2D;
+  border: 3px solid #FFFDFA;
   box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
 }
 .dot:hover { transform: scale(1.12); }
 
-/* Anuncio visto: blanco con borde naranja (pedido) */
+/* Anuncio visto: crema con borde dorado */
 .dot.seen{
-  background: #ffffff;
-  border-color: #ffb100;
+  background: #F2E9D8;
+  border-color: #E2B84C;
 }
 
 /* Hover desde listado */
 .dot.hover{
   transform: scale(1.22);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+  box-shadow: 0 10px 24px rgba(138,31,45,0.18);
 }
 
-/* Seleccionado: azul (mantener) */
+/* Seleccionado: dorado con borde granate */
 .dot.active {
-  background: #1a73e8;
-  border-color: #0b3d91;
+  background: #E2B84C;
+  border-color: #8A1F2D;
   transform: scale(1.18);
+  box-shadow: 0 0 0 4px rgba(138,31,45,0.14), 0 8px 22px rgba(0,0,0,0.22);
 }
 
 /* Tarjeta (ahora dentro del mapa, en la parte inferior y centrada respecto al mapa) */
@@ -1067,7 +1068,59 @@ body{
   .topRow{
     display: none !important;
   }
-  .mobileTopRow{ display:none !important; }
+
+  .mobileTopRow{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: calc(env(safe-area-inset-top, 0px) + 10px) 12px 12px;
+    min-height: 72px;
+    box-sizing: border-box;
+    background: var(--bg);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .mobileBack{
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #111;
+    font-size: 26px;
+    line-height: 1;
+    flex: 0 0 auto;
+  }
+
+  .mobileSearchShell{
+    flex: 1 1 auto;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.14);
+    background: #fff;
+    padding: 0 14px;
+    box-sizing: border-box;
+  }
+
+  .mobileSearchIcon{
+    font-size: 18px;
+    color: rgba(0,0,0,0.55);
+    flex: 0 0 auto;
+  }
+
+  .mobileSearchInput{
+    flex: 1 1 auto;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    color: #111;
+    min-width: 0;
+  }
 
   .mobileActionsRow{
     display: grid;
@@ -1101,7 +1154,7 @@ body{
   }
 
   .page{
-    height: calc(100dvh - 60px - 52px);
+    height: calc(100dvh - 60px - 52px - 64px);
     padding: 0;
     overflow: hidden;
   }
@@ -1471,12 +1524,6 @@ body{
 .heartBtn{ display:none !important; }
 @media (max-width:768px){
   body{ background:var(--bg) !important; }
-  .mobileTopRow{ display:none !important; }
-}
-
-
-/* ===== ELIMINADO: botón preview móvil/web ===== */
-#previewToggle,
-#mobileSimOverlay{
-  display:none !important;
+  .mobileTopRow{ background:var(--bg) !important; border-bottom:none !important; }
+  .mobileBack{ display:none !important; }
 }
