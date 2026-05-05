@@ -1558,3 +1558,18 @@ body{
     display:none !important;
   }
 }
+
+
+/* === MAP: footer mount required by layout JS, but never visible here === */
+#bhFooter{
+  display:none !important;
+  height:0 !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+}
+
+/* === MAP: no responsive preview simulator on production map === */
+#previewToggle,
+#mobileSimOverlay{
+  display:none !important;
+}
