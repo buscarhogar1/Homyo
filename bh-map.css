@@ -259,30 +259,31 @@ body{
   width: 14px;
   height: 14px;
   border-radius: 999px;
-  background: #ffb100;
-  border: 3px solid #ffffff;
+  background: #F2E9D8;
+  border: 3px solid #8A1F2D;
   box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
 }
 .dot:hover { transform: scale(1.12); }
 
-/* Anuncio visto: blanco con borde naranja (pedido) */
+/* Anuncio visto: dorado con borde crema */
 .dot.seen{
-  background: #ffffff;
-  border-color: #ffb100;
+  background: #E2B84C;
+  border-color: #F2E9D8;
 }
 
 /* Hover desde listado */
 .dot.hover{
   transform: scale(1.22);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+  box-shadow: 0 10px 24px rgba(138,31,45,0.18);
 }
 
-/* Seleccionado: azul (mantener) */
+/* Seleccionado: granate con borde dorado */
 .dot.active {
-  background: #1a73e8;
-  border-color: #0b3d91;
+  background: #8A1F2D;
+  border-color: #E2B84C;
   transform: scale(1.18);
+  box-shadow: 0 0 0 4px rgba(226,184,76,0.22), 0 8px 22px rgba(0,0,0,0.22);
 }
 
 /* Tarjeta (ahora dentro del mapa, en la parte inferior y centrada respecto al mapa) */
