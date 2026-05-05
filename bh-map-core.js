@@ -1043,13 +1043,57 @@ export function initMap(){
     }, 300);
   }
 
+  function normalizeSearchText(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
   async function geocodeCity(city) {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&limit=1`;
-    const res = await fetch(url);
+    const normalized = normalizeSearchText(city);
+
+    // Evita que Nominatim resuelva "Murcia" como zona periférica o punto turístico.
+    // Centro urbano de Murcia.
+    if (normalized === "murcia") {
+      return [37.9922, -1.1307];
+    }
+
+    const structuredUrl =
+      `https://nominatim.openstreetmap.org/search?format=json&city=${encodeURIComponent(city)}&country=España&countrycodes=es&limit=5`;
+
+    try {
+      const structuredRes = await fetch(structuredUrl, { headers: { "Accept": "application/json" } });
+      if (structuredRes.ok) {
+        const structuredData = await structuredRes.json();
+        const bestStructured = (structuredData || []).find((item) => {
+          const type = String(item.type || "").toLowerCase();
+          const cls = String(item.class || "").toLowerCase();
+          return cls === "boundary" || type === "city" || type === "town" || type === "municipality" || type === "administrative";
+        }) || structuredData?.[0];
+
+        if (bestStructured) {
+          return [parseFloat(bestStructured.lat), parseFloat(bestStructured.lon)];
+        }
+      }
+    } catch {}
+
+    const fallbackUrl =
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city + ", España")}&countrycodes=es&limit=5`;
+
+    const res = await fetch(fallbackUrl, { headers: { "Accept": "application/json" } });
     if (!res.ok) return null;
+
     const data = await res.json();
-    if (!data[0]) return null;
-    return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+    const best = (data || []).find((item) => {
+      const type = String(item.type || "").toLowerCase();
+      const cls = String(item.class || "").toLowerCase();
+      return cls === "boundary" || type === "city" || type === "town" || type === "municipality" || type === "administrative";
+    }) || data?.[0];
+
+    if (!best) return null;
+    return [parseFloat(best.lat), parseFloat(best.lon)];
   }
 
   async function goToCity(city) {
