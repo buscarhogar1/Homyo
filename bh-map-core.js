@@ -1554,7 +1554,7 @@ export function initMap(){
 
   // Cuando cambia layout (ocultar/mostrar columnas) Leaflet necesita invalidateSize
   function safeInvalidate(){
-    try { map.invalidateSize(true); } catch {}
+    try { map.invalidateSize({ pan: false, animate: false }); } catch {}
     if (sunEnabled) {
       try { updateSunOverlay(); } catch {}
     }
