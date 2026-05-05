@@ -34,19 +34,10 @@ html, body {
 /* En escritorio, nada de scroll en la página */
 body{
   overflow: hidden;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-#bhHeader{
-  flex: 0 0 auto;
 }
 
 .page{
-  flex: 1 1 auto;
-  min-height: 0;
-  height: auto;
+  height: calc(100% - var(--headerH));
   padding: 10px 15px 10px;
   box-sizing: border-box;
 }
@@ -1566,11 +1557,4 @@ body{
   #previewToggle{
     display:none !important;
   }
-}
-
-
-/* === FINAL: no preview simulator in real map page === */
-#previewToggle,
-#mobileSimOverlay{
-  display:none !important;
 }
