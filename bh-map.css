@@ -12,7 +12,7 @@
   --sunbar-outer-pad: 14px;
   --sunbar-gap: 12px;
 
-  --headerH: 56px;
+  --headerH: 84px;
 
   /* Columnas: ahora 20% más estrechas aprox. */
   --sideW: 304px;          /* antes ~380 */
@@ -1539,6 +1539,22 @@ body{
   .mobileModeBtn,
   .mobileToggleBtn,
   .mobileViewBtn{
+    display:none !important;
+  }
+}
+
+
+/* === HEADER HEIGHT FIX === */
+@media (max-width: 720px){
+  :root{
+    --headerH: 69px;
+  }
+}
+
+
+/* === HIDE RESPONSIVE PREVIEW BUTTON IN REAL WEB VIEW === */
+@media (min-width: 721px){
+  #previewToggle{
     display:none !important;
   }
 }
