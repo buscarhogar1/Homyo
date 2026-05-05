@@ -1044,40 +1044,18 @@ export function initMap(){
   }
 
   async function geocodeCity(city) {
-    const raw = String(city || "").trim();
-    const normalized = raw
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-
-    // Evita que Nominatim devuelva el centroide de la región/municipio
-    // y desplace el mapa hacia las afueras.
-    if (normalized === "murcia") {
-      return [37.99224, -1.13065];
-    }
-
-    const queries = [
-      `${raw}, España`,
-      raw
-    ];
-
-    for (const q of queries) {
-      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&countrycodes=es`;
-      const res = await fetch(url);
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (data && data[0]) {
-        return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-      }
-    }
-
-    return null;
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}&limit=1`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data[0]) return null;
+    return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
   }
 
   async function goToCity(city) {
     setStatus("Buscando ciudad...");
     const center = await geocodeCity(city);
-    if (center) map.setView(center, 13, { animate: false });
+    if (center) map.setView(center, 13);
     scheduleReload();
   }
 
@@ -1784,7 +1762,9 @@ export function initMap(){
 
       if (initialParams.city) {
         initialCityCenter = await geocodeCity(initialParams.city);
-        if (initialCityCenter) map.setView(initialCityCenter, 13, { animate: false });
+        if (initialCityCenter) {
+          map.setView(initialCityCenter, 13, { animate: false });
+        }
       }
 
       safeInvalidate();
@@ -1795,14 +1775,10 @@ export function initMap(){
 
       await loadPointsForCurrentView();
 
-      if (initialCityCenter) {
-        map.setView(initialCityCenter, 13, { animate: false });
-      }
-
       // etiqueta inicial
       schedulePlaceUpdate();
 
-      // Segunda pasada por si el layout termina de ajustar
+      // Segunda pasada por si el layout termina de ajustar, sin permitir desplazamientos automáticos
       setTimeout(() => {
         safeInvalidate();
         if (initialCityCenter) map.setView(initialCityCenter, 13, { animate: false });
