@@ -1,6 +1,115 @@
 /* =====================================================
    HOMYO — Header overrides globales
    -----------------------------------------------------
-   El header común vive en bh-shared.css.
-   Este archivo queda por compatibilidad y no debe pisarlo.
+   Este archivo se carga después de bh-shared.css.
+   Refuerza el header común para que el mismo diseño
+   se aplique en index.html, map.html, listing.html,
+   account.html y cualquier página que use bh-layout.js.
    ===================================================== */
+
+:root{
+  --headerH:107px;
+}
+
+#bhHeader .topbar,
+.topbar{
+  height:107px;
+  background:var(--bg) !important;
+  color:#8C1F2D;
+  display:flex;
+  align-items:center;
+  padding:0 16px;
+  box-sizing:border-box;
+  border:none !important;
+  border-bottom:none !important;
+  position:relative;
+  z-index:20;
+  box-shadow:
+    0 1px 0 rgba(140,31,45,0.18),
+    0 8px 22px rgba(0,0,0,0.055) !important;
+}
+
+#bhHeader .brandText,
+.brandText{
+  margin-top:0 !important;
+  color:#8C1F2D;
+  font-family:'Raleway','Montserrat',system-ui,sans-serif;
+  font-size:43px;
+  font-weight:600;
+  letter-spacing:0.35em;
+  line-height:1;
+  text-transform:uppercase;
+}
+
+#bhHeader .navActionIconSvg,
+.navActionIconSvg,
+#bhHeader .navAvatar,
+.navAvatar{
+  margin-top:0 !important;
+}
+
+#bhHeader .navActionIconSvg,
+#bhHeader .navActionIconSvg svg,
+.navActionIconSvg,
+.navActionIconSvg svg,
+#bhHeader .navAvatar,
+#bhHeader .navAvatarSvg,
+#bhHeader .navAvatarSvg svg,
+.navAvatar,
+.navAvatarSvg,
+.navAvatarSvg svg{
+  width:28px;
+  min-width:28px;
+  height:28px;
+}
+
+@media (max-width:720px){
+  :root{
+    --headerH:96px;
+  }
+
+  #bhHeader .topbar,
+  .topbar{
+    height:96px;
+    padding:0 14px;
+  }
+
+  #bhHeader .brandText,
+  .brandText{
+    margin-top:0 !important;
+    font-size:32px;
+    letter-spacing:.24em;
+  }
+
+  #bhHeader .navActionIconSvg,
+  #bhHeader .navActionIconSvg svg,
+  .navActionIconSvg,
+  .navActionIconSvg svg,
+  #bhHeader .navAvatar,
+  #bhHeader .navAvatarSvg,
+  #bhHeader .navAvatarSvg svg,
+  .navAvatar,
+  .navAvatarSvg,
+  .navAvatarSvg svg{
+    width:22px;
+    min-width:22px;
+    height:22px;
+  }
+}
+
+@media (max-width:420px){
+  :root{
+    --headerH:94px;
+  }
+
+  #bhHeader .topbar,
+  .topbar{
+    height:94px;
+  }
+
+  #bhHeader .brandText,
+  .brandText{
+    font-size:30px;
+    letter-spacing:.22em;
+  }
+}

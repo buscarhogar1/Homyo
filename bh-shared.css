@@ -22,7 +22,7 @@ html,body{
 
 /* ===== Header ===== */
 .topbar{
-  height:84px;
+  height:107px;
   background:var(--bg);
   color:#8C1F2D;
   display:flex;
@@ -30,8 +30,12 @@ html,body{
   padding:0 16px;
   box-sizing:border-box;
   border:none;
-  box-shadow:none;
   border-bottom:none !important;
+  position:relative;
+  z-index:20;
+  box-shadow:
+    0 1px 0 rgba(140,31,45,0.18),
+    0 8px 22px rgba(0,0,0,0.055);
 }
 
 .topbarInner{
@@ -58,7 +62,7 @@ html,body{
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap');
 
 .brandText{
-  margin-top:5px;
+  margin-top:0;
   color:#8C1F2D;
   font-family:'Raleway','Montserrat',system-ui,sans-serif;
   font-size:43px;
@@ -146,7 +150,7 @@ html,body{
   width:28px;
   min-width:28px;
   height:28px;
-  margin-top:5px;
+  margin-top:0;
 }
 
 .navActionIconSvg svg{
@@ -206,7 +210,7 @@ html,body{
   font-size:12px;
   font-weight:800;
   line-height:1;
-  margin-top:5px;
+  margin-top:0;
 }
 
 .navAvatarSvg{
@@ -237,7 +241,7 @@ html,body{
 
 @media (max-width:720px){
   .topbar{
-    height:69px;
+    height:96px;
     padding:0 14px;
   }
 
@@ -246,7 +250,7 @@ html,body{
   }
 
   .brandText{
-    margin-top:5px;
+    margin-top:0;
     font-size:32px;
     letter-spacing:.24em;
   }
@@ -273,7 +277,7 @@ html,body{
 
   .navActionIconSvg,
   .navAvatar{
-    margin-top:5px;
+    margin-top:0;
   }
 
   .navActionIconSvg svg *,
@@ -283,6 +287,10 @@ html,body{
 }
 
 @media (max-width:420px){
+  .topbar{
+    height:94px;
+  }
+
   .brandText{
     font-size:30px;
     letter-spacing:.22em;
@@ -518,5 +526,53 @@ html,body{
 .topbar{
   background:var(--bg) !important;
   border-bottom:none !important;
-  box-shadow:none !important;
 }
+
+/* ===== HOMYO HEADER FINAL COMMON SETTINGS ===== */
+:root{
+  --headerH:107px;
+}
+
+#bhHeader .topbar,
+.topbar{
+  height:107px;
+  border:none;
+  border-bottom:none !important;
+  position:relative;
+  z-index:20;
+  box-shadow:
+    0 1px 0 rgba(140,31,45,0.18),
+    0 8px 22px rgba(0,0,0,0.055);
+}
+
+#bhHeader .brandText,
+.brandText,
+#bhHeader .navActionIconSvg,
+.navActionIconSvg,
+#bhHeader .navAvatar,
+.navAvatar{
+  margin-top:0 !important;
+}
+
+@media (max-width:720px){
+  :root{
+    --headerH:96px;
+  }
+
+  #bhHeader .topbar,
+  .topbar{
+    height:96px;
+  }
+}
+
+@media (max-width:420px){
+  :root{
+    --headerH:94px;
+  }
+
+  #bhHeader .topbar,
+  .topbar{
+    height:94px;
+  }
+}
+
