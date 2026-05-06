@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Homyo — Solo anuncios de profesionales</title>
 
-    <link rel="stylesheet" href="./bh-shared.css?v=20260506_header" />
-    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260506_header" />
+    <link rel="stylesheet" href="./bh-shared.css?v=20260506_header_compact" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260506_header_compact" />
 
     <style>
       :root{
@@ -36,10 +36,10 @@
       }
 
       .wrap{
-        height:calc(100vh - var(--headerH,107px));
-        height:calc(100dvh - var(--headerH,107px));
+        height:calc(100vh - var(--headerH,92px));
+        height:calc(100dvh - var(--headerH,92px));
         display:grid;
-        grid-template-rows:minmax(0,1fr) auto;
+        grid-template-rows:minmax(0,1fr);
         overflow:hidden;
       }
 
@@ -223,7 +223,7 @@
 
       .carouselCard{
         width:min(935px,calc(100% - 40px));
-        margin:clamp(18px,4vh,40px) auto clamp(10px,2vh,20px);
+        margin:calc(clamp(18px,4vh,40px) + 6px) auto clamp(10px,2vh,20px);
         align-self:center;
         background:#faf7f2;
         border-radius:18px;
@@ -269,21 +269,20 @@
         100%{ transform:translateX(-50%); }
       }
 
-      .footer{
-        min-height:34px;
-        padding:8px 12px;
-      }
 
+      /* Ajuste específico del index */
       #navFavoritos{ display:none !important; }
+      #bhFooter{ display:none !important; }
 
       @media (max-width:720px){
         .wrap{
-          height:calc(100vh - var(--headerH,96px));
-          height:calc(100dvh - var(--headerH,96px));
-          grid-template-rows:minmax(0,1fr) auto;
+          height:calc(100vh - var(--headerH,81px));
+          height:calc(100dvh - var(--headerH,81px));
+          grid-template-rows:minmax(0,1fr);
         }
 
         .main{ padding-bottom:0; }
+
         .searchBlock{ padding:clamp(10px,2.2vh,22px) 18px 0; }
 
         .tagline{
@@ -307,7 +306,7 @@
         .modeRow{
           grid-template-columns:repeat(2,minmax(0,1fr));
           width:100%;
-          max-width:304px;
+          max-width:299px;
           column-gap:15px;
           row-gap:20px;
           border-bottom:0;
@@ -357,9 +356,9 @@
         }
 
         .searchBox{
-          width:calc(100% + 20px);
-          margin-left:-10px;
-          margin-right:-10px;
+          width:calc(100% + 40px);
+          margin-left:-20px;
+          margin-right:-20px;
           min-height:54px;
           padding:0 10px 0 14px;
         }
@@ -384,7 +383,7 @@
         .carouselCard{
           width:calc(100% - 36px);
           max-width:420px;
-          margin:clamp(18px,3vh,30px) auto clamp(8px,1.5vh,20px);
+          margin:calc(clamp(18px,3vh,30px) + 11px) auto clamp(8px,1.5vh,20px);
           padding:clamp(18px,3vh,30px) 0;
         }
 
@@ -397,8 +396,8 @@
 
       @media (max-width:420px){
         .wrap{
-          height:calc(100vh - var(--headerH,94px));
-          height:calc(100dvh - var(--headerH,94px));
+          height:calc(100vh - var(--headerH,79px));
+          height:calc(100dvh - var(--headerH,79px));
         }
 
         .tagline{
@@ -431,16 +430,16 @@
               <label class="pill"><input type="radio" name="mode" value="room" /><span>Habitación</span></label>
             </div>
 
-            <div class="searchWrap">
+              <div class="searchWrap">
               <form id="form" class="searchBox" autocomplete="off">
-                <span class="searchIcon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="7"></circle>
-                    <path d="M21 21l-4.3-4.3"></path>
-                  </svg>
-                </span>
-                <input id="q" class="input" placeholder="Ciudad, zona, código postal..." aria-label="Buscar ciudad o zona" enterkeyhint="search" />
-                <button class="searchBtn" type="submit">Buscar</button>
+              <span class="searchIcon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="M21 21l-4.3-4.3"></path>
+                </svg>
+              </span>
+              <input id="q" class="input" placeholder="Ciudad, zona, código postal..." aria-label="Buscar ciudad o zona" enterkeyhint="search" />
+              <button class="searchBtn" type="submit">Buscar</button>
               </form>
             </div>
 
@@ -457,8 +456,8 @@
     </div>
 
     <script type="module">
-      import { initLayout } from "./bh-layout.js?v=20260506_index";
-      import { initAuth } from "./bh-auth.js?v=20260506_index";
+      import { initLayout } from "./bh-layout.js?v=20260506_header_menu";
+      import { initAuth } from "./bh-auth.js?v=20260506_header_menu";
 
       initLayout({ showMiniSearch: false });
       initAuth();
@@ -486,7 +485,7 @@
 
         requestAnimationFrame(() => {
           const halfW = track.scrollWidth / 2;
-          const duration = Math.max(18, Math.round(halfW / 38));
+          const duration = Math.round(halfW / 38);
           track.style.animationDuration = duration + "s";
         });
       }

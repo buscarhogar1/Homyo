@@ -22,7 +22,7 @@ html,body{
 
 /* ===== Header ===== */
 .topbar{
-  height:107px;
+  height:92px;
   background:var(--bg);
   color:#8C1F2D;
   display:flex;
@@ -46,6 +46,40 @@ html,body{
   gap:12px;
   position:relative;
   justify-content:center;
+}
+
+.leftGroup{
+  position:absolute;
+  left:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
+}
+
+.menuBtn{
+  appearance:none;
+  border:none;
+  background:transparent;
+  padding:0;
+  margin:0;
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:#8C1F2D;
+}
+
+.menuBtn svg{
+  width:26px;
+  height:26px;
+  display:block;
+}
+
+.menuBtn svg *{
+  stroke-width:1.8;
 }
 
 .brand{
@@ -118,7 +152,7 @@ html,body{
   align-items:center;
   position:relative;
   z-index:1;
-  transform:translateX(-30px);
+  margin-right:20px;
 }
 
 .navActionLink{
@@ -241,7 +275,7 @@ html,body{
 
 @media (max-width:720px){
   .topbar{
-    height:96px;
+    height:81px;
     padding:0 14px;
   }
 
@@ -255,8 +289,22 @@ html,body{
     letter-spacing:.24em;
   }
 
+  .leftGroup{
+    left:12px;
+  }
+
+  .menuBtn{
+    width:24px;
+    height:24px;
+  }
+
+  .menuBtn svg{
+    width:22px;
+    height:22px;
+  }
+
   .rightGroup{
-    transform:translateX(-20px);
+    margin-right:12px;
   }
 
   .navActionLink,
@@ -288,7 +336,7 @@ html,body{
 
 @media (max-width:420px){
   .topbar{
-    height:94px;
+    height:79px;
   }
 
   .brandText{
@@ -530,12 +578,12 @@ html,body{
 
 /* ===== HOMYO HEADER FINAL COMMON SETTINGS ===== */
 :root{
-  --headerH:107px;
+  --headerH:92px;
 }
 
 #bhHeader .topbar,
 .topbar{
-  height:107px;
+  height:92px;
   border:none;
   border-bottom:none !important;
   position:relative;
@@ -556,23 +604,23 @@ html,body{
 
 @media (max-width:720px){
   :root{
-    --headerH:96px;
+    --headerH:81px;
   }
 
   #bhHeader .topbar,
   .topbar{
-    height:96px;
+    height:81px;
   }
 }
 
 @media (max-width:420px){
   :root{
-    --headerH:94px;
+    --headerH:79px;
   }
 
   #bhHeader .topbar,
   .topbar{
-    height:94px;
+    height:79px;
   }
 }
 

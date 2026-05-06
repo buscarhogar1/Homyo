@@ -25,6 +25,16 @@ function renderHeader({ showMiniSearch, root }) {
   return `
     <header class="topbar">
       <div class="topbarInner">
+        <div class="leftGroup">
+          <button type="button" class="menuBtn" id="navMenuBtn" aria-label="Más opciones">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+              <path d="M4 7h16"></path>
+              <path d="M4 12h16"></path>
+              <path d="M4 17h16"></path>
+            </svg>
+          </button>
+        </div>
+
         <a class="brand" href="${root}" aria-label="Ir a inicio">
           <span class="brandText">HOMYO</span>
         </a>
