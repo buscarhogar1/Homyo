@@ -1,1 +1,188 @@
-/* bh-header-overrides regenerated */
+/* =====================================================
+   HOMYO — Header overrides globales
+   ===================================================== */
+
+:root{
+  --headerH:82px;
+}
+
+#bhHeader .topbar,
+.topbar{
+  height:82px;
+  background:var(--bg) !important;
+  color:#8C1F2D;
+  display:flex;
+  align-items:center;
+  padding:0 16px;
+  box-sizing:border-box;
+  border:none !important;
+  border-bottom:none !important;
+  position:relative;
+  z-index:20;
+  box-shadow:
+    0 1px 0 rgba(140,31,45,0.18),
+    0 8px 22px rgba(0,0,0,0.055) !important;
+}
+
+#bhHeader .topbarInner,
+.topbarInner{
+  position:relative;
+}
+
+#bhHeader .leftGroup,
+.leftGroup{
+  position:absolute;
+  left:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
+}
+
+#bhHeader .menuBtn,
+.menuBtn{
+  appearance:none;
+  border:none;
+  background:transparent;
+  padding:0;
+  margin:0;
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  color:#8C1F2D;
+}
+
+#bhHeader .menuBtn svg,
+.menuBtn svg{
+  width:26px;
+  height:26px;
+  display:block;
+}
+
+#bhHeader .menuBtn svg *,
+.menuBtn svg *{
+  stroke-width:1.8;
+}
+
+#bhHeader .rightGroup,
+.rightGroup{
+  margin-right:20px;
+  transform:none !important;
+}
+
+#bhHeader .brand,
+.brand{
+  left:50%;
+  transform:translateX(-50%);
+}
+
+#bhHeader .brandText,
+.brandText{
+  margin-top:0 !important;
+  color:#8C1F2D;
+  font-family:'Raleway','Montserrat',system-ui,sans-serif;
+  font-size:43px;
+  font-weight:600;
+  letter-spacing:0.35em;
+  line-height:1;
+  text-transform:uppercase;
+}
+
+#bhHeader .navActionIconSvg,
+.navActionIconSvg,
+#bhHeader .navAvatar,
+.navAvatar{
+  margin-top:0 !important;
+}
+
+#bhHeader .navActionIconSvg,
+#bhHeader .navActionIconSvg svg,
+.navActionIconSvg,
+.navActionIconSvg svg,
+#bhHeader .navAvatar,
+#bhHeader .navAvatarSvg,
+#bhHeader .navAvatarSvg svg,
+.navAvatar,
+.navAvatarSvg,
+.navAvatarSvg svg{
+  width:28px;
+  min-width:28px;
+  height:28px;
+}
+
+@media (max-width:720px){
+  :root{
+    --headerH:56px;
+  }
+
+  #bhHeader .topbar,
+  .topbar{
+    height:56px;
+    padding:0 14px;
+  }
+
+  #bhHeader .leftGroup,
+  .leftGroup{
+    left:12px;
+  }
+
+  #bhHeader .rightGroup,
+  .rightGroup{
+    margin-right:12px;
+    transform:none !important;
+  }
+
+  #bhHeader .menuBtn,
+  .menuBtn{
+    width:24px;
+    height:24px;
+  }
+
+  #bhHeader .menuBtn svg,
+  .menuBtn svg{
+    width:22px;
+    height:22px;
+  }
+
+  #bhHeader .brandText,
+  .brandText{
+    margin-top:0 !important;
+    font-size:32px;
+    letter-spacing:.24em;
+  }
+
+  #bhHeader .navActionIconSvg,
+  #bhHeader .navActionIconSvg svg,
+  .navActionIconSvg,
+  .navActionIconSvg svg,
+  #bhHeader .navAvatar,
+  #bhHeader .navAvatarSvg,
+  #bhHeader .navAvatarSvg svg,
+  .navAvatar,
+  .navAvatarSvg,
+  .navAvatarSvg svg{
+    width:22px;
+    min-width:22px;
+    height:22px;
+  }
+}
+
+@media (max-width:420px){
+  :root{
+    --headerH:54px;
+  }
+
+  #bhHeader .topbar,
+  .topbar{
+    height:54px;
+  }
+
+  #bhHeader .brandText,
+  .brandText{
+    font-size:30px;
+    letter-spacing:.22em;
+  }
+}

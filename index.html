@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Homyo — Solo anuncios de profesionales</title>
 
-    <link rel="stylesheet" href="./bh-shared.css?v=20260506_header_compact" />
-    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260506_header_compact" />
+    <link rel="stylesheet" href="./bh-shared.css?v=20260506_header_final" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260506_header_final" />
 
     <style>
       :root{
@@ -35,9 +35,11 @@
         min-height:100dvh;
       }
 
+      #bhFooter{ display:none !important; }
+
       .wrap{
-        height:calc(100vh - var(--headerH,92px));
-        height:calc(100dvh - var(--headerH,92px));
+        height:calc(100vh - var(--headerH,82px));
+        height:calc(100dvh - var(--headerH,82px));
         display:grid;
         grid-template-rows:minmax(0,1fr);
         overflow:hidden;
@@ -78,30 +80,28 @@
       .tagline{
         margin-top:33px;
         transform:translateY(15px);
-        display:inline-flex;
+        display:flex;
         align-items:center;
-        gap:14px;
-        color:#555;
-        font-size:21px;
-        font-weight:500;
-        letter-spacing:2.4px;
-        word-spacing:6px;
-        text-transform:uppercase;
+        justify-content:center;
+        width:min(100vw,1400px);
         margin-bottom:52px;
-        font-family:Georgia,serif;
-        font-style:italic;
+        overflow:hidden;
       }
 
-      .tagline:before,
-      .tagline:after{
-        content:"";
-        height:1px;
-        width:36px;
-        background:linear-gradient(to right,transparent,var(--dorado));
-        flex-shrink:0;
+      .skyline{
+        width:100%;
+        height:54px;
+        display:block;
       }
 
-      .tagline:after{ background:linear-gradient(to left,transparent,var(--dorado)); }
+      .skyline path{
+        fill:none;
+        stroke:url(#skylineGradient);
+        stroke-width:2.4;
+        stroke-linecap:round;
+        stroke-linejoin:round;
+        opacity:.95;
+      }
 
       .modeRow{
         display:grid;
@@ -137,9 +137,7 @@
       .pill:has(input:checked){ color:var(--granate); font-weight:700; border-bottom-color:var(--granate); }
       .pill:has(input:checked) span{ color:var(--granate); }
 
-      .searchWrap{
-        width:min(680px,100%);
-      }
+      .searchWrap{ width:min(680px,100%); }
 
       .searchBox{
         width:calc(100% + 60px);
@@ -210,16 +208,25 @@
 
       .subTagline{
         margin-top:28px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:12px;
         font-family:Georgia,serif;
         font-size:15px;
         font-style:italic;
         color:var(--dorado);
-        letter-spacing:.3px;
+        letter-spacing:1.4px;
+        text-transform:uppercase;
         opacity:.85;
       }
 
-      .midDot{ display:inline-block; margin:0 6px; }
-      .wordGap{ display:inline-block; width:6px; }
+      .midDot{
+        display:inline-block;
+        margin:0;
+        font-size:16px;
+        line-height:1;
+      }
 
       .carouselCard{
         width:min(935px,calc(100% - 40px));
@@ -269,15 +276,12 @@
         100%{ transform:translateX(-50%); }
       }
 
-
-      /* Ajuste específico del index */
       #navFavoritos{ display:none !important; }
-      #bhFooter{ display:none !important; }
 
       @media (max-width:720px){
         .wrap{
-          height:calc(100vh - var(--headerH,81px));
-          height:calc(100dvh - var(--headerH,81px));
+          height:calc(100vh - var(--headerH,56px));
+          height:calc(100dvh - var(--headerH,56px));
           grid-template-rows:minmax(0,1fr);
         }
 
@@ -289,19 +293,12 @@
           margin-top:34px;
           margin-bottom:38px;
           max-width:100%;
-          display:flex;
-          justify-content:center;
-          text-align:center;
-          font-size:12px;
-          line-height:1.2;
-          letter-spacing:.75px;
-          word-spacing:1px;
-          white-space:nowrap;
           transform:translateY(10px);
         }
 
-        .tagline:before,
-        .tagline:after{ width:18px; }
+        .skyline{
+          height:34px;
+        }
 
         .modeRow{
           grid-template-columns:repeat(2,minmax(0,1fr));
@@ -378,6 +375,8 @@
           margin-top:24px;
           text-align:center;
           white-space:nowrap;
+          gap:10px;
+          letter-spacing:.9px;
         }
 
         .carouselCard{
@@ -396,14 +395,8 @@
 
       @media (max-width:420px){
         .wrap{
-          height:calc(100vh - var(--headerH,79px));
-          height:calc(100dvh - var(--headerH,79px));
-        }
-
-        .tagline{
-          font-size:12px;
-          letter-spacing:.55px;
-          word-spacing:0;
+          height:calc(100vh - var(--headerH,54px));
+          height:calc(100dvh - var(--headerH,54px));
         }
 
         .pill{
@@ -420,7 +413,20 @@
     <div class="wrap">
       <main class="main">
         <div class="searchBlock">
-          <div class="tagline">Solo anuncios de profesionales</div>
+          <div class="tagline skylineWrap" aria-hidden="true">
+            <svg class="skyline" viewBox="0 0 1600 120" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="skylineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#8A1F2D" stop-opacity="0.12" />
+                  <stop offset="18%" stop-color="#8A1F2D" stop-opacity="0.82" />
+                  <stop offset="50%" stop-color="#E2B84C" stop-opacity="0.72" />
+                  <stop offset="82%" stop-color="#8A1F2D" stop-opacity="0.82" />
+                  <stop offset="100%" stop-color="#8A1F2D" stop-opacity="0.12" />
+                </linearGradient>
+              </defs>
+              <path d="M0 92 L40 92 L40 70 L78 70 L78 92 L120 92 L120 48 L168 48 L168 92 L214 92 L214 62 L248 62 L248 92 L304 92 L304 34 L360 34 L360 92 L410 92 L410 58 L446 58 L446 92 L520 92 L520 22 L590 22 L590 92 L648 92 L648 64 L700 64 L700 92 L760 92 L760 42 L822 42 L822 92 L900 92 L900 12 L968 12 L968 92 L1038 92 L1038 52 L1086 52 L1086 92 L1160 92 L1160 28 L1212 28 L1212 92 L1280 92 L1280 60 L1332 60 L1332 92 L1410 92 L1410 38 L1470 38 L1470 92 L1540 92 L1540 68 L1580 68 L1580 92 L1600 92" />
+            </svg>
+          </div>
 
           <div class="searchInner">
             <div class="modeRow" aria-label="Tipo de búsqueda">
@@ -430,20 +436,20 @@
               <label class="pill"><input type="radio" name="mode" value="room" /><span>Habitación</span></label>
             </div>
 
-              <div class="searchWrap">
+            <div class="searchWrap">
               <form id="form" class="searchBox" autocomplete="off">
-              <span class="searchIcon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="11" cy="11" r="7"></circle>
-                  <path d="M21 21l-4.3-4.3"></path>
-                </svg>
-              </span>
-              <input id="q" class="input" placeholder="Ciudad, zona, código postal..." aria-label="Buscar ciudad o zona" enterkeyhint="search" />
-              <button class="searchBtn" type="submit">Buscar</button>
+                <span class="searchIcon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="M21 21l-4.3-4.3"></path>
+                  </svg>
+                </span>
+                <input id="q" class="input" placeholder="Ciudad, zona, código postal..." aria-label="Buscar ciudad o zona" enterkeyhint="search" />
+                <button class="searchBtn" type="submit">Buscar</button>
               </form>
             </div>
 
-            <div class="subTagline">Una<span class="wordGap"></span>vivienda <span class="midDot">·</span> Un<span class="wordGap"></span>anuncio</div>
+            <div class="subTagline"><span class="midDot">·</span> SOLO ANUNCIOS DE PROFESIONALES <span class="midDot">·</span></div>
           </div>
         </div>
 
@@ -456,8 +462,8 @@
     </div>
 
     <script type="module">
-      import { initLayout } from "./bh-layout.js?v=20260506_header_menu";
-      import { initAuth } from "./bh-auth.js?v=20260506_header_menu";
+      import { initLayout } from "./bh-layout.js?v=20260506_header_final";
+      import { initAuth } from "./bh-auth.js?v=20260309b";
 
       initLayout({ showMiniSearch: false });
       initAuth();
