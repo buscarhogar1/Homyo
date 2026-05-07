@@ -176,19 +176,23 @@ function renderAuthModal({ root }) {
   `;
 }
 
-export function initLayout(opts = {}) {
+function initLayout(opts = {}) {
   const { showMiniSearch = false } = opts;
 
   const root = getSiteRoot();
   const headerMount = document.getElementById("bhHeader");
   const footerMount = document.getElementById("bhFooter");
 
-  if (!headerMount || !footerMount) {
-    throw new Error("Faltan contenedores bhHeader o bhFooter en la página.");
+  if (!headerMount) {
+    throw new Error("Falta el contenedor bhHeader en la página.");
   }
 
   headerMount.innerHTML = renderHeader({ showMiniSearch, root });
-  footerMount.innerHTML = renderFooter({ root });
+
+  // El footer es opcional. En index.html se ha eliminado por decisión de diseño.
+  if (footerMount) {
+    footerMount.innerHTML = renderFooter({ root });
+  }
 
   if (!document.getElementById("authOverlay")) {
     document.body.insertAdjacentHTML("beforeend", renderAuthModal({ root }));
@@ -217,3 +221,6 @@ export function initLayout(opts = {}) {
     });
   }
 }
+
+
+window.initLayout = initLayout;
