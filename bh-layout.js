@@ -6,7 +6,8 @@ function getSiteRoot() {
 }
 
 function getBaseUrlFromRoot(root) {
-  return window.location.origin + root;
+  const base = new URL(root || "./", window.location.href);
+  return base.href;
 }
 
 function renderHeader({ showMiniSearch, root }) {
@@ -176,7 +177,7 @@ function renderAuthModal({ root }) {
   `;
 }
 
-function initLayout(opts = {}) {
+export function initLayout(opts = {}) {
   const { showMiniSearch = false } = opts;
 
   const root = getSiteRoot();
@@ -223,4 +224,4 @@ function initLayout(opts = {}) {
 }
 
 
-window.initLayout = initLayout;
+if (typeof window !== "undefined") window.initLayout = initLayout;
