@@ -1191,17 +1191,20 @@ body{
     height: 100%;
   }
 
-  /* Desktop side columns become full-screen mobile panels */
+  /* Desktop side columns become mobile panels below the fixed header */
   #filtersCol,
   #listCol{
     position: fixed;
-    inset: 0;
+    top: var(--headerH, 56px);
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 3000;
     background: #fff;
     border: 0;
     border-radius: 0;
     display: none;
-    height: 100dvh;
+    height: calc(100dvh - var(--headerH, 56px));
     overflow: hidden;
   }
 
@@ -1241,13 +1244,13 @@ body{
   }
 
   #filtersBarMount{
-    height: calc(100dvh - 56px - env(safe-area-inset-top, 0px));
+    height: calc(100dvh - var(--headerH, 56px) - 56px - env(safe-area-inset-top, 0px));
     overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
 
   .listMount{
-    height: calc(100dvh - 56px - env(safe-area-inset-top, 0px));
+    height: calc(100dvh - var(--headerH, 56px) - 56px - env(safe-area-inset-top, 0px));
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
