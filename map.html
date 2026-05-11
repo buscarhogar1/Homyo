@@ -214,6 +214,7 @@
         <div class="topRow">
           <div class="topCell topCellLeft">
             <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
+            <button id="clearFiltersBtn" class="topToggleBtn clearFiltersBtn" type="button">Eliminar filtros</button>
           </div>
 
           <div class="topCell topCellCenter">
@@ -223,8 +224,8 @@
 
           <div class="topCell topCellRight">
             <div class="topRightTools">
-              <button id="saveSearchBtn" class="topToggleBtn" type="button">Guardar búsqueda</button>
               <button id="orderBtn" class="topToggleBtn" type="button">Ordenar por</button>
+              <button id="saveSearchDesktopBtn" class="topToggleBtn saveSearchDesktopBtn" type="button">Guardar búsqueda</button>
               <button id="toggleListBtn" class="topToggleBtn" type="button">Ocultar listado</button>
 
               <!-- Menú desplegable de orden -->
@@ -365,7 +366,6 @@
       import { initAuth } from "./bh-auth.js?v=20260504";
       import { initFiltersBar } from "./bh-map-filters.js";
       import { initMap } from "./bh-map-core.js";
-      import { saveCurrentSearch, openLoginModalOrAlert } from "./bh-user-data.js";
 
       // Header / auth
       initLayout({ showMiniSearch: true });
@@ -378,6 +378,8 @@
       const grid = document.getElementById("grid3");
       const btnFilters = document.getElementById("toggleFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
+      const btnClearFilters = document.getElementById("clearFiltersBtn");
+      const saveSearchDesktopBtn = document.getElementById("saveSearchDesktopBtn");
       const mobileFiltersBtn = document.getElementById("mobileFiltersBtn");
       const mobileListBtn = document.getElementById("mobileListBtn");
       const mobileFiltersCloseBtn = document.getElementById("mobileFiltersCloseBtn");
@@ -406,6 +408,30 @@
         const listHidden = grid.classList.contains("hideList");
         btnFilters.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
         btnList.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
+        if (btnClearFilters) btnClearFilters.hidden = filtersHidden;
+      }
+
+      function clearMapFilters() {
+        const paramsToRemove = [
+          "price_min", "price_max",
+          "since_days", "availability",
+          "useful_min", "useful_max",
+          "built_min", "built_max",
+          "bedrooms_min", "bathrooms_min",
+          "outdoor_type", "orientations", "energy",
+          "build_periods", "parking", "storage", "accessibility",
+          "quick"
+        ];
+        const url = new URL(window.location.href);
+        paramsToRemove.forEach((key) => url.searchParams.delete(key));
+        window.location.href = url.toString();
+      }
+
+      function toggleDesktopSavedSearch() {
+        if (!saveSearchDesktopBtn) return;
+        const saved = saveSearchDesktopBtn.classList.toggle("is-saved");
+        saveSearchDesktopBtn.textContent = saved ? "Búsqueda guardada" : "Guardar búsqueda";
+        saveSearchDesktopBtn.setAttribute("aria-pressed", saved ? "true" : "false");
       }
 
       function notifyLayoutResize() {
@@ -418,6 +444,9 @@
         applyToggleTexts();
         notifyLayoutResize();
       });
+
+      btnClearFilters?.addEventListener("click", clearMapFilters);
+      saveSearchDesktopBtn?.addEventListener("click", toggleDesktopSavedSearch);
 
       btnList.addEventListener("click", () => {
         grid.classList.toggle("hideList");
@@ -539,52 +568,15 @@
         openMobileFilters();
       });
 
-      const saveSearchBtn = document.getElementById("saveSearchBtn");
-
-      function setSaveButtonText(button, text){
-        const lbl = button?.querySelector?.(".mobileSaveSearchLabel");
-        if (lbl) lbl.textContent = text;
-        else if (button) button.textContent = text;
-      }
-
-      function getSaveButtonText(button){
-        const lbl = button?.querySelector?.(".mobileSaveSearchLabel");
-        return lbl ? lbl.textContent : (button?.textContent || "Guardar búsqueda");
-      }
-
-      async function saveSearchFromMap(button){
-        if (!button) return;
-        const oldText = getSaveButtonText(button);
-        try {
-          button.disabled = true;
-          setSaveButtonText(button, "Guardando…");
-          const place = (document.getElementById("placeLabel")?.textContent || "").trim();
-          const city = new URL(window.location.href).searchParams.get("city") || "";
-          await saveCurrentSearch({
-            name: place && place !== "—" ? place : city || "Búsqueda guardada",
-            map: window.__bhMap,
-            url: window.location.href
-          });
-          button.classList.add("is-saved");
-          setSaveButtonText(button, "Guardada");
-        } catch (err) {
-          if (err?.message === "LOGIN_REQUIRED") openLoginModalOrAlert();
-          else {
-            console.error(err);
-            alert("No se pudo guardar la búsqueda.");
-          }
-          setSaveButtonText(button, oldText);
-        } finally {
-          setTimeout(() => {
-            button.disabled = false;
-            if (button.classList.contains("is-saved")) return;
-            setSaveButtonText(button, oldText);
-          }, 700);
-        }
-      }
-
-      saveSearchBtn?.addEventListener("click", () => saveSearchFromMap(saveSearchBtn));
-      mobileSaveSearchBtn?.addEventListener("click", () => saveSearchFromMap(mobileSaveSearchBtn));
+      mobileSaveSearchBtn?.addEventListener("click", () => {
+        const saved = mobileSaveSearchBtn.classList.toggle("is-saved");
+        mobileSaveSearchBtn.setAttribute(
+          "aria-label",
+          saved ? "Búsqueda guardada" : "Guardar búsqueda"
+        );
+        const lbl = mobileSaveSearchBtn.querySelector(".mobileSaveSearchLabel");
+        if (lbl) lbl.textContent = saved ? "Guardada" : "Guardar";
+      });
     </script>
 </body>
 </html>

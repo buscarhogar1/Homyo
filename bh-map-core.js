@@ -12,12 +12,9 @@
   - Etiqueta “Comunidad / Ciudad / Zona” se actualiza automáticamente al mover el mapa (reverse geocoding con Nominatim).
 */
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 export function initMap(){
   const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const DEFAULT_CENTER = [37.9838, -1.1280];
   const DEFAULT_ZOOM = 13;
@@ -77,83 +74,12 @@ export function initMap(){
   }
   cardCloseBtn.addEventListener("click", closeCard);
 
-  let currentCardListingId = null;
-
-  function setHeartUI(isFav){
-    if (!heartBtn) return;
-    heartBtn.classList.toggle("isFav", !!isFav);
-    heartBtn.setAttribute("aria-pressed", isFav ? "true" : "false");
-    heartBtn.title = isFav ? "Quitar de favoritos" : "Guardar en favoritos";
-    heartBtn.style.borderColor = isFav ? "rgba(140,31,45,0.55)" : "rgba(0,0,0,0.18)";
-    heartBtn.style.boxShadow = isFav ? "0 6px 18px rgba(140,31,45,0.18)" : "none";
-    const svg = heartBtn.querySelector("svg");
-    if (svg) {
-      svg.style.fill = isFav ? "currentColor" : "none";
-      svg.style.color = isFav ? "#8C1F2D" : "#1a73e8";
-    }
-  }
-
-  async function getSession(){
-    const { data, error } = await supabase.auth.getSession();
-    if (error) throw error;
-    return data?.session || null;
-  }
-
-  async function isFavorite(listingId){
-    const session = await getSession();
-    if (!session?.user || !listingId) return false;
-    const { data, error } = await supabase
-      .from("favorites")
-      .select("id")
-      .eq("user_id", session.user.id)
-      .eq("listing_id", listingId)
-      .limit(1);
-    if (error) throw error;
-    return Array.isArray(data) && data.length > 0;
-  }
-
-  async function toggleFavorite(listingId){
-    const session = await getSession();
-    if (!session?.user) {
-      const navLogin = document.getElementById("navLogin");
-      if (navLogin) navLogin.click();
-      else alert("Inicia sesión para guardar favoritos.");
-      return null;
-    }
-
-    const fav = await isFavorite(listingId);
-    if (fav) {
-      const { error } = await supabase
-        .from("favorites")
-        .delete()
-        .eq("user_id", session.user.id)
-        .eq("listing_id", listingId);
-      if (error) throw error;
-      return false;
-    }
-
-    const { error } = await supabase
-      .from("favorites")
-      .insert({ user_id: session.user.id, listing_id: listingId });
-    if (error) throw error;
-    return true;
-  }
-
+  let heartOn = false;
   if (heartBtn) {
-    heartBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!currentCardListingId) return;
-      try {
-        heartBtn.disabled = true;
-        const next = await toggleFavorite(currentCardListingId);
-        if (next !== null) setHeartUI(next);
-      } catch (err) {
-        console.error(err);
-        alert("No se pudo actualizar favoritos.");
-      } finally {
-        heartBtn.disabled = false;
-      }
+    heartBtn.addEventListener("click", () => {
+      heartOn = !heartOn;
+      heartBtn.style.borderColor = heartOn ? "rgba(26,115,232,0.55)" : "rgba(0,0,0,0.18)";
+      heartBtn.style.boxShadow = heartOn ? "0 6px 18px rgba(26,115,232,0.18)" : "none";
     });
   }
 
@@ -209,6 +135,18 @@ export function initMap(){
     return line || "—";
   }
 
+
+  function stripStreetPrefixForList(text) {
+    return String(text || "")
+      .replace(/^\s*(calle|c\/)\s+/i, "")
+      .replace(/^\s*calle\s+["“”']?\s*/i, "")
+      .trim() || "—";
+  }
+
+  function buildListAddressTop(p) {
+    return stripStreetPrefixForList(buildAddressTop(p));
+  }
+
   // Persistencia “visto”
   const SEEN_KEY = "bh_seen_ids_v1";
 
@@ -249,11 +187,6 @@ export function initMap(){
   function openCardForPoint(p) {
     // Marcar visto al abrir card (pedido)
     markSeen(p.listing_id);
-    currentCardListingId = p.listing_id || null;
-    setHeartUI(false);
-    if (currentCardListingId) {
-      isFavorite(currentCardListingId).then(setHeartUI).catch((err) => console.warn("No se pudo leer favorito", err));
-    }
 
     cardAddrTopEl.textContent = buildAddressTop(p);
     cardAddrBottomEl.textContent = buildAddressBottom(p);
@@ -1025,7 +958,7 @@ export function initMap(){
 
       const title = document.createElement("div");
       title.className = "listTitle";
-      title.textContent = buildAddressTop(p);
+      title.textContent = buildListAddressTop(p);
 
       const sub = document.createElement("div");
       sub.className = "listSub";

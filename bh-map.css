@@ -2139,7 +2139,9 @@ body{
 
 /* Botones superiores — alineados al branding Homyo (granate / dorado, 3.5px) */
 #toggleFiltersBtn,
+#clearFiltersBtn,
 #orderBtn,
+#saveSearchDesktopBtn,
 #toggleListBtn{
   height: 36px !important;
   padding: 0 16px !important;
@@ -2158,7 +2160,9 @@ body{
 }
 
 #toggleFiltersBtn:hover,
+#clearFiltersBtn:hover,
 #orderBtn:hover,
+#saveSearchDesktopBtn:hover,
 #toggleListBtn:hover{
   border-color: rgba(196,150,42,0.55) !important;
   background: rgba(196,150,42,0.045) !important;
@@ -2176,6 +2180,37 @@ body{
     calc(100% - 9px) 51% !important;
   background-size: 5px 5px, 5px 5px !important;
   background-repeat: no-repeat !important;
+}
+
+
+#clearFiltersBtn[hidden]{
+  display:none !important;
+}
+
+.topCellLeft{
+  gap:10px !important;
+}
+
+#saveSearchDesktopBtn{
+  border-color:rgba(196,150,42,0.55) !important;
+  background:rgba(196,150,42,0.08) !important;
+  color:var(--bh-granate) !important;
+  box-shadow:0 2px 8px rgba(196,150,42,0.10) !important;
+}
+
+#saveSearchDesktopBtn:hover,
+#saveSearchDesktopBtn.is-saved{
+  border-color:rgba(196,150,42,0.85) !important;
+  background:rgba(196,150,42,0.18) !important;
+  color:var(--bh-granate) !important;
+  box-shadow:0 4px 14px rgba(196,150,42,0.16) !important;
+}
+
+@media (max-width:768px){
+  #clearFiltersBtn,
+  #saveSearchDesktopBtn{
+    display:none !important;
+  }
 }
 
 .orderMenu{
