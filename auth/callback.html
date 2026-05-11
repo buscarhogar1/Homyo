@@ -3,23 +3,184 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Buscar Hogar – Acceso</title>
+    <title>Acceso · Homyo</title>
     <style>
-      html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
-      .wrap{height:100%;display:grid;place-items:center;padding:20px;box-sizing:border-box;text-align:center;}
-      .box{width:min(720px,100%);border:1px solid #e6e7eb;border-radius:14px;padding:18px;}
-      .muted{opacity:.75;font-size:14px;line-height:1.35;word-break:break-word;}
-      .small{opacity:.8;font-size:12.5px;line-height:1.35;margin-top:10px;word-break:break-word;}
+      @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap');
+
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --granateDark:#701724;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --crema:#F2E9D8;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --card:#fff;
+        --ok:#1f7a4c;
+        --error:#9f1d2f;
+      }
+
+      *{ box-sizing:border-box; }
+
+      html,body{
+        min-height:100%;
+        margin:0;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(226,184,76,.15), transparent 28%),
+          radial-gradient(circle at 82% 78%, rgba(140,31,45,.08), transparent 30%),
+          var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      body{
+        min-height:100vh;
+        display:grid;
+        place-items:center;
+        padding:24px;
+      }
+
+      .authCard{
+        width:min(560px,100%);
+        background:rgba(255,255,255,.92);
+        border:1px solid rgba(196,150,42,.28);
+        border-radius:18px;
+        box-shadow:0 18px 50px rgba(140,31,45,.09);
+        padding:38px 34px 32px;
+        text-align:center;
+        position:relative;
+        overflow:hidden;
+      }
+
+      .authCard::before{
+        content:"";
+        position:absolute;
+        left:0;
+        right:0;
+        top:0;
+        height:4px;
+        background:linear-gradient(90deg,var(--granate),var(--doradoSoft));
+      }
+
+      .brand{
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
+        font-size:28px;
+        font-weight:600;
+        letter-spacing:.34em;
+        line-height:1;
+        color:var(--granate);
+        text-transform:uppercase;
+        margin-bottom:30px;
+      }
+
+      .statusIcon{
+        width:58px;
+        height:58px;
+        border-radius:999px;
+        margin:0 auto 22px;
+        display:grid;
+        place-items:center;
+        color:var(--granate);
+        background:var(--crema);
+        border:1px solid rgba(196,150,42,.32);
+      }
+
+      .statusIcon svg{
+        width:26px;
+        height:26px;
+        display:block;
+      }
+
+      .title{
+        margin:0 0 12px;
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
+        font-size:34px;
+        line-height:1.08;
+        letter-spacing:-.6px;
+        font-weight:400;
+        color:var(--granate);
+      }
+
+      .msg{
+        margin:0 auto;
+        max-width:420px;
+        color:var(--ink2);
+        font-size:16px;
+        line-height:1.55;
+      }
+
+      .details{
+        margin:18px auto 0;
+        max-width:440px;
+        color:var(--muted);
+        font-size:12.5px;
+        line-height:1.45;
+        word-break:break-word;
+      }
+
+      .btn{
+        margin-top:24px;
+        appearance:none;
+        border:1px solid var(--granate);
+        border-radius:999px;
+        background:var(--granate);
+        color:#fff;
+        padding:12px 22px;
+        cursor:pointer;
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        transition:background .18s ease, transform .18s ease, box-shadow .18s ease;
+      }
+
+      .btn:hover{
+        background:var(--granateDark);
+        transform:translateY(-1px);
+        box-shadow:0 10px 24px rgba(140,31,45,.16);
+      }
+
+      .authCard.error .statusIcon{
+        color:var(--error);
+        background:rgba(140,31,45,.07);
+        border-color:rgba(140,31,45,.18);
+      }
+
+      .authCard.ok .statusIcon{
+        color:var(--ok);
+        background:rgba(31,122,76,.07);
+        border-color:rgba(31,122,76,.18);
+      }
+
+      @media (max-width:560px){
+        body{ padding:18px; }
+        .authCard{ padding:32px 22px 28px; border-radius:14px; }
+        .brand{ font-size:24px; letter-spacing:.26em; margin-bottom:24px; }
+        .title{ font-size:28px; }
+        .msg{ font-size:15px; }
+      }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <div class="box">
-        <div id="title">Finalizando inicio de sesión…</div>
-        <div class="muted" id="msg">Un momento.</div>
-        <div class="small" id="details"></div>
+    <main class="authCard" id="authCard" aria-live="polite">
+      <div class="brand">Homyo</div>
+
+      <div class="statusIcon" aria-hidden="true">
+        <svg id="statusSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 7v5l3 2"></path>
+        </svg>
       </div>
-    </div>
+
+      <h1 class="title" id="title">Finalizando acceso</h1>
+      <p class="msg" id="msg">Estamos verificando tu sesión.</p>
+      <div class="details" id="details"></div>
+      <button class="btn" id="goHomeBtn" type="button" style="display:none;">Ir a inicio</button>
+    </main>
 
     <script type="module">
       import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -28,35 +189,87 @@
       const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
       const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+      const authCard = document.getElementById("authCard");
       const titleEl = document.getElementById("title");
       const msgEl = document.getElementById("msg");
       const detailsEl = document.getElementById("details");
+      const goHomeBtn = document.getElementById("goHomeBtn");
+      const statusSvg = document.getElementById("statusSvg");
 
-      const url = new URL(window.location.href);
-      const hasCode = url.searchParams.has("code");
-      const hasError = url.searchParams.has("error") || url.searchParams.has("error_description");
+      function baseUrl(){
+        const url = new URL(window.location.href);
+        const path = url.pathname.endsWith("/") ? url.pathname : url.pathname.slice(0, url.pathname.lastIndexOf("/") + 1);
+        return url.origin + path;
+      }
 
-      // Si entras aquí a mano, esto es lo esperado:
-      if (!hasCode && !hasError) {
-        titleEl.textContent = "Callback OK";
-        msgEl.textContent = "Esta página existe. Para funcionar, tienes que llegar aquí volviendo desde Google (con ?code=...).";
-        detailsEl.textContent = "URL actual: " + window.location.href;
-      } else {
-        try {
-          detailsEl.textContent = "URL actual: " + window.location.href;
+      function icon(type){
+        if (type === "ok") {
+          statusSvg.innerHTML = '<circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.5 2.5L16.5 9"></path>';
+          return;
+        }
+        if (type === "error") {
+          statusSvg.innerHTML = '<circle cx="12" cy="12" r="9"></circle><path d="M15 9l-6 6"></path><path d="M9 9l6 6"></path>';
+          return;
+        }
+        statusSvg.innerHTML = '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>';
+      }
 
-          const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+      function setState(type){
+        authCard.classList.remove("ok", "error");
+        if (type) authCard.classList.add(type);
+        icon(type);
+      }
+
+      function goHome(){
+        window.location.href = baseUrl() + "index.html";
+      }
+
+      goHomeBtn.addEventListener("click", goHome);
+
+      const currentUrl = new URL(window.location.href);
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const hasCode = currentUrl.searchParams.has("code");
+      const hasHashSession = hashParams.has("access_token");
+      const hasError = currentUrl.searchParams.has("error") || currentUrl.searchParams.has("error_description") || hashParams.has("error") || hashParams.has("error_description");
+      const authType = currentUrl.searchParams.get("type") || hashParams.get("type") || "";
+
+      try {
+        if (hasError) {
+          throw new Error(hashParams.get("error_description") || currentUrl.searchParams.get("error_description") || "No se pudo completar el acceso.");
+        }
+
+        if (hasCode) {
+          const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
           if (error) throw error;
+        } else if (hasHashSession) {
+          const access_token = hashParams.get("access_token");
+          const refresh_token = hashParams.get("refresh_token");
+          const { error } = await supabase.auth.setSession({ access_token, refresh_token });
+          if (error) throw error;
+        } else {
+          titleEl.textContent = "Página de acceso disponible";
+          msgEl.textContent = "Esta página existe, pero no ha recibido ningún código de acceso.";
+          detailsEl.textContent = "URL actual: " + window.location.href;
+          goHomeBtn.style.display = "inline-block";
+          throw new Error("Sin código de acceso.");
+        }
 
-          msgEl.textContent = "Acceso completado. Volviendo…";
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setState("ok");
+        titleEl.textContent = authType === "signup" ? "Email verificado" : "Acceso completado";
+        msgEl.textContent = "Sesión iniciada correctamente. Te llevamos de vuelta.";
 
-          const returnUrl = localStorage.getItem("bh_return_url") || "../index.html";
-          localStorage.removeItem("bh_return_url");
-          window.location.href = returnUrl;
-        } catch (e) {
-          msgEl.textContent = "No se pudo completar el acceso. Vuelve atrás e inténtalo de nuevo.";
+        const returnUrl = localStorage.getItem("bh_return_url") || (baseUrl() + "index.html");
+        localStorage.removeItem("bh_return_url");
+        window.location.href = returnUrl;
+      } catch (e) {
+        console.error(e);
+        if (String(e?.message || "") !== "Sin código de acceso.") {
+          setState("error");
+          titleEl.textContent = "No se pudo completar el acceso";
+          msgEl.textContent = "El enlace no es válido, ha caducado o la URL no está autorizada en Supabase.";
           detailsEl.textContent = "Error: " + (e?.message || String(e));
-          console.error(e);
+          goHomeBtn.style.display = "inline-block";
         }
       }
     </script>
