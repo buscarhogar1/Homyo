@@ -92,21 +92,46 @@ body{
 }
 
 .placeLabel{
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   max-width: 100%;
-  padding: 6px 14px;
+  height: 34px;
+  padding: 0 16px 0 13px;
   border-radius: 999px;
-  background: #fff;
-  border: 1px solid rgba(140,31,45,0.18);
+  background: #FFFDFA;
+  border: 1px solid rgba(140, 31, 45, 0.22);
+  box-shadow:
+    0 1px 2px rgba(140, 31, 45, 0.06),
+    0 8px 18px -12px rgba(140, 31, 45, 0.22);
+  font-family: 'Raleway', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   font-size: 12.5px;
   font-weight: 500;
-  font-family: inherit;
-  color: rgba(0,0,0,0.72);
+  letter-spacing: 0.04em;
+  color: #8C1F2D;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: 0.01em;
   /* Alineación a la izquierda sobre el mapa (pedido) */
   justify-self: start;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.placeLabel::before{
+  content: "";
+  flex: 0 0 auto;
+  width: 12px;
+  height: 14px;
+  background-color: #C4962A;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M12 2C7.58 2 4 5.58 4 10c0 5.7 7.05 11.55 7.35 11.8a1 1 0 0 0 1.3 0C12.95 21.55 20 15.7 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z'/></svg>") center / contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='black' d='M12 2C7.58 2 4 5.58 4 10c0 5.7 7.05 11.55 7.35 11.8a1 1 0 0 0 1.3 0C12.95 21.55 20 15.7 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z'/></svg>") center / contain no-repeat;
+}
+
+.placeLabel:hover{
+  border-color: rgba(140, 31, 45, 0.4);
+  box-shadow:
+    0 1px 2px rgba(140, 31, 45, 0.08),
+    0 10px 20px -12px rgba(140, 31, 45, 0.32);
 }
 
 .topRightTools{
@@ -562,15 +587,98 @@ body{
   text-overflow: ellipsis;
 }
 
-/* Leaflet controles */
-.leaflet-control-zoom a {
-  width: 34px;
-  height: 34px;
-  line-height: 34px;
-  border-radius: 10px;
+/* Leaflet controles — branding Homyo
+   Botones +/- del zoom alineados al estilo .qBtn (granate, crema, chip suave) */
+.leaflet-control-zoom{
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 14px !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
 }
-.leaflet-bar a, .leaflet-bar a:hover {
-  border-bottom: 1px solid rgba(0,0,0,0.08);
+.leaflet-control-zoom a,
+.leaflet-control-zoom a:hover,
+.leaflet-control-zoom a:focus{
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 1 !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(140,31,45,0.14) !important;
+  background: rgba(255,253,250,0.94) !important;
+  color: var(--bh-granate, #8C1F2D) !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 400 !important;
+  display: grid !important;
+  place-items: center !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  box-shadow:
+    0 10px 24px rgba(138,31,45,0.06),
+    0 1px 0 rgba(255,255,255,0.9) inset,
+    inset 0 0 0 1px rgba(196,150,42,0.06) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.16s ease,
+    color 0.16s ease;
+}
+
+/* Hover: tinte granate más definido (mismo lenguaje que .topToggleBtn:hover) */
+.leaflet-control-zoom a:hover{
+  background: #fff !important;
+  border-color: rgba(140,31,45,0.38) !important;
+  color: #6e1622 !important;
+  box-shadow:
+    0 12px 28px rgba(138,31,45,0.12),
+    inset 0 0 0 1px rgba(196,150,42,0.10) !important;
+  transform: translateY(-1px);
+}
+
+.leaflet-control-zoom a:active{
+  transform: translateY(0);
+  background: rgba(140,31,45,0.06) !important;
+  box-shadow:
+    0 4px 10px rgba(138,31,45,0.10),
+    inset 0 1px 2px rgba(140,31,45,0.10) !important;
+}
+
+.leaflet-control-zoom a:focus-visible{
+  outline: 2px solid rgba(196,150,42,0.55) !important;
+  outline-offset: 2px;
+}
+
+/* Quitamos la línea separadora gris por defecto entre + y - */
+.leaflet-bar a,
+.leaflet-bar a:hover,
+.leaflet-bar a + a{
+  border-bottom: none !important;
+  border-top: none !important;
+}
+
+/* Estado deshabilitado (zoom-in al máximo / zoom-out al mínimo) */
+.leaflet-control-zoom a.leaflet-disabled,
+.leaflet-control-zoom a.leaflet-disabled:hover{
+  opacity: 0.45 !important;
+  background: rgba(255,253,250,0.7) !important;
+  border-color: rgba(140,31,45,0.10) !important;
+  color: rgba(140,31,45,0.55) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow:
+    0 4px 10px rgba(138,31,45,0.04),
+    inset 0 0 0 1px rgba(196,150,42,0.04) !important;
+}
+
+/* Posición interna: pequeño respiro respecto al borde del mapa */
+.leaflet-top.leaflet-left{
+  padding: 12px 0 0 12px;
 }
 
 /* Controles rápidos (Sol / áreas / geolocalización) */
@@ -989,7 +1097,7 @@ body{
 .fBody{
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 2px;
 }
 
 .fRow2{
@@ -1028,7 +1136,7 @@ body{
   gap: 10px;
   font-size: 14px;
   color: rgba(0,0,0,0.80);
-  padding: 6px 2px;
+  padding: 1px 2px;
 }
 .fRadio input{
   width: 18px;
@@ -1374,7 +1482,7 @@ body{
 .fOptCol{
   display: grid !important;
   grid-template-columns: 1fr !important;
-  gap: 8px !important;
+  gap: 0 !important;
   width: 100% !important;
 }
 
@@ -1383,7 +1491,8 @@ body{
   align-items: flex-start !important;
   gap: 10px !important;
   width: 100% !important;
-  padding: 2px 0 !important;
+  padding: 0 !important;
+  line-height: 0.9 !important;
   box-sizing: border-box !important;
 }
 
@@ -1398,7 +1507,7 @@ body{
   display: block !important;
   flex: 1 1 auto !important;
   min-width: 0 !important;
-  line-height: 1.2 !important;
+  line-height: 0.9 !important;
   white-space: normal !important;
 }
 
@@ -1407,7 +1516,7 @@ body{
   align-items: flex-start !important;
   gap: 10px !important;
   width: 100% !important;
-  padding: 2px 0 !important;
+  padding: 0 !important;
   box-sizing: border-box !important;
 }
 
@@ -1426,7 +1535,7 @@ body{
   .fOptCol{
     display: grid !important;
     grid-template-columns: 1fr !important;
-    gap: 8px !important;
+    gap: 0 !important;
     width: 100% !important;
   }
 
@@ -1435,7 +1544,8 @@ body{
     align-items: flex-start !important;
     gap: 10px !important;
     width: 100% !important;
-    padding: 2px 0 !important;
+    padding: 0 !important;
+    line-height: 0.9 !important;
   }
 
   .fOptText{
@@ -1449,7 +1559,7 @@ body{
     align-items: flex-start !important;
     gap: 10px !important;
     width: 100% !important;
-    padding: 2px 0 !important;
+    padding: 0 !important;
   }
 }
 
@@ -1575,4 +1685,840 @@ body{
 #previewToggle,
 #mobileSimOverlay{
   display:none !important;
+}
+
+
+/* =====================================================================
+   FILTROS — REBRANDING (Homyo)
+   Mismo lenguaje visual que index.html: granate / dorado, bordes suaves
+   color crema, tipografía Raleway en etiquetas, esquinas 3.5px.
+   Estos overrides se cargan al final para reemplazar al estilo "azul"
+   genérico anterior.
+   ===================================================================== */
+:root{
+  --bh-granate: #8C1F2D;
+  --bh-dorado: #C4962A;
+  --bh-bg: #FFFDFA;
+  --bh-border: #e7dfd2;
+}
+
+/* Columna filtros: fondo crema y separador suave a juego con la marca */
+.colFilters{
+  background: var(--bh-bg) !important;
+  border-right: 1px solid rgba(140,31,45,0.08) !important;
+}
+
+#filtersBarMount{
+  background: transparent !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(140,31,45,0.18) transparent;
+}
+#filtersBarMount::-webkit-scrollbar{ width: 6px; }
+#filtersBarMount::-webkit-scrollbar-thumb{
+  background: rgba(140,31,45,0.18);
+  border-radius: 999px;
+}
+#filtersBarMount::-webkit-scrollbar-thumb:hover{
+  background: rgba(140,31,45,0.32);
+}
+
+.filtersRoot{
+  padding: 16px 14px 28px !important;
+  gap: 10px !important;
+}
+
+/* Tarjeta de filtro */
+.fBlock{
+  border: 1px solid var(--bh-border) !important;
+  border-radius: 3.5px !important;
+  background: #fff !important;
+  padding: 14px 14px 12px !important;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.03) !important;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease !important;
+}
+.fBlock:hover{
+  border-color: rgba(140,31,45,0.28) !important;
+  box-shadow: 0 2px 10px rgba(140,31,45,0.06) !important;
+}
+.fBlock.active{
+  border-color: rgba(196,150,42,0.55) !important;
+  background: rgba(196,150,42,0.045) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(196,150,42,0.18),
+    0 3px 12px rgba(196,150,42,0.08) !important;
+}
+
+/* Cabecera */
+.fHead{
+  margin-bottom: 10px !important;
+}
+
+.fTitle{
+  gap: 10px !important;
+}
+
+.fTitleText{
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: rgba(0,0,0,0.72) !important;
+}
+.fBlock.active .fTitleText{
+  color: var(--bh-granate) !important;
+}
+
+/* Punto indicador de estado */
+.fDot{
+  width: 8px !important;
+  height: 8px !important;
+  border: 1.5px solid rgba(140,31,45,0.45) !important;
+  background: transparent !important;
+}
+.fBlock.active .fDot{
+  background: var(--bh-granate) !important;
+  border-color: var(--bh-granate) !important;
+  box-shadow: 0 0 0 3px rgba(140,31,45,0.12) !important;
+}
+
+/* Botón limpiar */
+.fClearBtn{
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--bh-border) !important;
+  background: #fff !important;
+  color: rgba(0,0,0,0.42) !important;
+  font-size: 16px !important;
+  transition: all .15s ease !important;
+}
+.fClearBtn:hover{
+  background: rgba(140,31,45,0.06) !important;
+  border-color: rgba(140,31,45,0.32) !important;
+  color: var(--bh-granate) !important;
+}
+.fClearBtn.active{
+  border-color: rgba(140,31,45,0.45) !important;
+  color: var(--bh-granate) !important;
+  background: rgba(140,31,45,0.08) !important;
+}
+
+/* Inputs */
+.fInp,
+.fSel{
+  height: 42px !important;
+  border-radius: 3.5px !important;
+  border: 1px solid var(--bh-border) !important;
+  padding: 0 12px !important;
+  font-size: 14px !important;
+  font-family: inherit !important;
+  color: #222 !important;
+  background: #fff !important;
+  transition: border-color .15s ease, box-shadow .15s ease !important;
+}
+.fInp::placeholder{
+  color: #b9b1a6 !important;
+}
+.fInp:hover,
+.fSel:hover{
+  border-color: rgba(140,31,45,0.28) !important;
+}
+.fInp:focus,
+.fSel:focus{
+  border-color: var(--bh-dorado) !important;
+  box-shadow: 0 0 0 3px rgba(196,150,42,0.14) !important;
+}
+
+.fInpStack{
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.fInpWrap{
+  position: relative;
+}
+
+/* Dropdown sugerencias */
+.fDrop{
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(100% + 4px);
+  background: #fff;
+  border: 1px solid var(--bh-border);
+  border-radius: 3.5px;
+  box-shadow: 0 10px 28px rgba(140,31,45,0.10);
+  z-index: 30;
+  overflow: hidden;
+  padding: 4px;
+}
+.fDrop.bh-hidden{ display: none; }
+
+.fDropItem{
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 9px 10px;
+  border-radius: 3.5px;
+  font-size: 13px;
+  font-family: inherit;
+  color: rgba(0,0,0,0.78);
+  cursor: pointer;
+  transition: background .12s ease, color .12s ease;
+}
+.fDropItem:hover{
+  background: rgba(196,150,42,0.10);
+  color: var(--bh-granate);
+}
+
+/* Opciones (radio / checkbox) */
+.fOptCol{
+  gap: 0 !important;
+}
+
+.fOptLine{
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 5px 8px !important;
+  border-radius: 3.5px !important;
+  cursor: pointer;
+  transition: background .12s ease;
+}
+.fOptLine:hover{
+  background: rgba(196,150,42,0.06);
+}
+
+.fOptLine input[type="checkbox"],
+.fOptLine input[type="radio"],
+.fBody .fRadio input{
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  border: 1.5px solid #cdc3b3 !important;
+  background: #fff !important;
+  cursor: pointer;
+  position: relative;
+  flex: 0 0 auto !important;
+  transition: all .15s ease;
+}
+
+.fOptLine input[type="checkbox"]{
+  border-radius: 3.5px !important;
+}
+.fOptLine input[type="radio"],
+.fBody .fRadio input[type="radio"]{
+  border-radius: 999px !important;
+}
+
+.fOptLine input[type="checkbox"]:hover,
+.fOptLine input[type="radio"]:hover{
+  border-color: var(--bh-granate) !important;
+}
+
+.fOptLine input[type="checkbox"]:checked{
+  background: var(--bh-granate) !important;
+  border-color: var(--bh-granate) !important;
+}
+.fOptLine input[type="checkbox"]:checked::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 14px;
+}
+
+.fOptLine input[type="radio"]:checked,
+.fBody .fRadio input[type="radio"]:checked{
+  border-color: var(--bh-granate) !important;
+}
+.fOptLine input[type="radio"]:checked::after,
+.fBody .fRadio input[type="radio"]:checked::after{
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 999px;
+  background: var(--bh-granate);
+}
+
+.fOptText{
+  font-size: 14px !important;
+  color: rgba(0,0,0,0.82) !important;
+  font-family: inherit !important;
+  line-height: 1.3 !important;
+}
+.fOptLine input:checked ~ .fOptText{
+  color: var(--bh-granate) !important;
+  font-weight: 600 !important;
+}
+
+/* ----- Móvil ----- */
+@media (max-width: 768px){
+  .colFilters{
+    background: var(--bh-bg) !important;
+    border-right: 0 !important;
+  }
+
+  .mobilePanelHead{
+    background: var(--bh-bg) !important;
+    border-bottom: 1px solid rgba(140,31,45,0.10) !important;
+  }
+  .mobilePanelTitle{
+    font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.18em !important;
+    text-transform: uppercase !important;
+    color: var(--bh-granate) !important;
+  }
+  .mobilePanelClose{
+    border: 1px solid rgba(140,31,45,0.22) !important;
+    color: var(--bh-granate) !important;
+    background: #fff !important;
+  }
+  .mobilePanelClose:active{
+    background: rgba(140,31,45,0.06) !important;
+  }
+
+  .filtersRoot{
+    padding: 14px 14px calc(28px + env(safe-area-inset-bottom, 0px)) !important;
+    gap: 10px !important;
+  }
+
+  .fBlock{
+    padding: 14px !important;
+  }
+
+  .fInp,
+  .fSel{
+    height: 48px !important;
+    font-size: 15px !important;
+  }
+
+  .fOptLine{
+    padding: 7px 8px !important;
+  }
+
+  .fOptText{
+    font-size: 15px !important;
+  }
+}
+
+
+/* =====================================================================
+   LISTADO — REBRANDING (Homyo)
+   Mismo lenguaje que filtros: granate / dorado, fondo crema, esquinas
+   suaves 3.5px, tipografía Raleway en etiquetas.
+   ===================================================================== */
+.colList{
+  background: var(--bh-bg) !important;
+  border-left: 1px solid rgba(140,31,45,0.08) !important;
+}
+
+.listMount{
+  background: transparent !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(140,31,45,0.18) transparent;
+}
+.listMount::-webkit-scrollbar{ width: 6px; }
+.listMount::-webkit-scrollbar-thumb{
+  background: rgba(140,31,45,0.18);
+  border-radius: 999px;
+}
+.listMount::-webkit-scrollbar-thumb:hover{
+  background: rgba(140,31,45,0.32);
+}
+
+.listItems{
+  padding: 16px 14px 28px !important;
+  gap: 12px !important;
+}
+
+/* Tarjeta de listado */
+.listCard{
+  grid-template-columns: 100px 1fr !important;
+  gap: 12px !important;
+  padding: 12px !important;
+  border-radius: 3.5px !important;
+  border: 1px solid var(--bh-border) !important;
+  background: #fff !important;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.03) !important;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease !important;
+}
+.listCard:hover{
+  border-color: rgba(140,31,45,0.28) !important;
+  box-shadow: 0 6px 18px rgba(140,31,45,0.10) !important;
+  transform: translateY(-1px) !important;
+}
+.listCard.active,
+.listCard.selected{
+  border-color: rgba(196,150,42,0.55) !important;
+  background: rgba(196,150,42,0.045) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(196,150,42,0.18),
+    0 4px 14px rgba(196,150,42,0.10) !important;
+}
+
+.listImg,
+.listImgPh{
+  width: 100px !important;
+  height: 88px !important;
+  border-radius: 3.5px !important;
+  background: #f5f1ea !important;
+}
+.listImgPh{
+  color: #b9b1a6 !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+}
+
+.listTitle{
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  color: var(--bh-granate) !important;
+  text-decoration: none !important;
+  line-height: 1.25 !important;
+}
+.listTitle:hover{
+  text-decoration: underline !important;
+  text-decoration-color: rgba(140,31,45,0.35) !important;
+  text-underline-offset: 3px !important;
+}
+
+.listSub{
+  margin-top: 3px !important;
+  font-size: 12.5px !important;
+  color: rgba(0,0,0,0.62) !important;
+}
+
+.listPrice{
+  margin-top: 8px !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  color: #1a1a1a !important;
+  letter-spacing: -0.01em !important;
+}
+
+.listMeta{
+  margin-top: 8px !important;
+  gap: 6px !important;
+  font-size: 11.5px !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: rgba(0,0,0,0.58) !important;
+}
+.listMeta > *{
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 3.5px;
+  background: rgba(196,150,42,0.08);
+  color: rgba(0,0,0,0.62) !important;
+}
+
+.listAgency{
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+  border-top: 1px dashed var(--bh-border) !important;
+  font-size: 11.5px !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  color: var(--bh-dorado) !important;
+}
+
+/* Botones superiores — alineados al branding Homyo (granate / dorado, 3.5px) */
+#toggleFiltersBtn,
+#orderBtn,
+#toggleListBtn{
+  height: 36px !important;
+  padding: 0 16px !important;
+  border-radius: 3.5px !important;
+  border: 1px solid var(--bh-border) !important;
+  background: #fff !important;
+  color: var(--bh-granate) !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  cursor: pointer;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.03) !important;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease !important;
+}
+
+#toggleFiltersBtn:hover,
+#orderBtn:hover,
+#toggleListBtn:hover{
+  border-color: rgba(196,150,42,0.55) !important;
+  background: rgba(196,150,42,0.045) !important;
+  color: var(--bh-granate) !important;
+  box-shadow: 0 3px 12px rgba(196,150,42,0.10) !important;
+}
+
+#orderBtn{
+  padding-right: 30px !important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--bh-granate) 50%),
+    linear-gradient(135deg, var(--bh-granate) 50%, transparent 50%) !important;
+  background-position:
+    calc(100% - 14px) 51%,
+    calc(100% - 9px) 51% !important;
+  background-size: 5px 5px, 5px 5px !important;
+  background-repeat: no-repeat !important;
+}
+
+.orderMenu{
+  border: 1px solid var(--bh-border) !important;
+  border-radius: 3.5px !important;
+  box-shadow: 0 18px 40px rgba(140,31,45,0.10) !important;
+  margin-top: 4px !important;
+  padding: 6px !important;
+}
+.orderItem{
+  border-radius: 3.5px !important;
+  font-family: inherit !important;
+  font-size: 12.5px !important;
+  color: rgba(0,0,0,0.78) !important;
+  transition: background .12s ease, color .12s ease !important;
+}
+.orderItem:hover{
+  background: rgba(196,150,42,0.10) !important;
+  color: var(--bh-granate) !important;
+}
+
+/* ----- Móvil ----- */
+@media (max-width: 768px){
+  .colList{
+    background: var(--bh-bg) !important;
+    border-left: 0 !important;
+  }
+
+  .listItems{
+    padding: 14px 14px calc(28px + env(safe-area-inset-bottom, 0px)) !important;
+    gap: 12px !important;
+  }
+
+  .listCard{
+    grid-template-columns: 110px 1fr !important;
+    padding: 12px !important;
+  }
+
+  .listImg,
+  .listImgPh{
+    width: 110px !important;
+    height: 96px !important;
+  }
+
+  .listTitle{
+    font-size: 15px !important;
+  }
+  .listPrice{
+    font-size: 18px !important;
+  }
+
+  .mobileOrderMenu{
+    border: 1px solid var(--bh-border) !important;
+    border-radius: 3.5px !important;
+    box-shadow: 0 18px 40px rgba(140,31,45,0.12) !important;
+  }
+}
+
+
+/* =====================================================================
+   TARJETA FLOTANTE EN EL MAPA — REBRANDING (Homyo)
+   Granate / dorado, esquinas 3.5px, tipografía Raleway en chips/etiquetas.
+   ===================================================================== */
+.card{
+  border-radius: 3.5px !important;
+  border: 1px solid var(--bh-border) !important;
+  background: #fff !important;
+  box-shadow:
+    0 1px 0 rgba(140,31,45,0.04),
+    0 18px 44px rgba(140,31,45,0.18),
+    0 6px 14px rgba(0,0,0,0.06) !important;
+}
+
+.mediaSide{
+  background: #f5f1ea !important;
+}
+
+.mediaPlaceholder{
+  color: #b9b1a6 !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+}
+
+.badgeNew{
+  background: var(--bh-dorado) !important;
+  color: #fff !important;
+  border-radius: 3.5px !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  padding: 5px 9px !important;
+  box-shadow: 0 2px 8px rgba(196,150,42,0.30) !important;
+}
+
+.mediaMiniIcon{
+  border-radius: 3.5px !important;
+  border: 1px solid rgba(140,31,45,0.16) !important;
+  background: rgba(255,255,255,0.96) !important;
+}
+.mediaMiniIcon svg{
+  color: var(--bh-granate) !important;
+}
+
+.heartBtn{
+  border: 1px solid rgba(140,31,45,0.20) !important;
+  background: #fff !important;
+}
+.heartBtn svg{
+  color: var(--bh-granate) !important;
+}
+
+.closeBtn{
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--bh-border) !important;
+  background: #fff !important;
+  transition: all .15s ease !important;
+}
+.closeBtn svg{
+  width: 16px !important;
+  height: 16px !important;
+  color: rgba(0,0,0,0.55) !important;
+}
+.closeBtn:hover{
+  background: rgba(140,31,45,0.06) !important;
+  border-color: rgba(140,31,45,0.32) !important;
+}
+.closeBtn:hover svg{
+  color: var(--bh-granate) !important;
+}
+
+.addrTop{
+  color: var(--bh-granate) !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  padding-right: 60px !important;
+}
+.addrTop:hover{
+  text-decoration-color: rgba(140,31,45,0.4) !important;
+  text-underline-offset: 3px !important;
+}
+
+.addrBottom{
+  font-size: 13.5px !important;
+  color: rgba(0,0,0,0.62) !important;
+}
+
+.price{
+  margin-top: 10px !important;
+  font-size: 19px !important;
+  font-weight: 800 !important;
+  color: #1a1a1a !important;
+  letter-spacing: -0.01em !important;
+}
+
+.facts{
+  margin-top: 10px !important;
+  gap: 6px !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.10em !important;
+  text-transform: uppercase !important;
+}
+.fact{
+  padding: 4px 9px !important;
+  border-radius: 3.5px !important;
+  background: rgba(196,150,42,0.10) !important;
+  color: rgba(0,0,0,0.66) !important;
+  gap: 6px !important;
+}
+.fact svg{
+  width: 14px !important;
+  height: 14px !important;
+  color: var(--bh-granate) !important;
+}
+
+.agency{
+  padding-top: 10px !important;
+  border-top: 1px dashed var(--bh-border) !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: var(--bh-dorado) !important;
+}
+
+/* ----- Móvil ----- */
+@media (max-width: 768px){
+  .card{
+    border-radius: 3.5px !important;
+    box-shadow:
+      0 -2px 0 rgba(140,31,45,0.04),
+      0 14px 40px rgba(140,31,45,0.18) !important;
+  }
+  .addrTop{
+    font-size: 17px !important;
+    padding-right: 50px !important;
+  }
+  .price{
+    font-size: 20px !important;
+  }
+  .closeBtn{
+    width: 36px !important;
+    height: 36px !important;
+  }
+}
+
+
+/* =====================================================================
+   AJUSTES FINALES (mayo 2026)
+   - Ocultar pill de estado (Anuncios / zoom / modo) en web y móvil
+   - Ocultar zoom de Leaflet en móvil
+   - Botones laterales del mapa con estilo del index (granate / dorado)
+   - Botones móviles de Filtros / Listado más bajos y con branding
+   ===================================================================== */
+
+/* 1) Ocultar pill "Anuncios: N | zoom X | modo=..." en todas las vistas */
+#status{
+  display: none !important;
+}
+
+/* 2) Ocultar zoom de Leaflet en móvil (los gestos pinch siguen funcionando) */
+@media (max-width: 768px){
+  .leaflet-control-zoom{
+    display: none !important;
+  }
+}
+
+/* 3) Botones laterales del mapa: alinear con el lenguaje del index
+      (granate, fondo crema translúcido, esquinas suaves estilo "icon chip"
+      del index). Se conserva tamaño (44x44) y posición. */
+.qBtn{
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(140,31,45,0.14) !important;
+  background: rgba(255,253,250,0.92) !important;
+  box-shadow:
+    0 10px 24px rgba(138,31,45,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.9) !important;
+  backdrop-filter: blur(10px);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease !important;
+}
+.qBtn:hover{
+  background: #fff !important;
+  transform: translateY(-1px);
+  border-color: rgba(196,150,42,0.42) !important;
+  box-shadow:
+    0 14px 30px rgba(138,31,45,0.09),
+    inset 0 1px 0 rgba(255,255,255,0.95) !important;
+}
+.qBtn svg{
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--bh-granate, #8C1F2D) !important;
+  stroke: var(--bh-granate, #8C1F2D) !important;
+  stroke-width: 1.8 !important;
+  fill: none !important;
+}
+.qBtn.active{
+  border-color: rgba(196,150,42,0.65) !important;
+  background: #fff !important;
+  box-shadow:
+    0 12px 28px rgba(196,150,42,0.18),
+    inset 0 0 0 1px rgba(196,150,42,0.30) !important;
+}
+.qBtn.active svg{
+  color: var(--bh-granate, #8C1F2D) !important;
+  stroke: var(--bh-granate, #8C1F2D) !important;
+}
+.qBtn.disabled{
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+/* botón "+" pequeño que aparece junto a un área — mismo idioma visual */
+.qBtnSmall{
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(140,31,45,0.14) !important;
+  background: rgba(255,253,250,0.92) !important;
+  box-shadow:
+    0 8px 20px rgba(138,31,45,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.9) !important;
+  backdrop-filter: blur(10px);
+}
+.qBtnSmall:hover{
+  background: #fff !important;
+  border-color: rgba(196,150,42,0.42) !important;
+}
+.qBtnSmall svg{
+  width: 18px !important;
+  height: 18px !important;
+  color: var(--bh-granate, #8C1F2D) !important;
+  stroke: var(--bh-granate, #8C1F2D) !important;
+  stroke-width: 1.8 !important;
+  fill: none !important;
+}
+
+/* 4) Botones móviles "Filtros" / "Listado": menos altos + branding */
+@media (max-width: 768px){
+  .mobileActionsRow{
+    background: var(--bh-bg, #FFFDFA) !important;
+    border-bottom: 1px solid rgba(140,31,45,0.10) !important;
+    padding: 8px 12px !important;
+    gap: 10px !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .mobileActionBtn{
+    height: 40px !important;
+    border: 1px solid rgba(140,31,45,0.18) !important;
+    border-right: 1px solid rgba(140,31,45,0.18) !important;
+    border-radius: 3.5px !important;
+    background: #fff !important;
+    color: var(--bh-granate, #8C1F2D) !important;
+    font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.16em !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 1px 6px rgba(140,31,45,0.04) !important;
+    transition: background .15s ease, border-color .15s ease, box-shadow .15s ease !important;
+  }
+
+  .mobileActionBtn:last-child{
+    border-right: 1px solid rgba(140,31,45,0.18) !important;
+  }
+
+  .mobileActionBtn:active,
+  .mobileActionBtn:hover{
+    background: rgba(196,150,42,0.06) !important;
+    border-color: rgba(196,150,42,0.45) !important;
+    box-shadow: 0 3px 12px rgba(196,150,42,0.10) !important;
+  }
 }

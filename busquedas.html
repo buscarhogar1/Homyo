@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Búsquedas guardadas · Homyo</title>
+
+    <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
+
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
+        --good:#1f7a4c;
+        --warn:#a36105;
+      }
+
+      *{ box-sizing:border-box; }
+
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      .pageWrap{
+        width:min(1120px,100%);
+        margin:0 auto;
+        padding:40px 24px 96px;
+      }
+
+      .crumbs{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:24px;
+      }
+
+      .crumbs a{ color:var(--muted); text-decoration:none; }
+      .crumbs a:hover{ color:var(--granate); }
+      .crumbs .sep{ color:var(--doradoSoft); }
+      .crumbs .current{ color:var(--granate); }
+
+      .pageHeader{
+        display:grid;
+        grid-template-columns:1fr auto;
+        align-items:end;
+        gap:24px;
+        padding-bottom:28px;
+        margin-bottom:36px;
+        border-bottom:1px solid var(--line);
+      }
+
+      .pageKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 14px;
+      }
+
+      .pageTitle{
+        margin:0;
+        font-family:'Raleway',sans-serif;
+        font-size:56px;
+        line-height:1;
+        letter-spacing:-1.2px;
+        font-weight:300;
+        color:var(--granate);
+      }
+
+      .pageTitle strong{ font-weight:600; }
+
+      .pageSubtitle{
+        margin:14px 0 0;
+        font-size:16px;
+        color:var(--ink2);
+        max-width:580px;
+        line-height:1.5;
+      }
+
+      .pillBtn{
+        appearance:none;
+        border:1px solid var(--line);
+        background:#fff;
+        color:var(--ink2);
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        padding:11px 18px;
+        border-radius:999px;
+        cursor:pointer;
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        transition:all .18s ease;
+        text-decoration:none;
+      }
+
+      .pillBtn:hover{
+        border-color:var(--granate);
+        color:var(--granate);
+      }
+
+      .pillBtn.primary{
+        background:var(--granate);
+        color:#fff;
+        border-color:var(--granate);
+      }
+
+      .pillBtn.primary:hover{ background:#711824; }
+
+      .pillBtn svg{ width:14px; height:14px; }
+
+      /* ===== Summary strip ===== */
+      .summary{
+        display:grid;
+        grid-template-columns:repeat(4, minmax(0,1fr));
+        gap:0;
+        border:1px solid var(--line);
+        border-radius:4px;
+        background:var(--card);
+        margin-bottom:32px;
+        overflow:hidden;
+      }
+
+      .summaryItem{
+        padding:22px 24px;
+        border-right:1px solid var(--lineSoft);
+      }
+
+      .summaryItem:last-child{ border-right:none; }
+
+      .summaryLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:600;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin:0 0 10px;
+      }
+
+      .summaryValue{
+        font-family:'Raleway',sans-serif;
+        font-size:30px;
+        font-weight:400;
+        color:var(--granate);
+        letter-spacing:-.8px;
+        line-height:1;
+      }
+
+      .summarySub{
+        margin-top:6px;
+        font-size:12px;
+        color:var(--muted);
+      }
+
+      /* ===== Search list ===== */
+      .listLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.34em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin:0 0 16px;
+      }
+
+      .searchList{
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+      }
+
+      .searchItem{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:24px 26px;
+        display:grid;
+        grid-template-columns:1fr auto;
+        gap:18px;
+        align-items:start;
+        position:relative;
+        transition:all .22s ease;
+      }
+
+      .searchItem:hover{
+        border-color:rgba(140,31,45,.18);
+        box-shadow:0 8px 22px rgba(140,31,45,.05);
+      }
+
+      .searchItemMain{ min-width:0; }
+
+      .searchHead{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-bottom:14px;
+      }
+
+      .searchName{
+        font-family:'Raleway',sans-serif;
+        font-size:21px;
+        font-weight:500;
+        color:var(--ink);
+        margin:0;
+        letter-spacing:-.2px;
+      }
+
+      .searchStatus{
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        padding:5px 10px;
+        border-radius:999px;
+      }
+
+      .searchStatus.active{
+        color:var(--good);
+        background:rgba(31,122,76,.08);
+      }
+
+      .searchStatus.active::before{
+        content:"";
+        width:7px;
+        height:7px;
+        border-radius:50%;
+        background:var(--good);
+      }
+
+      .searchStatus.paused{
+        color:var(--muted);
+        background:#f3f0e8;
+      }
+
+      .searchStatus.paused::before{
+        content:"";
+        width:7px;
+        height:7px;
+        border-radius:50%;
+        background:var(--muted);
+      }
+
+      .searchStatus.fresh{
+        color:var(--granate);
+        background:rgba(140,31,45,.07);
+      }
+
+      .searchStatus.fresh::before{
+        content:"";
+        width:7px;
+        height:7px;
+        border-radius:50%;
+        background:var(--granate);
+      }
+
+      .chipRow{
+        display:flex;
+        flex-wrap:wrap;
+        gap:6px;
+        margin-bottom:14px;
+      }
+
+      .chip{
+        font-size:12.5px;
+        color:var(--ink2);
+        background:var(--cardWarm);
+        border:1px solid var(--lineSoft);
+        padding:6px 11px;
+        border-radius:999px;
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+      }
+
+      .chip svg{
+        width:11px;
+        height:11px;
+        color:var(--dorado);
+      }
+
+      .searchMeta{
+        display:flex;
+        gap:24px;
+        font-size:13px;
+        color:var(--muted);
+        flex-wrap:wrap;
+      }
+
+      .searchMeta strong{
+        color:var(--granate);
+        font-weight:600;
+      }
+
+      .searchMeta .pulse{
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+      }
+
+      .searchMeta .pulse svg{
+        width:13px;
+        height:13px;
+        color:var(--dorado);
+      }
+
+      .searchActions{
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        align-items:stretch;
+      }
+
+      .iconBtn{
+        appearance:none;
+        border:1px solid var(--line);
+        background:#fff;
+        color:var(--ink2);
+        width:38px;
+        height:38px;
+        border-radius:50%;
+        display:grid;
+        place-items:center;
+        cursor:pointer;
+        transition:all .18s ease;
+      }
+
+      .iconBtn:hover{
+        color:var(--granate);
+        border-color:var(--granate);
+      }
+
+      .iconBtn svg{ width:16px; height:16px; }
+
+      .searchActionsRow{
+        display:flex;
+        gap:8px;
+      }
+
+      .freqBar{
+        margin-top:18px;
+        padding-top:16px;
+        border-top:1px solid var(--lineSoft);
+        display:flex;
+        gap:8px;
+        align-items:center;
+        flex-wrap:wrap;
+        font-size:13px;
+        color:var(--muted);
+      }
+
+      .freqLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        margin-right:8px;
+      }
+
+      .freqOpts{
+        display:inline-flex;
+        gap:4px;
+        background:var(--lineSoft);
+        padding:3px;
+        border-radius:999px;
+      }
+
+      .freqOpt{
+        appearance:none;
+        border:none;
+        background:transparent;
+        font-family:inherit;
+        font-size:12px;
+        color:var(--ink2);
+        padding:6px 14px;
+        border-radius:999px;
+        cursor:pointer;
+        transition:all .18s ease;
+      }
+
+      .freqOpt.active{
+        background:var(--granate);
+        color:#fff;
+        box-shadow:0 2px 6px rgba(140,31,45,.18);
+      }
+
+      .freqOpt:not(.active):hover{
+        color:var(--granate);
+      }
+
+      /* ===== New search CTA ===== */
+      .newSearchCard{
+        margin-top:22px;
+        border:1px dashed var(--doradoSoft);
+        border-radius:4px;
+        background:linear-gradient(180deg, var(--cardWarm) 0%, #fff 100%);
+        padding:28px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:18px;
+        flex-wrap:wrap;
+      }
+
+      .newSearchCard h3{
+        font-family:'Raleway',sans-serif;
+        font-size:20px;
+        font-weight:400;
+        margin:0 0 6px;
+        color:var(--granate);
+      }
+
+      .newSearchCard p{
+        margin:0;
+        color:var(--ink2);
+        font-size:14px;
+      }
+
+      @media (max-width:900px){
+        .summary{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+        .summaryItem:nth-child(2){ border-right:none; }
+        .summaryItem:nth-child(1), .summaryItem:nth-child(2){
+          border-bottom:1px solid var(--lineSoft);
+        }
+        .pageTitle{ font-size:42px; }
+      }
+
+      @media (max-width:680px){
+        .pageWrap{ padding:24px 16px 64px; }
+        .pageHeader{ grid-template-columns:1fr; gap:18px; }
+        .pageTitle{ font-size:34px; letter-spacing:-.8px; }
+        .summary{ grid-template-columns:1fr; }
+        .summaryItem{ border-right:none; border-bottom:1px solid var(--lineSoft); }
+        .summaryItem:last-child{ border-bottom:none; }
+        .searchItem{ grid-template-columns:1fr; padding:18px 18px; }
+        .searchActions{ flex-direction:row; justify-content:flex-end; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="pageWrap">
+      <nav class="crumbs" aria-label="Migas de pan">
+        <a href="./account.html">Mi cuenta</a>
+        <span class="sep">/</span>
+        <span class="current">Búsquedas guardadas</span>
+      </nav>
+
+      <header class="pageHeader">
+        <div>
+          <p class="pageKicker">Tus alertas</p>
+          <h1 class="pageTitle">Búsquedas <strong>guardadas</strong></h1>
+          <p class="pageSubtitle">Te avisamos en cuanto aparece una vivienda nueva que encaje con lo que buscas. Sin spam, sin duplicados, solo lo que importa.</p>
+        </div>
+        <a class="pillBtn primary" href="./map.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          Nueva búsqueda
+        </a>
+      </header>
+
+      <!-- Summary -->
+      <section class="summary" aria-label="Resumen">
+        <div class="summaryItem">
+          <p class="summaryLabel">Búsquedas activas</p>
+          <div class="summaryValue">4</div>
+          <p class="summarySub">de 10 disponibles</p>
+        </div>
+        <div class="summaryItem">
+          <p class="summaryLabel">Nuevas esta semana</p>
+          <div class="summaryValue">23</div>
+          <p class="summarySub">viviendas encontradas</p>
+        </div>
+        <div class="summaryItem">
+          <p class="summaryLabel">Avisos enviados</p>
+          <div class="summaryValue">12</div>
+          <p class="summarySub">en los últimos 30 días</p>
+        </div>
+        <div class="summaryItem">
+          <p class="summaryLabel">Próximo aviso</p>
+          <div class="summaryValue">Mañana</div>
+          <p class="summarySub">resumen semanal · 09:00</p>
+        </div>
+      </section>
+
+      <p class="listLabel">Tus búsquedas</p>
+
+      <section class="searchList" aria-label="Listado de búsquedas guardadas">
+        <!-- Search 1 -->
+        <article class="searchItem">
+          <div class="searchItemMain">
+            <div class="searchHead">
+              <h3 class="searchName">Piso en Salamanca con terraza</h3>
+              <span class="searchStatus fresh">3 nuevas</span>
+            </div>
+            <div class="chipRow">
+              <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/></svg>Salamanca, Madrid</span>
+              <span class="chip">Comprar</span>
+              <span class="chip">350.000 – 500.000 €</span>
+              <span class="chip">2 – 3 hab.</span>
+              <span class="chip">≥ 90 m²</span>
+              <span class="chip">Terraza</span>
+              <span class="chip">Sol mañana</span>
+            </div>
+            <div class="searchMeta">
+              <span class="pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Creada hace 12 días</span>
+              <span><strong>47</strong> coincidencias totales</span>
+              <span>Último aviso: hoy, 09:02</span>
+            </div>
+            <div class="freqBar">
+              <span class="freqLabel">Frecuencia</span>
+              <div class="freqOpts" role="tablist">
+                <button class="freqOpt" type="button">Instantáneo</button>
+                <button class="freqOpt active" type="button">Diario</button>
+                <button class="freqOpt" type="button">Semanal</button>
+                <button class="freqOpt" type="button">Pausado</button>
+              </div>
+            </div>
+          </div>
+          <div class="searchActions">
+            <a class="pillBtn primary" href="./map.html">Ver resultados</a>
+            <div class="searchActionsRow">
+              <button class="iconBtn" type="button" aria-label="Editar búsqueda">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg>
+              </button>
+              <button class="iconBtn" type="button" aria-label="Eliminar búsqueda">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Search 2 -->
+        <article class="searchItem">
+          <div class="searchItemMain">
+            <div class="searchHead">
+              <h3 class="searchName">Obra nueva en Madrid Centro</h3>
+              <span class="searchStatus active">Activa</span>
+            </div>
+            <div class="chipRow">
+              <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/></svg>Centro, Madrid</span>
+              <span class="chip">Obra nueva</span>
+              <span class="chip">Hasta 600.000 €</span>
+              <span class="chip">3+ hab.</span>
+              <span class="chip">Garaje incluido</span>
+            </div>
+            <div class="searchMeta">
+              <span class="pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Creada hace 1 mes</span>
+              <span><strong>12</strong> coincidencias totales</span>
+              <span>Sin novedades esta semana</span>
+            </div>
+            <div class="freqBar">
+              <span class="freqLabel">Frecuencia</span>
+              <div class="freqOpts" role="tablist">
+                <button class="freqOpt" type="button">Instantáneo</button>
+                <button class="freqOpt" type="button">Diario</button>
+                <button class="freqOpt active" type="button">Semanal</button>
+                <button class="freqOpt" type="button">Pausado</button>
+              </div>
+            </div>
+          </div>
+          <div class="searchActions">
+            <a class="pillBtn primary" href="./map.html">Ver resultados</a>
+            <div class="searchActionsRow">
+              <button class="iconBtn" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg></button>
+              <button class="iconBtn" type="button" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Search 3 -->
+        <article class="searchItem">
+          <div class="searchItemMain">
+            <div class="searchHead">
+              <h3 class="searchName">Alquiler cerca del trabajo</h3>
+              <span class="searchStatus active">Activa</span>
+            </div>
+            <div class="chipRow">
+              <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/></svg>≤ 20 min en bici desde Atocha</span>
+              <span class="chip">Alquilar</span>
+              <span class="chip">Hasta 1.500 €/mes</span>
+              <span class="chip">1 – 2 hab.</span>
+              <span class="chip">Amueblado</span>
+            </div>
+            <div class="searchMeta">
+              <span class="pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Creada hace 5 días</span>
+              <span><strong>8</strong> coincidencias totales</span>
+              <span>Último aviso: ayer, 18:30</span>
+            </div>
+            <div class="freqBar">
+              <span class="freqLabel">Frecuencia</span>
+              <div class="freqOpts" role="tablist">
+                <button class="freqOpt active" type="button">Instantáneo</button>
+                <button class="freqOpt" type="button">Diario</button>
+                <button class="freqOpt" type="button">Semanal</button>
+                <button class="freqOpt" type="button">Pausado</button>
+              </div>
+            </div>
+          </div>
+          <div class="searchActions">
+            <a class="pillBtn primary" href="./map.html">Ver resultados</a>
+            <div class="searchActionsRow">
+              <button class="iconBtn" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg></button>
+              <button class="iconBtn" type="button" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Search 4 -->
+        <article class="searchItem">
+          <div class="searchItemMain">
+            <div class="searchHead">
+              <h3 class="searchName">Casa con jardín cerca de Madrid</h3>
+              <span class="searchStatus paused">Pausada</span>
+            </div>
+            <div class="chipRow">
+              <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/></svg>Las Rozas, Pozuelo, Majadahonda</span>
+              <span class="chip">Comprar</span>
+              <span class="chip">Hasta 850.000 €</span>
+              <span class="chip">4+ hab.</span>
+              <span class="chip">Jardín</span>
+              <span class="chip">Sol todo el día</span>
+            </div>
+            <div class="searchMeta">
+              <span class="pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Creada hace 3 meses</span>
+              <span><strong>134</strong> coincidencias totales</span>
+              <span>Pausada el 02/05/2026</span>
+            </div>
+            <div class="freqBar">
+              <span class="freqLabel">Frecuencia</span>
+              <div class="freqOpts" role="tablist">
+                <button class="freqOpt" type="button">Instantáneo</button>
+                <button class="freqOpt" type="button">Diario</button>
+                <button class="freqOpt" type="button">Semanal</button>
+                <button class="freqOpt active" type="button">Pausado</button>
+              </div>
+            </div>
+          </div>
+          <div class="searchActions">
+            <a class="pillBtn" href="./map.html">Ver resultados</a>
+            <div class="searchActionsRow">
+              <button class="iconBtn" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg></button>
+              <button class="iconBtn" type="button" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg></button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="newSearchCard">
+        <div>
+          <h3>¿Buscas algo más?</h3>
+          <p>Crea una nueva búsqueda con tus filtros favoritos y te avisamos cuando aparezca.</p>
+        </div>
+        <a class="pillBtn primary" href="./map.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          Crear búsqueda
+        </a>
+      </div>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
+      import { initAuth } from "./bh-auth.js?v=20260504";
+      initLayout({ showMiniSearch: false });
+      initAuth();
+
+      // Frequency toggles within each card
+      document.querySelectorAll(".freqOpts").forEach((group) => {
+        group.querySelectorAll(".freqOpt").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            group.querySelectorAll(".freqOpt").forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

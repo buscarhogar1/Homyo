@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Favoritos · Homyo</title>
+
+    <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
+
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
+        --good:#1f7a4c;
+      }
+
+      *{ box-sizing:border-box; }
+
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      .pageWrap{
+        width:min(1120px,100%);
+        margin:0 auto;
+        padding:40px 24px 96px;
+      }
+
+      /* ===== Breadcrumb ===== */
+      .crumbs{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:24px;
+      }
+
+      .crumbs a{
+        color:var(--muted);
+        text-decoration:none;
+      }
+
+      .crumbs a:hover{
+        color:var(--granate);
+      }
+
+      .crumbs .sep{
+        color:var(--doradoSoft);
+      }
+
+      .crumbs .current{
+        color:var(--granate);
+      }
+
+      /* ===== Page header ===== */
+      .pageHeader{
+        display:grid;
+        grid-template-columns:1fr auto;
+        align-items:end;
+        gap:24px;
+        padding-bottom:28px;
+        margin-bottom:36px;
+        border-bottom:1px solid var(--line);
+      }
+
+      .pageKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 14px;
+      }
+
+      .pageTitle{
+        margin:0;
+        font-family:'Raleway',sans-serif;
+        font-size:56px;
+        line-height:1;
+        letter-spacing:-1.2px;
+        font-weight:300;
+        color:var(--granate);
+      }
+
+      .pageTitle strong{ font-weight:600; }
+
+      .pageSubtitle{
+        margin:14px 0 0;
+        font-size:16px;
+        color:var(--ink2);
+        max-width:560px;
+        line-height:1.5;
+      }
+
+      .headerActions{
+        display:flex;
+        gap:10px;
+        align-items:center;
+      }
+
+      .pillBtn{
+        appearance:none;
+        border:1px solid var(--line);
+        background:#fff;
+        color:var(--ink2);
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        padding:11px 18px;
+        border-radius:999px;
+        cursor:pointer;
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        transition:all .18s ease;
+      }
+
+      .pillBtn:hover{
+        border-color:var(--granate);
+        color:var(--granate);
+      }
+
+      .pillBtn.primary{
+        background:var(--granate);
+        color:#fff;
+        border-color:var(--granate);
+      }
+
+      .pillBtn.primary:hover{
+        background:#711824;
+      }
+
+      .pillBtn svg{
+        width:14px;
+        height:14px;
+      }
+
+      /* ===== Toolbar ===== */
+      .toolbar{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:16px;
+        margin-bottom:24px;
+        flex-wrap:wrap;
+      }
+
+      .toolbarLeft{
+        display:flex;
+        gap:6px;
+        flex-wrap:wrap;
+      }
+
+      .tabBtn{
+        appearance:none;
+        border:none;
+        background:transparent;
+        font-family:'Raleway',sans-serif;
+        font-size:13px;
+        font-weight:500;
+        letter-spacing:.1em;
+        text-transform:uppercase;
+        color:var(--muted);
+        padding:8px 14px;
+        cursor:pointer;
+        border-bottom:2px solid transparent;
+        transition:color .18s ease, border-color .18s ease;
+      }
+
+      .tabBtn:hover{
+        color:var(--ink);
+      }
+
+      .tabBtn.active{
+        color:var(--granate);
+        border-bottom-color:var(--granate);
+      }
+
+      .tabBtn .count{
+        color:var(--dorado);
+        margin-left:6px;
+        font-size:11px;
+      }
+
+      .sortWrap{
+        display:flex;
+        align-items:center;
+        gap:8px;
+        font-size:13px;
+        color:var(--muted);
+      }
+
+      .sortSelect{
+        appearance:none;
+        border:1px solid var(--line);
+        background:#fff;
+        padding:8px 32px 8px 12px;
+        font-size:13px;
+        font-family:inherit;
+        color:var(--ink);
+        border-radius:999px;
+        cursor:pointer;
+        background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%238C1F2D' stroke-width='1.6' stroke-linecap='round'><path d='m3 5 3 3 3-3'/></svg>");
+        background-repeat:no-repeat;
+        background-position:right 10px center;
+        background-size:12px;
+      }
+
+      /* ===== Grid ===== */
+      .favGrid{
+        display:grid;
+        grid-template-columns:repeat(3, minmax(0,1fr));
+        gap:22px;
+      }
+
+      .favCard{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        overflow:hidden;
+        text-decoration:none;
+        color:inherit;
+        display:flex;
+        flex-direction:column;
+        transition:all .22s ease;
+        position:relative;
+      }
+
+      .favCard:hover{
+        border-color:rgba(140,31,45,.22);
+        box-shadow:0 14px 28px rgba(140,31,45,.07);
+        transform:translateY(-2px);
+      }
+
+      .favMedia{
+        position:relative;
+        aspect-ratio: 4 / 3;
+        background:linear-gradient(135deg, var(--cardWarm) 0%, #f6ead2 100%);
+        overflow:hidden;
+      }
+
+      .favMedia .placeholder{
+        position:absolute;
+        inset:0;
+        display:grid;
+        place-items:center;
+        color:var(--dorado);
+        opacity:.45;
+      }
+
+      .favMedia .placeholder svg{
+        width:54px;
+        height:54px;
+      }
+
+      .favBadge{
+        position:absolute;
+        top:12px;
+        left:12px;
+        background:rgba(255,253,250,.95);
+        color:var(--granate);
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        padding:6px 10px;
+        border-radius:2px;
+        backdrop-filter:blur(4px);
+      }
+
+      .favBadge.alert{
+        background:var(--granate);
+        color:#fff;
+      }
+
+      .heartBtn{
+        position:absolute;
+        top:10px;
+        right:10px;
+        width:36px;
+        height:36px;
+        border-radius:50%;
+        background:rgba(255,253,250,.95);
+        border:none;
+        display:grid;
+        place-items:center;
+        color:var(--granate);
+        cursor:pointer;
+        backdrop-filter:blur(4px);
+        transition:all .18s ease;
+      }
+
+      .heartBtn:hover{
+        background:#fff;
+        transform:scale(1.06);
+      }
+
+      .heartBtn svg{
+        width:18px;
+        height:18px;
+        fill:currentColor;
+      }
+
+      .favBody{
+        padding:18px 18px 20px;
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+      }
+
+      .favPrice{
+        font-family:'Raleway',sans-serif;
+        font-size:24px;
+        font-weight:600;
+        color:var(--granate);
+        letter-spacing:-.5px;
+        line-height:1;
+      }
+
+      .favPrice .perMeter{
+        font-size:12px;
+        color:var(--muted);
+        font-weight:500;
+        letter-spacing:0;
+        margin-left:8px;
+      }
+
+      .favTitle{
+        margin:0;
+        font-size:15px;
+        font-weight:500;
+        color:var(--ink);
+        line-height:1.35;
+      }
+
+      .favLocation{
+        font-size:13px;
+        color:var(--muted);
+        display:flex;
+        align-items:center;
+        gap:4px;
+      }
+
+      .favLocation svg{
+        width:12px;
+        height:12px;
+        flex-shrink:0;
+      }
+
+      .favSpecs{
+        display:flex;
+        gap:14px;
+        font-size:12.5px;
+        color:var(--ink2);
+        padding-top:10px;
+        margin-top:6px;
+        border-top:1px solid var(--lineSoft);
+      }
+
+      .favSpecs span{
+        display:inline-flex;
+        align-items:center;
+        gap:5px;
+      }
+
+      .favSpecs svg{
+        width:13px;
+        height:13px;
+        color:var(--dorado);
+      }
+
+      .favFootnote{
+        font-size:12px;
+        color:var(--muted);
+        margin-top:10px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      }
+
+      .favFootnote .saved{
+        color:var(--good);
+        display:inline-flex;
+        align-items:center;
+        gap:5px;
+      }
+
+      .favFootnote .saved::before{
+        content:"";
+        width:6px;
+        height:6px;
+        border-radius:50%;
+        background:var(--good);
+      }
+
+      /* ===== Empty state ===== */
+      .emptyState{
+        display:none;
+        text-align:center;
+        padding:80px 20px;
+        border:1px dashed var(--line);
+        border-radius:4px;
+        background:var(--cardWarm);
+      }
+
+      .emptyState.show{ display:block; }
+
+      .emptyState h3{
+        font-family:'Raleway',sans-serif;
+        color:var(--granate);
+        font-size:24px;
+        margin:14px 0 8px;
+        font-weight:400;
+      }
+
+      .emptyState p{
+        color:var(--ink2);
+        margin:0 0 22px;
+      }
+
+      @media (max-width:900px){
+        .favGrid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .pageTitle{ font-size:42px; }
+      }
+
+      @media (max-width:680px){
+        .pageWrap{ padding:24px 16px 64px; }
+        .pageHeader{
+          grid-template-columns:1fr;
+          gap:18px;
+        }
+        .headerActions{ flex-wrap:wrap; }
+        .pageTitle{ font-size:34px; letter-spacing:-.8px; }
+        .pageSubtitle{ font-size:15px; }
+        .favGrid{ grid-template-columns:1fr; gap:16px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="pageWrap">
+      <nav class="crumbs" aria-label="Migas de pan">
+        <a href="./account.html">Mi cuenta</a>
+        <span class="sep">/</span>
+        <span class="current">Favoritos</span>
+      </nav>
+
+      <header class="pageHeader">
+        <div>
+          <p class="pageKicker">Tu colección</p>
+          <h1 class="pageTitle">Tus <strong>favoritos</strong></h1>
+          <p class="pageSubtitle">Las viviendas que has guardado. Te avisamos si bajan de precio, si quedan pocas unidades o si desaparecen del mercado.</p>
+        </div>
+        <div class="headerActions">
+          <button class="pillBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"></path><path d="M7 12h10"></path><path d="M10 17h4"></path></svg>
+            Filtrar
+          </button>
+          <button class="pillBtn primary" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+            Nueva carpeta
+          </button>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <div class="toolbarLeft" role="tablist">
+          <button class="tabBtn active" type="button">Todos <span class="count">12</span></button>
+          <button class="tabBtn" type="button">Comprar <span class="count">7</span></button>
+          <button class="tabBtn" type="button">Alquilar <span class="count">3</span></button>
+          <button class="tabBtn" type="button">Obra nueva <span class="count">2</span></button>
+        </div>
+        <div class="sortWrap">
+          <span>Ordenar por</span>
+          <select class="sortSelect" aria-label="Ordenar favoritos">
+            <option>Guardados recientemente</option>
+            <option>Precio (menor a mayor)</option>
+            <option>Precio (mayor a menor)</option>
+            <option>Metros útiles</option>
+            <option>Cambios recientes</option>
+          </select>
+        </div>
+      </div>
+
+      <section class="favGrid" aria-label="Listado de favoritos">
+        <!-- Card 1 -->
+        <a class="favCard" href="./listing.html">
+          <div class="favMedia">
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
+            <span class="favBadge alert">Bajada de precio</span>
+            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
+              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
+            </button>
+          </div>
+          <div class="favBody">
+            <div class="favPrice">385.000€<span class="perMeter">3.520 €/m²</span></div>
+            <h3 class="favTitle">Piso en Calle de Lagasca, 92</h3>
+            <div class="favLocation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Salamanca · Recoletos, Madrid
+            </div>
+            <div class="favSpecs">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 12h18"/></svg>3 hab.</span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 14h16"/><path d="M5 14V8a3 3 0 0 1 6 0"/><path d="M6 20l-1-2"/><path d="M18 20l1-2"/></svg>2 baños</span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>108 m²</span>
+            </div>
+            <div class="favFootnote"><span class="saved">Guardado hace 2 días</span><span>−25.000€</span></div>
+          </div>
+        </a>
+
+        <!-- Card 2 -->
+        <a class="favCard" href="./listing.html">
+          <div class="favMedia">
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
+            <span class="favBadge">Obra nueva</span>
+            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
+              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
+            </button>
+          </div>
+          <div class="favBody">
+            <div class="favPrice">512.000€<span class="perMeter">4.265 €/m²</span></div>
+            <h3 class="favTitle">Residencial Mirador del Retiro</h3>
+            <div class="favLocation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Retiro · Pacífico, Madrid
+            </div>
+            <div class="favSpecs">
+              <span>3 hab.</span><span>2 baños</span><span>120 m²</span>
+            </div>
+            <div class="favFootnote"><span class="saved">Guardado ayer</span><span>Entrega 2027</span></div>
+          </div>
+        </a>
+
+        <!-- Card 3 -->
+        <a class="favCard" href="./listing.html">
+          <div class="favMedia">
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
+            <span class="favBadge">Profesional</span>
+            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
+              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
+            </button>
+          </div>
+          <div class="favBody">
+            <div class="favPrice">279.000€<span class="perMeter">3.106 €/m²</span></div>
+            <h3 class="favTitle">Ático con terraza en Chamberí</h3>
+            <div class="favLocation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Chamberí · Trafalgar, Madrid
+            </div>
+            <div class="favSpecs">
+              <span>2 hab.</span><span>1 baño</span><span>90 m²</span>
+            </div>
+            <div class="favFootnote"><span class="saved">Guardado hace 4 días</span><span>Sin cambios</span></div>
+          </div>
+        </a>
+
+        <!-- Card 4 -->
+        <a class="favCard" href="./listing.html">
+          <div class="favMedia">
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
+            <span class="favBadge alert">Pocas unidades</span>
+            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
+              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
+            </button>
+          </div>
+          <div class="favBody">
+            <div class="favPrice">1.450€<span class="perMeter">Alquiler / mes</span></div>
+            <h3 class="favTitle">Dúplex luminoso cerca del Retiro</h3>
+            <div class="favLocation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Retiro · Ibiza, Madrid
+            </div>
+            <div class="favSpecs">
+              <span>2 hab.</span><span>2 baños</span><span>72 m²</span>
+            </div>
+            <div class="favFootnote"><span class="saved">Guardado hoy</span><span>+1 visita pendiente</span></div>
+          </div>
+        </a>
+
+        <!-- Card 5 -->
+        <a class="favCard" href="./listing.html">
+          <div class="favMedia">
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
+            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
+              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
+            </button>
+          </div>
+          <div class="favBody">
+            <div class="favPrice">425.000€<span class="perMeter">3.864 €/m²</span></div>
+            <h3 class="favTitle">Piso reformado en Justicia</h3>
+            <div class="favLocation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Centro · Justicia, Madrid
+            </div>
+            <div class="favSpecs">
+              <span>3 hab.</span><span>2 baños</span><span>110 m²</span>
+            </div>
+            <div class="favFootnote"><span class="saved">Guardado hace 1 semana</span><span>Sin cambios</span></div>
+          </div>
+        </a>
+
+        <!-- Card 6 -->
+        <a class="favCard" href="./listing.html">
+          <div class="favMedia">
+            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
+            <span class="favBadge">Sol todo el año</span>
+            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
+              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
+            </button>
+          </div>
+          <div class="favBody">
+            <div class="favPrice">329.000€<span class="perMeter">3.099 €/m²</span></div>
+            <h3 class="favTitle">Casa adosada con jardín</h3>
+            <div class="favLocation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Las Rozas · Monte Rozas
+            </div>
+            <div class="favSpecs">
+              <span>4 hab.</span><span>3 baños</span><span>106 m²</span>
+            </div>
+            <div class="favFootnote"><span class="saved">Guardado hace 10 días</span><span>Sin cambios</span></div>
+          </div>
+        </a>
+      </section>
+
+      <section class="emptyState" id="emptyState" aria-hidden="true">
+        <h3>Aún no tienes favoritos</h3>
+        <p>Pulsa el corazón en cualquier vivienda del mapa para empezar tu colección.</p>
+        <a class="pillBtn primary" href="./map.html">Ir al mapa</a>
+      </section>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
+      import { initAuth } from "./bh-auth.js?v=20260504";
+      initLayout({ showMiniSearch: false });
+      initAuth();
+
+      // Tabs (visual only)
+      document.querySelectorAll(".tabBtn").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".tabBtn").forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+        });
+      });
+
+      // Heart removal (visual)
+      document.querySelectorAll(".heartBtn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const card = btn.closest(".favCard");
+          if (!card) return;
+          card.style.transition = "opacity .25s ease, transform .25s ease";
+          card.style.opacity = "0";
+          card.style.transform = "scale(.96)";
+          setTimeout(() => card.remove(), 260);
+        });
+      });
+    </script>
+  </body>
+</html>

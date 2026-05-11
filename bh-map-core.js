@@ -1527,6 +1527,42 @@ export function initMap(){
 
   map.addControl(new LocateControl());
 
+  // NUEVO: botón de transporte (placeholder funcional, mismo lenguaje visual
+  // que el resto de los controles laterales y a juego con el botón "Vehículo"
+  // del index).
+  const TransportControl = L.Control.extend({
+    options: { position: "topright" },
+    onAdd: function() {
+      const container = L.DomUtil.create("div", "quickCol");
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+
+      const btn = L.DomUtil.create("div", "qBtn", container);
+      btn.id = "transportBtn";
+      btn.title = "Transporte";
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 17h14"></path>
+          <path d="M6 17l1.2-5.4A2 2 0 0 1 9.15 10h5.7a2 2 0 0 1 1.95 1.6L18 17"></path>
+          <circle cx="8" cy="17.5" r="1.6"></circle>
+          <circle cx="16" cy="17.5" r="1.6"></circle>
+        </svg>
+      `;
+
+      btn.addEventListener("click", () => {
+        const next = !btn.classList.contains("active");
+        btn.classList.toggle("active", next);
+        try {
+          window.dispatchEvent(new CustomEvent("bh:transport-toggle", { detail: { active: next } }));
+        } catch {}
+      });
+
+      return container;
+    }
+  });
+
+  map.addControl(new TransportControl());
+
   const SunControl = L.Control.extend({
     options: { position: "topright" },
     onAdd: function() {

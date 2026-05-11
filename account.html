@@ -3,92 +3,206 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Mi cuenta · Buscar Hogar</title>
+    <title>Mi cuenta · Homyo</title>
 
     <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
 
     <style>
       :root{
-        --accountBg:#FFFDFA;
-        --accountCardBorder:#dcdfe4;
-        --accountCardHover:#cfd4db;
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --granateSoft:#A33646;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
       }
 
+      *{ box-sizing:border-box; }
+
       body{
-        background:var(--accountBg);
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
       }
 
       .accountPage{
-        min-height:calc(100vh - 56px);
-        padding:40px 16px 72px;
-        box-sizing:border-box;
+        min-height:calc(100vh - var(--headerH,82px));
+        padding:56px 24px 96px;
       }
 
       .accountWrap{
-        width:min(1120px, 100%);
+        width:min(1120px,100%);
         margin:0 auto;
       }
 
+      /* ===== Hero / intro ===== */
       .accountIntro{
-        margin-bottom:40px;
+        display:grid;
+        grid-template-columns:1fr auto;
+        align-items:end;
+        gap:24px;
+        padding-bottom:28px;
+        margin-bottom:44px;
+        border-bottom:1px solid var(--line);
+      }
+
+      .accountKicker{
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 14px;
       }
 
       .accountTitle{
         margin:0;
-        font-size:58px;
-        line-height:1.02;
-        letter-spacing:-1.2px;
-        font-weight:800;
-        color:#1b1b1d;
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
+        font-size:64px;
+        line-height:1;
+        letter-spacing:-1.5px;
+        font-weight:300;
+        color:var(--granate);
+      }
+
+      .accountTitle strong{
+        font-weight:600;
+        color:var(--granate);
       }
 
       .accountEmail{
-        margin:14px 0 0;
-        font-size:30px;
-        line-height:1.25;
-        color:#62676f;
+        margin:18px 0 0;
+        font-size:17px;
+        line-height:1.4;
+        color:var(--ink2);
+        display:flex;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
       }
 
-      .accountLine{
-        width:58px;
-        height:5px;
-        border-radius:999px;
-        background:var(--terra);
-        margin-top:24px;
+      .accountEmail::before{
+        content:"";
+        width:6px;
+        height:6px;
+        border-radius:50%;
+        background:var(--dorado);
+        display:inline-block;
+      }
+
+      .accountAvatar{
+        width:96px;
+        height:96px;
+        border-radius:50%;
+        background:linear-gradient(135deg, #fff 0%, var(--cardWarm) 100%);
+        border:1px solid var(--line);
+        display:grid;
+        place-items:center;
+        font-family:'Raleway',sans-serif;
+        font-size:34px;
+        font-weight:500;
+        letter-spacing:.04em;
+        color:var(--granate);
+        box-shadow:0 8px 22px rgba(140,31,45,.06);
+        flex-shrink:0;
+      }
+
+      .accountStatus{
+        margin-top:18px;
+        font-size:14px;
+        color:var(--muted);
+      }
+
+      .accountStatus a{
+        color:var(--granate);
+        font-weight:500;
+      }
+
+      /* ===== Grid of cards ===== */
+      .accountSectionLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.34em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin:0 0 22px;
       }
 
       .accountGrid{
         display:grid;
-        grid-template-columns:repeat(2, minmax(0, 1fr));
-        gap:28px;
+        grid-template-columns:repeat(2, minmax(0,1fr));
+        gap:18px;
       }
 
       .accountCard{
-        display:flex;
-        gap:18px;
-        align-items:flex-start;
-        min-height:156px;
-        padding:28px 26px;
-        background:#fff;
-        border:1px solid var(--accountCardBorder);
-        border-radius:6px;
-        box-sizing:border-box;
+        position:relative;
+        display:grid;
+        grid-template-columns:64px 1fr auto;
+        align-items:center;
+        gap:22px;
+        padding:28px 28px;
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
         text-decoration:none;
         color:inherit;
-        transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+        overflow:hidden;
+        transition:border-color .22s ease, transform .22s ease, box-shadow .22s ease;
+      }
+
+      .accountCard::before{
+        content:"";
+        position:absolute;
+        left:0;
+        top:0;
+        bottom:0;
+        width:3px;
+        background:var(--granate);
+        transform:scaleY(0);
+        transform-origin:top;
+        transition:transform .25s ease;
       }
 
       .accountCard:hover{
-        border-color:var(--accountCardHover);
-        box-shadow:0 10px 28px rgba(0,0,0,.06);
-        transform:translateY(-1px);
+        border-color:rgba(140,31,45,.22);
+        box-shadow:0 14px 32px rgba(140,31,45,.07);
+        transform:translateY(-2px);
+      }
+
+      .accountCard:hover::before{
+        transform:scaleY(1);
+      }
+
+      .accountIconWrap{
+        width:64px;
+        height:64px;
+        border-radius:50%;
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.25);
+        display:grid;
+        place-items:center;
+        color:var(--granate);
+        transition:background .22s ease, color .22s ease;
+      }
+
+      .accountCard:hover .accountIconWrap{
+        background:var(--granate);
+        color:#fff;
+        border-color:var(--granate);
       }
 
       .accountIcon{
-        width:34px;
-        height:34px;
-        flex:0 0 34px;
-        color:#1877c9;
+        width:28px;
+        height:28px;
       }
 
       .accountCardBody{
@@ -96,91 +210,157 @@
       }
 
       .accountCardTitle{
-        margin:0 0 12px;
-        font-size:19px;
+        margin:0 0 6px;
+        font-family:'Raleway',sans-serif;
+        font-size:21px;
         line-height:1.2;
-        font-weight:750;
-        color:#0d6fbe;
+        font-weight:500;
+        color:var(--ink);
+        letter-spacing:-.2px;
       }
 
       .accountCardText{
         margin:0;
-        font-size:17px;
+        font-size:14.5px;
         line-height:1.5;
-        color:#5d636b;
+        color:var(--ink2);
       }
 
-      .accountStatus{
-        margin-top:18px;
+      .accountCardMeta{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin-top:10px;
+      }
+
+      .accountCardArrow{
+        width:36px;
+        height:36px;
+        border-radius:50%;
+        display:grid;
+        place-items:center;
+        color:var(--granate);
+        transition:transform .22s ease;
+      }
+
+      .accountCard:hover .accountCardArrow{
+        transform:translateX(4px);
+      }
+
+      .accountCardArrow svg{
+        width:18px;
+        height:18px;
+      }
+
+      /* ===== Footer link row ===== */
+      .accountFooter{
+        margin-top:48px;
+        padding-top:28px;
+        border-top:1px solid var(--line);
+        display:flex;
+        gap:28px;
+        flex-wrap:wrap;
         font-size:14px;
-        color:#6b7280;
+        color:var(--muted);
       }
 
-      @media (max-width: 900px){
+      .accountFooter a{
+        color:var(--ink2);
+        text-decoration:none;
+        border-bottom:1px solid transparent;
+      }
+
+      .accountFooter a:hover{
+        color:var(--granate);
+        border-bottom-color:var(--granate);
+      }
+
+      .accountFooter .logoutLink{
+        color:var(--granate);
+        font-weight:500;
+        cursor:pointer;
+      }
+
+      @media (max-width:900px){
         .accountPage{
-          padding-top:30px;
+          padding:36px 18px 72px;
         }
 
         .accountTitle{
-          font-size:44px;
+          font-size:46px;
         }
 
-        .accountEmail{
-          font-size:24px;
+        .accountAvatar{
+          width:72px;
+          height:72px;
+          font-size:26px;
         }
       }
 
-      @media (max-width: 680px){
+      @media (max-width:680px){
         .accountPage{
-          padding:22px 14px 46px;
+          padding:24px 16px 56px;
         }
 
         .accountIntro{
-          margin-bottom:26px;
+          grid-template-columns:1fr;
+          align-items:flex-start;
+          gap:18px;
+          padding-bottom:22px;
+          margin-bottom:30px;
+        }
+
+        .accountAvatar{
+          order:-1;
+          width:64px;
+          height:64px;
+          font-size:22px;
         }
 
         .accountTitle{
-          font-size:34px;
-          line-height:1.08;
+          font-size:36px;
+          letter-spacing:-.8px;
         }
 
         .accountEmail{
-          font-size:19px;
-          margin-top:10px;
-          word-break:break-word;
-        }
-
-        .accountLine{
-          width:48px;
-          height:4px;
-          margin-top:18px;
+          font-size:15px;
         }
 
         .accountGrid{
           grid-template-columns:1fr;
-          gap:16px;
+          gap:12px;
         }
 
         .accountCard{
-          min-height:auto;
-          padding:22px 18px;
-          gap:14px;
+          grid-template-columns:52px 1fr auto;
+          gap:16px;
+          padding:20px 18px;
+        }
+
+        .accountIconWrap{
+          width:52px;
+          height:52px;
         }
 
         .accountIcon{
-          width:30px;
-          height:30px;
-          flex-basis:30px;
+          width:24px;
+          height:24px;
         }
 
         .accountCardTitle{
           font-size:18px;
-          margin-bottom:8px;
         }
 
         .accountCardText{
-          font-size:15px;
-          line-height:1.45;
+          font-size:13.5px;
+        }
+
+        .accountCardArrow{
+          width:28px;
+          height:28px;
         }
       }
     </style>
@@ -192,55 +372,101 @@
     <main class="accountPage">
       <div class="accountWrap">
         <section class="accountIntro" aria-labelledby="accountTitle">
-          <h1 class="accountTitle" id="accountTitle">Hola</h1>
-          <p class="accountEmail" id="accountEmail">Cargando…</p>
-          <div class="accountLine" aria-hidden="true"></div>
-          <div class="accountStatus" id="accountStatus" aria-live="polite"></div>
+          <div>
+            <p class="accountKicker">Mi cuenta</p>
+            <h1 class="accountTitle" id="accountTitle">Hola</h1>
+            <p class="accountEmail" id="accountEmail">Cargando…</p>
+            <div class="accountStatus" id="accountStatus" aria-live="polite"></div>
+          </div>
+          <div class="accountAvatar" id="accountAvatar" aria-hidden="true">·</div>
         </section>
+
+        <p class="accountSectionLabel">Gestiona tu experiencia</p>
 
         <section class="accountGrid" aria-label="Opciones de la cuenta">
-          <a class="accountCard" href="#" data-account-action="favoritos">
-            <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <path d="M12 20.5s-6.7-4.3-8.8-8C1.6 9.7 2.4 6.7 5.1 5.4c2.2-1.1 4.5-.4 5.9 1.3 1.4-1.7 3.7-2.4 5.9-1.3 2.7 1.3 3.5 4.3 1.9 7.1C18.7 16.2 12 20.5 12 20.5Z"></path>
-            </svg>
+          <a class="accountCard" href="./favoritos.html">
+            <span class="accountIconWrap">
+              <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 20.5s-6.7-4.3-8.8-8C1.6 9.7 2.4 6.7 5.1 5.4c2.2-1.1 4.5-.4 5.9 1.3 1.4-1.7 3.7-2.4 5.9-1.3 2.7 1.3 3.5 4.3 1.9 7.1C18.7 16.2 12 20.5 12 20.5Z"></path>
+              </svg>
+            </span>
             <div class="accountCardBody">
               <h2 class="accountCardTitle">Favoritos</h2>
-              <p class="accountCardText">Ver y gestionar las viviendas que has guardado.</p>
+              <p class="accountCardText">Las viviendas que has guardado, ordenadas y siempre a mano.</p>
+              <div class="accountCardMeta" data-meta="favoritos">12 viviendas</div>
             </div>
+            <span class="accountCardArrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+              </svg>
+            </span>
           </a>
 
-          <a class="accountCard" href="#" data-account-action="busquedas">
-            <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <path d="M6 4.5h12a1.5 1.5 0 0 1 1.5 1.5v13l-7.5-3-7.5 3V6A1.5 1.5 0 0 1 6 4.5Z"></path>
-            </svg>
+          <a class="accountCard" href="./busquedas.html">
+            <span class="accountIconWrap">
+              <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m20 20-3.5-3.5"></path>
+                <path d="M8 11h6"></path>
+              </svg>
+            </span>
             <div class="accountCardBody">
               <h2 class="accountCardTitle">Búsquedas guardadas</h2>
-              <p class="accountCardText">Ver y gestionar tus búsquedas guardadas.</p>
+              <p class="accountCardText">Recibe avisos cuando haya nuevas viviendas que encajen contigo.</p>
+              <div class="accountCardMeta" data-meta="busquedas">4 búsquedas activas</div>
             </div>
+            <span class="accountCardArrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+              </svg>
+            </span>
           </a>
 
-          <a class="accountCard" href="#" data-account-action="login">
-            <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <rect x="5" y="10" width="14" height="10" rx="2"></rect>
-              <path d="M8 10V7.8A4 4 0 0 1 12 4a4 4 0 0 1 4 3.8V10"></path>
-            </svg>
+          <a class="accountCard" href="./detalles-acceso.html">
+            <span class="accountIconWrap">
+              <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="5" y="10.5" width="14" height="10" rx="1.5"></rect>
+                <path d="M8 10.5V7.5A4 4 0 0 1 12 3.5a4 4 0 0 1 4 4v3"></path>
+                <circle cx="12" cy="15" r="1.5"></circle>
+              </svg>
+            </span>
             <div class="accountCardBody">
               <h2 class="accountCardTitle">Detalles de acceso</h2>
-              <p class="accountCardText">Gestionar el email, la contraseña y los datos de inicio de sesión.</p>
+              <p class="accountCardText">Email, contraseña y sesiones activas en otros dispositivos.</p>
+              <div class="accountCardMeta">Última conexión hoy</div>
             </div>
+            <span class="accountCardArrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+              </svg>
+            </span>
           </a>
 
-          <a class="accountCard" href="#" data-account-action="correo">
-            <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-              <rect x="3.5" y="5.5" width="17" height="13" rx="2"></rect>
-              <path d="m4.5 7 7.5 6L19.5 7"></path>
-            </svg>
+          <a class="accountCard" href="./ajustes-correo.html">
+            <span class="accountIconWrap">
+              <svg class="accountIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3.5" y="5.5" width="17" height="13" rx="1.5"></rect>
+                <path d="m4.5 7 7.5 6L19.5 7"></path>
+              </svg>
+            </span>
             <div class="accountCardBody">
               <h2 class="accountCardTitle">Ajustes de correo</h2>
-              <p class="accountCardText">Gestionar qué avisos y con qué frecuencia quieres recibirlos.</p>
+              <p class="accountCardText">Elige qué avisos quieres recibir y con qué frecuencia.</p>
+              <div class="accountCardMeta">Avisos semanales</div>
             </div>
+            <span class="accountCardArrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>
+              </svg>
+            </span>
           </a>
         </section>
+
+        <div class="accountFooter">
+          <a href="./index.html">Volver al inicio</a>
+          <a href="./legal/aviso-legal.html" onerror="this.style.display='none'">Aviso legal</a>
+          <a href="#" id="logoutFooterLink" class="logoutLink">Cerrar sesión</a>
+        </div>
       </div>
     </main>
 
@@ -249,11 +475,6 @@
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
-      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-      const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
-      const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       initLayout({ showMiniSearch: false });
       initAuth();
@@ -261,74 +482,58 @@
       const titleEl = document.getElementById("accountTitle");
       const emailEl = document.getElementById("accountEmail");
       const statusEl = document.getElementById("accountStatus");
-      const accountActionEls = document.querySelectorAll("[data-account-action]");
+      const avatarEl = document.getElementById("accountAvatar");
+      const logoutFooterLink = document.getElementById("logoutFooterLink");
 
       function getUserDisplayName(user) {
         const fullName = String(user?.user_metadata?.full_name || "").trim();
         if (fullName) return fullName;
-
         const email = String(user?.email || "").trim();
         if (!email) return "usuario";
-
         return email.split("@")[0] || "usuario";
+      }
+
+      function getInitial(name, email) {
+        const source = (name || email || "").trim();
+        if (!source) return "·";
+        return source.charAt(0).toUpperCase();
       }
 
       function setUser(user) {
         const name = getUserDisplayName(user);
-        titleEl.textContent = `Hola ${name}`;
+        titleEl.innerHTML = `Hola, <strong>${name}</strong>`;
         emailEl.textContent = user?.email || "";
         statusEl.textContent = "";
+        avatarEl.textContent = getInitial(name, user?.email);
       }
 
-      function goToHomeAndOpenLogin() {
-        try {
-          sessionStorage.setItem("bh_open_auth_after_redirect", "1");
-        } catch (_) {}
-        window.location.href = window.BH_SITE_ROOT || "./";
-      }
-
-      async function requireSession() {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
-
-        const session = data?.session || null;
-        if (!session?.user) {
-          goToHomeAndOpenLogin();
-          return null;
-        }
-
-        setUser(session.user);
-        return session;
+      function showSignedOutState() {
+        titleEl.textContent = "Hola";
+        emailEl.textContent = "No has iniciado sesión";
+        avatarEl.textContent = "·";
+        statusEl.innerHTML = "";
+        const loginLink = document.createElement("a");
+        loginLink.href = "#";
+        loginLink.textContent = "Iniciar sesión";
+        loginLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          document.getElementById("navLogin")?.click();
+        });
+        statusEl.appendChild(loginLink);
       }
 
       window.addEventListener("bh:auth-changed", (event) => {
         const session = event?.detail?.session || null;
         if (!session?.user) {
-          goToHomeAndOpenLogin();
+          showSignedOutState();
           return;
         }
         setUser(session.user);
       });
 
-      for (const el of accountActionEls) {
-        el.addEventListener("click", (event) => {
-          event.preventDefault();
-          const key = el.getAttribute("data-account-action");
-
-          const messages = {
-            favoritos: "Pendiente: aquí irá la gestión de favoritos.",
-            busquedas: "Pendiente: aquí irá la gestión de búsquedas guardadas.",
-            login: "Pendiente: aquí irán los detalles de acceso.",
-            correo: "Pendiente: aquí irán los ajustes de correo."
-          };
-
-          statusEl.textContent = messages[key] || "Pendiente.";
-        });
-      }
-
-      requireSession().catch((error) => {
-        console.error(error);
-        statusEl.textContent = "No se pudo cargar la cuenta.";
+      logoutFooterLink?.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("navLogoutBtn")?.click();
       });
     </script>
   </body>

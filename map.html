@@ -15,7 +15,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css?v=20260505_footer_hidden_markers_fixed" />
+    <link rel="stylesheet" href="./bh-map.css?v=20260510_filters_tight3" />
 
     <style>
       @media (max-width: 720px){
@@ -37,6 +37,142 @@
           display:none !important;
         }
       }
+
+      /* Oculta la barra de búsqueda móvil antigua: la sustituye .mobileSearchHeader */
+      .mobileTopRow{ display:none !important; }
+      .mobileSearchHeader{ display:none; }
+
+      @media (max-width: 768px){
+        .mobileSearchHeader{
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 10px 12px 10px;
+          background: var(--bg, #FFFDFA);
+          border-bottom: 1px solid rgba(140,31,45,0.10);
+          box-sizing: border-box;
+          min-height: 64px;
+        }
+
+        .mobileBackBtn{
+          flex: 0 0 auto;
+          width: 40px;
+          height: 40px;
+          display: grid;
+          place-items: center;
+          border-radius: 999px;
+          border: 1px solid rgba(140,31,45,0.22);
+          background: #fff;
+          color: #8C1F2D;
+          cursor: pointer;
+          padding: 0;
+          transition: background 0.13s, border-color 0.13s, box-shadow 0.13s;
+        }
+        .mobileBackBtn svg{
+          width: 20px;
+          height: 20px;
+          display: block;
+        }
+        .mobileBackBtn:active,
+        .mobileBackBtn:hover{
+          background: rgba(140,31,45,0.06);
+          border-color: rgba(140,31,45,0.40);
+        }
+
+        .mobileSearchHeaderInfo{
+          flex: 1 1 auto;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 2px;
+        }
+
+        .mobileSearchHeaderPlace{
+          font-family: inherit;
+          font-size: 16px;
+          font-weight: 700;
+          color: #111;
+          letter-spacing: 0.005em;
+          line-height: 1.2;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          min-width: 0;
+        }
+
+        .mobileSearchHeaderEdit{
+          align-self: flex-start;
+          background: transparent;
+          border: 0;
+          padding: 2px 0 0;
+          margin: 0;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 600;
+          color: #C4962A;
+          cursor: pointer;
+          line-height: 1.2;
+          letter-spacing: 0.01em;
+          text-decoration: none;
+          border-bottom: 1px solid transparent;
+          transition: color 0.13s, border-color 0.13s;
+        }
+        .mobileSearchHeaderEdit:hover,
+        .mobileSearchHeaderEdit:active{
+          color: #8C1F2D;
+          border-bottom-color: rgba(140,31,45,0.45);
+        }
+
+        .mobileSaveSearchBtn{
+          flex: 0 0 auto;
+          height: 40px;
+          padding: 0 14px;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          border-radius: 999px;
+          border: 1px solid #8C1F2D;
+          background: #8C1F2D;
+          color: #FFFDFA;
+          font-family: inherit;
+          font-size: 13.5px;
+          font-weight: 600;
+          letter-spacing: 0.015em;
+          cursor: pointer;
+          box-shadow: 0 2px 8px rgba(140,31,45,0.18);
+          transition: background 0.13s, border-color 0.13s, box-shadow 0.13s, transform 0.06s;
+        }
+        .mobileSaveSearchBtn:hover{
+          background: #761724;
+          border-color: #761724;
+          box-shadow: 0 3px 12px rgba(140,31,45,0.28);
+        }
+        .mobileSaveSearchBtn:active{
+          transform: translateY(1px);
+        }
+        .mobileSaveSearchIcon{
+          width: 16px;
+          height: 16px;
+          display: block;
+          flex: 0 0 auto;
+        }
+        .mobileSaveSearchLabel{
+          line-height: 1;
+        }
+
+        /* Estado "guardada": invierte la jerarquía cromática */
+        .mobileSaveSearchBtn.is-saved{
+          background: #fff;
+          color: #8C1F2D;
+          border-color: rgba(140,31,45,0.35);
+          box-shadow: 0 1px 4px rgba(140,31,45,0.10);
+        }
+        .mobileSaveSearchBtn.is-saved .mobileSaveSearchIcon{
+          fill: #C4962A;
+          stroke: #8C1F2D;
+        }
+      }
     </style>
   </head>
 
@@ -45,11 +181,25 @@
 
     <!-- Contenedor general de la página del mapa -->
 
-    <div class="mobileTopRow" aria-hidden="true">
-      <div class="mobileSearchShell">
-        <span class="mobileSearchIcon" aria-hidden="true">⌕</span>
-        <input id="mobileSearchInput" class="mobileSearchInput" type="text" placeholder="Buscar zona..." />
+    <div class="mobileSearchHeader" aria-hidden="true">
+      <button id="mobileBackBtn" class="mobileBackBtn" type="button" aria-label="Volver">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <div class="mobileSearchHeaderInfo">
+        <div id="mobilePlaceLabel" class="mobileSearchHeaderPlace">—</div>
+        <button id="mobileNewSearchBtn" class="mobileSearchHeaderEdit" type="button">Nueva búsqueda</button>
       </div>
+
+      <button id="mobileSaveSearchBtn" class="mobileSaveSearchBtn" type="button" aria-label="Guardar búsqueda">
+        <svg class="mobileSaveSearchIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 16v-5a6 6 0 1 0-12 0v5l-1.6 2.2A.6.6 0 0 0 4.9 19h14.2a.6.6 0 0 0 .5-.8z"/>
+          <path d="M10 21a2 2 0 0 0 4 0"/>
+        </svg>
+        <span class="mobileSaveSearchLabel">Guardar</span>
+      </button>
     </div>
 
     <div class="mobileActionsRow" aria-hidden="true">
@@ -357,6 +507,45 @@
 
       // Inicializar mapa
       initMap();
+
+      // ====== Mobile search header: sync place label + actions ======
+      const mobilePlaceLabel = document.getElementById("mobilePlaceLabel");
+      const desktopPlaceLabel = document.getElementById("placeLabel");
+      const mobileBackBtn = document.getElementById("mobileBackBtn");
+      const mobileNewSearchBtn = document.getElementById("mobileNewSearchBtn");
+      const mobileSaveSearchBtn = document.getElementById("mobileSaveSearchBtn");
+
+      // Refleja el texto dinámico (reverse-geocode) del placeLabel de escritorio
+      if (desktopPlaceLabel && mobilePlaceLabel){
+        const syncPlace = () => {
+          const t = (desktopPlaceLabel.textContent || "").trim();
+          if (t) mobilePlaceLabel.textContent = t;
+        };
+        syncPlace();
+        new MutationObserver(syncPlace).observe(desktopPlaceLabel, {
+          childList: true, characterData: true, subtree: true,
+        });
+      }
+
+      mobileBackBtn?.addEventListener("click", () => {
+        if (history.length > 1) history.back();
+        else location.href = "./index.html";
+      });
+
+      mobileNewSearchBtn?.addEventListener("click", () => {
+        // Reutiliza el panel de filtros como "nueva búsqueda" en móvil
+        openMobileFilters();
+      });
+
+      mobileSaveSearchBtn?.addEventListener("click", () => {
+        const saved = mobileSaveSearchBtn.classList.toggle("is-saved");
+        mobileSaveSearchBtn.setAttribute(
+          "aria-label",
+          saved ? "Búsqueda guardada" : "Guardar búsqueda"
+        );
+        const lbl = mobileSaveSearchBtn.querySelector(".mobileSaveSearchLabel");
+        if (lbl) lbl.textContent = saved ? "Guardada" : "Guardar";
+      });
     </script>
 </body>
 </html>
