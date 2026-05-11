@@ -471,183 +471,37 @@
         <div>
           <p class="pageKicker">Tu colección</p>
           <h1 class="pageTitle">Tus <strong>favoritos</strong></h1>
-          <p class="pageSubtitle">Las viviendas que has guardado. Te avisamos si bajan de precio, si quedan pocas unidades o si desaparecen del mercado.</p>
+          <p class="pageSubtitle">Las viviendas que has guardado. Solo se muestran los favoritos asociados a tu cuenta.</p>
         </div>
         <div class="headerActions">
-          <button class="pillBtn" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"></path><path d="M7 12h10"></path><path d="M10 17h4"></path></svg>
-            Filtrar
-          </button>
-          <button class="pillBtn primary" type="button">
+          <a class="pillBtn primary" href="./map.html">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
-            Nueva carpeta
-          </button>
+            Buscar viviendas
+          </a>
         </div>
       </header>
 
       <div class="toolbar">
         <div class="toolbarLeft" role="tablist">
-          <button class="tabBtn active" type="button">Todos <span class="count">12</span></button>
-          <button class="tabBtn" type="button">Comprar <span class="count">7</span></button>
-          <button class="tabBtn" type="button">Alquilar <span class="count">3</span></button>
-          <button class="tabBtn" type="button">Obra nueva <span class="count">2</span></button>
+          <button class="tabBtn active" type="button" data-mode="all">Todos <span class="count" id="countAll">0</span></button>
+          <button class="tabBtn" type="button" data-mode="buy">Comprar <span class="count" id="countBuy">0</span></button>
+          <button class="tabBtn" type="button" data-mode="rent">Alquilar <span class="count" id="countRent">0</span></button>
         </div>
         <div class="sortWrap">
-          <span>Ordenar por</span>
-          <select class="sortSelect" aria-label="Ordenar favoritos">
-            <option>Guardados recientemente</option>
-            <option>Precio (menor a mayor)</option>
-            <option>Precio (mayor a menor)</option>
-            <option>Metros útiles</option>
-            <option>Cambios recientes</option>
+          <span>Ordenar</span>
+          <select class="sortSelect" id="sortSelect">
+            <option value="saved_desc">Guardados recientemente</option>
+            <option value="price_asc">Precio menor a mayor</option>
+            <option value="price_desc">Precio mayor a menor</option>
           </select>
         </div>
       </div>
 
-      <section class="favGrid" aria-label="Listado de favoritos">
-        <!-- Card 1 -->
-        <a class="favCard" href="./listing.html">
-          <div class="favMedia">
-            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
-            <span class="favBadge alert">Bajada de precio</span>
-            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
-              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
-            </button>
-          </div>
-          <div class="favBody">
-            <div class="favPrice">385.000€<span class="perMeter">3.520 €/m²</span></div>
-            <h3 class="favTitle">Piso en Calle de Lagasca, 92</h3>
-            <div class="favLocation">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              Salamanca · Recoletos, Madrid
-            </div>
-            <div class="favSpecs">
-              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 12h18"/></svg>3 hab.</span>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 14h16"/><path d="M5 14V8a3 3 0 0 1 6 0"/><path d="M6 20l-1-2"/><path d="M18 20l1-2"/></svg>2 baños</span>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="1"/></svg>108 m²</span>
-            </div>
-            <div class="favFootnote"><span class="saved">Guardado hace 2 días</span><span>−25.000€</span></div>
-          </div>
-        </a>
-
-        <!-- Card 2 -->
-        <a class="favCard" href="./listing.html">
-          <div class="favMedia">
-            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
-            <span class="favBadge">Obra nueva</span>
-            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
-              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
-            </button>
-          </div>
-          <div class="favBody">
-            <div class="favPrice">512.000€<span class="perMeter">4.265 €/m²</span></div>
-            <h3 class="favTitle">Residencial Mirador del Retiro</h3>
-            <div class="favLocation">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              Retiro · Pacífico, Madrid
-            </div>
-            <div class="favSpecs">
-              <span>3 hab.</span><span>2 baños</span><span>120 m²</span>
-            </div>
-            <div class="favFootnote"><span class="saved">Guardado ayer</span><span>Entrega 2027</span></div>
-          </div>
-        </a>
-
-        <!-- Card 3 -->
-        <a class="favCard" href="./listing.html">
-          <div class="favMedia">
-            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
-            <span class="favBadge">Profesional</span>
-            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
-              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
-            </button>
-          </div>
-          <div class="favBody">
-            <div class="favPrice">279.000€<span class="perMeter">3.106 €/m²</span></div>
-            <h3 class="favTitle">Ático con terraza en Chamberí</h3>
-            <div class="favLocation">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              Chamberí · Trafalgar, Madrid
-            </div>
-            <div class="favSpecs">
-              <span>2 hab.</span><span>1 baño</span><span>90 m²</span>
-            </div>
-            <div class="favFootnote"><span class="saved">Guardado hace 4 días</span><span>Sin cambios</span></div>
-          </div>
-        </a>
-
-        <!-- Card 4 -->
-        <a class="favCard" href="./listing.html">
-          <div class="favMedia">
-            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
-            <span class="favBadge alert">Pocas unidades</span>
-            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
-              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
-            </button>
-          </div>
-          <div class="favBody">
-            <div class="favPrice">1.450€<span class="perMeter">Alquiler / mes</span></div>
-            <h3 class="favTitle">Dúplex luminoso cerca del Retiro</h3>
-            <div class="favLocation">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              Retiro · Ibiza, Madrid
-            </div>
-            <div class="favSpecs">
-              <span>2 hab.</span><span>2 baños</span><span>72 m²</span>
-            </div>
-            <div class="favFootnote"><span class="saved">Guardado hoy</span><span>+1 visita pendiente</span></div>
-          </div>
-        </a>
-
-        <!-- Card 5 -->
-        <a class="favCard" href="./listing.html">
-          <div class="favMedia">
-            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
-            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
-              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
-            </button>
-          </div>
-          <div class="favBody">
-            <div class="favPrice">425.000€<span class="perMeter">3.864 €/m²</span></div>
-            <h3 class="favTitle">Piso reformado en Justicia</h3>
-            <div class="favLocation">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              Centro · Justicia, Madrid
-            </div>
-            <div class="favSpecs">
-              <span>3 hab.</span><span>2 baños</span><span>110 m²</span>
-            </div>
-            <div class="favFootnote"><span class="saved">Guardado hace 1 semana</span><span>Sin cambios</span></div>
-          </div>
-        </a>
-
-        <!-- Card 6 -->
-        <a class="favCard" href="./listing.html">
-          <div class="favMedia">
-            <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/></svg></div>
-            <span class="favBadge">Sol todo el año</span>
-            <button class="heartBtn" type="button" aria-label="Quitar de favoritos">
-              <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9-9C1.5 8.5 3 6 5.5 5c2-.8 4 0 5 1.5L12 8l1.5-1.5c1-1.5 3-2.3 5-1.5C21 6 22.5 8.5 21 12c-2 4.5-9 9-9 9z"/></svg>
-            </button>
-          </div>
-          <div class="favBody">
-            <div class="favPrice">329.000€<span class="perMeter">3.099 €/m²</span></div>
-            <h3 class="favTitle">Casa adosada con jardín</h3>
-            <div class="favLocation">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              Las Rozas · Monte Rozas
-            </div>
-            <div class="favSpecs">
-              <span>4 hab.</span><span>3 baños</span><span>106 m²</span>
-            </div>
-            <div class="favFootnote"><span class="saved">Guardado hace 10 días</span><span>Sin cambios</span></div>
-          </div>
-        </a>
-      </section>
+      <section class="favGrid" id="favGrid" aria-live="polite"></section>
 
       <section class="emptyState" id="emptyState" aria-hidden="true">
         <h3>Aún no tienes favoritos</h3>
-        <p>Pulsa el corazón en cualquier vivienda del mapa para empezar tu colección.</p>
+        <p>Pulsa el corazón en cualquier vivienda del mapa o de la ficha para guardarla aquí.</p>
         <a class="pillBtn primary" href="./map.html">Ir al mapa</a>
       </section>
     </main>
@@ -657,30 +511,92 @@
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
+      import { getSession, listFavorites, removeFavorite, openLoginModalOrAlert } from "./bh-user-data.js";
+
       initLayout({ showMiniSearch: false });
       initAuth();
 
-      // Tabs (visual only)
-      document.querySelectorAll(".tabBtn").forEach((tab) => {
-        tab.addEventListener("click", () => {
-          document.querySelectorAll(".tabBtn").forEach((t) => t.classList.remove("active"));
-          tab.classList.add("active");
-        });
-      });
+      const grid = document.getElementById("favGrid");
+      const empty = document.getElementById("emptyState");
+      const sortSelect = document.getElementById("sortSelect");
+      const tabs = Array.from(document.querySelectorAll(".tabBtn"));
+      let rows = [];
+      let activeMode = "all";
 
-      // Heart removal (visual)
-      document.querySelectorAll(".heartBtn").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const card = btn.closest(".favCard");
-          if (!card) return;
-          card.style.transition = "opacity .25s ease, transform .25s ease";
-          card.style.opacity = "0";
-          card.style.transform = "scale(.96)";
-          setTimeout(() => card.remove(), 260);
+      function euro(n){
+        if (n == null) return "—";
+        return new Intl.NumberFormat("es-ES", { style:"currency", currency:"EUR", maximumFractionDigits:0 }).format(n);
+      }
+      function text(v, fallback="—"){ return v == null || String(v).trim()==="" ? fallback : String(v).trim(); }
+      function address(r){ return text(r.address_display) !== "—" ? r.address_display : [r.street_name, r.street_number, r.floor, r.door].map(v=>text(v,"")).filter(Boolean).join(" ") || "Dirección"; }
+      function locationText(r){ return [r.postcode, r.city].map(v=>text(v,"")).filter(Boolean).join(" ") || "—"; }
+      function savedWhen(v){
+        if (!v) return "Guardado";
+        const d = new Date(v); if (isNaN(d)) return "Guardado";
+        return "Guardado el " + d.toLocaleDateString("es-ES");
+      }
+      function modeOf(r){ return String(r.listing_mode || "buy"); }
+      function sortRows(a,b){
+        const mode = sortSelect.value;
+        if (mode === "price_asc") return (a.price_eur ?? 999999999) - (b.price_eur ?? 999999999);
+        if (mode === "price_desc") return (b.price_eur ?? -1) - (a.price_eur ?? -1);
+        return new Date(b.favorited_at || 0) - new Date(a.favorited_at || 0);
+      }
+      function updateCounts(){
+        document.getElementById("countAll").textContent = rows.length;
+        document.getElementById("countBuy").textContent = rows.filter(r => modeOf(r)==="buy").length;
+        document.getElementById("countRent").textContent = rows.filter(r => modeOf(r)==="rent").length;
+      }
+      function render(){
+        updateCounts();
+        let visible = rows.filter(r => activeMode === "all" || modeOf(r) === activeMode).sort(sortRows);
+        grid.innerHTML = "";
+        empty.classList.toggle("show", visible.length === 0);
+        empty.setAttribute("aria-hidden", visible.length === 0 ? "false" : "true");
+        visible.forEach(r => {
+          const a = document.createElement("a");
+          a.className = "favCard";
+          a.href = `./listing.html?id=${encodeURIComponent(r.listing_id)}`;
+          a.innerHTML = `
+            <div class="favMedia">
+              <div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="m4 16 5-5 4 4 2-2 5 5"/><circle cx="9" cy="8" r="1.5"/></svg></div>
+              <span class="favBadge">${text(r.status, "publicado")}</span>
+              <button class="heartBtn" type="button" aria-label="Quitar de favoritos" data-id="${r.listing_id}"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg></button>
+            </div>
+            <div class="favBody">
+              <div class="favPrice">${euro(r.price_eur)}</div>
+              <h3 class="favTitle">${address(r)}</h3>
+              <div class="favLocation">${locationText(r)}</div>
+              <div class="favSpecs"><span>${r.bedrooms ?? "—"} hab.</span><span>${r.bathrooms ?? "—"} baños</span><span>${r.useful_area_m2 ?? "—"} m² útiles</span></div>
+              <div class="favFootnote"><span class="saved">${savedWhen(r.favorited_at)}</span><span>${text(r.agency_name)}</span></div>
+            </div>`;
+          grid.appendChild(a);
         });
+      }
+      grid.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".heartBtn");
+        if (!btn) return;
+        e.preventDefault(); e.stopPropagation();
+        const id = btn.dataset.id;
+        try{
+          await removeFavorite(id);
+          rows = rows.filter(r => String(r.listing_id) !== String(id));
+          render();
+        }catch(err){ console.error(err); alert("No se pudo quitar el favorito."); }
       });
+      tabs.forEach(tab => tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        activeMode = tab.dataset.mode || "all";
+        render();
+      }));
+      sortSelect.addEventListener("change", render);
+      (async()=>{
+        const session = await getSession();
+        if (!session?.user){ openLoginModalOrAlert(); empty.classList.add("show"); return; }
+        rows = await listFavorites();
+        render();
+      })().catch(err => { console.error(err); alert("No se pudieron cargar los favoritos."); });
     </script>
   </body>
 </html>

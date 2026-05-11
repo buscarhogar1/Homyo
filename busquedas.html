@@ -480,7 +480,7 @@
         <div>
           <p class="pageKicker">Tus alertas</p>
           <h1 class="pageTitle">Búsquedas <strong>guardadas</strong></h1>
-          <p class="pageSubtitle">Te avisamos en cuanto aparece una vivienda nueva que encaje con lo que buscas. Sin spam, sin duplicados, solo lo que importa.</p>
+          <p class="pageSubtitle">Guarda filtros del mapa y vuelve a ellos cuando quieras. Las alertas automáticas se podrán activar sobre esta misma base.</p>
         </div>
         <a class="pillBtn primary" href="./map.html">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
@@ -488,197 +488,20 @@
         </a>
       </header>
 
-      <!-- Summary -->
       <section class="summary" aria-label="Resumen">
-        <div class="summaryItem">
-          <p class="summaryLabel">Búsquedas activas</p>
-          <div class="summaryValue">4</div>
-          <p class="summarySub">de 10 disponibles</p>
-        </div>
-        <div class="summaryItem">
-          <p class="summaryLabel">Nuevas esta semana</p>
-          <div class="summaryValue">23</div>
-          <p class="summarySub">viviendas encontradas</p>
-        </div>
-        <div class="summaryItem">
-          <p class="summaryLabel">Avisos enviados</p>
-          <div class="summaryValue">12</div>
-          <p class="summarySub">en los últimos 30 días</p>
-        </div>
-        <div class="summaryItem">
-          <p class="summaryLabel">Próximo aviso</p>
-          <div class="summaryValue">Mañana</div>
-          <p class="summarySub">resumen semanal · 09:00</p>
-        </div>
+        <div class="summaryItem"><div class="summaryLabel">Guardadas</div><div class="summaryValue" id="sumTotal">0</div><div class="summarySub">búsquedas</div></div>
+        <div class="summaryItem"><div class="summaryLabel">Activas</div><div class="summaryValue" id="sumActive">0</div><div class="summarySub">con aviso</div></div>
+        <div class="summaryItem"><div class="summaryLabel">Coincidencias</div><div class="summaryValue" id="sumMatches">0</div><div class="summarySub">registradas</div></div>
+        <div class="summaryItem"><div class="summaryLabel">Última</div><div class="summaryValue" id="sumLast">—</div><div class="summarySub">fecha</div></div>
       </section>
 
-      <p class="listLabel">Tus búsquedas</p>
-
-      <section class="searchList" aria-label="Listado de búsquedas guardadas">
-        <!-- Search 1 -->
-        <article class="searchItem">
-          <div class="searchItemMain">
-            <div class="searchHead">
-              <h3 class="searchName">Piso en Salamanca con terraza</h3>
-              <span class="searchStatus fresh">3 nuevas</span>
-            </div>
-            <div class="chipRow">
-              <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/></svg>Salamanca, Madrid</span>
-              <span class="chip">Comprar</span>
-              <span class="chip">350.000 – 500.000 €</span>
-              <span class="chip">2 – 3 hab.</span>
-              <span class="chip">≥ 90 m²</span>
-              <span class="chip">Terraza</span>
-              <span class="chip">Sol mañana</span>
-            </div>
-            <div class="searchMeta">
-              <span class="pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Creada hace 12 días</span>
-              <span><strong>47</strong> coincidencias totales</span>
-              <span>Último aviso: hoy, 09:02</span>
-            </div>
-            <div class="freqBar">
-              <span class="freqLabel">Frecuencia</span>
-              <div class="freqOpts" role="tablist">
-                <button class="freqOpt" type="button">Instantáneo</button>
-                <button class="freqOpt active" type="button">Diario</button>
-                <button class="freqOpt" type="button">Semanal</button>
-                <button class="freqOpt" type="button">Pausado</button>
-              </div>
-            </div>
-          </div>
-          <div class="searchActions">
-            <a class="pillBtn primary" href="./map.html">Ver resultados</a>
-            <div class="searchActionsRow">
-              <button class="iconBtn" type="button" aria-label="Editar búsqueda">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg>
-              </button>
-              <button class="iconBtn" type="button" aria-label="Eliminar búsqueda">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg>
-              </button>
-            </div>
-          </div>
-        </article>
-
-        <!-- Search 2 -->
-        <article class="searchItem">
-          <div class="searchItemMain">
-            <div class="searchHead">
-              <h3 class="searchName">Obra nueva en Madrid Centro</h3>
-              <span class="searchStatus active">Activa</span>
-            </div>
-            <div class="chipRow">
-              <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/></svg>Centro, Madrid</span>
-              <span class="chip">Obra nueva</span>
-              <span class="chip">Hasta 600.000 €</span>
-              <span class="chip">3+ hab.</span>
-              <span class="chip">Garaje incluido</span>
-            </div>
-            <div class="searchMeta">
-              <span class="pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Creada hace 1 mes</span>
-              <span><strong>12</strong> coincidencias totales</span>
-              <span>Sin novedades esta semana</span>
-            </div>
-            <div class="freqBar">
-              <span class="freqLabel">Frecuencia</span>
-              <div class="freqOpts" role="tablist">
-                <button class="freqOpt" type="button">Instantáneo</button>
-                <button class="freqOpt" type="button">Diario</button>
-                <button class="freqOpt active" type="button">Semanal</button>
-                <button class="freqOpt" type="button">Pausado</button>
-              </div>
-            </div>
-          </div>
-          <div class="searchActions">
-            <a class="pillBtn primary" href="./map.html">Ver resultados</a>
-            <div class="searchActionsRow">
-              <button class="iconBtn" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg></button>
-              <button class="iconBtn" type="button" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg></button>
-            </div>
-          </div>
-        </article>
-
-        <!-- Search 3 -->
-        <article class="searchItem">
-          <div class="searchItemMain">
-            <div class="searchHead">
-              <h3 class="searchName">Alquiler cerca del trabajo</h3>
-              <span class="searchStatus active">Activa</span>
-            </div>
-            <div class="chipRow">
-              <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/></svg>≤ 20 min en bici desde Atocha</span>
-              <span class="chip">Alquilar</span>
-              <span class="chip">Hasta 1.500 €/mes</span>
-              <span class="chip">1 – 2 hab.</span>
-              <span class="chip">Amueblado</span>
-            </div>
-            <div class="searchMeta">
-              <span class="pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Creada hace 5 días</span>
-              <span><strong>8</strong> coincidencias totales</span>
-              <span>Último aviso: ayer, 18:30</span>
-            </div>
-            <div class="freqBar">
-              <span class="freqLabel">Frecuencia</span>
-              <div class="freqOpts" role="tablist">
-                <button class="freqOpt active" type="button">Instantáneo</button>
-                <button class="freqOpt" type="button">Diario</button>
-                <button class="freqOpt" type="button">Semanal</button>
-                <button class="freqOpt" type="button">Pausado</button>
-              </div>
-            </div>
-          </div>
-          <div class="searchActions">
-            <a class="pillBtn primary" href="./map.html">Ver resultados</a>
-            <div class="searchActionsRow">
-              <button class="iconBtn" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg></button>
-              <button class="iconBtn" type="button" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg></button>
-            </div>
-          </div>
-        </article>
-
-        <!-- Search 4 -->
-        <article class="searchItem">
-          <div class="searchItemMain">
-            <div class="searchHead">
-              <h3 class="searchName">Casa con jardín cerca de Madrid</h3>
-              <span class="searchStatus paused">Pausada</span>
-            </div>
-            <div class="chipRow">
-              <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/></svg>Las Rozas, Pozuelo, Majadahonda</span>
-              <span class="chip">Comprar</span>
-              <span class="chip">Hasta 850.000 €</span>
-              <span class="chip">4+ hab.</span>
-              <span class="chip">Jardín</span>
-              <span class="chip">Sol todo el día</span>
-            </div>
-            <div class="searchMeta">
-              <span class="pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Creada hace 3 meses</span>
-              <span><strong>134</strong> coincidencias totales</span>
-              <span>Pausada el 02/05/2026</span>
-            </div>
-            <div class="freqBar">
-              <span class="freqLabel">Frecuencia</span>
-              <div class="freqOpts" role="tablist">
-                <button class="freqOpt" type="button">Instantáneo</button>
-                <button class="freqOpt" type="button">Diario</button>
-                <button class="freqOpt" type="button">Semanal</button>
-                <button class="freqOpt active" type="button">Pausado</button>
-              </div>
-            </div>
-          </div>
-          <div class="searchActions">
-            <a class="pillBtn" href="./map.html">Ver resultados</a>
-            <div class="searchActionsRow">
-              <button class="iconBtn" type="button" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="m14 6 4 4"/></svg></button>
-              <button class="iconBtn" type="button" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg></button>
-            </div>
-          </div>
-        </article>
-      </section>
+      <p class="listLabel">Listado</p>
+      <section class="searchList" id="searchList" aria-live="polite"></section>
 
       <div class="newSearchCard">
         <div>
           <h3>¿Buscas algo más?</h3>
-          <p>Crea una nueva búsqueda con tus filtros favoritos y te avisamos cuando aparezca.</p>
+          <p>Crea una nueva búsqueda desde el mapa y guárdala con tus filtros actuales.</p>
         </div>
         <a class="pillBtn primary" href="./map.html">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
@@ -692,18 +515,95 @@
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
+      import { getSession, listSavedSearches, deleteSavedSearch, updateSavedSearchFrequency, openLoginModalOrAlert } from "./bh-user-data.js";
+
       initLayout({ showMiniSearch: false });
       initAuth();
 
-      // Frequency toggles within each card
-      document.querySelectorAll(".freqOpts").forEach((group) => {
-        group.querySelectorAll(".freqOpt").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            group.querySelectorAll(".freqOpt").forEach((b) => b.classList.remove("active"));
-            btn.classList.add("active");
-          });
+      const list = document.getElementById("searchList");
+      let rows = [];
+
+      function text(v, fallback="—"){ return v == null || String(v).trim()==="" ? fallback : String(v).trim(); }
+      function formatDate(v){ const d = new Date(v); return isNaN(d) ? "—" : d.toLocaleDateString("es-ES"); }
+      function mapUrl(r){
+        const f = r.filters || {};
+        if (f.map_url) return f.map_url.startsWith("/") ? "." + f.map_url : f.map_url;
+        const q = new URLSearchParams();
+        Object.entries(f).forEach(([k,v]) => { if (!["absolute_url","saved_at_client","saved_from"].includes(k) && v != null && typeof v !== "object") q.set(k, v); });
+        return "./map.html" + (q.toString() ? "?" + q.toString() : "");
+      }
+      function chips(r){
+        const f = r.filters || {};
+        const arr = [];
+        if (f.city) arr.push(f.city);
+        if (f.mode) arr.push(f.mode === "buy" ? "Comprar" : f.mode === "rent" ? "Alquilar" : f.mode);
+        if (f.price_min || f.price_max) arr.push(`Precio ${f.price_min || "0"}–${f.price_max || "∞"}`);
+        if (f.useful_min || f.useful_max) arr.push(`Útiles ${f.useful_min || "0"}–${f.useful_max || "∞"} m²`);
+        if (f.since_days) arr.push(`Últimos ${f.since_days} días`);
+        return arr.length ? arr : ["Sin filtros detallados"];
+      }
+      function freqKey(r){ if (!r.active) return "paused"; return r.frequency || "daily"; }
+      function render(){
+        document.getElementById("sumTotal").textContent = rows.length;
+        document.getElementById("sumActive").textContent = rows.filter(r=>r.active).length;
+        document.getElementById("sumMatches").textContent = rows.reduce((a,r)=>a+Number(r.total_matches || 0),0);
+        document.getElementById("sumLast").textContent = rows[0]?.created_at ? formatDate(rows[0].created_at) : "—";
+        list.innerHTML = "";
+        if (!rows.length) {
+          list.innerHTML = `<article class="searchItem"><div class="searchItemMain"><div class="searchHead"><h3 class="searchName">No tienes búsquedas guardadas</h3></div><p class="pageSubtitle">Ve al mapa, ajusta filtros y pulsa “Guardar búsqueda”.</p></div></article>`;
+          return;
+        }
+        rows.forEach(r => {
+          const article = document.createElement("article");
+          article.className = "searchItem";
+          const fk = freqKey(r);
+          article.innerHTML = `
+            <div class="searchItemMain">
+              <div class="searchHead"><h3 class="searchName">${text(r.name,"Búsqueda guardada")}</h3><span class="searchStatus ${r.active ? "active" : "paused"}">${r.active ? "Activa" : "Pausada"}</span></div>
+              <div class="chipRow">${chips(r).map(c=>`<span class="chip">${c}</span>`).join("")}</div>
+              <div class="searchMeta"><span>Creada: <strong>${formatDate(r.created_at)}</strong></span><span>Coincidencias: <strong>${r.total_matches ?? 0}</strong></span></div>
+              <div class="freqBar"><span class="freqLabel">Frecuencia</span><div class="freqOpts" data-id="${r.saved_search_id}">
+                <button class="freqOpt ${fk==="instant"?"active":""}" type="button" data-freq="instant">Instantáneo</button>
+                <button class="freqOpt ${fk==="daily"?"active":""}" type="button" data-freq="daily">Diario</button>
+                <button class="freqOpt ${fk==="weekly"?"active":""}" type="button" data-freq="weekly">Semanal</button>
+                <button class="freqOpt ${fk==="paused"?"active":""}" type="button" data-freq="paused">Pausado</button>
+              </div></div>
+            </div>
+            <div class="searchActions">
+              <a class="pillBtn" href="${mapUrl(r)}">Ver resultados</a>
+              <div class="searchActionsRow"><button class="iconBtn deleteSearch" type="button" data-id="${r.saved_search_id}" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg></button></div>
+            </div>`;
+          list.appendChild(article);
         });
+      }
+      list.addEventListener("click", async (e)=>{
+        const del = e.target.closest(".deleteSearch");
+        if (del){
+          const id = del.dataset.id;
+          if (!confirm("¿Eliminar esta búsqueda guardada?")) return;
+          try{ await deleteSavedSearch(id); rows = rows.filter(r=>String(r.saved_search_id)!==String(id)); render(); }
+          catch(err){ console.error(err); alert("No se pudo eliminar la búsqueda."); }
+          return;
+        }
+        const freq = e.target.closest(".freqOpt");
+        if (freq){
+          const group = freq.closest(".freqOpts");
+          const id = group.dataset.id;
+          const value = freq.dataset.freq;
+          try{
+            await updateSavedSearchFrequency(id, value);
+            const row = rows.find(r=>String(r.saved_search_id)===String(id));
+            if (row){ row.frequency = value; row.active = value !== "paused"; }
+            render();
+          }catch(err){ console.error(err); alert("No se pudo cambiar la frecuencia."); }
+        }
       });
+      (async()=>{
+        const session = await getSession();
+        if (!session?.user){ openLoginModalOrAlert(); return; }
+        rows = await listSavedSearches();
+        render();
+      })().catch(err => { console.error(err); alert("No se pudieron cargar las búsquedas guardadas."); });
     </script>
   </body>
 </html>
