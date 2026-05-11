@@ -224,8 +224,8 @@
 
           <div class="topCell topCellRight">
             <div class="topRightTools">
-              <button id="orderBtn" class="topToggleBtn" type="button">Ordenar por</button>
               <button id="saveSearchDesktopBtn" class="topToggleBtn saveSearchDesktopBtn" type="button">Guardar búsqueda</button>
+              <button id="orderBtn" class="topToggleBtn" type="button">Ordenar por</button>
               <button id="toggleListBtn" class="topToggleBtn" type="button">Ocultar listado</button>
 
               <!-- Menú desplegable de orden -->
@@ -353,6 +353,19 @@
     </div>
     <div id="bhFooter" hidden style="display:none !important;"></div>
 
+    <div id="saveSearchAuthOverlay" class="saveSearchAuthOverlay" aria-hidden="true">
+      <div class="saveSearchAuthModal" role="dialog" aria-modal="true" aria-labelledby="saveSearchAuthTitle">
+        <button id="saveSearchAuthClose" class="saveSearchAuthClose" type="button" aria-label="Cerrar">×</button>
+        <div class="saveSearchAuthKicker">Búsquedas guardadas</div>
+        <h2 id="saveSearchAuthTitle" class="saveSearchAuthTitle">Inicia sesión para guardar búsquedas</h2>
+        <p class="saveSearchAuthText">Para guardar opciones de búsqueda necesitas acceder a tu cuenta. Así podrás recuperar tus filtros más adelante.</p>
+        <div class="saveSearchAuthActions">
+          <button id="saveSearchAuthLoginBtn" class="saveSearchAuthPrimary" type="button">Iniciar sesión para guardar búsquedas</button>
+          <button id="saveSearchAuthCancelBtn" class="saveSearchAuthSecondary" type="button">Ahora no</button>
+        </div>
+      </div>
+    </div>
+
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -386,6 +399,12 @@
       const mobileListCloseBtn = document.getElementById("mobileListCloseBtn");
       const mobileOrderBtn = document.getElementById("mobileOrderBtn");
       const mobileOrderMenu = document.getElementById("mobileOrderMenu");
+      const orderBtn = document.getElementById("orderBtn");
+      const orderMenu = document.getElementById("orderMenu");
+      const saveSearchAuthOverlay = document.getElementById("saveSearchAuthOverlay");
+      const saveSearchAuthClose = document.getElementById("saveSearchAuthClose");
+      const saveSearchAuthCancelBtn = document.getElementById("saveSearchAuthCancelBtn");
+      const saveSearchAuthLoginBtn = document.getElementById("saveSearchAuthLoginBtn");
 
       function closeMobilePanels() {
         document.body.classList.remove("mobileFiltersOpen");
@@ -409,6 +428,8 @@
         btnFilters.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
         btnList.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
         if (btnClearFilters) btnClearFilters.hidden = filtersHidden;
+        if (orderBtn) orderBtn.hidden = listHidden;
+        if (listHidden) closeOrderMenu();
       }
 
       function clearMapFilters() {
@@ -427,8 +448,36 @@
         window.location.href = url.toString();
       }
 
+      function userIsLoggedIn() {
+        return !!(window.BH_AUTH_SESSION?.user || document.body.classList.contains("bh-authenticated"));
+      }
+
+      function openSaveSearchAuthPrompt() {
+        if (!saveSearchAuthOverlay) return;
+        saveSearchAuthOverlay.classList.add("open");
+        saveSearchAuthOverlay.setAttribute("aria-hidden", "false");
+        document.body.classList.add("saveSearchAuthOpen");
+      }
+
+      function closeSaveSearchAuthPrompt() {
+        if (!saveSearchAuthOverlay) return;
+        saveSearchAuthOverlay.classList.remove("open");
+        saveSearchAuthOverlay.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("saveSearchAuthOpen");
+      }
+
+      function openLoginForSavedSearches() {
+        closeSaveSearchAuthPrompt();
+        const navLogin = document.getElementById("navLogin");
+        if (navLogin) navLogin.click();
+      }
+
       function toggleDesktopSavedSearch() {
         if (!saveSearchDesktopBtn) return;
+        if (!userIsLoggedIn()) {
+          openSaveSearchAuthPrompt();
+          return;
+        }
         const saved = saveSearchDesktopBtn.classList.toggle("is-saved");
         saveSearchDesktopBtn.textContent = saved ? "Búsqueda guardada" : "Guardar búsqueda";
         saveSearchDesktopBtn.setAttribute("aria-pressed", saved ? "true" : "false");
@@ -447,10 +496,20 @@
 
       btnClearFilters?.addEventListener("click", clearMapFilters);
       saveSearchDesktopBtn?.addEventListener("click", toggleDesktopSavedSearch);
+      saveSearchAuthClose?.addEventListener("click", closeSaveSearchAuthPrompt);
+      saveSearchAuthCancelBtn?.addEventListener("click", closeSaveSearchAuthPrompt);
+      saveSearchAuthLoginBtn?.addEventListener("click", openLoginForSavedSearches);
+      saveSearchAuthOverlay?.addEventListener("click", (e) => {
+        if (e.target === saveSearchAuthOverlay) closeSaveSearchAuthPrompt();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeSaveSearchAuthPrompt();
+      });
 
       btnList.addEventListener("click", () => {
         grid.classList.toggle("hideList");
-          notifyLayoutResize();
+        applyToggleTexts();
+        notifyLayoutResize();
       });
 
 
@@ -473,9 +532,6 @@
       applyToggleTexts();
 
       // Orden: escritorio + móvil
-      const orderBtn = document.getElementById("orderBtn");
-      const orderMenu = document.getElementById("orderMenu");
-
       function closeOrderMenu() {
         orderMenu.style.display = "none";
         orderMenu.setAttribute("aria-hidden", "true");
@@ -569,6 +625,10 @@
       });
 
       mobileSaveSearchBtn?.addEventListener("click", () => {
+        if (!userIsLoggedIn()) {
+          openSaveSearchAuthPrompt();
+          return;
+        }
         const saved = mobileSaveSearchBtn.classList.toggle("is-saved");
         mobileSaveSearchBtn.setAttribute(
           "aria-label",
