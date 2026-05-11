@@ -671,9 +671,11 @@
 
   <script type="module">
     import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
+    import { initAuth } from "./bh-auth.js?v=20260511_auth_fix_branding";
 
     window.addEventListener("DOMContentLoaded", () => {
       initLayout({ showMiniSearch: false });
+      initAuth();
     });
   </script>
 
