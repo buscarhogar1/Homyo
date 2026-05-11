@@ -4,6 +4,26 @@ const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+function getCurrentBaseUrl(){
+  const url = new URL(window.location.href);
+  const path = url.pathname.endsWith("/")
+    ? url.pathname
+    : url.pathname.slice(0, url.pathname.lastIndexOf("/") + 1);
+  return url.origin + path;
+}
+
+function getAuthBaseUrl(){
+  return window.BH_BASE_URL || getCurrentBaseUrl();
+}
+
+function getCallbackUrl(){
+  return window.BH_CALLBACK_URL || (getAuthBaseUrl() + "callback.html");
+}
+
+function getResetPasswordUrl(){
+  return getAuthBaseUrl() + "reset-password.html";
+}
+
 function $(id){ return document.getElementById(id); }
 
 function getUserDisplayName(user) {
@@ -225,7 +245,7 @@ export function initAuth() {
       setMsg(authMsgStart, "");
       localStorage.setItem("bh_return_url", window.location.href);
 
-      const redirectTo = window.BH_CALLBACK_URL || (window.location.origin + "/callback.html");
+      const redirectTo = getCallbackUrl();
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -275,7 +295,7 @@ export function initAuth() {
 
     setBusy(false);
     goPassword(email);
-    setMsg(authMsgPw, "Si no tienes cuenta, pulsa “No tengo cuenta, registrarme”. Para detección automática, hay que crear la Edge Function check-email.");
+    setMsg(authMsgPw, "No he podido comprobar automáticamente si el email existe. Si ya tienes cuenta, entra con tu contraseña. Si no, pulsa “No tengo cuenta, registrarme”.");
   });
 
   goRegisterBtn.addEventListener("click", () => {
@@ -305,7 +325,7 @@ export function initAuth() {
       setBusy(true);
       setMsg(forgotPwMsg, "");
 
-      const redirectTo = (window.BH_BASE_URL || window.location.origin + "/") + "reset-password.html";
+      const redirectTo = getResetPasswordUrl();
 
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo
@@ -315,7 +335,7 @@ export function initAuth() {
 
       setMsg(forgotPwMsg, "Te hemos enviado un correo para cambiar la contraseña.");
     } catch (e) {
-      setMsg(forgotPwMsg, "No se pudo enviar el correo de recuperación. Inténtalo de nuevo.");
+      setMsg(forgotPwMsg, "No se pudo enviar el correo de recuperación. Revisa que el email esté registrado y que la URL de reset esté autorizada en Supabase.");
       console.error(e);
     } finally {
       setBusy(false);
@@ -360,7 +380,7 @@ export function initAuth() {
       setBusy(true);
       setMsg(authMsgReg, "");
 
-      const redirectTo = window.BH_CALLBACK_URL || (window.location.origin + "/callback.html");
+      const redirectTo = getCallbackUrl();
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -373,13 +393,22 @@ export function initAuth() {
 
       if (error){
         const msg = String(error.message || "");
-        if (msg.toLowerCase().includes("already") || msg.toLowerCase().includes("registered")){
+        if (msg.toLowerCase().includes("already") || msg.toLowerCase().includes("registered") || msg.toLowerCase().includes("exists")){
           setBusy(false);
           goPassword(email);
-          setMsg(authMsgPw, "Ese email ya está registrado. Entra con tu contraseña.");
+          setMsg(authMsgPw, "Ese email ya está registrado. Entra con tu contraseña o usa “He olvidado mi contraseña”.");
           return;
         }
         throw error;
+      }
+
+      // Supabase puede devolver un usuario sin identities cuando el email ya existe,
+      // sin lanzar error explícito por seguridad. Lo tratamos como cuenta existente.
+      if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        setBusy(false);
+        goPassword(email);
+        setMsg(authMsgPw, "Ese email ya está registrado. Entra con tu contraseña o usa “He olvidado mi contraseña”.");
+        return;
       }
 
       const needsConfirm = !data?.session;
@@ -395,7 +424,7 @@ export function initAuth() {
       }
 
     } catch(e){
-      setMsg(authMsgReg, "No se pudo crear la cuenta. Revisa el email o prueba otra contraseña.");
+      setMsg(authMsgReg, "No se pudo crear la cuenta. Revisa el email, la contraseña y la configuración de emails en Supabase.");
       console.error(e);
     } finally {
       setBusy(false);
