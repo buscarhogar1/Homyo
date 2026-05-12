@@ -1166,12 +1166,6 @@
 
 
 
-/* === HIDE FAVORITE BUTTONS REQUESTED === */
-#saveBtn,
-#stickySaveBtn,
-#mobileGallerySave{
-  display:none !important;
-}
 
 
 /* === BRAND-ALIGNED AGENCY CARD (web + mobile) === */
@@ -1667,9 +1661,56 @@
     ></script>
 
     <script>
+      window.bhFavoritesReady = import("./bh-user-data.js").then((mod) => {
+        window.bhFavoritesApi = {
+          isFavorite: mod.isFavorite,
+          toggleFavorite: mod.toggleFavorite,
+          openLoginModalOrAlert: mod.openLoginModalOrAlert
+        };
+        return window.bhFavoritesApi;
+      });
+
+      async function getBhFavoritesApi(){
+        if (window.bhFavoritesApi) return window.bhFavoritesApi;
+        if (!window.bhFavoritesReady) {
+          window.bhFavoritesReady = import("./bh-user-data.js").then((mod) => {
+            window.bhFavoritesApi = {
+              isFavorite: mod.isFavorite,
+              toggleFavorite: mod.toggleFavorite,
+              openLoginModalOrAlert: mod.openLoginModalOrAlert
+            };
+            return window.bhFavoritesApi;
+          });
+        }
+        return await window.bhFavoritesReady;
+      }
+    </script>
+
+    <script>
       const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
       const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
       const VIEW_DETAIL = "listing_detail_public";
+      let bhSupabaseClientPromise = null;
+
+      async function getBhSupabase(){
+        if (!bhSupabaseClientPromise) {
+          bhSupabaseClientPromise = import("https://esm.sh/@supabase/supabase-js@2").then(({ createClient }) => createClient(SUPABASE_URL, SUPABASE_ANON_KEY));
+        }
+        return bhSupabaseClientPromise;
+      }
+
+      async function getBhSession(){
+        const sb = await getBhSupabase();
+        const { data, error } = await sb.auth.getSession();
+        if (error) throw error;
+        return data?.session || null;
+      }
+
+      function openLoginModalOrAlert(){
+        const navLogin = document.getElementById("navLogin");
+        if (navLogin) navLogin.click();
+        else alert("Inicia sesión para guardar favoritos.");
+      }
 
       const bannerEl = document.getElementById("banner");
 
@@ -2276,7 +2317,43 @@ function renderFeatures(row) {
         });
       }
 
-      function storageKey(listingId){ return "bh_saved_" + listingId; }
+      async function isFavorite(listingId){
+        const session = await getBhSession();
+        if (!session?.user || !listingId) return false;
+        const sb = await getBhSupabase();
+        const { data, error } = await sb
+          .from("favorites")
+          .select("id")
+          .eq("user_id", session.user.id)
+          .eq("listing_id", listingId)
+          .limit(1);
+        if (error) throw error;
+        return Array.isArray(data) && data.length > 0;
+      }
+
+      async function toggleFavorite(listingId){
+        const session = await getBhSession();
+        if (!session?.user) {
+          openLoginModalOrAlert();
+          return null;
+        }
+        const sb = await getBhSupabase();
+        const fav = await isFavorite(listingId);
+        if (fav) {
+          const { error } = await sb
+            .from("favorites")
+            .delete()
+            .eq("user_id", session.user.id)
+            .eq("listing_id", listingId);
+          if (error) throw error;
+          return false;
+        }
+        const { error } = await sb
+          .from("favorites")
+          .insert({ user_id: session.user.id, listing_id: listingId });
+        if (error) throw error;
+        return true;
+      }
 
       function setSavedUI(isSaved){
         saveTextEl.textContent = isSaved ? "Guardado" : "Guardar";
@@ -2393,7 +2470,7 @@ function renderFeatures(row) {
           if (stickyPhoneBtnEl) stickyPhoneBtnEl.textContent = phoneText;
           callBtn.title = "Llamar";
           callBtn.setAttribute("aria-label", "Teléfono: " + phoneText);
-          stickyPhoneBtnEl.setAttribute("aria-label", "Teléfono: " + phoneText);
+          if (stickyPhoneBtnEl) stickyPhoneBtnEl.setAttribute("aria-label", "Teléfono: " + phoneText);
         }
 
         function revealEmail(){
@@ -2495,13 +2572,22 @@ function renderFeatures(row) {
           return;
         }
 
-        const initialSaved = localStorage.getItem(storageKey(listingId)) === "1";
-        setSavedUI(initialSaved);
+        getBhFavoritesApi().then((api) => api.isFavorite(listingId)).then(setSavedUI).catch((err) => console.warn("No se pudo leer favorito", err));
 
-        saveBtn.addEventListener("click", () => {
-          const nowSaved = !(localStorage.getItem(storageKey(listingId)) === "1");
-          localStorage.setItem(storageKey(listingId), nowSaved ? "1" : "0");
-          setSavedUI(nowSaved);
+        saveBtn.addEventListener("click", async () => {
+          try {
+            saveBtn.disabled = true;
+            if (stickySaveBtnEl) stickySaveBtnEl.disabled = true;
+            const api = await getBhFavoritesApi();
+            const next = await api.toggleFavorite(listingId);
+            if (next !== null) setSavedUI(next);
+          } catch (err) {
+            console.error(err);
+            alert("No se pudo actualizar favoritos.");
+          } finally {
+            saveBtn.disabled = false;
+            if (stickySaveBtnEl) stickySaveBtnEl.disabled = false;
+          }
         });
 
         stickySaveBtnEl.addEventListener("click", () => {
