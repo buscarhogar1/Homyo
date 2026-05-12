@@ -607,18 +607,78 @@
         return HOMYO_SITE_ROOT + "map.html" + (params.toString() ? "?" + params.toString() : "");
       }
 
+      function csvValues(value){
+        if (Array.isArray(value)) return value.map(String).map(v => v.trim()).filter(Boolean);
+        if (value == null) return [];
+        return String(value).split(",").map(v => v.trim()).filter(Boolean);
+      }
+
+      function pushMappedCsv(arr, value, labelMap){
+        csvValues(value).forEach((v) => arr.push(labelMap[v] || v));
+      }
+
+      const buildPeriodLabels = {
+        pre1960: "Antes de 1960",
+        "1960_1970": "1960–1970",
+        "1970_1980": "1970–1980",
+        "1980_1990": "1980–1990",
+        "1990_2000": "1990–2000",
+        "2000_2010": "2000–2010",
+        "2010_2020": "2010–2020",
+        "2020_plus": "2020+"
+      };
+
+      const outdoorLabels = {
+        balcon: "Balcón",
+        terraza: "Terraza",
+        jardin: "Jardín",
+        patio: "Patio"
+      };
+
+      const accessibilityLabels = {
+        ascensor: "Ascensor",
+        movilidad_reducida: "Adaptado a movilidad reducida"
+      };
+
+      const parkingLabels = {
+        incluido: "Parking incluido",
+        opcional: "Parking opcional",
+        no_disponible: "Parking no disponible"
+      };
+
+      const storageLabels = {
+        incluido: "Trastero incluido",
+        no_incluido: "Trastero no incluido"
+      };
+
+      const availabilityLabels = {
+        available: "Disponible",
+        negotiation: "Ofertado / en negociación",
+        sold: "Alquilado / vendido"
+      };
+
       function chips(row){
         const f = row.filters || {};
         const arr = [];
+
         if (f.city) arr.push(f.city);
         if (f.mode) arr.push(modeLabel(f.mode));
         if (f.price_min || f.price_max) arr.push(`Precio ${f.price_min || "0"}–${f.price_max || "∞"}`);
         if (f.useful_min || f.useful_max) arr.push(`Útiles ${f.useful_min || "0"}–${f.useful_max || "∞"} m²`);
-        if (f.built_min || f.built_max) arr.push(`Año ${f.built_min || "—"}–${f.built_max || "—"}`);
+        if (f.built_min || f.built_max) arr.push(`Construidos ${f.built_min || "0"}–${f.built_max || "∞"} m²`);
         if (f.bedrooms_min) arr.push(`${f.bedrooms_min}+ dormitorios`);
         if (f.bathrooms_min) arr.push(`${f.bathrooms_min}+ baños`);
         if (f.since_days) arr.push(`Últimos ${f.since_days} días`);
-        if (f.energy) arr.push(`Energía ${f.energy}`);
+        if (f.energy) arr.push(f.energy === "pending" ? "Energía pendiente" : `Energía ${f.energy}`);
+        if (f.availability) arr.push(availabilityLabels[f.availability] || f.availability);
+
+        pushMappedCsv(arr, f.build_periods, buildPeriodLabels);
+        pushMappedCsv(arr, f.outdoor_type, outdoorLabels);
+        pushMappedCsv(arr, f.orientations, { N:"Orientación N", S:"Orientación S", E:"Orientación E", O:"Orientación O" });
+        pushMappedCsv(arr, f.accessibility, accessibilityLabels);
+        pushMappedCsv(arr, f.parking, parkingLabels);
+        pushMappedCsv(arr, f.storage, storageLabels);
+
         return arr.length ? arr : ["Sin filtros detallados"];
       }
 
