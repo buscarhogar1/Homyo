@@ -515,7 +515,7 @@
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
-      import { getSession, listSavedSearches, deleteSavedSearch, updateSavedSearchFrequency, openLoginModalOrAlert } from "./bh-user-data.js?v=20260512_saved_search_results_v2";
+      import { getSession, listSavedSearches, deleteSavedSearch, updateSavedSearchFrequency, openLoginModalOrAlert } from "./bh-user-data.js?v=20260512_saved_search_results_v3";
 
       initLayout({ showMiniSearch: false });
       initAuth();
@@ -576,19 +576,18 @@
         });
       }
 
+      const HOMYO_SITE_ROOT = "https://buscarhogar1.github.io/Homyo/";
+
       function mapUrl(row){
         const f = row?.filters || {};
         const params = new URLSearchParams();
 
-        // No usamos directamente f.map_url ni f.absolute_url como href porque en
-        // GitHub Pages pueden venir como /Homyo/map.html y, si se concatenan mal,
-        // acaban en /Homyo/Homyo/map.html o /map.html.
-        // Aquí extraemos solo los parámetros y reconstruimos siempre la ruta correcta
-        // desde la ubicación real de busquedas.html.
+        // Extraemos solo parámetros. Nunca usamos la ruta guardada como destino,
+        // porque puede venir como /Homyo/map.html, map.html o una URL antigua.
         const storedUrl = f.map_url || f.absolute_url || "";
         if (storedUrl) {
           try {
-            const parsed = new URL(storedUrl, window.location.href);
+            const parsed = new URL(storedUrl, HOMYO_SITE_ROOT);
             parsed.searchParams.forEach((value, key) => {
               if (!FILTER_KEYS_TO_SKIP.has(key)) params.set(key, value);
             });
@@ -605,9 +604,7 @@
 
         if (!params.has("mode")) params.set("mode", "buy");
 
-        const base = new URL("./map.html", window.location.href);
-        base.search = params.toString();
-        return base.href;
+        return HOMYO_SITE_ROOT + "map.html" + (params.toString() ? "?" + params.toString() : "");
       }
 
       function chips(row){
@@ -678,7 +675,7 @@
               </div>
             </div>
             <div class="searchActions">
-              <a class="pillBtn primary" href="${escapeHtml(url)}">Ver resultados</a>
+              <a class="pillBtn primary resultLink" href="${escapeHtml(url)}" data-url="${escapeHtml(url)}">Ver resultados</a>
               <div class="searchActionsRow">
                 <button class="iconBtn deleteSearch" type="button" data-id="${escapeHtml(id)}" aria-label="Eliminar búsqueda">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg>
@@ -691,6 +688,14 @@
       }
 
       list.addEventListener("click", async (e) => {
+        const resultLink = e.target.closest(".resultLink");
+        if (resultLink) {
+          e.preventDefault();
+          const target = resultLink.dataset.url || resultLink.getAttribute("href") || (HOMYO_SITE_ROOT + "map.html");
+          window.location.assign(target);
+          return;
+        }
+
         const del = e.target.closest(".deleteSearch");
         if (del) {
           const id = del.dataset.id;
