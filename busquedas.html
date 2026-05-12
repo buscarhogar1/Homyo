@@ -515,7 +515,7 @@
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
-      import { getSession, listSavedSearches, deleteSavedSearch, updateSavedSearchFrequency, openLoginModalOrAlert } from "./bh-user-data.js?v=20260512_saved_search_results";
+      import { getSession, listSavedSearches, deleteSavedSearch, updateSavedSearchFrequency, openLoginModalOrAlert } from "./bh-user-data.js?v=20260512_saved_search_results_v2";
 
       initLayout({ showMiniSearch: false });
       initAuth();
@@ -580,9 +580,11 @@
         const f = row?.filters || {};
         const params = new URLSearchParams();
 
-        // 1) Preferimos los parámetros de la URL exacta guardada.
-        // En GitHub Pages puede venir como /Homyo/map.html?...; aquí lo normalizamos
-        // siempre a ./map.html?... para evitar /Homyo/Homyo/map.html.
+        // No usamos directamente f.map_url ni f.absolute_url como href porque en
+        // GitHub Pages pueden venir como /Homyo/map.html y, si se concatenan mal,
+        // acaban en /Homyo/Homyo/map.html o /map.html.
+        // Aquí extraemos solo los parámetros y reconstruimos siempre la ruta correcta
+        // desde la ubicación real de busquedas.html.
         const storedUrl = f.map_url || f.absolute_url || "";
         if (storedUrl) {
           try {
@@ -599,13 +601,13 @@
           }
         }
 
-        // 2) Añadimos/actualizamos filtros guardados explícitamente.
         addPrimitiveFiltersToParams(params, f);
 
-        // 3) Fallback mínimo.
         if (!params.has("mode")) params.set("mode", "buy");
 
-        return "./map.html" + (params.toString() ? "?" + params.toString() : "");
+        const base = new URL("./map.html", window.location.href);
+        base.search = params.toString();
+        return base.href;
       }
 
       function chips(row){

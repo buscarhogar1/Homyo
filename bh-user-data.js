@@ -77,7 +77,7 @@ function cleanFiltersFromUrl(url){
   const u = new URL(url || window.location.href, window.location.href);
   const obj = {};
   u.searchParams.forEach((value, key) => { obj[key] = value; });
-  obj.map_url = `./map.html${u.search || ""}`;
+  obj.map_url = `map.html${u.search || ""}`;
   obj.absolute_url = u.href;
   return obj;
 }
