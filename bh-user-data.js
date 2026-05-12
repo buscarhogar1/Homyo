@@ -77,7 +77,7 @@ function cleanFiltersFromUrl(url){
   const u = new URL(url || window.location.href, window.location.href);
   const obj = {};
   u.searchParams.forEach((value, key) => { obj[key] = value; });
-  obj.map_url = `${u.pathname}${u.search || ""}`;
+  obj.map_url = `./map.html${u.search || ""}`;
   obj.absolute_url = u.href;
   return obj;
 }
@@ -107,7 +107,7 @@ export function buildSavedSearchPayload({ name, map, url } = {}){
     frequency: "paused",
     frequency_value: null,
     channel_email: false,
-    channel_internal: false,
+    channel_internal: true,
     active: false,
     filters: {
       ...filters,
@@ -123,23 +123,51 @@ export function buildSavedSearchPayload({ name, map, url } = {}){
 export async function saveCurrentSearch({ name, map, url } = {}){
   const session = await requireSession();
   const payload = buildSavedSearchPayload({ name, map, url });
+
+  const row = {
+    user_id: session.user.id,
+    name: payload.name,
+    bbox_min_lat: payload.bbox_min_lat ?? null,
+    bbox_min_lng: payload.bbox_min_lng ?? null,
+    bbox_max_lat: payload.bbox_max_lat ?? null,
+    bbox_max_lng: payload.bbox_max_lng ?? null,
+    polygon_geojson: payload.polygon_geojson ?? null,
+    filters: payload.filters || {},
+    frequency: payload.frequency || "paused",
+    frequency_value: payload.frequency_value ?? null,
+    channel_email: payload.channel_email === true,
+    channel_internal: payload.channel_internal !== false,
+    active: payload.active === true
+  };
+
   const { data, error } = await supabase
     .from("saved_searches")
-    .insert({ user_id: session.user.id, ...payload })
-    .select("id")
+    .insert(row)
+    .select("id, created_at")
     .single();
-  if (error) throw error;
-  return data;
+
+  if (error) {
+    const msg = [error.message, error.details, error.hint, error.code].filter(Boolean).join(" | ");
+    throw new Error(msg || "SAVE_SEARCH_INSERT_FAILED");
+  }
+  return { ...(data || {}), already_exists: false };
 }
 
 export async function listSavedSearches(){
   await requireSession();
+
   const { data, error } = await supabase
-    .from("my_saved_searches")
-    .select("*")
+    .from("saved_searches")
+    .select("id, name, filters, frequency, frequency_value, channel_email, channel_internal, active, created_at, last_checked_at, bbox_min_lat, bbox_min_lng, bbox_max_lat, bbox_max_lng")
     .order("created_at", { ascending:false });
+
   if (error) throw error;
-  return data || [];
+
+  return (data || []).map((row) => ({
+    ...row,
+    saved_search_id: row.id,
+    total_matches: row.total_matches ?? 0
+  }));
 }
 
 export async function deleteSavedSearch(savedSearchId){
@@ -154,10 +182,10 @@ export async function deleteSavedSearch(savedSearchId){
 export async function updateSavedSearchFrequency(savedSearchId, frequency){
   await requireSession();
   const map = {
-    instant: { frequency:"instant", active:true, frequency_value:1, channel_email:true, channel_internal:true },
-    daily: { frequency:"daily", active:true, frequency_value:1, channel_email:true, channel_internal:true },
-    weekly: { frequency:"weekly", active:true, frequency_value:7, channel_email:true, channel_internal:true },
-    paused: { frequency:"paused", active:false, frequency_value:null, channel_email:false, channel_internal:false },
+    instant: { frequency:"instant", active:true, frequency_value:1 },
+    daily: { frequency:"daily", active:true, frequency_value:1 },
+    weekly: { frequency:"weekly", active:true, frequency_value:7 },
+    paused: { frequency:"paused", active:false, frequency_value:null },
   };
   const patch = map[frequency] || map.daily;
   const { error } = await supabase
