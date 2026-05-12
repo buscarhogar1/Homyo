@@ -2139,9 +2139,7 @@ body{
 
 /* Botones superiores — alineados al branding Homyo (granate / dorado, 3.5px) */
 #toggleFiltersBtn,
-#clearFiltersBtn,
 #orderBtn,
-#saveSearchDesktopBtn,
 #toggleListBtn{
   height: 36px !important;
   padding: 0 16px !important;
@@ -2160,9 +2158,7 @@ body{
 }
 
 #toggleFiltersBtn:hover,
-#clearFiltersBtn:hover,
 #orderBtn:hover,
-#saveSearchDesktopBtn:hover,
 #toggleListBtn:hover{
   border-color: rgba(196,150,42,0.55) !important;
   background: rgba(196,150,42,0.045) !important;
@@ -2180,37 +2176,6 @@ body{
     calc(100% - 9px) 51% !important;
   background-size: 5px 5px, 5px 5px !important;
   background-repeat: no-repeat !important;
-}
-
-
-#clearFiltersBtn[hidden]{
-  display:none !important;
-}
-
-.topCellLeft{
-  gap:10px !important;
-}
-
-#saveSearchDesktopBtn{
-  border-color:rgba(196,150,42,0.55) !important;
-  background:rgba(196,150,42,0.08) !important;
-  color:var(--bh-granate) !important;
-  box-shadow:0 2px 8px rgba(196,150,42,0.10) !important;
-}
-
-#saveSearchDesktopBtn:hover,
-#saveSearchDesktopBtn.is-saved{
-  border-color:rgba(196,150,42,0.85) !important;
-  background:rgba(196,150,42,0.18) !important;
-  color:var(--bh-granate) !important;
-  box-shadow:0 4px 14px rgba(196,150,42,0.16) !important;
-}
-
-@media (max-width:768px){
-  #clearFiltersBtn,
-  #saveSearchDesktopBtn{
-    display:none !important;
-  }
 }
 
 .orderMenu{
@@ -2559,21 +2524,46 @@ body{
 }
 
 /* =====================================================================
-   GUARDAR BÚSQUEDA — aviso de login requerido
-   Modal propio para web y móvil cuando el usuario intenta guardar una
-   búsqueda sin sesión iniciada.
+   BÚSQUEDAS GUARDADAS — conexión real + modal login
    ===================================================================== */
+#saveSearchDesktopBtn{
+  border-color:rgba(196,150,42,0.55) !important;
+  background:rgba(196,150,42,0.08) !important;
+  color:var(--bh-granate, #8C1F2D) !important;
+  box-shadow:0 2px 8px rgba(196,150,42,0.10) !important;
+}
+
+#saveSearchDesktopBtn:hover,
+#saveSearchDesktopBtn.is-saved{
+  border-color:rgba(196,150,42,0.85) !important;
+  background:rgba(196,150,42,0.18) !important;
+  color:var(--bh-granate, #8C1F2D) !important;
+  box-shadow:0 4px 14px rgba(196,150,42,0.16) !important;
+}
+
+#saveSearchDesktopBtn:disabled,
+#mobileSaveSearchBtn:disabled{
+  opacity:.72;
+  cursor:wait;
+}
+
+@media (max-width:768px){
+  #saveSearchDesktopBtn{
+    display:none !important;
+  }
+}
+
 .saveSearchAuthOverlay{
   position:fixed;
   inset:0;
-  z-index:5000;
+  z-index:50000;
   display:none;
   align-items:center;
   justify-content:center;
-  padding:24px;
-  background:rgba(29,26,23,0.34);
-  backdrop-filter:blur(5px);
-  -webkit-backdrop-filter:blur(5px);
+  padding:22px;
+  background:rgba(29,26,23,0.38);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
 }
 
 .saveSearchAuthOverlay.open{
@@ -2581,26 +2571,24 @@ body{
 }
 
 body.saveSearchAuthOpen{
-  overflow:hidden !important;
+  overflow:hidden;
 }
 
 .saveSearchAuthModal{
   position:relative;
-  width:min(460px, 100%);
+  width:min(480px,100%);
   background:#FFFDFA;
-  border:1px solid rgba(140,31,45,0.18);
-  border-radius:3.5px;
-  box-shadow:
-    0 24px 70px rgba(29,26,23,0.18),
-    0 1px 0 rgba(255,255,255,0.85) inset;
+  border:1px solid rgba(196,150,42,0.35);
+  border-radius:4px;
+  box-shadow:0 22px 70px rgba(29,26,23,0.22);
   padding:34px 30px 28px;
   color:#1d1a17;
 }
 
 .saveSearchAuthClose{
   position:absolute;
-  right:14px;
   top:14px;
+  right:14px;
   width:34px;
   height:34px;
   border-radius:999px;
@@ -2610,81 +2598,73 @@ body.saveSearchAuthOpen{
   font-size:22px;
   line-height:1;
   cursor:pointer;
-  display:grid;
-  place-items:center;
-  transition:background .15s ease, border-color .15s ease;
 }
 
 .saveSearchAuthClose:hover{
   background:rgba(140,31,45,0.06);
-  border-color:rgba(140,31,45,0.34);
+  border-color:rgba(140,31,45,0.32);
 }
 
 .saveSearchAuthKicker{
-  margin:0 0 12px;
   font-family:'Raleway','Montserrat',system-ui,sans-serif;
   font-size:11px;
   font-weight:700;
   letter-spacing:.24em;
   text-transform:uppercase;
   color:#C4962A;
+  margin-bottom:14px;
 }
 
 .saveSearchAuthTitle{
-  margin:0;
-  padding-right:28px;
+  margin:0 34px 12px 0;
   font-family:'Raleway','Montserrat',system-ui,sans-serif;
   font-size:30px;
   line-height:1.08;
   font-weight:500;
-  letter-spacing:-.02em;
+  letter-spacing:-.04em;
   color:#8C1F2D;
 }
 
 .saveSearchAuthText{
-  margin:14px 0 0;
+  margin:0;
+  color:#4a4640;
   font-size:15px;
   line-height:1.55;
-  color:#4a4640;
 }
 
 .saveSearchAuthActions{
+  margin-top:24px;
   display:flex;
   gap:10px;
-  align-items:center;
-  margin-top:24px;
   flex-wrap:wrap;
 }
 
 .saveSearchAuthPrimary,
 .saveSearchAuthSecondary{
   min-height:42px;
-  border-radius:3.5px;
+  border-radius:4px;
   padding:0 16px;
   font-family:'Raleway','Montserrat',system-ui,sans-serif;
   font-size:11.5px;
   font-weight:700;
-  letter-spacing:.16em;
+  letter-spacing:.14em;
   text-transform:uppercase;
   cursor:pointer;
-  transition:background .15s ease, border-color .15s ease, box-shadow .15s ease, color .15s ease;
 }
 
 .saveSearchAuthPrimary{
   border:1px solid #8C1F2D;
   background:#8C1F2D;
-  color:#fff;
-  box-shadow:0 4px 14px rgba(140,31,45,0.16);
+  color:#FFFDFA;
 }
 
 .saveSearchAuthPrimary:hover{
-  background:#741825;
-  border-color:#741825;
-  box-shadow:0 6px 18px rgba(140,31,45,0.22);
+  background:#711824;
+  border-color:#711824;
 }
 
 .saveSearchAuthSecondary{
-  border:1px solid #e7dfd2;
+  border:1px solid #ece6db;
   background:#fff;
   color:#8C1F2D;
 }
@@ -2695,29 +2675,17 @@ body.saveSearchAuthOpen{
 }
 
 @media (max-width:768px){
-  .saveSearchAuthOverlay{
-    padding:18px;
-    align-items:flex-end;
-  }
-
   .saveSearchAuthModal{
-    width:100%;
-    padding:30px 22px 22px;
-    box-shadow:0 -12px 44px rgba(29,26,23,0.18);
+    padding:30px 22px 24px;
   }
 
   .saveSearchAuthTitle{
     font-size:25px;
   }
 
-  .saveSearchAuthActions{
-    flex-direction:column;
-    align-items:stretch;
-  }
-
   .saveSearchAuthPrimary,
   .saveSearchAuthSecondary{
     width:100%;
-    min-height:46px;
+    justify-content:center;
   }
 }

@@ -123,13 +123,31 @@ export function buildSavedSearchPayload({ name, map, url } = {}){
 export async function saveCurrentSearch({ name, map, url } = {}){
   const session = await requireSession();
   const payload = buildSavedSearchPayload({ name, map, url });
+
+  // Evita duplicados exactos para la misma URL/filtros principales.
+  // No depende de una constraint SQL: funciona con la estructura actual de saved_searches.
+  const mapUrl = payload?.filters?.map_url || null;
+  if (mapUrl) {
+    const { data: existing, error: existingError } = await supabase
+      .from("saved_searches")
+      .select("id")
+      .eq("user_id", session.user.id)
+      .contains("filters", { map_url: mapUrl })
+      .limit(1);
+
+    if (existingError) throw existingError;
+    if (Array.isArray(existing) && existing.length > 0) {
+      return { id: existing[0].id, already_exists: true };
+    }
+  }
+
   const { data, error } = await supabase
     .from("saved_searches")
     .insert({ user_id: session.user.id, ...payload })
     .select("id")
     .single();
   if (error) throw error;
-  return data;
+  return { ...(data || {}), already_exists: false };
 }
 
 export async function listSavedSearches(){
