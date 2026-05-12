@@ -2422,8 +2422,13 @@ function renderFeatures(row) {
       }
 
       function setContactButtons(phone, email){
-        const hasPhone = !!(phone && String(phone).trim());
-        const hasEmail = !!(email && String(email).trim());
+        const phoneText = phone ? String(phone).trim() : "";
+        const emailText = email ? String(email).trim() : "";
+        const hasPhone = !!phoneText;
+        const hasEmail = !!emailText;
+
+        const phoneHref = hasPhone ? ("tel:" + phoneText.replace(/\s+/g, "")) : "";
+        const emailHref = hasEmail ? ("mailto:" + emailText) : "";
 
         callBtn.disabled = !hasPhone;
         emailBtn.disabled = !hasEmail;
@@ -2435,44 +2440,80 @@ function renderFeatures(row) {
 
         if (mobileBottomPhoneBtnEl) mobileBottomPhoneBtnEl.disabled = !hasPhone;
         if (mobileBottomContactBtnEl) mobileBottomContactBtnEl.disabled = !hasEmail;
+
+        const callLabel = callBtn.querySelector("span:last-child");
+        const emailLabel = emailBtn.querySelector("span:last-child");
+
+        if (callLabel) callLabel.textContent = "Ver teléfono";
+        if (emailLabel) emailLabel.textContent = "Ver correo";
+        if (stickyPhoneBtnEl) stickyPhoneBtnEl.textContent = "Ver teléfono";
+
+        let phoneRevealed = false;
+
         callBtn.onclick = () => {
           if (!hasPhone) return;
-          window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
-        };
-        stickyPhoneBtnEl.onclick = () => {
-          if (!hasPhone) return;
-          window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
+          phoneRevealed = true;
+          if (callLabel) callLabel.textContent = phoneText;
+          callBtn.title = "Llamar";
+          callBtn.setAttribute("aria-label", "Teléfono: " + phoneText);
+          if (stickyPhoneBtnEl) stickyPhoneBtnEl.textContent = phoneText;
+          callBtn.onclick = () => { window.location.href = phoneHref; };
         };
 
         emailBtn.onclick = () => {
           if (!hasEmail) return;
-          window.location.href = "mailto:" + String(email);
+          if (emailLabel) emailLabel.textContent = emailText;
+          emailBtn.title = "Enviar correo";
+          emailBtn.setAttribute("aria-label", "Correo: " + emailText);
+          emailBtn.onclick = () => { window.location.href = emailHref; };
         };
+
+        stickyPhoneBtnEl.onclick = () => {
+          if (!hasPhone) return;
+          if (!phoneRevealed) {
+            phoneRevealed = true;
+            stickyPhoneBtnEl.textContent = phoneText;
+            if (callLabel) callLabel.textContent = phoneText;
+            stickyPhoneBtnEl.setAttribute("aria-label", "Teléfono: " + phoneText);
+            return;
+          }
+          window.location.href = phoneHref;
+        };
+
         contactBtn.onclick = () => {
           if (!hasEmail) return;
-          window.location.href = "mailto:" + String(email);
+          window.location.href = emailHref;
         };
+
         visitBtn.onclick = () => {
           if (!hasEmail) return;
           const subject = encodeURIComponent("Solicitud de visita");
-          window.location.href = "mailto:" + String(email) + "?subject=" + subject;
+          window.location.href = "mailto:" + emailText + "?subject=" + subject;
         };
+
         stickyContactBtnEl.onclick = () => {
           if (!hasEmail) return;
-          window.location.href = "mailto:" + String(email);
+          window.location.href = emailHref;
         };
 
         if (mobileBottomPhoneBtnEl){
           mobileBottomPhoneBtnEl.onclick = () => {
             if (!hasPhone) return;
-            window.location.href = "tel:" + String(phone).replace(/\s+/g, "");
+            if (!phoneRevealed) {
+              phoneRevealed = true;
+              if (callLabel) callLabel.textContent = phoneText;
+              if (stickyPhoneBtnEl) stickyPhoneBtnEl.textContent = phoneText;
+              mobileBottomPhoneBtnEl.setAttribute("aria-label", "Teléfono: " + phoneText);
+              return;
+            }
+            window.location.href = phoneHref;
           };
         }
 
         if (mobileBottomContactBtnEl){
           mobileBottomContactBtnEl.onclick = () => {
             if (!hasEmail) return;
-            window.location.href = "mailto:" + String(email);
+            window.location.href = emailHref;
           };
         }
       }
