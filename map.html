@@ -379,7 +379,7 @@
       import { initAuth } from "./bh-auth.js?v=20260504";
       import { initFiltersBar } from "./bh-map-filters.js";
       import { initMap } from "./bh-map-core.js";
-      import { getSession, saveCurrentSearch } from "./bh-user-data.js?v=20260512_saved_searches_real_v2";
+      import { getSession, saveCurrentSearch } from "./bh-user-data.js?v=20260512_saved_searches_real_v3";
 
       // Header / auth
       initLayout({ showMiniSearch: true });
@@ -527,7 +527,8 @@
             return;
           }
 
-          alert("No se pudo guardar la búsqueda. Revisa la conexión o inténtalo de nuevo.");
+          const detail = err?.message || err?.details || err?.hint || String(err);
+          alert("No se pudo guardar la búsqueda. Error real: " + detail);
           setTimeout(() => setSaveSearchButtonState(button, "idle"), 1400);
         }
       }

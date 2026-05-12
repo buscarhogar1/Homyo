@@ -146,7 +146,10 @@ export async function saveCurrentSearch({ name, map, url } = {}){
     .select("id, created_at")
     .single();
 
-  if (error) throw error;
+  if (error) {
+    const msg = [error.message, error.details, error.hint, error.code].filter(Boolean).join(" | ");
+    throw new Error(msg || "SAVE_SEARCH_INSERT_FAILED");
+  }
   return { ...(data || {}), already_exists: false };
 }
 
