@@ -1660,6 +1660,20 @@
       crossorigin=""
     ></script>
 
+    <script type="module">
+      import {
+        isFavorite as bhIsFavorite,
+        toggleFavorite as bhToggleFavorite,
+        openLoginModalOrAlert as bhOpenLoginModalOrAlert
+      } from "./bh-user-data.js";
+
+      window.bhFavoritesApi = {
+        isFavorite: bhIsFavorite,
+        toggleFavorite: bhToggleFavorite,
+        openLoginModalOrAlert: bhOpenLoginModalOrAlert
+      };
+    </script>
+
     <script>
       const SUPABASE_URL = "https://dpusnylssfjnksbieimj.supabase.co";
       const SUPABASE_ANON_KEY = "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK";
@@ -2491,13 +2505,13 @@ function renderFeatures(row) {
           return;
         }
 
-        isFavorite(listingId).then(setSavedUI).catch((err) => console.warn("No se pudo leer favorito", err));
+        window.bhFavoritesApi.isFavorite(listingId).then(setSavedUI).catch((err) => console.warn("No se pudo leer favorito", err));
 
         saveBtn.addEventListener("click", async () => {
           try {
             saveBtn.disabled = true;
             if (stickySaveBtnEl) stickySaveBtnEl.disabled = true;
-            const next = await toggleFavorite(listingId);
+            const next = await window.bhFavoritesApi.toggleFavorite(listingId);
             if (next !== null) setSavedUI(next);
           } catch (err) {
             console.error(err);
