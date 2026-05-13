@@ -52,15 +52,15 @@ function renderHeader({ showMiniSearch, root }) {
               Registrar inmobiliaria
             </a>
 
-            <a href="./legal/terminos.html" class="bhSideLink">
+            <a href="./terminos.html" class="bhSideLink">
               Términos de uso
             </a>
 
-            <a href="./legal/privacidad.html" class="bhSideLink">
+            <a href="./privacidad.html" class="bhSideLink">
               Política de privacidad
             </a>
 
-            <a href="./legal/cookies.html" class="bhSideLink">
+            <a href="./cookies.html" class="bhSideLink">
               Política de cookies
             </a>
           </nav>

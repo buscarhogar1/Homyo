@@ -3,32 +3,59 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Política de cookies · Buscar Hogar</title>
+    <title>Política de cookies · Homyo</title>
 
-    <link rel="stylesheet" href="../bh-shared.css" />
+    <link rel="stylesheet" href="./bh-shared.css?v=20260513" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260513" />
 
     <style>
       .legalWrap{
-        max-width: 760px;
+        max-width: 820px;
         margin: 0 auto;
-        padding: 40px 16px 64px;
-        line-height: 1.6;
+        padding: 48px 24px 80px;
+        line-height: 1.65;
+      }
+
+      .legalWrap::before{
+        content:"Información legal";
+        display:block;
+        margin:0 0 14px;
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:#C4962A;
       }
 
       .legalWrap h1{
-        font-size: 28px;
-        margin-bottom: 24px;
+        margin: 0 0 28px;
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
+        font-size: clamp(34px, 5vw, 56px);
+        line-height: 1;
+        letter-spacing: -1.1px;
+        font-weight: 500;
+        color: #8C1F2D;
       }
 
       .legalWrap h2{
-        font-size: 18px;
-        margin-top: 32px;
-        margin-bottom: 8px;
+        margin: 34px 0 10px;
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #8C1F2D;
       }
 
       .legalWrap p{
-        margin: 0 0 12px;
-        color: #333;
+        margin: 0 0 14px;
+        color: #3f3a34;
+        font-size: 15.5px;
+      }
+
+      @media (max-width:720px){
+        .legalWrap{
+          padding:32px 18px 64px;
+        }
       }
     </style>
   </head>
@@ -68,12 +95,9 @@
         aunque esto puede afectar al funcionamiento del sitio.
       </p>
     </main>
-
-    <div id="bhFooter"></div>
-
     <script type="module">
-      import { initLayout } from "../bh-layout.js";
-      import { initAuth } from "../bh-auth.js";
+      import { initLayout } from "./bh-layout.js?v=20260513";
+      import { initAuth } from "./bh-auth.js?v=20260513";
 
       initLayout({ showMiniSearch: false });
       initAuth();
