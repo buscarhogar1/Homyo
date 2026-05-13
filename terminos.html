@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Términos de uso · Buscar Hogar</title>
+
+    <link rel="stylesheet" href="../bh-shared.css" />
+
+    <style>
+      .legalWrap{
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 40px 16px 64px;
+        line-height: 1.6;
+      }
+
+      .legalWrap h1{
+        font-size: 28px;
+        margin-bottom: 24px;
+      }
+
+      .legalWrap h2{
+        font-size: 18px;
+        margin-top: 32px;
+        margin-bottom: 8px;
+      }
+
+      .legalWrap p{
+        margin: 0 0 12px;
+        color: #333;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="legalWrap">
+      <h1>Términos de uso</h1>
+
+      <p>
+        Estos términos regulan el acceso y uso de la plataforma Buscar Hogar.
+        Al navegar o utilizar este sitio web, aceptas quedar vinculado por estos términos.
+      </p>
+
+      <h2>Objeto del servicio</h2>
+      <p>
+        Buscar Hogar es una plataforma informativa que muestra anuncios inmobiliarios
+        publicados exclusivamente por profesionales verificados.
+        Buscar Hogar no actúa como intermediario en las operaciones.
+      </p>
+
+      <h2>Acceso y uso</h2>
+      <p>
+        El usuario se compromete a utilizar la plataforma de forma lícita,
+        sin realizar acciones que puedan dañar, sobrecargar o impedir su funcionamiento.
+      </p>
+
+      <h2>Responsabilidad</h2>
+      <p>
+        Buscar Hogar no garantiza la exactitud absoluta de la información publicada,
+        que es responsabilidad de los profesionales anunciantes.
+      </p>
+
+      <h2>Propiedad intelectual</h2>
+      <p>
+        El diseño, estructura y contenidos de la plataforma son titularidad de Buscar Hogar,
+        salvo que se indique lo contrario.
+      </p>
+
+      <h2>Modificaciones</h2>
+      <p>
+        Buscar Hogar se reserva el derecho a modificar estos términos en cualquier momento.
+      </p>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "../bh-layout.js";
+      import { initAuth } from "../bh-auth.js";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+    </script>
+  </body>
+</html>
