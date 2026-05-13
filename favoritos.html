@@ -485,7 +485,9 @@
         <div class="toolbarLeft" role="tablist">
           <button class="tabBtn active" type="button" data-mode="all">Todos <span class="count" id="countAll">0</span></button>
           <button class="tabBtn" type="button" data-mode="buy">Comprar <span class="count" id="countBuy">0</span></button>
+          <button class="tabBtn" type="button" data-mode="newbuild">Obra nueva <span class="count" id="countNewBuild">0</span></button>
           <button class="tabBtn" type="button" data-mode="rent">Alquilar <span class="count" id="countRent">0</span></button>
+          <button class="tabBtn" type="button" data-mode="room">Habitación <span class="count" id="countRoom">0</span></button>
         </div>
         <div class="sortWrap">
           <span>Ordenar</span>
@@ -536,6 +538,41 @@
         return "Guardado el " + d.toLocaleDateString("es-ES");
       }
       function modeOf(r){ return String(r.listing_mode || "buy"); }
+
+      function propertyTypeOf(r){
+        return String(
+          r.property_type ||
+          r.listing_type ||
+          r.operation_type ||
+          ""
+        ).toLowerCase();
+      }
+
+      function isNewBuild(r){
+        return (
+          r.is_new_build === true ||
+          propertyTypeOf(r).includes("obra") ||
+          propertyTypeOf(r).includes("new")
+        );
+      }
+
+      function isRoom(r){
+        return (
+          propertyTypeOf(r).includes("habitacion") ||
+          propertyTypeOf(r).includes("habitación") ||
+          propertyTypeOf(r).includes("room")
+        );
+      }
+
+      function matchesActiveMode(r){
+        if (activeMode === "all") return true;
+        if (activeMode === "buy") return modeOf(r) === "buy";
+        if (activeMode === "rent") return modeOf(r) === "rent";
+        if (activeMode === "newbuild") return isNewBuild(r);
+        if (activeMode === "room") return isRoom(r);
+        return true;
+      }
+
       function sortRows(a,b){
         const mode = sortSelect.value;
         if (mode === "price_asc") return (a.price_eur ?? 999999999) - (b.price_eur ?? 999999999);
@@ -546,10 +583,13 @@
         document.getElementById("countAll").textContent = rows.length;
         document.getElementById("countBuy").textContent = rows.filter(r => modeOf(r)==="buy").length;
         document.getElementById("countRent").textContent = rows.filter(r => modeOf(r)==="rent").length;
+        document.getElementById("countNewBuild").textContent = rows.filter(r => isNewBuild(r)).length;
+        document.getElementById("countRoom").textContent = rows.filter(r => isRoom(r)).length;
       }
+
       function render(){
         updateCounts();
-        let visible = rows.filter(r => activeMode === "all" || modeOf(r) === activeMode).sort(sortRows);
+        let visible = rows.filter(matchesActiveMode).sort(sortRows);
         grid.innerHTML = "";
         empty.classList.toggle("show", visible.length === 0);
         empty.setAttribute("aria-hidden", visible.length === 0 ? "false" : "true");
