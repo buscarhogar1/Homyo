@@ -393,7 +393,7 @@
             <div class="accountCardBody">
               <h2 class="accountCardTitle">Favoritos</h2>
               <p class="accountCardText">Las viviendas que has guardado, ordenadas y siempre a mano.</p>
-              <div class="accountCardMeta" data-meta="favoritos">12 viviendas</div>
+              <div class="accountCardMeta" id="favoritesMeta">0 anuncios guardados</div>
             </div>
             <span class="accountCardArrow" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -413,7 +413,7 @@
             <div class="accountCardBody">
               <h2 class="accountCardTitle">Búsquedas guardadas</h2>
               <p class="accountCardText">Recibe avisos cuando haya nuevas viviendas que encajen contigo.</p>
-              <div class="accountCardMeta" data-meta="busquedas">4 búsquedas activas</div>
+              <div class="accountCardMeta" id="searchesMeta">0 búsquedas guardadas</div>
             </div>
             <span class="accountCardArrow" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -475,6 +475,7 @@
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
+      import { listFavorites, listSavedSearches } from "./bh-user-data.js";
 
       initLayout({ showMiniSearch: false });
       initAuth();
@@ -484,6 +485,39 @@
       const statusEl = document.getElementById("accountStatus");
       const avatarEl = document.getElementById("accountAvatar");
       const logoutFooterLink = document.getElementById("logoutFooterLink");
+      const favoritesMetaEl = document.getElementById("favoritesMeta");
+      const searchesMetaEl = document.getElementById("searchesMeta");
+
+      async function refreshAccountCounters(session){
+        if (!session?.user){
+          if (favoritesMetaEl) favoritesMetaEl.textContent = "0 anuncios guardados";
+          if (searchesMetaEl) searchesMetaEl.textContent = "0 búsquedas guardadas";
+          return;
+        }
+
+        try{
+          const [favorites, searches] = await Promise.all([
+            listFavorites(),
+            listSavedSearches()
+          ]);
+
+          const favCount = Array.isArray(favorites) ? favorites.length : 0;
+          const searchCount = Array.isArray(searches) ? searches.length : 0;
+
+          if (favoritesMetaEl){
+            favoritesMetaEl.textContent =
+              `${favCount} ${favCount === 1 ? "anuncio guardado" : "anuncios guardados"}`;
+          }
+
+          if (searchesMetaEl){
+            searchesMetaEl.textContent =
+              `${searchCount} ${searchCount === 1 ? "búsqueda guardada" : "búsquedas guardadas"}`;
+          }
+        }catch(err){
+          console.warn("No se pudieron cargar contadores", err);
+        }
+      }
+
 
       function getUserDisplayName(user) {
         const fullName = String(user?.user_metadata?.full_name || "").trim();
@@ -526,9 +560,11 @@
         const session = event?.detail?.session || null;
         if (!session?.user) {
           showSignedOutState();
+          refreshAccountCounters(null);
           return;
         }
         setUser(session.user);
+        refreshAccountCounters(session);
       });
 
       logoutFooterLink?.addEventListener("click", (e) => {
