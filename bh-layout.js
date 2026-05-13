@@ -52,10 +52,22 @@ function renderHeader({ showMiniSearch, root }) {
               Registrar inmobiliaria
             </a>
 
-            <a href="./aviso-legal.html" class="bhSideLink">
-              Aviso legal
+            <a href="./terminos.html" class="bhSideLink">
+              Términos de uso
+            </a>
+
+            <a href="./privacidad.html" class="bhSideLink">
+              Política de privacidad
+            </a>
+
+            <a href="./cookies.html" class="bhSideLink">
+              Política de cookies
             </a>
           </nav>
+
+          <div class="bhSideFooter">
+            © 2026 Homyo
+          </div>
         </aside>
 
         <a class="brand" href="${root}" aria-label="Ir a inicio">

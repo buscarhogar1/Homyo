@@ -719,6 +719,7 @@ body.bhMenuOpen{
   display:flex;
   flex-direction:column;
   padding:18px 14px;
+  gap:4px;
 }
 
 .bhSideLink{
@@ -737,6 +738,16 @@ body.bhMenuOpen{
 .bhSideLink:hover{
   background:#f8f0df;
   color:#8C1F2D;
+}
+
+.bhSideFooter{
+  margin-top:auto;
+  padding:24px 28px;
+  border-top:1px solid #efe7d8;
+  color:#8f8578;
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
 }
 
 @media (max-width:720px){
