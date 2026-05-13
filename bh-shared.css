@@ -765,3 +765,39 @@ body.bhMenuOpen{
     font-size:32px;
   }
 }
+
+
+/* ===== HOMYO SIDE MENU MOBILE FOOTER FIX ===== */
+
+.bhSideMenu{
+  min-height:100dvh;
+}
+
+.bhSideNav{
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.bhSideFooter{
+  flex:0 0 auto;
+  padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width:720px){
+  .bhSideMenu{
+    height:100dvh;
+    max-height:100dvh;
+  }
+
+  .bhSideNav{
+    padding-bottom:18px;
+  }
+
+  .bhSideFooter{
+    position:sticky;
+    bottom:0;
+    background:#FFFDFA;
+    padding:16px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+    font-size:11px;
+  }
+}
