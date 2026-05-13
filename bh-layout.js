@@ -36,6 +36,28 @@ function renderHeader({ showMiniSearch, root }) {
           </button>
         </div>
 
+        <div class="bhSideOverlay" id="bhSideOverlay"></div>
+
+        <aside class="bhSideMenu" id="bhSideMenu" aria-hidden="true">
+          <div class="bhSideMenuTop">
+            <div class="bhSideMenuBrand">HOMYO</div>
+
+            <button type="button" class="bhSideClose" id="bhSideClose" aria-label="Cerrar menú">
+              ×
+            </button>
+          </div>
+
+          <nav class="bhSideNav">
+            <a href="./registro-inmobiliaria.html" class="bhSideLink">
+              Registrar inmobiliaria
+            </a>
+
+            <a href="./aviso-legal.html" class="bhSideLink">
+              Aviso legal
+            </a>
+          </nav>
+        </aside>
+
         <a class="brand" href="${root}" aria-label="Ir a inicio">
           <span class="brandText">HOMYO</span>
         </a>
@@ -203,6 +225,34 @@ export function initLayout(opts = {}) {
   window.BH_SITE_ROOT = root;
   window.BH_BASE_URL = BASE_URL;
   window.BH_CALLBACK_URL = BASE_URL + "callback.html";
+
+
+  const sideMenu = document.getElementById("bhSideMenu");
+  const sideOverlay = document.getElementById("bhSideOverlay");
+  const menuBtn = document.getElementById("navMenuBtn");
+  const sideClose = document.getElementById("bhSideClose");
+
+  function openSideMenu(){
+    sideMenu?.classList.add("open");
+    sideOverlay?.classList.add("open");
+    document.body.classList.add("bhMenuOpen");
+  }
+
+  function closeSideMenu(){
+    sideMenu?.classList.remove("open");
+    sideOverlay?.classList.remove("open");
+    document.body.classList.remove("bhMenuOpen");
+  }
+
+  menuBtn?.addEventListener("click", openSideMenu);
+  sideClose?.addEventListener("click", closeSideMenu);
+  sideOverlay?.addEventListener("click", closeSideMenu);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape"){
+      closeSideMenu();
+    }
+  });
 
   const miniSearchForm = document.getElementById("miniSearchForm");
   if (miniSearchForm) {
