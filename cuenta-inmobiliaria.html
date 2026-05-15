@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cuenta profesional · Homyo</title>
+
+    <link rel="stylesheet" href="./bh-shared.css?v=20260515" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260515" />
+
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --granateSoft:#A33646;
+        --granateDark:#711824;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
+        --good:#1f7a4c;
+        --goodSoft:#e8f3ec;
+        --warn:#a8741b;
+        --warnSoft:#fbf1dd;
+        --danger:#b03247;
+      }
+
+      *{ box-sizing:border-box; }
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      .proPage{
+        min-height:calc(100vh - var(--headerH,82px));
+        padding:48px 24px 96px;
+      }
+      .proWrap{ width:min(1180px,100%); margin:0 auto; }
+
+      .crumbs{
+        display:flex; align-items:center; gap:10px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px; letter-spacing:.28em; text-transform:uppercase;
+        color:var(--muted); margin-bottom:22px;
+      }
+      .crumbs a{ color:var(--muted); text-decoration:none; }
+      .crumbs a:hover{ color:var(--granate); }
+      .crumbs .sep{ color:var(--doradoSoft); }
+      .crumbs .current{ color:var(--granate); }
+
+      /* ===== HERO ===== */
+      .proHero{
+        display:grid;
+        grid-template-columns: 88px 1fr auto;
+        gap:28px;
+        align-items:center;
+        padding:28px 32px;
+        background:linear-gradient(135deg, #fff 0%, var(--cardWarm) 100%);
+        border:1px solid var(--line);
+        border-radius:4px;
+        position:relative;
+        overflow:hidden;
+      }
+      .proHero::after{
+        content:"";
+        position:absolute;
+        right:-80px; top:-80px;
+        width:260px; height:260px;
+        border-radius:50%;
+        background:radial-gradient(circle, rgba(196,150,42,.16) 0%, transparent 65%);
+        pointer-events:none;
+      }
+      .proLogo{
+        width:88px; height:88px;
+        border-radius:4px;
+        background:#fff;
+        border:1px solid var(--line);
+        display:grid; place-items:center;
+        font-family:'Raleway',sans-serif;
+        font-size:30px; font-weight:600;
+        color:var(--granate);
+        letter-spacing:.02em;
+        box-shadow:0 8px 22px rgba(140,31,45,.06);
+        position:relative;
+        z-index:1;
+      }
+      .proHeroBody{ min-width:0; position:relative; z-index:1; }
+      .proKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:11px; font-weight:600;
+        letter-spacing:.3em; text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 8px;
+      }
+      .proName{
+        margin:0 0 6px;
+        font-family:'Raleway',sans-serif;
+        font-size:38px; line-height:1.05;
+        letter-spacing:-.8px; font-weight:400;
+        color:var(--granate);
+      }
+      .proName strong{ font-weight:600; }
+      .proMeta{
+        display:flex; flex-wrap:wrap; gap:14px;
+        font-size:14px; color:var(--ink2);
+      }
+      .proMeta > span{ display:inline-flex; align-items:center; gap:8px; }
+      .proMeta svg{ width:14px; height:14px; color:var(--muted); }
+
+      .proBadges{
+        display:flex; flex-direction:column; gap:8px; align-items:flex-end;
+        position:relative; z-index:1;
+      }
+      .badge{
+        display:inline-flex; align-items:center; gap:8px;
+        padding:7px 12px;
+        border-radius:999px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px; font-weight:600;
+        letter-spacing:.18em; text-transform:uppercase;
+        white-space:nowrap;
+      }
+      .badge svg{ width:13px; height:13px; }
+      .badgeVerified{
+        background:#fff;
+        color:var(--good);
+        border:1px solid rgba(31,122,76,.35);
+      }
+      .badgePlan{
+        background:var(--granate);
+        color:#fff;
+      }
+
+      /* ===== KPI ROW ===== */
+      .kpis{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:14px;
+        margin-top:22px;
+      }
+      .kpi{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:22px 22px 20px;
+        position:relative;
+      }
+      .kpi::before{
+        content:"";
+        position:absolute; left:0; top:18px; bottom:18px;
+        width:2px;
+        background:var(--dorado);
+        opacity:.7;
+      }
+      .kpiLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:10.5px; font-weight:600;
+        letter-spacing:.24em; text-transform:uppercase;
+        color:var(--muted);
+        margin:0 0 10px;
+      }
+      .kpiValue{
+        font-family:'Raleway',sans-serif;
+        font-size:34px; line-height:1;
+        font-weight:500; color:var(--granate);
+        letter-spacing:-.4px;
+        margin:0 0 8px;
+      }
+      .kpiValue .unit{
+        font-size:14px;
+        color:var(--muted);
+        font-weight:500;
+        margin-left:4px;
+        letter-spacing:0;
+      }
+      .kpiDelta{
+        font-size:12.5px; color:var(--ink2);
+        display:inline-flex; align-items:center; gap:6px;
+      }
+      .kpiDelta.up{ color:var(--good); }
+      .kpiDelta.down{ color:var(--danger); }
+      .kpiDelta.flat{ color:var(--muted); }
+      .kpiDelta svg{ width:11px; height:11px; }
+
+      /* ===== Verification banner (only if pending) ===== */
+      .verifyStrip{
+        display:none;
+        align-items:center; gap:18px;
+        background:var(--warnSoft);
+        border:1px solid rgba(168,116,27,.35);
+        border-left:3px solid var(--warn);
+        padding:18px 22px;
+        border-radius:4px;
+        margin-top:22px;
+      }
+      .verifyStrip.isOn{ display:flex; }
+      .verifyStrip .ic{
+        width:40px; height:40px;
+        border-radius:50%;
+        background:#fff; color:var(--warn);
+        display:grid; place-items:center;
+        border:1px solid rgba(168,116,27,.4);
+        flex:0 0 auto;
+      }
+      .verifyStrip h4{
+        margin:0 0 3px;
+        font-family:'Raleway',sans-serif;
+        font-size:14px; font-weight:600;
+        color:var(--ink);
+      }
+      .verifyStrip p{
+        margin:0; font-size:13px;
+        color:var(--ink2); line-height:1.5;
+      }
+      .verifyStrip .actions{ margin-left:auto; flex:0 0 auto; }
+
+      /* ===== Section headings ===== */
+      .sectionHead{
+        margin:48px 0 18px;
+        display:flex; align-items:baseline; justify-content:space-between;
+        gap:18px;
+      }
+      .sectionLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:11px; font-weight:600;
+        letter-spacing:.32em; text-transform:uppercase;
+        color:var(--muted);
+        margin:0;
+      }
+      .sectionLink{
+        font-family:'Raleway',sans-serif;
+        font-size:11.5px; font-weight:600;
+        letter-spacing:.2em; text-transform:uppercase;
+        color:var(--granate);
+        text-decoration:none;
+        border-bottom:1px solid transparent;
+        padding-bottom:2px;
+      }
+      .sectionLink:hover{ border-bottom-color:var(--granate); }
+
+      /* ===== Main grid of cards ===== */
+      .proGrid{
+        display:grid;
+        grid-template-columns:repeat(3, minmax(0,1fr));
+        gap:14px;
+      }
+      .proCard{
+        display:grid;
+        grid-template-rows:auto 1fr auto;
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:26px 26px 22px;
+        text-decoration:none;
+        color:inherit;
+        position:relative;
+        overflow:hidden;
+        transition:border-color .22s ease, transform .22s ease, box-shadow .22s ease;
+      }
+      .proCard::before{
+        content:"";
+        position:absolute;
+        left:0; top:0; bottom:0;
+        width:3px;
+        background:var(--granate);
+        transform:scaleY(0);
+        transform-origin:top;
+        transition:transform .25s ease;
+      }
+      .proCard:hover{
+        border-color:rgba(140,31,45,.22);
+        box-shadow:0 14px 32px rgba(140,31,45,.07);
+        transform:translateY(-2px);
+      }
+      .proCard:hover::before{ transform:scaleY(1); }
+      .cardTop{
+        display:flex; align-items:center; justify-content:space-between;
+        gap:12px;
+        margin-bottom:18px;
+      }
+      .cardIcon{
+        width:48px; height:48px;
+        border-radius:50%;
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.25);
+        color:var(--granate);
+        display:grid; place-items:center;
+        transition:background .22s ease, color .22s ease, border-color .22s ease;
+      }
+      .proCard:hover .cardIcon{
+        background:var(--granate);
+        color:#fff;
+        border-color:var(--granate);
+      }
+      .cardIcon svg{ width:22px; height:22px; }
+      .cardCount{
+        font-family:'Raleway',sans-serif;
+        font-size:11px; font-weight:600;
+        letter-spacing:.2em; text-transform:uppercase;
+        color:var(--dorado);
+        padding:5px 10px;
+        background:#fff;
+        border:1px solid rgba(196,150,42,.3);
+        border-radius:999px;
+      }
+      .cardCount.alert{
+        color:var(--granate);
+        border-color:rgba(140,31,45,.3);
+        background:rgba(140,31,45,.04);
+      }
+      .cardTitle{
+        margin:0 0 8px;
+        font-family:'Raleway',sans-serif;
+        font-size:22px; line-height:1.15;
+        font-weight:500; color:var(--ink);
+        letter-spacing:-.3px;
+      }
+      .cardText{
+        margin:0;
+        font-size:14px; line-height:1.55;
+        color:var(--ink2);
+      }
+      .cardFoot{
+        margin-top:18px;
+        padding-top:14px;
+        border-top:1px solid var(--lineSoft);
+        display:flex; justify-content:space-between; align-items:center;
+        font-family:'Raleway',sans-serif;
+        font-size:11px; font-weight:600;
+        letter-spacing:.2em; text-transform:uppercase;
+        color:var(--muted);
+      }
+      .cardFoot .go{
+        color:var(--granate);
+        display:inline-flex; align-items:center; gap:8px;
+      }
+      .cardFoot .go svg{
+        width:14px; height:14px;
+        transition:transform .22s ease;
+      }
+      .proCard:hover .cardFoot .go svg{ transform:translateX(3px); }
+
+      /* Wider card variant for activity */
+      .activityCard{
+        grid-column:span 2;
+        display:flex; flex-direction:column;
+      }
+      @media (max-width:980px){ .activityCard{ grid-column:span 1; } }
+
+      .activityCard .cardTop{ margin-bottom:14px; }
+      .activityList{
+        list-style:none;
+        margin:0; padding:0;
+        display:flex; flex-direction:column;
+      }
+      .activityList li{
+        display:grid;
+        grid-template-columns:40px 1fr auto;
+        gap:14px;
+        align-items:center;
+        padding:14px 0;
+        border-top:1px solid var(--lineSoft);
+      }
+      .activityList li:first-child{ border-top:none; padding-top:6px; }
+      .actIcon{
+        width:40px; height:40px;
+        border-radius:50%;
+        background:var(--cardWarm);
+        color:var(--granate);
+        display:grid; place-items:center;
+        border:1px solid rgba(196,150,42,.25);
+      }
+      .actIcon svg{ width:16px; height:16px; }
+      .actBody h5{
+        margin:0 0 2px;
+        font-family:'Raleway',sans-serif;
+        font-size:14px; font-weight:600;
+        color:var(--ink);
+      }
+      .actBody p{
+        margin:0;
+        font-size:13px; line-height:1.45;
+        color:var(--ink2);
+      }
+      .actBody p strong{ color:var(--granate); font-weight:600; }
+      .actTime{
+        font-family:'Raleway',sans-serif;
+        font-size:11px; font-weight:600;
+        letter-spacing:.18em; text-transform:uppercase;
+        color:var(--muted);
+        white-space:nowrap;
+      }
+
+      .planCard{
+        grid-column:span 1;
+        display:flex; flex-direction:column;
+        background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><circle cx='100' cy='20' r='80' fill='%23fbf5e9'/></svg>") no-repeat right top / 200px 200px;
+      }
+      .planCard .planName{
+        font-family:'Raleway',sans-serif;
+        font-size:26px; font-weight:500;
+        color:var(--granate);
+        letter-spacing:-.4px;
+        margin:0 0 4px;
+      }
+      .planCard .planPrice{
+        font-family:'Raleway',sans-serif;
+        font-size:13.5px;
+        color:var(--ink2);
+        margin:0 0 18px;
+      }
+      .planCard .planList{
+        list-style:none; padding:0; margin:0 0 18px;
+        display:flex; flex-direction:column; gap:8px;
+        font-size:13.5px;
+        color:var(--ink2);
+      }
+      .planCard .planList li{
+        display:grid;
+        grid-template-columns:auto 1fr auto;
+        gap:10px;
+        align-items:center;
+      }
+      .planCard .planList li::before{
+        content:"";
+        width:6px; height:6px;
+        border-radius:50%;
+        background:var(--dorado);
+      }
+      .planCard .planList li .v{
+        font-family:'Raleway',sans-serif;
+        font-size:12.5px; font-weight:600;
+        color:var(--ink);
+      }
+      .planCard .planList li .v.warn{ color:var(--warn); }
+
+      /* ===== Bottom secondary cards ===== */
+      .proGrid.cols4{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+      .smallCard{
+        padding:20px 22px;
+        display:grid;
+        grid-template-rows:auto 1fr;
+        gap:8px;
+      }
+      .smallCard .cardTop{ margin-bottom:6px; }
+      .smallCard .cardIcon{ width:38px; height:38px; }
+      .smallCard .cardIcon svg{ width:18px; height:18px; }
+      .smallCard .cardTitle{ font-size:17px; margin-bottom:4px; }
+      .smallCard .cardText{ font-size:13px; }
+      .smallCard .cardFoot{ margin-top:14px; padding-top:12px; }
+
+      /* ===== Anon (logged out) state ===== */
+      .anonGate{
+        margin-top:32px;
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:54px 48px;
+        text-align:center;
+      }
+      .anonGate .ic{
+        width:64px; height:64px;
+        margin:0 auto 22px;
+        border-radius:50%;
+        background:var(--cardWarm);
+        color:var(--granate);
+        display:grid; place-items:center;
+        border:1px solid rgba(196,150,42,.3);
+      }
+      .anonGate .ic svg{ width:28px; height:28px; }
+      .anonGate h2{
+        margin:0 0 10px;
+        font-family:'Raleway',sans-serif;
+        font-size:32px; font-weight:300;
+        color:var(--granate);
+        letter-spacing:-.6px;
+      }
+      .anonGate h2 strong{ font-weight:600; }
+      .anonGate p{
+        margin:0 auto 24px;
+        max-width:460px;
+        font-size:15px; line-height:1.55;
+        color:var(--ink2);
+      }
+      .anonGate .actions{
+        display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+      }
+      .btnPrimary,
+      .btnGhost{
+        appearance:none;
+        font-family:'Raleway',sans-serif;
+        font-size:12.5px; font-weight:600;
+        letter-spacing:.22em; text-transform:uppercase;
+        padding:14px 26px;
+        border-radius:4px;
+        cursor:pointer;
+        text-decoration:none;
+        border:1px solid transparent;
+        transition:all .18s ease;
+        display:inline-flex; align-items:center; gap:8px;
+      }
+      .btnPrimary{
+        background:var(--granate);
+        color:#fff;
+        border-color:var(--granate);
+      }
+      .btnPrimary:hover{ background:var(--granateDark); border-color:var(--granateDark); }
+      .btnGhost{
+        background:#fff;
+        border-color:var(--line);
+        color:var(--ink2);
+      }
+      .btnGhost:hover{ border-color:var(--granate); color:var(--granate); }
+
+      /* ===== Footer row ===== */
+      .proFooter{
+        margin-top:56px;
+        padding-top:28px;
+        border-top:1px solid var(--line);
+        display:flex; gap:28px; flex-wrap:wrap;
+        font-size:14px; color:var(--muted);
+        align-items:center;
+      }
+      .proFooter a{
+        color:var(--ink2);
+        text-decoration:none;
+        border-bottom:1px solid transparent;
+      }
+      .proFooter a:hover{ color:var(--granate); border-bottom-color:var(--granate); }
+      .proFooter .logoutLink{
+        color:var(--granate);
+        font-weight:500;
+        cursor:pointer;
+      }
+      .proFooter .switchLink{
+        margin-left:auto;
+        font-family:'Raleway',sans-serif;
+        font-size:11.5px; font-weight:600;
+        letter-spacing:.2em; text-transform:uppercase;
+        color:var(--muted);
+      }
+      .proFooter .switchLink a{ color:var(--granate); border-bottom-color:var(--granate); padding-bottom:1px; }
+
+      /* ===== Auth-only / anon-only toggles ===== */
+      .pro-auth-only{ display:none; }
+      body.is-authed .pro-auth-only{ display:block; }
+      body.is-authed .pro-auth-only.flex{ display:flex; }
+      body.is-authed .pro-auth-only.grid{ display:grid; }
+      body.is-authed .pro-anon-only{ display:none !important; }
+
+      /* ===== Responsive ===== */
+      @media (max-width:1040px){
+        .kpis{ grid-template-columns:repeat(2,1fr); }
+        .proGrid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+        .proGrid.cols4{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .activityCard{ grid-column:span 2; }
+        .planCard{ grid-column:span 2; }
+      }
+      @media (max-width:720px){
+        .proPage{ padding:28px 16px 64px; }
+        .proHero{
+          grid-template-columns:64px 1fr;
+          padding:22px 20px;
+        }
+        .proLogo{ width:64px; height:64px; font-size:22px; }
+        .proName{ font-size:28px; letter-spacing:-.4px; }
+        .proBadges{
+          grid-column:1 / -1;
+          flex-direction:row;
+          align-items:center;
+          margin-top:6px;
+        }
+        .proGrid,
+        .proGrid.cols4{ grid-template-columns:1fr; }
+        .activityCard, .planCard{ grid-column:span 1; }
+        .kpis{ grid-template-columns:repeat(2,1fr); }
+        .kpiValue{ font-size:26px; }
+        .sectionHead{ margin-top:36px; }
+        .verifyStrip{ flex-wrap:wrap; }
+        .verifyStrip .actions{ margin-left:0; width:100%; }
+        .anonGate{ padding:36px 24px; }
+        .anonGate h2{ font-size:24px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="proPage">
+      <div class="proWrap">
+
+        <nav class="crumbs" aria-label="Migas de pan">
+          <a href="./index.html">Inicio</a>
+          <span class="sep">/</span>
+          <a href="./contacto.html?tipo=inmobiliaria">Profesionales</a>
+          <span class="sep">/</span>
+          <span class="current">Cuenta</span>
+        </nav>
+
+        <!-- =========================================================
+             ANON STATE — shown when not logged in
+             ========================================================= -->
+        <section class="anonGate pro-anon-only" id="anonGate" aria-labelledby="anonTitle">
+          <span class="ic" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="10.5" width="16" height="11" rx="1.5"></rect>
+              <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
+              <circle cx="12" cy="16" r="1.5"></circle>
+            </svg>
+          </span>
+          <h2 id="anonTitle">Accede a tu <strong>cuenta profesional</strong></h2>
+          <p>
+            Gestiona tus anuncios, contactos y estadísticas desde un único panel.
+            Si aún no tienes cuenta, completa el alta y nuestro equipo verifica tu inmobiliaria
+            en menos de 48&nbsp;h.
+          </p>
+          <div class="actions">
+            <button type="button" class="btnPrimary" id="anonLoginBtn">Iniciar sesión</button>
+            <a class="btnGhost" href="./registro-profesional.html">Crear cuenta profesional</a>
+          </div>
+        </section>
+
+        <!-- =========================================================
+             AUTH STATE — full dashboard
+             ========================================================= -->
+        <div class="pro-auth-only">
+
+          <!-- ===== HERO ===== -->
+          <header class="proHero" aria-labelledby="proName">
+            <div class="proLogo" id="proLogo" aria-hidden="true">CM</div>
+            <div class="proHeroBody">
+              <p class="proKicker">Cuenta profesional</p>
+              <h1 class="proName" id="proName">Hola, <strong>Casas del Mar</strong></h1>
+              <div class="proMeta">
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  Calle Serrano 21, Madrid
+                </span>
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 6h16v12H4z"></path>
+                    <path d="M4 10h16"></path>
+                  </svg>
+                  CIF B12345678
+                </span>
+                <span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4"></circle>
+                    <path d="M4 21c1.5-4 14.5-4 16 0"></path>
+                  </svg>
+                  <span id="proResp">Ana Ruiz · Administradora</span>
+                </span>
+              </div>
+            </div>
+            <div class="proBadges">
+              <span class="badge badgeVerified" title="Verificada por Homyo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"></path>
+                  <path d="M9 12l2 2 4-4"></path>
+                </svg>
+                Inmobiliaria verificada
+              </span>
+              <span class="badge badgePlan">Plan Casa · Anual</span>
+            </div>
+          </header>
+
+          <!-- ===== KPIs ===== -->
+          <section class="kpis" aria-label="Indicadores de la cuenta">
+            <div class="kpi">
+              <p class="kpiLabel">Anuncios activos</p>
+              <p class="kpiValue">24<span class="unit">/30</span></p>
+              <span class="kpiDelta flat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>
+                6 cupos disponibles
+              </span>
+            </div>
+            <div class="kpi">
+              <p class="kpiLabel">Leads este mes</p>
+              <p class="kpiValue">38</p>
+              <span class="kpiDelta up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg>
+                +18 % vs. abril
+              </span>
+            </div>
+            <div class="kpi">
+              <p class="kpiLabel">Visualizaciones</p>
+              <p class="kpiValue">12.4<span class="unit">K</span></p>
+              <span class="kpiDelta up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg>
+                +9 % últimos 30 días
+              </span>
+            </div>
+            <div class="kpi">
+              <p class="kpiLabel">Tasa de respuesta</p>
+              <p class="kpiValue">92<span class="unit">%</span></p>
+              <span class="kpiDelta up">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 6-6 6 6"/></svg>
+                Media en 1 h 12 min
+              </span>
+            </div>
+          </section>
+
+          <!-- ===== Verification status (only if pending — hidden by default) ===== -->
+          <aside class="verifyStrip" id="verifyStrip" aria-live="polite">
+            <span class="ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 8v4"></path>
+                <circle cx="12" cy="16" r=".7" fill="currentColor"></circle>
+              </svg>
+            </span>
+            <div>
+              <h4>Verificación pendiente</h4>
+              <p>Falta la nota simple del Registro Mercantil. Súbela para activar tu cuenta y poder publicar anuncios.</p>
+            </div>
+            <div class="actions">
+              <a class="btnPrimary" href="./registro-profesional.html#step-3">Completar verificación</a>
+            </div>
+          </aside>
+
+          <!-- ===== Sección principal — Gestión ===== -->
+          <div class="sectionHead">
+            <p class="sectionLabel">Tu actividad</p>
+            <a href="#" class="sectionLink">Centro de ayuda profesional →</a>
+          </div>
+
+          <section class="proGrid" aria-label="Gestión principal">
+            <a class="proCard" href="#anuncios">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 11.5 12 4l9 7.5"></path>
+                    <path d="M5 10v9.5h14V10"></path>
+                    <path d="M10 19.5V14h4v5.5"></path>
+                  </svg>
+                </span>
+                <span class="cardCount">24 activos</span>
+              </div>
+              <h2 class="cardTitle">Mis anuncios</h2>
+              <p class="cardText">Publica, edita y destaca tus viviendas. Controla el rendimiento de cada anuncio en un vistazo.</p>
+              <div class="cardFoot">
+                <span>3 en borrador</span>
+                <span class="go">Gestionar
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <a class="proCard" href="#contactos">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                  </svg>
+                </span>
+                <span class="cardCount alert">5 sin leer</span>
+              </div>
+              <h2 class="cardTitle">Contactos y leads</h2>
+              <p class="cardText">Solicitudes de visita y mensajes recibidos. Responde rápido para mantener tu tasa por encima del 90 %.</p>
+              <div class="cardFoot">
+                <span>38 este mes</span>
+                <span class="go">Ver bandeja
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <a class="proCard" href="#stats">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 20V10"></path>
+                    <path d="M10 20V4"></path>
+                    <path d="M16 20v-8"></path>
+                    <path d="M22 20H2"></path>
+                  </svg>
+                </span>
+                <span class="cardCount">+9 %</span>
+              </div>
+              <h2 class="cardTitle">Estadísticas</h2>
+              <p class="cardText">Visualizaciones, clicks de contacto y conversión por anuncio, zona y tipo de inmueble.</p>
+              <div class="cardFoot">
+                <span>Últimos 30 días</span>
+                <span class="go">Abrir informe
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <!-- Activity (wide) -->
+            <a class="proCard activityCard" href="#actividad">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 7v5l3.5 2"></path>
+                  </svg>
+                </span>
+                <span class="cardCount">Hoy</span>
+              </div>
+              <h2 class="cardTitle">Actividad reciente</h2>
+              <ul class="activityList" role="list">
+                <li>
+                  <span class="actIcon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                  </span>
+                  <div class="actBody">
+                    <h5>Nueva solicitud de visita</h5>
+                    <p><strong>Laura M.</strong> · Piso 3 hab. en Chamberí · prefiere sábado por la mañana</p>
+                  </div>
+                  <span class="actTime">Hace 12 min</span>
+                </li>
+                <li>
+                  <span class="actIcon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg>
+                  </span>
+                  <div class="actBody">
+                    <h5>Mensaje sin responder</h5>
+                    <p>Conversación con <strong>Daniel R.</strong> abierta hace 1 día sobre Ático en Salamanca.</p>
+                  </div>
+                  <span class="actTime">Ayer</span>
+                </li>
+                <li>
+                  <span class="actIcon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+                  </span>
+                  <div class="actBody">
+                    <h5>Anuncio destacado activo</h5>
+                    <p>Chalet en La Moraleja se mostrará en portada durante <strong>5 días</strong> más.</p>
+                  </div>
+                  <span class="actTime">2 d</span>
+                </li>
+                <li>
+                  <span class="actIcon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                  </span>
+                  <div class="actBody">
+                    <h5>Factura disponible</h5>
+                    <p>Renovación Plan Casa · <strong>180&nbsp;€</strong> · descarga ya tu PDF.</p>
+                  </div>
+                  <span class="actTime">3 d</span>
+                </li>
+              </ul>
+              <div class="cardFoot">
+                <span>Últimas 72 h</span>
+                <span class="go">Ver todo
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <!-- Plan card -->
+            <a class="proCard planCard" href="#plan">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6l-8-4z"></path>
+                  </svg>
+                </span>
+                <span class="cardCount">Anual</span>
+              </div>
+              <p class="planName">Plan Casa</p>
+              <p class="planPrice">180&nbsp;€/mes · renueva el 12 jun 2026</p>
+              <ul class="planList">
+                <li><span>Anuncios incluidos</span><span class="v">30</span></li>
+                <li><span>Destacados/mes</span><span class="v">3 de 5</span></li>
+                <li><span>Microsite propio</span><span class="v">Activo</span></li>
+                <li><span>Próxima factura</span><span class="v warn">180&nbsp;€</span></li>
+              </ul>
+              <div class="cardFoot">
+                <span>Facturación</span>
+                <span class="go">Gestionar plan
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+          </section>
+
+          <!-- ===== Secondary grid ===== -->
+          <div class="sectionHead">
+            <p class="sectionLabel">Configuración de la cuenta</p>
+          </div>
+
+          <section class="proGrid cols4" aria-label="Ajustes y configuración">
+            <a class="proCard smallCard" href="#datos">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21V13h4v8"/></svg>
+                </span>
+              </div>
+              <h3 class="cardTitle">Datos de la empresa</h3>
+              <p class="cardText">Razón social, CIF, domicilio fiscal y documentación oficial.</p>
+              <div class="cardFoot">
+                <span>Editar</span>
+                <span class="go">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <a class="proCard smallCard" href="#equipo">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1.2-3.4 11.8-3.4 13 0"/><circle cx="17" cy="9" r="2.7"/><path d="M16 14.5c2.5 0 5 1.4 5.5 3"/></svg>
+                </span>
+              </div>
+              <h3 class="cardTitle">Equipo y permisos</h3>
+              <p class="cardText">Invita comerciales y define quién puede publicar, responder o facturar.</p>
+              <div class="cardFoot">
+                <span>4 miembros</span>
+                <span class="go">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <a class="proCard smallCard" href="#perfil">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.5 12h17"/><path d="M12 3a14 14 0 0 1 0 18"/><path d="M12 3a14 14 0 0 0 0 18"/></svg>
+                </span>
+              </div>
+              <h3 class="cardTitle">Perfil público</h3>
+              <p class="cardText">Tu microsite en Homyo: logo, descripción, fotos y datos visibles.</p>
+              <div class="cardFoot">
+                <span>homyo.es/i/casas-del-mar</span>
+                <span class="go">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <a class="proCard smallCard" href="#facturacion">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg>
+                </span>
+              </div>
+              <h3 class="cardTitle">Facturación</h3>
+              <p class="cardText">Método de pago, datos fiscales y descarga de facturas mensuales.</p>
+              <div class="cardFoot">
+                <span>Visa ···· 4421</span>
+                <span class="go">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <a class="proCard smallCard" href="./detalles-acceso.html">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="1.5"/><path d="M8 10.5V7.5A4 4 0 0 1 12 3.5a4 4 0 0 1 4 4v3"/><circle cx="12" cy="15" r="1.5"/></svg>
+                </span>
+              </div>
+              <h3 class="cardTitle">Acceso y seguridad</h3>
+              <p class="cardText">Contraseña, doble factor y sesiones activas en otros dispositivos.</p>
+              <div class="cardFoot">
+                <span>2FA activado</span>
+                <span class="go">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <a class="proCard smallCard" href="./ajustes-correo.html">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6 12 13 2 6"/><rect x="2" y="5" width="20" height="14" rx="2"/></svg>
+                </span>
+              </div>
+              <h3 class="cardTitle">Notificaciones</h3>
+              <p class="cardText">Cuándo y cómo te avisamos de nuevos leads, mensajes y avisos del sistema.</p>
+              <div class="cardFoot">
+                <span>Diario · email</span>
+                <span class="go">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <a class="proCard smallCard" href="#integraciones">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg>
+                </span>
+              </div>
+              <h3 class="cardTitle">Integraciones</h3>
+              <p class="cardText">Sincroniza tu CRM o herramienta de gestión inmobiliaria con Homyo.</p>
+              <div class="cardFoot">
+                <span>Inmovilla · activo</span>
+                <span class="go">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <a class="proCard smallCard" href="./contacto.html?tipo=inmobiliaria">
+              <div class="cardTop">
+                <span class="cardIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.1 9.1a3 3 0 0 1 5.7 1c0 2-3 2.5-3 4"/><circle cx="12" cy="17" r=".7" fill="currentColor"/></svg>
+                </span>
+              </div>
+              <h3 class="cardTitle">Soporte profesional</h3>
+              <p class="cardText">Habla con tu account manager o consulta la guía del profesional inmobiliario.</p>
+              <div class="cardFoot">
+                <span>L–V · 9–19h</span>
+                <span class="go">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </span>
+              </div>
+            </a>
+          </section>
+
+          <!-- ===== Footer ===== -->
+          <div class="proFooter">
+            <a href="./index.html">Volver al inicio</a>
+            <a href="./terminos.html">Términos del profesional</a>
+            <a href="#" id="logoutFooterLink" class="logoutLink">Cerrar sesión</a>
+            <span class="switchLink">¿Cuenta particular? <a href="./account.html">Cambiar</a></span>
+          </div>
+
+        </div><!-- /.pro-auth-only -->
+
+      </div>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
+      import { initAuth } from "./bh-auth.js?v=20260504";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+
+      const body = document.body;
+      const proNameEl = document.getElementById("proName");
+      const proLogoEl = document.getElementById("proLogo");
+      const proRespEl = document.getElementById("proResp");
+      const logoutFooterLink = document.getElementById("logoutFooterLink");
+      const anonLoginBtn = document.getElementById("anonLoginBtn");
+
+      function initials(name){
+        const parts = String(name||"").trim().split(/\s+/).filter(Boolean);
+        if (!parts.length) return "·";
+        const a = parts[0]?.[0] || "";
+        const b = parts.length > 1 ? parts[parts.length - 1][0] : "";
+        return (a + b).toUpperCase() || "·";
+      }
+
+      function getCompanyName(user){
+        // The pro account name lives in user_metadata in real life.
+        // Fall back to the user's display name if the metadata isn't there yet.
+        const meta = user?.user_metadata || {};
+        return (
+          meta.company_name ||
+          meta.brand_name ||
+          meta.full_name ||
+          (user?.email ? user.email.split("@")[0] : "tu inmobiliaria")
+        );
+      }
+
+      function setProUser(user){
+        const name = getCompanyName(user);
+        proNameEl.innerHTML = `Hola, <strong>${name}</strong>`;
+        proLogoEl.textContent = initials(name);
+        const respName = user?.user_metadata?.responsible_name;
+        const respRole = user?.user_metadata?.responsible_role;
+        if (respName && proRespEl){
+          proRespEl.textContent = `${respName}${respRole ? " · " + respRole : ""}`;
+        }
+      }
+
+      function showAuth(){
+        body.classList.add("is-authed");
+      }
+      function showAnon(){
+        body.classList.remove("is-authed");
+      }
+
+      window.addEventListener("bh:auth-changed", (event) => {
+        const session = event?.detail?.session || null;
+        if (!session?.user){
+          showAnon();
+          return;
+        }
+        setProUser(session.user);
+        showAuth();
+      });
+
+      anonLoginBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("navLogin")?.click();
+      });
+
+      logoutFooterLink?.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("navLogoutBtn")?.click();
+      });
+    </script>
+  </body>
+</html>

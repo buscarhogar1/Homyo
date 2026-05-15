@@ -1,0 +1,1978 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Registro profesional · Homyo</title>
+
+    <link rel="stylesheet" href="./bh-shared.css?v=20260515" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260515" />
+
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --granateSoft:#A33646;
+        --granateDark:#711824;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
+        --good:#1f7a4c;
+        --goodSoft:#e8f3ec;
+        --warn:#a8741b;
+        --warnSoft:#fbf1dd;
+        --danger:#b03247;
+      }
+
+      *{ box-sizing:border-box; }
+
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      .pageWrap{
+        width:min(1120px,100%);
+        margin:0 auto;
+        padding:36px 24px 96px;
+      }
+
+      .crumbs{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:22px;
+      }
+      .crumbs a{ color:var(--muted); text-decoration:none; }
+      .crumbs a:hover{ color:var(--granate); }
+      .crumbs .sep{ color:var(--doradoSoft); }
+      .crumbs .current{ color:var(--granate); }
+
+      /* ===== Page header ===== */
+      .pageHeader{
+        padding-bottom:28px;
+        margin-bottom:28px;
+        border-bottom:1px solid var(--line);
+      }
+      .pageKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 14px;
+      }
+      .pageTitle{
+        margin:0;
+        font-family:'Raleway',sans-serif;
+        font-size:54px;
+        line-height:1.02;
+        letter-spacing:-1.2px;
+        font-weight:300;
+        color:var(--granate);
+        max-width:900px;
+      }
+      .pageTitle strong{ font-weight:600; }
+      .pageSubtitle{
+        margin:18px 0 0;
+        font-size:16px;
+        color:var(--ink2);
+        max-width:680px;
+        line-height:1.55;
+      }
+
+      /* ===== Stepper ===== */
+      .stepper{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:0;
+        margin-bottom:32px;
+        border-top:1px solid var(--line);
+        border-bottom:1px solid var(--line);
+      }
+      .step{
+        padding:18px 18px 18px 22px;
+        display:flex;
+        align-items:flex-start;
+        gap:14px;
+        border-right:1px solid var(--line);
+        background:#fff;
+        position:relative;
+      }
+      .step:last-child{ border-right:none; }
+      .step::before{
+        content:"";
+        position:absolute;
+        left:0;
+        top:0;
+        bottom:0;
+        width:3px;
+        background:transparent;
+      }
+      .step.isActive::before{ background:var(--granate); }
+      .step.isDone::before{ background:var(--dorado); }
+      .stepNum{
+        flex:0 0 auto;
+        width:30px;
+        height:30px;
+        border-radius:50%;
+        border:1px solid var(--line);
+        display:grid;
+        place-items:center;
+        font-family:'Raleway',sans-serif;
+        font-size:13px;
+        font-weight:600;
+        color:var(--muted);
+        background:#fff;
+      }
+      .step.isActive .stepNum{
+        background:var(--granate);
+        color:#fff;
+        border-color:var(--granate);
+      }
+      .step.isDone .stepNum{
+        background:var(--dorado);
+        color:#fff;
+        border-color:var(--dorado);
+      }
+      .step.isDone .stepNum::before{
+        content:"";
+        width:10px;
+        height:6px;
+        border-left:2px solid #fff;
+        border-bottom:2px solid #fff;
+        transform:rotate(-45deg) translate(1px,-2px);
+        display:block;
+      }
+      .step.isDone .stepNum span{ display:none; }
+      .stepBody{ min-width:0; }
+      .stepKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:600;
+        letter-spacing:.26em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin:0 0 3px;
+      }
+      .step.isActive .stepKicker{ color:var(--granate); }
+      .stepTitle{
+        font-family:'Raleway',sans-serif;
+        font-size:14.5px;
+        font-weight:600;
+        color:var(--ink);
+        margin:0;
+        letter-spacing:-.1px;
+      }
+
+      /* ===== Layout 2 columns ===== */
+      .contentGrid{
+        display:grid;
+        grid-template-columns: 1fr 340px;
+        gap:32px;
+        align-items:start;
+      }
+      @media (max-width:980px){
+        .contentGrid{ grid-template-columns:1fr; }
+      }
+
+      /* ===== Section card ===== */
+      .section{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:30px 32px 32px;
+      }
+      .section + .section{ margin-top:14px; }
+      .sectionLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.3em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 10px;
+      }
+      .sectionTitle{
+        font-family:'Raleway',sans-serif;
+        margin:0 0 8px;
+        font-size:26px;
+        line-height:1.15;
+        font-weight:500;
+        color:var(--granate);
+        letter-spacing:-.4px;
+      }
+      .sectionHelp{
+        margin:0 0 24px;
+        font-size:14.5px;
+        line-height:1.55;
+        color:var(--ink2);
+        max-width:640px;
+      }
+
+      .stepHidden{ display:none; }
+
+      /* ===== Fields ===== */
+      .fieldGrid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:16px;
+      }
+      .fieldGrid.cols3{ grid-template-columns:1fr 1fr 1fr; }
+      .fieldGrid.cols2to1 > .full{ grid-column:1 / -1; }
+      @media (max-width:620px){
+        .fieldGrid,
+        .fieldGrid.cols3{ grid-template-columns:1fr; }
+      }
+
+      .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+      .field:last-child{ margin-bottom:0; }
+      .field.full{ grid-column:1 / -1; }
+
+      .fieldLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        color:var(--ink2);
+      }
+      .fieldLabel .opt,
+      .fieldLabel .req{
+        font-weight:500;
+        letter-spacing:.04em;
+        text-transform:none;
+        margin-left:6px;
+        font-size:11px;
+      }
+      .fieldLabel .opt{ color:var(--muted); }
+      .fieldLabel .req{ color:var(--granate); }
+
+      .fieldHint{
+        font-size:12.5px;
+        color:var(--muted);
+        line-height:1.45;
+        margin-top:-2px;
+      }
+      .fieldHint a{ color:var(--granate); }
+
+      .inputBase,
+      select.inputBase,
+      textarea.inputBase{
+        width:100%;
+        padding:12px 14px;
+        border:1px solid var(--line);
+        border-radius:4px;
+        background:#fff;
+        font-family:inherit;
+        font-size:15px;
+        line-height:1.4;
+        color:var(--ink);
+        transition:border-color .18s ease, box-shadow .18s ease;
+      }
+      .inputBase:focus,
+      select.inputBase:focus,
+      textarea.inputBase:focus{
+        outline:none;
+        border-color:var(--granate);
+        box-shadow:0 0 0 3px rgba(140,31,45,.08);
+      }
+      .inputBase.isError{
+        border-color:var(--danger);
+        box-shadow:0 0 0 3px rgba(176,50,71,.08);
+      }
+      .errorMsg{
+        font-size:12px;
+        color:var(--danger);
+        margin-top:2px;
+        display:none;
+      }
+      .errorMsg.isOn{ display:block; }
+
+      select.inputBase{
+        appearance:none;
+        background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a857d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 12px center / 16px 16px;
+        padding-right:38px;
+        cursor:pointer;
+      }
+
+      .inputCombo{
+        display:grid;
+        grid-template-columns:auto 1fr;
+        align-items:stretch;
+      }
+      .inputCombo .prefix{
+        background:var(--cardWarm);
+        border:1px solid var(--line);
+        border-right:none;
+        border-radius:4px 0 0 4px;
+        padding:0 14px;
+        display:grid;
+        place-items:center;
+        font-family:'Raleway',sans-serif;
+        font-size:13px;
+        font-weight:600;
+        color:var(--granate);
+        letter-spacing:.06em;
+      }
+      .inputCombo .inputBase{
+        border-radius:0 4px 4px 0;
+      }
+
+      .pwHints{
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:6px 14px;
+        margin-top:8px;
+        font-size:12px;
+        color:var(--muted);
+      }
+      .pwHint{
+        display:flex;
+        align-items:center;
+        gap:8px;
+      }
+      .pwHint .dot{
+        width:10px;
+        height:10px;
+        border-radius:50%;
+        background:#eadcc1;
+        flex:0 0 auto;
+        position:relative;
+      }
+      .pwHint.ok{ color:var(--good); }
+      .pwHint.ok .dot{ background:var(--good); }
+      .pwHint.ok .dot::after{
+        content:"";
+        position:absolute;
+        inset:0;
+        margin:auto;
+        width:5px;
+        height:3px;
+        border-left:1.6px solid #fff;
+        border-bottom:1.6px solid #fff;
+        transform:rotate(-45deg) translate(0px,-1px);
+      }
+
+      /* ===== Radio cards ===== */
+      .radioCards{
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:12px;
+      }
+      @media (max-width:560px){ .radioCards{ grid-template-columns:1fr; } }
+      .radioCard{
+        position:relative;
+        display:block;
+        background:#fff;
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:18px 20px 18px 48px;
+        cursor:pointer;
+        transition:all .15s ease;
+      }
+      .radioCard:hover{ border-color:var(--granateSoft); }
+      .radioCard input{
+        position:absolute;
+        left:18px;
+        top:20px;
+        accent-color:var(--granate);
+      }
+      .radioCard h4{
+        margin:0 0 4px;
+        font-family:'Raleway',sans-serif;
+        font-size:15px;
+        font-weight:600;
+        color:var(--ink);
+        letter-spacing:-.1px;
+      }
+      .radioCard p{
+        margin:0;
+        font-size:13px;
+        line-height:1.45;
+        color:var(--muted);
+      }
+      .radioCard.isOn{
+        border-color:var(--granate);
+        background:linear-gradient(180deg, #fff 0%, var(--cardWarm) 100%);
+        box-shadow:0 6px 18px -10px rgba(140,31,45,.35);
+      }
+
+      /* ===== File upload ===== */
+      .uploadList{
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+      }
+      .uploadRow{
+        display:grid;
+        grid-template-columns:44px 1fr auto;
+        gap:14px;
+        align-items:center;
+        background:#fff;
+        border:1px dashed var(--line);
+        border-radius:4px;
+        padding:14px 16px;
+        transition:border-color .15s ease, background .15s ease;
+      }
+      .uploadRow.isFilled{
+        border-style:solid;
+        border-color:rgba(31,122,76,.4);
+        background:var(--goodSoft);
+      }
+      .uploadIcon{
+        width:44px;
+        height:44px;
+        border-radius:50%;
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.35);
+        color:var(--granate);
+        display:grid;
+        place-items:center;
+      }
+      .uploadRow.isFilled .uploadIcon{
+        background:#fff;
+        border-color:rgba(31,122,76,.35);
+        color:var(--good);
+      }
+      .uploadIcon svg{ width:20px; height:20px; }
+      .uploadBody{ min-width:0; }
+      .uploadBody h4{
+        margin:0 0 3px;
+        font-family:'Raleway',sans-serif;
+        font-size:14.5px;
+        font-weight:600;
+        color:var(--ink);
+        display:flex;
+        align-items:center;
+        gap:8px;
+        flex-wrap:wrap;
+      }
+      .uploadReq{
+        font-size:10px;
+        font-weight:600;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        padding:2px 6px;
+        border-radius:2px;
+        background:var(--granate);
+        color:#fff;
+      }
+      .uploadReq.opt{ background:var(--cardWarm); color:var(--muted); }
+      .uploadBody p{
+        margin:0;
+        font-size:13px;
+        line-height:1.45;
+        color:var(--ink2);
+      }
+      .uploadFile{
+        margin-top:4px;
+        font-size:12.5px;
+        color:var(--good);
+        display:none;
+        align-items:center;
+        gap:6px;
+      }
+      .uploadRow.isFilled .uploadFile{ display:inline-flex; }
+      .uploadFile .x{
+        appearance:none;
+        background:transparent;
+        border:none;
+        cursor:pointer;
+        color:var(--muted);
+        font-size:14px;
+        padding:0 0 0 4px;
+      }
+      .uploadFile .x:hover{ color:var(--danger); }
+      .uploadBtn{
+        appearance:none;
+        background:#fff;
+        border:1px solid var(--line);
+        color:var(--ink2);
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.16em;
+        text-transform:uppercase;
+        padding:10px 16px;
+        border-radius:4px;
+        cursor:pointer;
+        transition:all .15s ease;
+      }
+      .uploadBtn:hover{ border-color:var(--granate); color:var(--granate); }
+      .uploadRow.isFilled .uploadBtn{
+        background:transparent;
+        border-color:rgba(31,122,76,.3);
+        color:var(--good);
+      }
+
+      /* ===== Verification banner ===== */
+      .verifyBanner{
+        display:flex;
+        gap:14px;
+        align-items:flex-start;
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.35);
+        border-radius:4px;
+        padding:18px 20px;
+        margin-bottom:24px;
+      }
+      .verifyBanner .icon{
+        width:36px; height:36px; flex:0 0 auto;
+        border-radius:50%;
+        background:#fff;
+        border:1px solid rgba(196,150,42,.5);
+        color:var(--granate);
+        display:grid;
+        place-items:center;
+      }
+      .verifyBanner .icon svg{ width:18px; height:18px; }
+      .verifyBanner h4{
+        margin:0 0 4px;
+        font-family:'Raleway',sans-serif;
+        font-size:14px;
+        font-weight:600;
+        color:var(--granate);
+      }
+      .verifyBanner p{
+        margin:0;
+        font-size:13.5px;
+        color:var(--ink2);
+        line-height:1.5;
+      }
+
+      /* ===== Legal block ===== */
+      .legalRow{
+        display:flex;
+        align-items:flex-start;
+        gap:10px;
+        margin-top:8px;
+        font-size:13.5px;
+        color:var(--ink2);
+        line-height:1.5;
+      }
+      .legalRow + .legalRow{ margin-top:12px; }
+      .legalRow input[type=checkbox]{
+        margin-top:3px;
+        accent-color:var(--granate);
+        flex-shrink:0;
+        width:16px;
+        height:16px;
+      }
+      .legalRow a{ color:var(--granate); text-decoration:underline; }
+
+      /* ===== Summary review ===== */
+      .summaryGrid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:14px;
+        margin-bottom:20px;
+      }
+      @media (max-width:620px){ .summaryGrid{ grid-template-columns:1fr; } }
+      .summaryCard{
+        background:#fff;
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:18px 20px;
+      }
+      .summaryCard .head{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
+        margin-bottom:10px;
+      }
+      .summaryCard .head h4{
+        margin:0;
+        font-family:'Raleway',sans-serif;
+        font-size:13px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--dorado);
+      }
+      .summaryEdit{
+        appearance:none;
+        border:none;
+        background:transparent;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        color:var(--granate);
+        cursor:pointer;
+        padding:0;
+      }
+      .summaryEdit:hover{ color:var(--granateDark); }
+      .summaryList{
+        list-style:none;
+        margin:0;
+        padding:0;
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+      }
+      .summaryList li{
+        display:grid;
+        grid-template-columns:120px 1fr;
+        gap:10px;
+        font-size:13.5px;
+        color:var(--ink2);
+      }
+      .summaryList li .k{
+        color:var(--muted);
+        font-family:'Raleway',sans-serif;
+        font-size:11.5px;
+        font-weight:600;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        padding-top:1px;
+      }
+      .summaryList li .v{
+        color:var(--ink);
+        word-break:break-word;
+      }
+      .summaryList li .v.muted{ color:var(--muted); font-style:italic; }
+
+      /* ===== Action row ===== */
+      .actionsRow{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:14px;
+        margin-top:28px;
+        padding-top:22px;
+        border-top:1px solid var(--lineSoft);
+      }
+      .actionsHint{
+        font-size:12.5px;
+        color:var(--muted);
+      }
+      .actionsBtns{
+        display:flex;
+        gap:10px;
+        align-items:center;
+      }
+
+      .btnPrimary,
+      .btnGhost{
+        appearance:none;
+        font-family:'Raleway',sans-serif;
+        font-size:13px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        padding:14px 26px;
+        border-radius:4px;
+        cursor:pointer;
+        transition:all .18s ease;
+        border:1px solid transparent;
+      }
+      .btnPrimary{
+        background:var(--granate);
+        color:#fff;
+        border-color:var(--granate);
+      }
+      .btnPrimary:hover{ background:var(--granateDark); border-color:var(--granateDark); }
+      .btnPrimary:disabled{ background:#cfc7b8; border-color:#cfc7b8; cursor:not-allowed; }
+      .btnGhost{
+        background:#fff;
+        border-color:var(--line);
+        color:var(--ink2);
+        text-decoration:none;
+      }
+      .btnGhost:hover{ border-color:var(--granate); color:var(--granate); }
+
+      /* ===== Sidebar ===== */
+      .sideStack{
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+        position:sticky;
+        top:24px;
+      }
+      .infoCard{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:24px 24px 22px;
+      }
+      .infoCardLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:10.5px;
+        font-weight:600;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 10px;
+      }
+      .infoCardTitle{
+        font-family:'Raleway',sans-serif;
+        margin:0 0 14px;
+        font-size:18px;
+        font-weight:600;
+        color:var(--granate);
+        letter-spacing:-.2px;
+      }
+
+      .infoTimeline{
+        list-style:none;
+        margin:0;
+        padding:0 0 0 8px;
+        position:relative;
+      }
+      .infoTimeline::before{
+        content:"";
+        position:absolute;
+        left:14px;
+        top:6px;
+        bottom:6px;
+        width:1px;
+        background:var(--line);
+      }
+      .infoTimeline li{
+        position:relative;
+        padding:0 0 18px 38px;
+      }
+      .infoTimeline li:last-child{ padding-bottom:0; }
+      .infoTimeline li::before{
+        content:"";
+        position:absolute;
+        left:6px;
+        top:3px;
+        width:16px;
+        height:16px;
+        border-radius:50%;
+        background:#fff;
+        border:2px solid var(--dorado);
+      }
+      .infoTimeline li.isCurrent::before{
+        background:var(--granate);
+        border-color:var(--granate);
+        box-shadow:0 0 0 4px rgba(140,31,45,.12);
+      }
+      .infoTimeline li h5{
+        margin:0 0 3px;
+        font-family:'Raleway',sans-serif;
+        font-size:13.5px;
+        font-weight:600;
+        color:var(--ink);
+        letter-spacing:-.1px;
+      }
+      .infoTimeline li p{
+        margin:0;
+        font-size:12.5px;
+        line-height:1.5;
+        color:var(--muted);
+      }
+      .infoTimeline li .when{
+        font-family:'Raleway',sans-serif;
+        font-size:10.5px;
+        font-weight:600;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin-top:4px;
+      }
+
+      .helpList{
+        list-style:none;
+        margin:0;
+        padding:0;
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+      }
+      .helpItem{
+        display:flex;
+        gap:12px;
+        align-items:flex-start;
+        font-size:13.5px;
+        line-height:1.5;
+        color:var(--ink2);
+      }
+      .helpItem::before{
+        content:"";
+        width:6px;
+        height:6px;
+        border-radius:50%;
+        background:var(--dorado);
+        margin-top:8px;
+        flex:0 0 auto;
+      }
+      .helpItem strong{
+        display:block;
+        color:var(--ink);
+        font-family:'Raleway',sans-serif;
+        font-weight:600;
+        font-size:13px;
+        margin-bottom:2px;
+      }
+
+      .calloutCard{
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.35);
+        border-radius:4px;
+        padding:22px 24px;
+      }
+      .calloutCard h3{
+        font-family:'Raleway',sans-serif;
+        margin:0 0 6px;
+        font-size:15px;
+        font-weight:600;
+        color:var(--granate);
+      }
+      .calloutCard p{
+        margin:0 0 12px;
+        font-size:13px;
+        line-height:1.55;
+        color:var(--ink2);
+      }
+      .calloutCard a{
+        font-family:'Raleway',sans-serif;
+        font-size:11.5px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--granate);
+        text-decoration:none;
+        border-bottom:1px solid var(--granate);
+        padding-bottom:2px;
+      }
+      .calloutCard a:hover{ color:var(--granateDark); border-color:var(--granateDark); }
+
+      /* ===== Success / review state ===== */
+      .submittedCard{
+        display:none;
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:0;
+        overflow:hidden;
+      }
+      .submittedCard.isOn{ display:block; }
+
+      .submittedHead{
+        padding:44px 40px 36px;
+        background:linear-gradient(180deg, var(--cardWarm) 0%, #fff 100%);
+        border-bottom:1px solid var(--line);
+        text-align:center;
+      }
+      .submittedIcon{
+        width:72px; height:72px;
+        margin:0 auto 20px;
+        border-radius:50%;
+        background:#fff;
+        border:1px solid rgba(31,122,76,.3);
+        color:var(--good);
+        display:grid;
+        place-items:center;
+        box-shadow:0 12px 24px -12px rgba(31,122,76,.3);
+      }
+      .submittedIcon svg{ width:34px; height:34px; }
+      .submittedKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 10px;
+      }
+      .submittedTitle{
+        font-family:'Raleway',sans-serif;
+        margin:0 0 12px;
+        font-size:38px;
+        font-weight:300;
+        color:var(--granate);
+        letter-spacing:-.8px;
+      }
+      .submittedTitle strong{ font-weight:600; }
+      .submittedBody{
+        margin:0 auto 0;
+        max-width:520px;
+        font-size:15px;
+        line-height:1.55;
+        color:var(--ink2);
+      }
+      .submittedRef{
+        display:inline-flex;
+        gap:8px;
+        align-items:center;
+        margin-top:20px;
+        padding:8px 16px;
+        background:#fff;
+        border:1px solid var(--line);
+        border-radius:999px;
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.16em;
+        color:var(--ink2);
+      }
+      .submittedRef .k{ color:var(--muted); }
+      .submittedRef .v{ color:var(--granate); }
+
+      .submittedBody2{
+        padding:32px 40px 36px;
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:32px;
+      }
+      @media (max-width:760px){
+        .submittedBody2{ grid-template-columns:1fr; padding:28px 24px 30px; }
+        .submittedHead{ padding:32px 24px 26px; }
+        .submittedTitle{ font-size:30px; }
+      }
+
+      .submittedTimeline{
+        list-style:none;
+        margin:0;
+        padding:0;
+      }
+      .submittedTimeline li{
+        position:relative;
+        padding:0 0 22px 38px;
+      }
+      .submittedTimeline li:last-child{ padding-bottom:0; }
+      .submittedTimeline li::before{
+        content:"";
+        position:absolute;
+        left:8px;
+        top:4px;
+        bottom:-10px;
+        width:1px;
+        background:var(--line);
+      }
+      .submittedTimeline li:last-child::before{ display:none; }
+      .submittedTimeline li::after{
+        content:"";
+        position:absolute;
+        left:1px;
+        top:1px;
+        width:16px;
+        height:16px;
+        border-radius:50%;
+        background:#fff;
+        border:2px solid var(--dorado);
+      }
+      .submittedTimeline li.isDone::after{
+        background:var(--good);
+        border-color:var(--good);
+      }
+      .submittedTimeline li.isCurrent::after{
+        background:var(--granate);
+        border-color:var(--granate);
+        box-shadow:0 0 0 4px rgba(140,31,45,.12);
+      }
+      .submittedTimeline li.isDone::before,
+      .submittedTimeline li.isCurrent::before{ background:var(--dorado); }
+      .submittedTimeline h4{
+        margin:0 0 4px;
+        font-family:'Raleway',sans-serif;
+        font-size:14.5px;
+        font-weight:600;
+        color:var(--ink);
+        letter-spacing:-.1px;
+      }
+      .submittedTimeline p{
+        margin:0;
+        font-size:13px;
+        line-height:1.5;
+        color:var(--muted);
+      }
+      .submittedTimeline .when{
+        font-family:'Raleway',sans-serif;
+        font-size:10.5px;
+        font-weight:600;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin-bottom:3px;
+        display:block;
+      }
+
+      .submittedAside h3{
+        font-family:'Raleway',sans-serif;
+        margin:0 0 14px;
+        font-size:13px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--dorado);
+      }
+      .submittedAside .nextRow{
+        display:flex;
+        align-items:flex-start;
+        gap:12px;
+        padding:14px 16px;
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.3);
+        border-radius:4px;
+        margin-bottom:10px;
+      }
+      .submittedAside .nextRow .ic{
+        width:32px; height:32px;
+        flex:0 0 auto;
+        border-radius:50%;
+        background:#fff;
+        border:1px solid rgba(196,150,42,.4);
+        color:var(--granate);
+        display:grid; place-items:center;
+      }
+      .submittedAside .nextRow .ic svg{ width:14px; height:14px; }
+      .submittedAside .nextRow h5{
+        margin:0 0 2px;
+        font-family:'Raleway',sans-serif;
+        font-size:13.5px;
+        font-weight:600;
+        color:var(--ink);
+      }
+      .submittedAside .nextRow p{
+        margin:0;
+        font-size:12.5px;
+        line-height:1.5;
+        color:var(--ink2);
+      }
+
+      .submittedActions{
+        margin-top:22px;
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+      }
+
+      @media (max-width:680px){
+        .pageWrap{ padding:24px 16px 64px; }
+        .pageTitle{ font-size:34px; letter-spacing:-.6px; }
+        .pageSubtitle{ font-size:14.5px; }
+        .section{ padding:24px 20px 26px; }
+        .stepper{ grid-template-columns:repeat(4,auto); overflow-x:auto; }
+        .step{ padding:12px 14px 12px 18px; min-width:170px; }
+        .actionsRow{ flex-direction:column; align-items:stretch; }
+        .actionsHint{ order:2; }
+        .actionsBtns{ order:1; justify-content:space-between; }
+        .actionsBtns .btnPrimary,
+        .actionsBtns .btnGhost{ flex:1 1 auto; padding:14px 16px; letter-spacing:.18em; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="pageWrap">
+      <nav class="crumbs" aria-label="Migas de pan">
+        <a href="./index.html">Inicio</a>
+        <span class="sep">/</span>
+        <a href="./contacto.html?tipo=inmobiliaria">Profesionales</a>
+        <span class="sep">/</span>
+        <span class="current">Alta profesional</span>
+      </nav>
+
+      <header class="pageHeader">
+        <p class="pageKicker">Alta de inmobiliaria</p>
+        <h1 class="pageTitle">Crea tu cuenta profesional en <strong>Homyo</strong>.</h1>
+        <p class="pageSubtitle">
+          En Homyo no hace falta esperar a que te llamemos: completas tu alta, acreditas que tu inmobiliaria
+          está dada de alta oficialmente y nuestro equipo verifica los datos. Cuando todo cuadra, te activamos
+          la cuenta y puedes empezar a publicar.
+        </p>
+      </header>
+
+      <!-- ===== STEPPER ===== -->
+      <ol class="stepper" id="stepper" aria-label="Pasos del alta">
+        <li class="step isActive" data-step="1">
+          <span class="stepNum"><span>1</span></span>
+          <div class="stepBody">
+            <p class="stepKicker">Paso 1</p>
+            <h3 class="stepTitle">Datos de la empresa</h3>
+          </div>
+        </li>
+        <li class="step" data-step="2">
+          <span class="stepNum"><span>2</span></span>
+          <div class="stepBody">
+            <p class="stepKicker">Paso 2</p>
+            <h3 class="stepTitle">Persona responsable</h3>
+          </div>
+        </li>
+        <li class="step" data-step="3">
+          <span class="stepNum"><span>3</span></span>
+          <div class="stepBody">
+            <p class="stepKicker">Paso 3</p>
+            <h3 class="stepTitle">Acreditación</h3>
+          </div>
+        </li>
+        <li class="step" data-step="4">
+          <span class="stepNum"><span>4</span></span>
+          <div class="stepBody">
+            <p class="stepKicker">Paso 4</p>
+            <h3 class="stepTitle">Revisión y envío</h3>
+          </div>
+        </li>
+      </ol>
+
+      <div class="contentGrid">
+        <!-- ===== MAIN COLUMN ===== -->
+        <div>
+          <form id="regForm" autocomplete="on" novalidate>
+
+            <!-- ============ STEP 1: EMPRESA ============ -->
+            <section class="section" id="step-1">
+              <p class="sectionLabel">Paso 1 · Empresa</p>
+              <h2 class="sectionTitle">Identifica tu inmobiliaria</h2>
+              <p class="sectionHelp">
+                Necesitamos los datos fiscales y registrales de la empresa que va a operar en Homyo.
+                Tienen que coincidir con lo que figura en el Registro Mercantil o en tu certificado fiscal.
+              </p>
+
+              <div class="verifyBanner">
+                <span class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"></path>
+                    <path d="M9 12l2 2 4-4"></path>
+                  </svg>
+                </span>
+                <div>
+                  <h4>Comprobaremos tu empresa en fuentes oficiales</h4>
+                  <p>Cruzamos el CIF y el número de Registro Mercantil con datos públicos. Si no aparece o no coincide, te lo decimos para que lo corrijas antes de seguir.</p>
+                </div>
+              </div>
+
+              <div class="fieldGrid cols2to1">
+                <div class="field full">
+                  <label class="fieldLabel" for="fCompanyName">Razón social <span class="req">obligatorio</span></label>
+                  <input class="inputBase" type="text" id="fCompanyName" name="companyName" placeholder="Ej. Inmobiliaria Casas del Mar, S.L." required />
+                  <p class="fieldHint">Nombre fiscal completo, tal y como figura en el modelo 036 o en la escritura.</p>
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fBrandName">Nombre comercial <span class="opt">(opcional)</span></label>
+                  <input class="inputBase" type="text" id="fBrandName" name="brandName" placeholder="Ej. Casas del Mar" />
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fCif">CIF / NIF empresa <span class="req">obligatorio</span></label>
+                  <input class="inputBase" type="text" id="fCif" name="cif" placeholder="B12345678" required maxlength="9" />
+                  <p class="fieldHint">9 caracteres. Verificaremos su validez automáticamente.</p>
+                  <p class="errorMsg" id="errCif">Formato no válido. Debe tener 9 caracteres (ej. B12345678).</p>
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fLegalForm">Forma jurídica <span class="req">obligatorio</span></label>
+                  <select class="inputBase" id="fLegalForm" name="legalForm" required>
+                    <option value="">Selecciona…</option>
+                    <option>Sociedad Limitada (S.L.)</option>
+                    <option>Sociedad Anónima (S.A.)</option>
+                    <option>Comunidad de bienes</option>
+                    <option>Autónomo / persona física</option>
+                    <option>Cooperativa</option>
+                    <option>Otra</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fRegMerc">Nº Registro Mercantil <span class="req">obligatorio</span></label>
+                  <input class="inputBase" type="text" id="fRegMerc" name="regMerc" placeholder="Tomo · Folio · Hoja" required />
+                  <p class="fieldHint">No aplica solo en autónomos. <a href="#">¿Dónde lo encuentro?</a></p>
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fIncDate">Fecha de constitución <span class="req">obligatorio</span></label>
+                  <input class="inputBase" type="date" id="fIncDate" name="incDate" required />
+                </div>
+
+                <div class="field full">
+                  <label class="fieldLabel" for="fAddress">Domicilio fiscal <span class="req">obligatorio</span></label>
+                  <input class="inputBase" type="text" id="fAddress" name="address" placeholder="Calle, número, piso" required />
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fPostal">Código postal</label>
+                  <input class="inputBase" type="text" id="fPostal" name="postal" placeholder="28013" maxlength="5" />
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fCity">Localidad</label>
+                  <input class="inputBase" type="text" id="fCity" name="city" placeholder="Madrid" />
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fProvince">Provincia</label>
+                  <input class="inputBase" type="text" id="fProvince" name="province" placeholder="Madrid" />
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fPhone">Teléfono de la empresa <span class="req">obligatorio</span></label>
+                  <div class="inputCombo">
+                    <span class="prefix">+34</span>
+                    <input class="inputBase" type="tel" id="fPhone" name="phone" placeholder="912 345 678" required />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fWeb">Web pública <span class="opt">(opcional)</span></label>
+                  <input class="inputBase" type="url" id="fWeb" name="web" placeholder="https://" />
+                  <p class="fieldHint">Nos ayuda a verificar tu actividad pública.</p>
+                </div>
+              </div>
+
+              <div class="actionsRow">
+                <span class="actionsHint">Tus datos se guardan automáticamente mientras avanzas.</span>
+                <div class="actionsBtns">
+                  <a class="btnGhost" href="./contacto.html?tipo=inmobiliaria">Cancelar</a>
+                  <button type="button" class="btnPrimary" data-go="2">Continuar</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- ============ STEP 2: RESPONSABLE ============ -->
+            <section class="section stepHidden" id="step-2">
+              <p class="sectionLabel">Paso 2 · Persona responsable</p>
+              <h2 class="sectionTitle">¿Quién es el responsable de la cuenta?</h2>
+              <p class="sectionHelp">
+                Esta persona será el administrador principal en Homyo. Podrá invitar a más miembros del equipo
+                cuando la cuenta esté activa. El nombre y el DNI deben coincidir con el representante legal
+                o un apoderado de la empresa.
+              </p>
+
+              <div class="fieldGrid">
+                <div class="field">
+                  <label class="fieldLabel" for="fRespName">Nombre <span class="req">obligatorio</span></label>
+                  <input class="inputBase" type="text" id="fRespName" name="respName" required autocomplete="given-name" />
+                </div>
+                <div class="field">
+                  <label class="fieldLabel" for="fRespSurname">Apellidos <span class="req">obligatorio</span></label>
+                  <input class="inputBase" type="text" id="fRespSurname" name="respSurname" required autocomplete="family-name" />
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fRespDni">DNI / NIE <span class="req">obligatorio</span></label>
+                  <input class="inputBase" type="text" id="fRespDni" name="respDni" placeholder="12345678X" required maxlength="9" />
+                  <p class="errorMsg" id="errDni">Formato no válido.</p>
+                </div>
+                <div class="field">
+                  <label class="fieldLabel" for="fRespRole">Cargo en la empresa <span class="req">obligatorio</span></label>
+                  <select class="inputBase" id="fRespRole" name="respRole" required>
+                    <option value="">Selecciona…</option>
+                    <option>Administrador único</option>
+                    <option>Apoderado / representante legal</option>
+                    <option>Socio</option>
+                    <option>Director / gerente</option>
+                    <option>Autónomo titular</option>
+                    <option>Otro</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fRespEmail">Email profesional <span class="req">obligatorio</span></label>
+                  <input class="inputBase" type="email" id="fRespEmail" name="respEmail" placeholder="responsable@inmobiliaria.com" required autocomplete="email" />
+                  <p class="fieldHint">Te enviaremos un código para verificarlo. Evita emails personales tipo Gmail si es posible.</p>
+                </div>
+                <div class="field">
+                  <label class="fieldLabel" for="fRespPhone">Móvil de contacto <span class="req">obligatorio</span></label>
+                  <div class="inputCombo">
+                    <span class="prefix">+34</span>
+                    <input class="inputBase" type="tel" id="fRespPhone" name="respPhone" placeholder="612 345 678" required autocomplete="tel" />
+                  </div>
+                </div>
+
+                <div class="field full">
+                  <label class="fieldLabel" for="fPass">Contraseña <span class="req">obligatorio</span></label>
+                  <input class="inputBase" type="password" id="fPass" name="password" minlength="10" required autocomplete="new-password" />
+                  <div class="pwHints" id="pwHints">
+                    <span class="pwHint" data-rule="len"><span class="dot"></span>Mínimo 10 caracteres</span>
+                    <span class="pwHint" data-rule="upper"><span class="dot"></span>Una mayúscula</span>
+                    <span class="pwHint" data-rule="num"><span class="dot"></span>Un número</span>
+                    <span class="pwHint" data-rule="sym"><span class="dot"></span>Un símbolo</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="actionsRow">
+                <span class="actionsHint">Después de enviar te pediremos verificar este email.</span>
+                <div class="actionsBtns">
+                  <button type="button" class="btnGhost" data-go="1">Volver</button>
+                  <button type="button" class="btnPrimary" data-go="3">Continuar</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- ============ STEP 3: ACREDITACIÓN ============ -->
+            <section class="section stepHidden" id="step-3">
+              <p class="sectionLabel">Paso 3 · Acreditación profesional</p>
+              <h2 class="sectionTitle">Demuestra que tu inmobiliaria es oficial</h2>
+              <p class="sectionHelp">
+                Necesitamos un mínimo de documentación para evitar perfiles falsos. Aceptamos PDF, JPG o PNG
+                de hasta 8 MB por archivo. Solo nuestro equipo de verificación puede ver estos documentos.
+              </p>
+
+              <div class="field full">
+                <label class="fieldLabel">Registro autonómico de agentes inmobiliarios <span class="req">si aplica</span></label>
+                <p class="fieldHint" style="margin-top:0;margin-bottom:10px;">
+                  Algunas comunidades autónomas (Cataluña, C. Valenciana, Madrid, etc.) exigen estar inscrito en un registro oficial.
+                  Indícalo si tu comunidad lo requiere.
+                </p>
+                <div class="radioCards" id="regAutoCards">
+                  <label class="radioCard">
+                    <input type="radio" name="regAuto" value="yes" />
+                    <h4>Sí, estoy inscrito</h4>
+                    <p>Indícanos el código del registro autonómico correspondiente.</p>
+                  </label>
+                  <label class="radioCard">
+                    <input type="radio" name="regAuto" value="no" />
+                    <h4>No aplica en mi comunidad</h4>
+                    <p>Operas en una comunidad sin registro obligatorio.</p>
+                  </label>
+                </div>
+              </div>
+
+              <div class="fieldGrid" id="regAutoFields" style="display:none;">
+                <div class="field">
+                  <label class="fieldLabel" for="fRegCcaa">Comunidad autónoma</label>
+                  <select class="inputBase" id="fRegCcaa" name="regCcaa">
+                    <option value="">Selecciona…</option>
+                    <option>Andalucía</option>
+                    <option>Aragón</option>
+                    <option>Asturias</option>
+                    <option>Baleares</option>
+                    <option>Canarias</option>
+                    <option>Cantabria</option>
+                    <option>Castilla y León</option>
+                    <option>Castilla-La Mancha</option>
+                    <option>Cataluña (AICAT)</option>
+                    <option>Comunidad Valenciana</option>
+                    <option>Extremadura</option>
+                    <option>Galicia</option>
+                    <option>La Rioja</option>
+                    <option>Madrid (RAIN)</option>
+                    <option>Murcia</option>
+                    <option>Navarra</option>
+                    <option>País Vasco</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="fieldLabel" for="fRegNumber">Código de registro</label>
+                  <input class="inputBase" type="text" id="fRegNumber" name="regNumber" placeholder="Ej. AICAT 12345 / RAIN 0001" />
+                </div>
+              </div>
+
+              <div class="field full" style="margin-top:18px;">
+                <label class="fieldLabel" for="fApi">Nº de colegiado API <span class="opt">(opcional)</span></label>
+                <input class="inputBase" type="text" id="fApi" name="api" placeholder="Ej. API Madrid · Nº 1234" />
+                <p class="fieldHint">Si estás colegiado, lo mostraremos como sello de confianza en tus anuncios.</p>
+              </div>
+
+              <p class="sectionLabel" style="margin-top:28px;">Documentación a aportar</p>
+
+              <div class="uploadList">
+                <div class="uploadRow" data-upload="cif">
+                  <span class="uploadIcon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                      <path d="M14 3v6h6"></path>
+                    </svg>
+                  </span>
+                  <div class="uploadBody">
+                    <h4>Tarjeta de identificación fiscal (CIF) <span class="uploadReq">Obligatorio</span></h4>
+                    <p>Documento emitido por Hacienda con el CIF de la empresa.</p>
+                    <span class="uploadFile">
+                      <span class="name">archivo.pdf</span>
+                      <button type="button" class="x" aria-label="Quitar">×</button>
+                    </span>
+                  </div>
+                  <button type="button" class="uploadBtn">Subir archivo</button>
+                </div>
+
+                <div class="uploadRow" data-upload="merc">
+                  <span class="uploadIcon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 4h16v6H4z"></path>
+                      <path d="M4 14h16v6H4z"></path>
+                      <path d="M8 7h.01M8 17h.01"></path>
+                    </svg>
+                  </span>
+                  <div class="uploadBody">
+                    <h4>Nota simple del Registro Mercantil <span class="uploadReq">Obligatorio</span></h4>
+                    <p>Acredita la existencia legal de la empresa. No más de 6 meses de antigüedad.</p>
+                    <span class="uploadFile">
+                      <span class="name">archivo.pdf</span>
+                      <button type="button" class="x" aria-label="Quitar">×</button>
+                    </span>
+                  </div>
+                  <button type="button" class="uploadBtn">Subir archivo</button>
+                </div>
+
+                <div class="uploadRow" data-upload="dni">
+                  <span class="uploadIcon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                      <circle cx="9" cy="12" r="2.5"></circle>
+                      <path d="M14 10h5M14 14h4"></path>
+                    </svg>
+                  </span>
+                  <div class="uploadBody">
+                    <h4>DNI / NIE del responsable <span class="uploadReq">Obligatorio</span></h4>
+                    <p>Anverso y reverso. Debe coincidir con la persona indicada en el paso 2.</p>
+                    <span class="uploadFile">
+                      <span class="name">archivo.pdf</span>
+                      <button type="button" class="x" aria-label="Quitar">×</button>
+                    </span>
+                  </div>
+                  <button type="button" class="uploadBtn">Subir archivo</button>
+                </div>
+
+                <div class="uploadRow" data-upload="poderes">
+                  <span class="uploadIcon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 3h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+                      <path d="M15 3v5h5"></path>
+                      <path d="M8 13h8M8 17h6"></path>
+                    </svg>
+                  </span>
+                  <div class="uploadBody">
+                    <h4>Escritura de poderes <span class="uploadReq opt">Si procede</span></h4>
+                    <p>Necesaria solo si el responsable no es el administrador único o socio único.</p>
+                    <span class="uploadFile">
+                      <span class="name">archivo.pdf</span>
+                      <button type="button" class="x" aria-label="Quitar">×</button>
+                    </span>
+                  </div>
+                  <button type="button" class="uploadBtn">Subir archivo</button>
+                </div>
+
+                <div class="uploadRow" data-upload="seguro">
+                  <span class="uploadIcon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"></path>
+                    </svg>
+                  </span>
+                  <div class="uploadBody">
+                    <h4>Seguro de responsabilidad civil <span class="uploadReq opt">Recomendado</span></h4>
+                    <p>Algunas comunidades autónomas lo exigen para inscripción en su registro.</p>
+                    <span class="uploadFile">
+                      <span class="name">archivo.pdf</span>
+                      <button type="button" class="x" aria-label="Quitar">×</button>
+                    </span>
+                  </div>
+                  <button type="button" class="uploadBtn">Subir archivo</button>
+                </div>
+              </div>
+
+              <div class="actionsRow">
+                <span class="actionsHint">Tu documentación se cifra al subirla y solo la ve el equipo de verificación.</span>
+                <div class="actionsBtns">
+                  <button type="button" class="btnGhost" data-go="2">Volver</button>
+                  <button type="button" class="btnPrimary" data-go="4">Continuar</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- ============ STEP 4: REVISIÓN ============ -->
+            <section class="section stepHidden" id="step-4">
+              <p class="sectionLabel">Paso 4 · Revisión</p>
+              <h2 class="sectionTitle">Revisa antes de enviar</h2>
+              <p class="sectionHelp">
+                Asegúrate de que todo es correcto. Tras enviar, nuestro equipo de verificación comprueba tus
+                datos con los registros oficiales. Si necesitamos algo más, te escribimos al email del responsable.
+              </p>
+
+              <div class="summaryGrid">
+                <div class="summaryCard">
+                  <div class="head">
+                    <h4>Empresa</h4>
+                    <button type="button" class="summaryEdit" data-go="1">Editar</button>
+                  </div>
+                  <ul class="summaryList" id="sumEmpresa">
+                    <li><span class="k">Razón social</span><span class="v" data-from="fCompanyName">—</span></li>
+                    <li><span class="k">CIF</span><span class="v" data-from="fCif">—</span></li>
+                    <li><span class="k">Forma jurídica</span><span class="v" data-from="fLegalForm">—</span></li>
+                    <li><span class="k">Registro Mercantil</span><span class="v" data-from="fRegMerc">—</span></li>
+                    <li><span class="k">Domicilio</span><span class="v" data-from="fAddress">—</span></li>
+                    <li><span class="k">Teléfono</span><span class="v" data-from="fPhone">—</span></li>
+                  </ul>
+                </div>
+
+                <div class="summaryCard">
+                  <div class="head">
+                    <h4>Responsable</h4>
+                    <button type="button" class="summaryEdit" data-go="2">Editar</button>
+                  </div>
+                  <ul class="summaryList" id="sumResp">
+                    <li><span class="k">Nombre</span><span class="v" data-combo="fRespName,fRespSurname">—</span></li>
+                    <li><span class="k">DNI / NIE</span><span class="v" data-from="fRespDni">—</span></li>
+                    <li><span class="k">Cargo</span><span class="v" data-from="fRespRole">—</span></li>
+                    <li><span class="k">Email</span><span class="v" data-from="fRespEmail">—</span></li>
+                    <li><span class="k">Móvil</span><span class="v" data-from="fRespPhone">—</span></li>
+                  </ul>
+                </div>
+
+                <div class="summaryCard" style="grid-column:1 / -1;">
+                  <div class="head">
+                    <h4>Acreditación</h4>
+                    <button type="button" class="summaryEdit" data-go="3">Editar</button>
+                  </div>
+                  <ul class="summaryList" id="sumAcred">
+                    <li><span class="k">Registro CCAA</span><span class="v" id="sumRegCcaa">—</span></li>
+                    <li><span class="k">Nº colegiado API</span><span class="v" data-from="fApi">—</span></li>
+                    <li><span class="k">Documentos subidos</span><span class="v" id="sumDocs">—</span></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="verifyBanner">
+                <span class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 7v5l3 2"></path>
+                  </svg>
+                </span>
+                <div>
+                  <h4>Tiempo medio de aprobación: 24 a 48 horas laborables</h4>
+                  <p>Cruzamos tus datos con el Registro Mercantil y el registro autonómico, si aplica. Recibirás un email cuando esté listo o si necesitamos algo adicional.</p>
+                </div>
+              </div>
+
+              <label class="legalRow">
+                <input type="checkbox" id="legalTerms" required />
+                <span>
+                  He leído y acepto las
+                  <a href="./terminos.html">condiciones de uso para profesionales</a>
+                  y la <a href="./privacidad.html">política de privacidad</a> de Homyo.
+                </span>
+              </label>
+              <label class="legalRow">
+                <input type="checkbox" id="legalTruth" required />
+                <span>
+                  Declaro bajo mi responsabilidad que los datos y documentos aportados son veraces
+                  y que represento legalmente a la inmobiliaria indicada.
+                </span>
+              </label>
+              <label class="legalRow">
+                <input type="checkbox" id="legalComms" />
+                <span>
+                  Quiero recibir comunicaciones comerciales de Homyo sobre nuevas funciones para profesionales.
+                  <em>(opcional)</em>
+                </span>
+              </label>
+
+              <div class="actionsRow">
+                <span class="actionsHint">Al enviar generaremos un código de seguimiento para tu solicitud.</span>
+                <div class="actionsBtns">
+                  <button type="button" class="btnGhost" data-go="3">Volver</button>
+                  <button type="submit" class="btnPrimary" id="submitBtn">Enviar solicitud</button>
+                </div>
+              </div>
+            </section>
+          </form>
+
+          <!-- ============ SUBMITTED STATE ============ -->
+          <section class="submittedCard" id="submittedCard" aria-live="polite">
+            <div class="submittedHead">
+              <div class="submittedIcon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12.5l4.5 4.5L19 7"></path>
+                </svg>
+              </div>
+              <p class="submittedKicker">Solicitud recibida</p>
+              <h2 class="submittedTitle">Tu cuenta está <strong>en revisión</strong></h2>
+              <p class="submittedBody">
+                Hemos recibido tu solicitud. Nuestro equipo de verificación está cruzando los datos con los
+                registros oficiales. Te avisaremos por email en un plazo de 24 a 48 horas laborables.
+              </p>
+              <div class="submittedRef">
+                <span class="k">Referencia</span>
+                <span class="v" id="refCode">HMY-PRO-000000</span>
+              </div>
+            </div>
+
+            <div class="submittedBody2">
+              <div>
+                <h3 style="font-family:'Raleway',sans-serif;margin:0 0 16px;font-size:13px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--dorado);">Qué pasa ahora</h3>
+                <ul class="submittedTimeline">
+                  <li class="isDone">
+                    <span class="when">Hace unos segundos</span>
+                    <h4>Solicitud recibida</h4>
+                    <p>Tus datos y documentos están guardados de forma cifrada.</p>
+                  </li>
+                  <li class="isCurrent">
+                    <span class="when">En curso · 24–48 h</span>
+                    <h4>Verificación automática</h4>
+                    <p>Cruzamos tu CIF y registro mercantil con fuentes públicas.</p>
+                  </li>
+                  <li>
+                    <span class="when">Tras la verificación automática</span>
+                    <h4>Revisión por nuestro equipo</h4>
+                    <p>Un humano revisa los documentos y puede contactarte si falta algo.</p>
+                  </li>
+                  <li>
+                    <span class="when">Al aprobar</span>
+                    <h4>Cuenta activada</h4>
+                    <p>Te enviamos un email para que entres y empieces a publicar.</p>
+                  </li>
+                </ul>
+              </div>
+
+              <aside class="submittedAside">
+                <h3>Mientras esperas</h3>
+                <div class="nextRow">
+                  <span class="ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 6h16v12H4z"></path>
+                      <path d="M4 7l8 6 8-6"></path>
+                    </svg>
+                  </span>
+                  <div>
+                    <h5>Verifica tu email</h5>
+                    <p>Te hemos enviado un enlace al correo del responsable. Si no lo ves, mira en spam.</p>
+                  </div>
+                </div>
+                <div class="nextRow">
+                  <span class="ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 21V10l9-6 9 6v11"></path>
+                      <path d="M9 21v-7h6v7"></path>
+                    </svg>
+                  </span>
+                  <div>
+                    <h5>Prepara tus anuncios</h5>
+                    <p>Si tienes un CRM, podrás conectarlo cuando activemos tu cuenta para subir todos los inmuebles a la vez.</p>
+                  </div>
+                </div>
+                <div class="nextRow">
+                  <span class="ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="9"></circle>
+                      <path d="M12 8v4l3 2"></path>
+                    </svg>
+                  </span>
+                  <div>
+                    <h5>Estado en tiempo real</h5>
+                    <p>Guarda este código de referencia para consultar el estado o contactarnos.</p>
+                  </div>
+                </div>
+
+                <div class="submittedActions">
+                  <a class="btnGhost" href="./index.html">Volver al inicio</a>
+                  <a class="btnPrimary" href="./contacto.html?tipo=inmobiliaria">Contactar soporte</a>
+                </div>
+              </aside>
+            </div>
+          </section>
+        </div>
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sideStack" id="sideStack">
+          <div class="infoCard">
+            <p class="infoCardLabel">Cómo funciona</p>
+            <h3 class="infoCardTitle">Cuatro pasos, una verificación.</h3>
+            <ol class="infoTimeline">
+              <li class="isCurrent">
+                <h5>Rellenas tus datos</h5>
+                <p>Empresa, responsable y acreditación profesional.</p>
+              </li>
+              <li>
+                <h5>Verificamos automáticamente</h5>
+                <p>Cruzamos tu CIF y registro mercantil con fuentes oficiales.</p>
+              </li>
+              <li>
+                <h5>Revisión humana</h5>
+                <p>Una persona del equipo confirma la documentación.</p>
+              </li>
+              <li>
+                <h5>Activamos tu cuenta</h5>
+                <p>Recibes un email y ya puedes publicar.</p>
+              </li>
+            </ol>
+          </div>
+
+          <div class="infoCard">
+            <p class="infoCardLabel">Qué necesitas tener a mano</p>
+            <ul class="helpList">
+              <li class="helpItem">
+                <span>
+                  <strong>CIF de la empresa</strong>
+                  9 caracteres. Lo verificamos en línea.
+                </span>
+              </li>
+              <li class="helpItem">
+                <span>
+                  <strong>Registro Mercantil</strong>
+                  Tomo, folio y hoja, o nota simple en PDF.
+                </span>
+              </li>
+              <li class="helpItem">
+                <span>
+                  <strong>DNI / NIE del responsable</strong>
+                  De la persona que firma el alta.
+                </span>
+              </li>
+              <li class="helpItem">
+                <span>
+                  <strong>Registro autonómico</strong>
+                  Solo si tu comunidad lo exige (Cataluña, Madrid…).
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="calloutCard">
+            <h3>¿Eres autónomo?</h3>
+            <p>También puedes darte de alta como agente individual: en el paso 1 selecciona "Autónomo" en forma jurídica y omitiremos los datos de Registro Mercantil.</p>
+            <a href="./contacto.html?tipo=inmobiliaria">Hablar con el equipo →</a>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260515";
+      import { initAuth } from "./bh-auth.js?v=20260515";
+      initLayout({ showMiniSearch: false });
+      initAuth();
+    </script>
+
+    <script>
+      (function(){
+        const $ = (sel, root) => (root||document).querySelector(sel);
+        const $$ = (sel, root) => Array.from((root||document).querySelectorAll(sel));
+
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        function goStep(n){
+          n = Math.max(1, Math.min(totalSteps, n));
+          // Validate current step before forward
+          if (n > currentStep && !validateStep(currentStep)) return;
+
+          if (n === totalSteps) refreshSummary();
+
+          currentStep = n;
+          $$(".section[id^='step-']").forEach(s => s.classList.add("stepHidden"));
+          const el = document.getElementById("step-" + n);
+          if (el) el.classList.remove("stepHidden");
+
+          $$("#stepper .step").forEach(s => {
+            const k = Number(s.dataset.step);
+            s.classList.toggle("isActive", k === n);
+            s.classList.toggle("isDone", k < n);
+          });
+
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function validateStep(n){
+          // simple required-check per step
+          let scope;
+          if (n === 1) scope = "#step-1";
+          else if (n === 2) scope = "#step-2";
+          else if (n === 3) scope = "#step-3";
+          else return true;
+
+          const requireds = $$(scope + " [required]");
+          let firstBad = null;
+          let ok = true;
+          requireds.forEach(el => {
+            const isEmpty = !String(el.value || "").trim();
+            if (isEmpty){
+              ok = false;
+              el.classList.add("isError");
+              if (!firstBad) firstBad = el;
+            } else {
+              el.classList.remove("isError");
+            }
+          });
+
+          // CIF format check
+          if (n === 1){
+            const cif = $("#fCif");
+            const errCif = $("#errCif");
+            if (cif && cif.value){
+              const ok2 = /^[A-Z][0-9]{7}[A-Z0-9]$/i.test(cif.value.trim());
+              cif.classList.toggle("isError", !ok2);
+              errCif.classList.toggle("isOn", !ok2);
+              if (!ok2){ ok = false; if (!firstBad) firstBad = cif; }
+            }
+          }
+
+          // DNI format check
+          if (n === 2){
+            const dni = $("#fRespDni");
+            const errDni = $("#errDni");
+            if (dni && dni.value){
+              const ok2 = /^[XYZ]?[0-9]{7,8}[A-Z]$/i.test(dni.value.trim());
+              dni.classList.toggle("isError", !ok2);
+              errDni.classList.toggle("isOn", !ok2);
+              if (!ok2){ ok = false; if (!firstBad) firstBad = dni; }
+            }
+          }
+
+          if (firstBad){ firstBad.focus(); }
+          return ok;
+        }
+
+        // Stepper buttons
+        document.addEventListener("click", (e) => {
+          const t = e.target.closest("[data-go]");
+          if (!t) return;
+          e.preventDefault();
+          goStep(Number(t.dataset.go));
+        });
+
+        // Clicking a finished step on the stepper goes back
+        $$("#stepper .step").forEach(s => {
+          s.addEventListener("click", () => {
+            const k = Number(s.dataset.step);
+            if (k <= currentStep) goStep(k);
+          });
+          s.style.cursor = "pointer";
+        });
+
+        // Password hints
+        const pw = $("#fPass");
+        if (pw){
+          pw.addEventListener("input", () => {
+            const v = pw.value;
+            const rules = {
+              len: v.length >= 10,
+              upper: /[A-Z]/.test(v),
+              num: /[0-9]/.test(v),
+              sym: /[^A-Za-z0-9]/.test(v)
+            };
+            $$("#pwHints .pwHint").forEach(h => {
+              h.classList.toggle("ok", rules[h.dataset.rule]);
+            });
+          });
+        }
+
+        // Radio cards visual state
+        $$("#regAutoCards input[name=regAuto]").forEach(r => {
+          r.addEventListener("change", () => {
+            $$("#regAutoCards .radioCard").forEach(c => c.classList.remove("isOn"));
+            r.closest(".radioCard").classList.add("isOn");
+            $("#regAutoFields").style.display = (r.value === "yes") ? "" : "none";
+          });
+        });
+
+        // Simulated file uploads
+        $$(".uploadRow .uploadBtn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const row = btn.closest(".uploadRow");
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = ".pdf,.jpg,.jpeg,.png";
+            input.addEventListener("change", () => {
+              const f = input.files && input.files[0];
+              if (!f) return;
+              row.classList.add("isFilled");
+              row.querySelector(".uploadFile .name").textContent = f.name;
+              row.querySelector(".uploadBtn").textContent = "Cambiar";
+            });
+            input.click();
+          });
+        });
+        $$(".uploadRow .uploadFile .x").forEach(x => {
+          x.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const row = x.closest(".uploadRow");
+            row.classList.remove("isFilled");
+            row.querySelector(".uploadBtn").textContent = "Subir archivo";
+          });
+        });
+
+        // Summary refresh
+        function refreshSummary(){
+          $$("#step-4 [data-from]").forEach(el => {
+            const id = el.dataset.from;
+            const src = document.getElementById(id);
+            const val = src ? (src.value || "").trim() : "";
+            el.textContent = val || "—";
+            el.classList.toggle("muted", !val);
+          });
+          $$("#step-4 [data-combo]").forEach(el => {
+            const ids = el.dataset.combo.split(",");
+            const txt = ids.map(i => (document.getElementById(i)?.value || "").trim()).filter(Boolean).join(" ");
+            el.textContent = txt || "—";
+            el.classList.toggle("muted", !txt);
+          });
+
+          // regCCAA + number
+          const regAutoVal = ($("input[name=regAuto]:checked") || {}).value;
+          const ccaa = ($("#fRegCcaa")?.value || "").trim();
+          const num = ($("#fRegNumber")?.value || "").trim();
+          let txt = "No aplica";
+          if (regAutoVal === "yes"){
+            txt = [ccaa, num].filter(Boolean).join(" · ") || "Pendiente de indicar";
+          }
+          const sumRegCcaa = $("#sumRegCcaa");
+          if (sumRegCcaa){
+            sumRegCcaa.textContent = txt;
+            sumRegCcaa.classList.toggle("muted", txt === "No aplica" || txt === "Pendiente de indicar");
+          }
+
+          // Docs count
+          const filled = $$(".uploadRow.isFilled").length;
+          const total = $$(".uploadRow").length;
+          const sumDocs = $("#sumDocs");
+          if (sumDocs){
+            sumDocs.textContent = filled === 0
+              ? "Ningún documento subido todavía"
+              : `${filled} de ${total} aportados`;
+            sumDocs.classList.toggle("muted", filled === 0);
+          }
+        }
+
+        // Submit
+        $("#regForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          if (!$("#legalTerms").checked){ $("#legalTerms").focus(); return; }
+          if (!$("#legalTruth").checked){ $("#legalTruth").focus(); return; }
+          if (!validateStep(1) || !validateStep(2) || !validateStep(3)){
+            // jump to first invalid
+            for (let i = 1; i <= 3; i++){
+              if (!validateStep(i)){ goStep(i); return; }
+            }
+          }
+
+          const btn = $("#submitBtn");
+          btn.disabled = true;
+          btn.textContent = "Enviando…";
+
+          setTimeout(() => {
+            // Hide stepper + form, show submitted state
+            $("#regForm").style.display = "none";
+            $("#stepper").style.display = "none";
+            $("#sideStack").style.display = "none";
+
+            // ref code
+            const ref = "HMY-PRO-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+            $("#refCode").textContent = ref;
+
+            $("#submittedCard").classList.add("isOn");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }, 900);
+        });
+
+        // Initial state
+        goStep(1);
+      })();
+    </script>
+  </body>
+</html>

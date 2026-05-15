@@ -79,7 +79,7 @@ function renderHeader({ showMiniSearch, root }) {
                 Cuenta
               </a>
 
-              <a href="./registro-inmobiliaria.html" class="bhSideLink bhSideAnonOnly">
+              <a href="./registro-profesional.html" class="bhSideLink bhSideAnonOnly">
                 Registrarse
               </a>
 
