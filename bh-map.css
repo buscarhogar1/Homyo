@@ -2248,8 +2248,15 @@ body{
   color: var(--bh-dorado) !important;
 }
 
-/* Botones superiores — alineados al branding Homyo (granate / dorado, 3.5px) */
+/* Botones superiores — alineados al branding Homyo (granate / dorado, 3.5px)
+   Unificamos TODOS los botones de la fila superior con el mismo lenguaje:
+   alto, tipografía, mayúsculas y radio. Solo varía el color (granate por
+   defecto, ghost para "Eliminar filtros", dorado para "Guardar búsqueda"). */
+.topToggleBtn,
 #toggleFiltersBtn,
+#clearFiltersBtn,
+#toggleMapBtn,
+#saveSearchDesktopBtn,
 #orderBtn,
 #toggleListBtn{
   height: 36px !important;
@@ -2259,7 +2266,7 @@ body{
   background: #fff !important;
   color: var(--bh-granate) !important;
   font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
-  font-size: 11.5px !important;
+  font-size: 10.5px !important;
   font-weight: 600 !important;
   letter-spacing: 0.16em !important;
   text-transform: uppercase !important;
@@ -2268,13 +2275,44 @@ body{
   transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease !important;
 }
 
+.topToggleBtn:hover,
 #toggleFiltersBtn:hover,
+#toggleMapBtn:hover,
 #orderBtn:hover,
 #toggleListBtn:hover{
   border-color: rgba(196,150,42,0.55) !important;
   background: rgba(196,150,42,0.045) !important;
   color: var(--bh-granate) !important;
   box-shadow: 0 3px 12px rgba(196,150,42,0.10) !important;
+}
+
+/* Variante ghost — "Eliminar filtros": misma forma, color neutro */
+#clearFiltersBtn,
+.topToggleBtnGhost{
+  border-color: rgba(0,0,0,0.14) !important;
+  background: transparent !important;
+  color: rgba(0,0,0,0.55) !important;
+  box-shadow: none !important;
+}
+#clearFiltersBtn:hover,
+.topToggleBtnGhost:hover{
+  border-color: rgba(140,31,45,0.32) !important;
+  background: rgba(140,31,45,0.04) !important;
+  color: var(--bh-granate) !important;
+  box-shadow: none !important;
+}
+
+/* Estado deshabilitado unificado */
+.topToggleBtn[disabled],
+#toggleFiltersBtn[disabled],
+#clearFiltersBtn[disabled],
+#toggleMapBtn[disabled],
+#saveSearchDesktopBtn[disabled],
+#orderBtn[disabled],
+#toggleListBtn[disabled]{
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
 }
 
 #orderBtn{

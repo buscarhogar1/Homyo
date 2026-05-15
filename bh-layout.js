@@ -48,39 +48,60 @@ function renderHeader({ showMiniSearch, root }) {
           </div>
 
           <nav class="bhSideNav">
-            <a href="./account.html" class="bhSideLink">
-              Cuenta usuario
-            </a>
+            <div class="bhSideSection">
+              <div class="bhSideHeading" aria-hidden="true">Usuario</div>
 
-            <a href="./cuenta-inmobiliaria.html" class="bhSideLink">
-              Cuenta inmobiliaria
-            </a>
+              <a href="#" class="bhSideLink bhSideAnonOnly" data-bh-open-auth="login">
+                Iniciar sesión
+              </a>
 
-            <a href="./registro-inmobiliaria.html" class="bhSideLink">
-              Registrar inmobiliaria
-            </a>
+              <a href="./account.html" class="bhSideLink bhSideAuthOnly">
+                Cuenta
+              </a>
 
-            <div class="bhSideGroup" id="bhLegalGroup">
-              <button type="button" class="bhSideLink bhSideGroupToggle" id="bhLegalToggle" aria-expanded="false" aria-controls="bhLegalSub">
-                <span>Información legal</span>
-                <svg class="bhSideChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M6 9l6 6 6-6"></path>
-                </svg>
-              </button>
+              <a href="#" class="bhSideLink bhSideAnonOnly" data-bh-open-auth="register">
+                Registrarse
+              </a>
 
-              <div class="bhSideSub" id="bhLegalSub" hidden>
-                <a href="./terminos.html" class="bhSideSubLink">
-                  Términos de uso
-                </a>
+              <a href="./contacto.html?tipo=usuario" class="bhSideLink">
+                Contacto
+              </a>
+            </div>
 
-                <a href="./privacidad.html" class="bhSideSubLink">
-                  Política de privacidad
-                </a>
+            <div class="bhSideSection">
+              <div class="bhSideHeading" aria-hidden="true">Profesional inmobiliario</div>
 
-                <a href="./cookies.html" class="bhSideSubLink">
-                  Política de cookies
-                </a>
-              </div>
+              <a href="./cuenta-inmobiliaria.html" class="bhSideLink bhSideAnonOnly">
+                Iniciar sesión
+              </a>
+
+              <a href="./cuenta-inmobiliaria.html" class="bhSideLink bhSideAuthOnly">
+                Cuenta
+              </a>
+
+              <a href="./registro-inmobiliaria.html" class="bhSideLink bhSideAnonOnly">
+                Registrarse
+              </a>
+
+              <a href="./contacto.html?tipo=inmobiliaria" class="bhSideLink">
+                Contacto
+              </a>
+            </div>
+
+            <div class="bhSideSection">
+              <div class="bhSideHeading" aria-hidden="true">Información legal</div>
+
+              <a href="./terminos.html" class="bhSideLink">
+                Términos de uso
+              </a>
+
+              <a href="./privacidad.html" class="bhSideLink">
+                Política de privacidad
+              </a>
+
+              <a href="./cookies.html" class="bhSideLink">
+                Política de cookies
+              </a>
             </div>
           </nav>
 
@@ -279,22 +300,22 @@ export function initLayout(opts = {}) {
   sideClose?.addEventListener("click", closeSideMenu);
   sideOverlay?.addEventListener("click", closeSideMenu);
 
-  const legalToggle = document.getElementById("bhLegalToggle");
-  const legalSub = document.getElementById("bhLegalSub");
-  const legalGroup = document.getElementById("bhLegalGroup");
-
-  legalToggle?.addEventListener("click", () => {
-    const expanded = legalToggle.getAttribute("aria-expanded") === "true";
-    const next = !expanded;
-    legalToggle.setAttribute("aria-expanded", next ? "true" : "false");
-    if (legalSub) {
-      if (next) {
-        legalSub.removeAttribute("hidden");
-      } else {
-        legalSub.setAttribute("hidden", "");
+  // Auth-modal openers from inside the side menu (Iniciar sesión / Registrarse).
+  sideMenu?.querySelectorAll("[data-bh-open-auth]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      closeSideMenu();
+      const mode = el.getAttribute("data-bh-open-auth");
+      const navLogin = document.getElementById("navLogin");
+      navLogin?.click();
+      if (mode === "register") {
+        // Try to advance the auth modal into the register step if it exposes one.
+        setTimeout(() => {
+          const goRegister = document.getElementById("goRegisterBtn");
+          goRegister?.click();
+        }, 30);
       }
-    }
-    legalGroup?.classList.toggle("open", next);
+    });
   });
 
   document.addEventListener("keydown", (e) => {

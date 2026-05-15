@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Contacto · Homyo</title>
+
+    <link rel="stylesheet" href="./bh-shared.css?v=20260515" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260515" />
+
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --granateSoft:#A33646;
+        --granateDark:#711824;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
+        --good:#1f7a4c;
+      }
+
+      *{ box-sizing:border-box; }
+
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      .pageWrap{
+        width:min(1080px,100%);
+        margin:0 auto;
+        padding:40px 24px 96px;
+      }
+
+      .crumbs{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:22px;
+      }
+      .crumbs a{ color:var(--muted); text-decoration:none; }
+      .crumbs a:hover{ color:var(--granate); }
+      .crumbs .sep{ color:var(--doradoSoft); }
+      .crumbs .current{ color:var(--granate); }
+
+      .pageHeader{
+        padding-bottom:28px;
+        margin-bottom:32px;
+        border-bottom:1px solid var(--line);
+      }
+      .pageKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 14px;
+      }
+      .pageTitle{
+        margin:0;
+        font-family:'Raleway',sans-serif;
+        font-size:52px;
+        line-height:1;
+        letter-spacing:-1.2px;
+        font-weight:300;
+        color:var(--granate);
+      }
+      .pageTitle strong{ font-weight:600; }
+      .pageSubtitle{
+        margin:14px 0 0;
+        font-size:16px;
+        color:var(--ink2);
+        max-width:620px;
+        line-height:1.5;
+      }
+
+      /* ===== Segmented control: usuario / inmobiliaria ===== */
+      .audienceSwitch{
+        display:inline-flex;
+        gap:4px;
+        padding:4px;
+        background:var(--cardWarm);
+        border:1px solid var(--line);
+        border-radius:999px;
+        margin-bottom:28px;
+      }
+      .audienceBtn{
+        appearance:none;
+        background:transparent;
+        border:none;
+        font-family:'Raleway',sans-serif;
+        font-size:13px;
+        font-weight:600;
+        letter-spacing:.04em;
+        color:var(--ink2);
+        padding:10px 20px;
+        border-radius:999px;
+        cursor:pointer;
+        transition:all .18s ease;
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+      }
+      .audienceBtn:hover{ color:var(--granate); }
+      .audienceBtn.isActive{
+        background:var(--granate);
+        color:#fff;
+        box-shadow:0 6px 14px -8px rgba(140,31,45,.55);
+      }
+      .audienceBtn svg{ width:16px; height:16px; }
+
+      /* ===== Layout 2 columns ===== */
+      .contentGrid{
+        display:grid;
+        grid-template-columns: 1fr 340px;
+        gap:32px;
+        align-items:start;
+      }
+      @media (max-width:900px){
+        .contentGrid{ grid-template-columns:1fr; }
+      }
+
+      /* ===== Form section ===== */
+      .section{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:28px 30px 30px;
+      }
+      .sectionLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.3em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 10px;
+      }
+      .sectionTitle{
+        font-family:'Raleway',sans-serif;
+        margin:0 0 6px;
+        font-size:24px;
+        line-height:1.15;
+        font-weight:500;
+        color:var(--granate);
+        letter-spacing:-.4px;
+      }
+      .sectionHelp{
+        margin:0 0 22px;
+        font-size:14.5px;
+        line-height:1.5;
+        color:var(--ink2);
+      }
+
+      .fieldGrid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:16px;
+      }
+      @media (max-width:560px){
+        .fieldGrid{ grid-template-columns:1fr; }
+      }
+
+      .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+      .field:last-of-type{ margin-bottom:0; }
+
+      .fieldLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        color:var(--ink2);
+      }
+      .fieldLabel .opt{
+        font-weight:500;
+        letter-spacing:.04em;
+        text-transform:none;
+        color:var(--muted);
+        margin-left:6px;
+        font-size:11px;
+      }
+
+      .inputBase,
+      select.inputBase,
+      textarea.inputBase{
+        width:100%;
+        padding:12px 14px;
+        border:1px solid var(--line);
+        border-radius:4px;
+        background:#fff;
+        font-family:inherit;
+        font-size:15px;
+        line-height:1.4;
+        color:var(--ink);
+        transition:border-color .18s ease, box-shadow .18s ease;
+      }
+      .inputBase:focus,
+      select.inputBase:focus,
+      textarea.inputBase:focus{
+        outline:none;
+        border-color:var(--granate);
+        box-shadow:0 0 0 3px rgba(140,31,45,.08);
+      }
+
+      select.inputBase{
+        appearance:none;
+        background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a857d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 12px center / 16px 16px;
+        padding-right:38px;
+        cursor:pointer;
+      }
+
+      textarea.inputBase{
+        min-height:160px;
+        resize:vertical;
+      }
+
+      .charCountRow{
+        display:flex;
+        justify-content:flex-end;
+        font-size:11.5px;
+        color:var(--muted);
+        margin-top:4px;
+      }
+
+      .topicChips{
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+        margin-top:6px;
+      }
+      .topicChip{
+        appearance:none;
+        background:#fff;
+        border:1px solid var(--line);
+        color:var(--ink2);
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:500;
+        letter-spacing:.04em;
+        padding:7px 12px;
+        border-radius:999px;
+        cursor:pointer;
+        transition:all .15s ease;
+      }
+      .topicChip:hover{
+        border-color:var(--granate);
+        color:var(--granate);
+      }
+      .topicChip.isActive{
+        background:var(--granate);
+        border-color:var(--granate);
+        color:#fff;
+      }
+
+      .legalRow{
+        display:flex;
+        align-items:flex-start;
+        gap:10px;
+        margin-top:18px;
+        font-size:13.5px;
+        color:var(--ink2);
+        line-height:1.5;
+      }
+      .legalRow input[type=checkbox]{
+        margin-top:3px;
+        accent-color:var(--granate);
+        flex-shrink:0;
+      }
+      .legalRow a{ color:var(--granate); text-decoration:underline; }
+
+      .actionsRow{
+        display:flex;
+        justify-content:flex-end;
+        align-items:center;
+        gap:14px;
+        margin-top:24px;
+        padding-top:22px;
+        border-top:1px solid var(--lineSoft);
+      }
+      .actionsHint{
+        font-size:12.5px;
+        color:var(--muted);
+        margin-right:auto;
+      }
+
+      .btnPrimary{
+        appearance:none;
+        background:var(--granate);
+        color:#fff;
+        font-family:'Raleway',sans-serif;
+        font-size:13px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        border:none;
+        padding:14px 26px;
+        border-radius:4px;
+        cursor:pointer;
+        transition:background .18s ease, transform .12s ease;
+      }
+      .btnPrimary:hover{ background:var(--granateDark); }
+      .btnPrimary:active{ transform:translateY(1px); }
+      .btnPrimary:disabled{
+        background:#cfc7b8;
+        cursor:not-allowed;
+      }
+
+      /* ===== Sidebar ===== */
+      .infoCard{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:24px 24px 22px;
+        margin-bottom:14px;
+      }
+      .infoCard + .infoCard{ margin-top:0; }
+
+      .infoCardLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:10.5px;
+        font-weight:600;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 10px;
+      }
+      .infoCardTitle{
+        font-family:'Raleway',sans-serif;
+        margin:0 0 14px;
+        font-size:18px;
+        font-weight:600;
+        color:var(--granate);
+        letter-spacing:-.2px;
+      }
+
+      .infoList{
+        list-style:none;
+        margin:0;
+        padding:0;
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+      }
+      .infoItem{
+        display:flex;
+        gap:12px;
+        align-items:flex-start;
+      }
+      .infoIcon{
+        width:34px; height:34px;
+        flex-shrink:0;
+        border-radius:50%;
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.35);
+        color:var(--granate);
+        display:grid;
+        place-items:center;
+      }
+      .infoIcon svg{ width:16px; height:16px; }
+      .infoText{ min-width:0; }
+      .infoText .k{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin:0 0 3px;
+      }
+      .infoText .v{
+        margin:0;
+        font-size:14px;
+        color:var(--ink);
+        line-height:1.4;
+      }
+      .infoText .v a{ color:var(--granate); text-decoration:none; }
+      .infoText .v a:hover{ text-decoration:underline; }
+
+      .crossCta{
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.35);
+        border-radius:4px;
+        padding:22px 24px 22px;
+      }
+      .crossCta h3{
+        font-family:'Raleway',sans-serif;
+        margin:0 0 8px;
+        font-size:16px;
+        font-weight:600;
+        color:var(--granate);
+      }
+      .crossCta p{
+        margin:0 0 14px;
+        font-size:13.5px;
+        line-height:1.5;
+        color:var(--ink2);
+      }
+      .crossCtaLink{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--granate);
+        text-decoration:none;
+        border-bottom:1px solid var(--granate);
+        padding-bottom:2px;
+      }
+      .crossCtaLink:hover{ color:var(--granateDark); border-color:var(--granateDark); }
+
+      /* ===== Success state ===== */
+      .successCard{
+        display:none;
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:48px 36px;
+        text-align:center;
+      }
+      .successCard.isOn{ display:block; }
+      .successIcon{
+        width:64px; height:64px;
+        margin:0 auto 18px;
+        border-radius:50%;
+        background:var(--cardWarm);
+        border:1px solid rgba(31,122,76,.35);
+        color:var(--good);
+        display:grid;
+        place-items:center;
+      }
+      .successIcon svg{ width:30px; height:30px; }
+      .successTitle{
+        font-family:'Raleway',sans-serif;
+        margin:0 0 8px;
+        font-size:26px;
+        font-weight:500;
+        color:var(--granate);
+        letter-spacing:-.3px;
+      }
+      .successBody{
+        margin:0 auto 22px;
+        max-width:440px;
+        font-size:15px;
+        line-height:1.5;
+        color:var(--ink2);
+      }
+      .successActions{
+        display:flex;
+        gap:10px;
+        justify-content:center;
+        flex-wrap:wrap;
+      }
+      .btnGhost{
+        appearance:none;
+        background:#fff;
+        border:1px solid var(--line);
+        color:var(--ink2);
+        font-family:'Raleway',sans-serif;
+        font-size:13px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        padding:14px 22px;
+        border-radius:4px;
+        cursor:pointer;
+        text-decoration:none;
+        transition:all .18s ease;
+      }
+      .btnGhost:hover{
+        border-color:var(--granate);
+        color:var(--granate);
+      }
+
+      @media (max-width:680px){
+        .pageWrap{ padding:24px 16px 64px; }
+        .pageTitle{ font-size:34px; letter-spacing:-.6px; }
+        .pageSubtitle{ font-size:14.5px; }
+        .section{ padding:22px 20px 24px; }
+        .infoCard{ padding:20px 18px 18px; }
+        .audienceBtn{ padding:9px 14px; font-size:12px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="pageWrap">
+      <nav class="crumbs" aria-label="Migas de pan">
+        <a href="./index.html">Inicio</a>
+        <span class="sep">/</span>
+        <span class="current">Contacto</span>
+      </nav>
+
+      <header class="pageHeader">
+        <p class="pageKicker">Contacto</p>
+        <h1 class="pageTitle">Hablemos sobre <strong id="heroPivot">tu búsqueda</strong></h1>
+        <p class="pageSubtitle" id="heroSub">
+          ¿Tienes una duda, una sugerencia o quieres reportar algo? Escríbenos y te respondemos
+          al correo que nos indiques, normalmente en menos de 24 horas laborables.
+        </p>
+      </header>
+
+      <div class="audienceSwitch" role="tablist" aria-label="Tipo de contacto">
+        <button type="button" class="audienceBtn isActive" id="tabUsuario" role="tab" aria-selected="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4.5 19.5c2.1-3.7 12.9-3.7 15 0"></path>
+          </svg>
+          Soy usuario
+        </button>
+        <button type="button" class="audienceBtn" id="tabInmo" role="tab" aria-selected="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 21V10l9-6 9 6v11"></path>
+            <path d="M9 21v-7h6v7"></path>
+          </svg>
+          Soy profesional inmobiliario
+        </button>
+      </div>
+
+      <div class="contentGrid">
+        <div>
+          <section class="section" id="formSection">
+            <p class="sectionLabel" id="formKicker">Formulario · Usuario</p>
+            <h2 class="sectionTitle" id="formTitle">Escríbenos</h2>
+            <p class="sectionHelp" id="formHelp">
+              Rellena estos datos y nos pondremos en contacto contigo lo antes posible.
+              Todos los campos marcados son obligatorios.
+            </p>
+
+            <form id="contactForm" autocomplete="on" novalidate>
+              <div class="field">
+                <label class="fieldLabel">Asunto</label>
+                <div class="topicChips" id="topicChips" role="group" aria-label="Asunto">
+                  <!-- chips inyectados por JS -->
+                </div>
+              </div>
+
+              <div class="fieldGrid">
+                <div class="field">
+                  <label class="fieldLabel" for="fName" id="lblName">Nombre y apellidos</label>
+                  <input class="inputBase" type="text" id="fName" name="name" required autocomplete="name" />
+                </div>
+
+                <div class="field" id="agencyField" style="display:none;">
+                  <label class="fieldLabel" for="fAgency">Inmobiliaria <span class="opt">(opcional)</span></label>
+                  <input class="inputBase" type="text" id="fAgency" name="agency" autocomplete="organization" />
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fEmail">Email</label>
+                  <input class="inputBase" type="email" id="fEmail" name="email" required autocomplete="email" />
+                </div>
+
+                <div class="field">
+                  <label class="fieldLabel" for="fPhone">Teléfono <span class="opt">(opcional)</span></label>
+                  <input class="inputBase" type="tel" id="fPhone" name="phone" autocomplete="tel" />
+                </div>
+              </div>
+
+              <div class="field" id="cityField" style="display:none;">
+                <label class="fieldLabel" for="fCity">Ciudad o zona principal</label>
+                <input class="inputBase" type="text" id="fCity" name="city" autocomplete="address-level2" />
+              </div>
+
+              <div class="field">
+                <label class="fieldLabel" for="fMessage" id="lblMessage">Mensaje</label>
+                <textarea class="inputBase" id="fMessage" name="message" required maxlength="1500" placeholder="Cuéntanos en qué podemos ayudarte..."></textarea>
+                <div class="charCountRow"><span id="charCount">0</span> / 1500</div>
+              </div>
+
+              <label class="legalRow">
+                <input type="checkbox" id="fAccept" required />
+                <span>
+                  He leído y acepto la
+                  <a href="./privacidad.html">política de privacidad</a> y los
+                  <a href="./terminos.html">términos de uso</a>.
+                </span>
+              </label>
+
+              <div class="actionsRow">
+                <span class="actionsHint">Respuesta media: menos de 24h laborables.</span>
+                <button type="submit" class="btnPrimary" id="submitBtn">Enviar mensaje</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="successCard" id="successCard" aria-live="polite">
+            <div class="successIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12.5l4.5 4.5L19 7"></path>
+              </svg>
+            </div>
+            <h2 class="successTitle">Mensaje enviado</h2>
+            <p class="successBody" id="successBody">
+              Gracias por escribirnos. Hemos recibido tu mensaje y te responderemos al correo que
+              nos has indicado en cuanto podamos.
+            </p>
+            <div class="successActions">
+              <a class="btnGhost" href="./index.html">Volver al inicio</a>
+              <button type="button" class="btnGhost" id="sendAnotherBtn">Enviar otro mensaje</button>
+            </div>
+          </section>
+        </div>
+
+        <aside>
+          <div class="infoCard">
+            <p class="infoCardLabel">Otras vías</p>
+            <h3 class="infoCardTitle" id="asideTitle">Estamos aquí</h3>
+
+            <ul class="infoList">
+              <li class="infoItem">
+                <span class="infoIcon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 6h16v12H4z"></path>
+                    <path d="M4 7l8 6 8-6"></path>
+                  </svg>
+                </span>
+                <div class="infoText">
+                  <p class="k">Email</p>
+                  <p class="v"><a id="asideEmail" href="mailto:hola@homyo.es">hola@homyo.es</a></p>
+                </div>
+              </li>
+
+              <li class="infoItem">
+                <span class="infoIcon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 7v5l3 2"></path>
+                  </svg>
+                </span>
+                <div class="infoText">
+                  <p class="k">Horario</p>
+                  <p class="v">Lunes a viernes · 9:00 – 18:00</p>
+                </div>
+              </li>
+
+              <li class="infoItem">
+                <span class="infoIcon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 21s-7-6.2-7-11a7 7 0 1114 0c0 4.8-7 11-7 11z"></path>
+                    <circle cx="12" cy="10" r="2.5"></circle>
+                  </svg>
+                </span>
+                <div class="infoText">
+                  <p class="k">Sede</p>
+                  <p class="v">Madrid, España</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="crossCta" id="crossCta">
+            <h3 id="crossCtaTitle">¿Eres una inmobiliaria?</h3>
+            <p id="crossCtaText">
+              Si quieres publicar anuncios o conocer las condiciones para profesionales,
+              tenemos un canal dedicado para ti.
+            </p>
+            <a class="crossCtaLink" id="crossCtaLink" href="?tipo=inmobiliaria">Contacto profesional →</a>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260515";
+      import { initAuth } from "./bh-auth.js?v=20260515";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+    </script>
+
+    <script>
+      (function(){
+        const params = new URLSearchParams(location.search);
+        const initialTipo = (params.get("tipo") || "usuario").toLowerCase() === "inmobiliaria"
+          ? "inmobiliaria"
+          : "usuario";
+
+        const COPY = {
+          usuario: {
+            heroPivot: "tu búsqueda",
+            heroSub: "¿Tienes una duda, una sugerencia o quieres reportar algo? Escríbenos y te respondemos al correo que nos indiques, normalmente en menos de 24 horas laborables.",
+            formKicker: "Formulario · Usuario",
+            formTitle: "Escríbenos",
+            formHelp: "Cuéntanos qué necesitas. Si tu consulta es sobre un anuncio concreto, mejor escribe directamente a la inmobiliaria desde la ficha del anuncio.",
+            topics: [
+              "Duda general",
+              "Problema con un anuncio",
+              "Reportar un anuncio",
+              "Mi cuenta",
+              "Sugerencia",
+              "Otro"
+            ],
+            asideTitle: "Estamos aquí",
+            asideEmail: "hola@homyo.es",
+            crossTitle: "¿Eres una inmobiliaria?",
+            crossText: "Si quieres publicar anuncios o conocer las condiciones para profesionales, tenemos un canal dedicado para ti.",
+            crossLinkText: "Contacto profesional →",
+            crossLinkHref: "?tipo=inmobiliaria",
+            agency: false,
+            city: false,
+            messagePlaceholder: "Cuéntanos en qué podemos ayudarte..."
+          },
+          inmobiliaria: {
+            heroPivot: "tu inmobiliaria",
+            heroSub: "Trabajamos con profesionales verificados. Cuéntanos tu caso y te explicamos cómo publicar anuncios, las condiciones y los próximos pasos.",
+            formKicker: "Formulario · Profesional inmobiliario",
+            formTitle: "Hablemos de tu inmobiliaria",
+            formHelp: "Estos datos nos ayudan a entender mejor a tu equipo. Te contactará una persona del equipo de Homyo, no un bot.",
+            topics: [
+              "Quiero publicar anuncios",
+              "Soporte técnico",
+              "Facturación",
+              "Verificación de cuenta",
+              "Colaboraciones",
+              "Otro"
+            ],
+            asideTitle: "Atención profesional",
+            asideEmail: "pro@homyo.es",
+            crossTitle: "¿Eres un particular?",
+            crossText: "Si estás buscando piso o tienes una duda sobre un anuncio, este es el canal que te corresponde.",
+            crossLinkText: "Contacto usuario →",
+            crossLinkHref: "?tipo=usuario",
+            agency: true,
+            city: true,
+            messagePlaceholder: "Cuéntanos qué tipo de propiedades trabajáis, dónde y qué necesitáis..."
+          }
+        };
+
+        const $ = (id) => document.getElementById(id);
+
+        const state = { tipo: initialTipo, topic: null };
+
+        function applyCopy(){
+          const c = COPY[state.tipo];
+
+          $("heroPivot").textContent = c.heroPivot;
+          $("heroSub").textContent = c.heroSub;
+          $("formKicker").textContent = c.formKicker;
+          $("formTitle").textContent = c.formTitle;
+          $("formHelp").textContent = c.formHelp;
+          $("asideTitle").textContent = c.asideTitle;
+          $("asideEmail").textContent = c.asideEmail;
+          $("asideEmail").href = "mailto:" + c.asideEmail;
+          $("crossCtaTitle").textContent = c.crossTitle;
+          $("crossCtaText").textContent = c.crossText;
+          $("crossCtaLink").textContent = c.crossLinkText;
+          $("crossCtaLink").href = c.crossLinkHref;
+
+          $("agencyField").style.display = c.agency ? "" : "none";
+          $("cityField").style.display = c.city ? "" : "none";
+          $("fMessage").placeholder = c.messagePlaceholder;
+
+          // tabs visual state
+          $("tabUsuario").classList.toggle("isActive", state.tipo === "usuario");
+          $("tabUsuario").setAttribute("aria-selected", state.tipo === "usuario" ? "true" : "false");
+          $("tabInmo").classList.toggle("isActive", state.tipo === "inmobiliaria");
+          $("tabInmo").setAttribute("aria-selected", state.tipo === "inmobiliaria" ? "true" : "false");
+
+          // doc title
+          document.title = state.tipo === "inmobiliaria"
+            ? "Contacto profesional · Homyo"
+            : "Contacto · Homyo";
+
+          // page header label
+          renderTopics();
+        }
+
+        function renderTopics(){
+          const c = COPY[state.tipo];
+          const host = $("topicChips");
+          host.innerHTML = "";
+          // reset selection on tipo switch if previous topic not in new list
+          if (!c.topics.includes(state.topic)) state.topic = c.topics[0];
+          c.topics.forEach((t) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "topicChip" + (t === state.topic ? " isActive" : "");
+            b.textContent = t;
+            b.addEventListener("click", () => {
+              state.topic = t;
+              host.querySelectorAll(".topicChip").forEach((el) => el.classList.remove("isActive"));
+              b.classList.add("isActive");
+            });
+            host.appendChild(b);
+          });
+        }
+
+        function setTipo(next){
+          if (next === state.tipo) return;
+          state.tipo = next;
+          // update URL without reloading
+          const url = new URL(location.href);
+          url.searchParams.set("tipo", next);
+          history.replaceState(null, "", url.toString());
+          applyCopy();
+        }
+
+        $("tabUsuario").addEventListener("click", () => setTipo("usuario"));
+        $("tabInmo").addEventListener("click", () => setTipo("inmobiliaria"));
+
+        $("crossCtaLink").addEventListener("click", (e) => {
+          e.preventDefault();
+          setTipo(state.tipo === "usuario" ? "inmobiliaria" : "usuario");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        // character count
+        const msg = $("fMessage");
+        const cc = $("charCount");
+        msg.addEventListener("input", () => {
+          cc.textContent = String(msg.value.length);
+        });
+
+        // submit
+        $("contactForm").addEventListener("submit", (e) => {
+          e.preventDefault();
+          const form = e.currentTarget;
+          if (!form.reportValidity()) return;
+          if (!$("fAccept").checked) {
+            $("fAccept").focus();
+            return;
+          }
+
+          const btn = $("submitBtn");
+          btn.disabled = true;
+          btn.textContent = "Enviando…";
+
+          // Simulación de envío. Conectar aquí con backend cuando exista.
+          setTimeout(() => {
+            $("formSection").style.display = "none";
+            const okBody = state.tipo === "inmobiliaria"
+              ? "Gracias por escribirnos. Una persona del equipo profesional de Homyo te contactará en cuanto pueda."
+              : "Gracias por escribirnos. Hemos recibido tu mensaje y te responderemos al correo que nos has indicado en cuanto podamos.";
+            $("successBody").textContent = okBody;
+            $("successCard").classList.add("isOn");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            btn.disabled = false;
+            btn.textContent = "Enviar mensaje";
+          }, 700);
+        });
+
+        $("sendAnotherBtn").addEventListener("click", () => {
+          $("successCard").classList.remove("isOn");
+          $("formSection").style.display = "";
+          $("contactForm").reset();
+          $("charCount").textContent = "0";
+          renderTopics();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        applyCopy();
+      })();
+    </script>
+  </body>
+</html>

@@ -797,6 +797,42 @@ body.bhMenuOpen{
   color:#8C1F2D;
 }
 
+.bhSideSection{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding:6px 0 14px;
+  border-bottom:1px solid #efe7d8;
+}
+
+.bhSideSection:last-of-type{
+  border-bottom:none;
+}
+
+.bhSideSection + .bhSideSection{
+  margin-top:6px;
+}
+
+.bhSideHeading{
+  font-family:'Raleway','Montserrat',system-ui,sans-serif;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:#8f8578;
+  padding:10px 14px 6px;
+  cursor:default;
+  user-select:none;
+}
+
+body:not(.bh-authenticated) .bhSideAuthOnly{
+  display:none !important;
+}
+
+body.bh-authenticated .bhSideAnonOnly{
+  display:none !important;
+}
+
 .bhSideFooter{
   margin-top:auto;
   padding:24px 28px;
