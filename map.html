@@ -15,7 +15,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css?v=20260515_hidemap_v1" />
+    <link rel="stylesheet" href="./bh-map.css?v=20260510_filters_tight3" />
 
     <style>
       @media (max-width: 720px){
@@ -214,14 +214,11 @@
         <div class="topRow">
           <div class="topCell topCellLeft">
             <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
-            <button id="clearFiltersBtn" class="topToggleBtn topToggleBtnGhost" type="button">Eliminar filtros</button>
           </div>
 
           <div class="topCell topCellCenter">
             <!-- Etiqueta dinámica “Comunidad / Ciudad / Zona” -->
             <div id="placeLabel" class="placeLabel">—</div>
-            <button id="saveSearchDesktopBtn" class="topToggleBtn saveSearchDesktopBtn" type="button">Guardar búsqueda</button>
-            <button id="toggleMapBtn" class="topToggleBtn" type="button">Ocultar mapa</button>
           </div>
 
           <div class="topCell topCellRight">
@@ -354,20 +351,6 @@
     </div>
     <div id="bhFooter" hidden style="display:none !important;"></div>
 
-
-    <div id="saveSearchAuthOverlay" class="saveSearchAuthOverlay" aria-hidden="true">
-      <div class="saveSearchAuthModal" role="dialog" aria-modal="true" aria-labelledby="saveSearchAuthTitle">
-        <button id="saveSearchAuthClose" class="saveSearchAuthClose" type="button" aria-label="Cerrar">×</button>
-        <div class="saveSearchAuthKicker">Búsquedas guardadas</div>
-        <h2 id="saveSearchAuthTitle" class="saveSearchAuthTitle">Inicia sesión para guardar búsquedas</h2>
-        <p class="saveSearchAuthText">Para guardar opciones de búsqueda necesitas acceder a tu cuenta. Así podrás recuperar tus filtros y gestionar las notificaciones desde tu perfil.</p>
-        <div class="saveSearchAuthActions">
-          <button id="saveSearchAuthLoginBtn" class="saveSearchAuthPrimary" type="button">Iniciar sesión para guardar búsquedas</button>
-          <button id="saveSearchAuthCancelBtn" class="saveSearchAuthSecondary" type="button">Ahora no</button>
-        </div>
-      </div>
-    </div>
-
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -379,9 +362,8 @@
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
-      import { initFiltersBar, clearAllFilters } from "./bh-map-filters.js?v=20260515_hidemap_v1";
-      import { initMap } from "./bh-map-core.js?v=20260515_hidemap_v1";
-      import { getSession, saveCurrentSearch } from "./bh-user-data.js?v=20260512_saved_searches_real_v3";
+      import { initFiltersBar } from "./bh-map-filters.js";
+      import { initMap } from "./bh-map-core.js";
 
       // Header / auth
       initLayout({ showMiniSearch: true });
@@ -394,19 +376,12 @@
       const grid = document.getElementById("grid3");
       const btnFilters = document.getElementById("toggleFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
-      const btnMap = document.getElementById("toggleMapBtn");
-      const btnClearFilters = document.getElementById("clearFiltersBtn");
-      const saveSearchDesktopBtn = document.getElementById("saveSearchDesktopBtn");
       const mobileFiltersBtn = document.getElementById("mobileFiltersBtn");
       const mobileListBtn = document.getElementById("mobileListBtn");
       const mobileFiltersCloseBtn = document.getElementById("mobileFiltersCloseBtn");
       const mobileListCloseBtn = document.getElementById("mobileListCloseBtn");
       const mobileOrderBtn = document.getElementById("mobileOrderBtn");
       const mobileOrderMenu = document.getElementById("mobileOrderMenu");
-      const saveSearchAuthOverlay = document.getElementById("saveSearchAuthOverlay");
-      const saveSearchAuthClose = document.getElementById("saveSearchAuthClose");
-      const saveSearchAuthCancelBtn = document.getElementById("saveSearchAuthCancelBtn");
-      const saveSearchAuthLoginBtn = document.getElementById("saveSearchAuthLoginBtn");
 
       function closeMobilePanels() {
         document.body.classList.remove("mobileFiltersOpen");
@@ -424,124 +399,31 @@
         document.body.classList.add("mobileListOpen");
       }
 
-      const orderBtn = document.getElementById("orderBtn");
-      const orderMenu = document.getElementById("orderMenu");
-
       function applyToggleTexts() {
         const filtersHidden = grid.classList.contains("hideFilters");
         const listHidden = grid.classList.contains("hideList");
-        const mapHidden = grid.classList.contains("hideMap");
         btnFilters.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
         btnList.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
-        if (btnMap) btnMap.textContent = mapHidden ? "Mostrar mapa" : "Ocultar mapa";
-        // Reglas: no se puede ocultar mapa y listado a la vez
-        if (btnList) btnList.disabled = mapHidden;
-        if (btnMap) btnMap.disabled = listHidden;
-        // Botón "Eliminar filtros" sólo visible cuando la columna de filtros está visible
-        if (btnClearFilters) btnClearFilters.hidden = filtersHidden;
-        if (orderBtn) orderBtn.hidden = listHidden;
-        if (listHidden && orderMenu) closeOrderMenu();
       }
 
+      function applyEmailAlertLayout() {
+        if (!emailAlertOptions.isEmailAlert) return;
 
-      async function userIsLoggedIn() {
-        if (window.BH_AUTH_SESSION?.user || document.body.classList.contains("bh-authenticated")) return true;
-        try {
-          const session = await getSession();
-          return !!session?.user;
-        } catch {
-          return false;
-        }
-      }
+        window.__bhListOrder = emailAlertOptions.order || "date_desc";
 
-      function openSaveSearchAuthPrompt() {
-        if (!saveSearchAuthOverlay) return;
-        saveSearchAuthOverlay.classList.add("open");
-        saveSearchAuthOverlay.setAttribute("aria-hidden", "false");
-        document.body.classList.add("saveSearchAuthOpen");
-      }
+        // Desktop: mapa + listado visibles.
+        grid.classList.remove("hideList");
+        grid.classList.remove("hideMap");
 
-      function closeSaveSearchAuthPrompt() {
-        if (!saveSearchAuthOverlay) return;
-        saveSearchAuthOverlay.classList.remove("open");
-        saveSearchAuthOverlay.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("saveSearchAuthOpen");
-      }
-
-      function openLoginForSavedSearches() {
-        closeSaveSearchAuthPrompt();
-        const navLogin = document.getElementById("navLogin");
-        if (navLogin) navLogin.click();
-      }
-
-      function getSaveSearchName() {
-        const url = new URL(window.location.href);
-        const city = (url.searchParams.get("city") || "").trim();
-        const modeRaw = (url.searchParams.get("mode") || "buy").trim();
-        const modeLabel = {
-          buy: "Comprar",
-          rent: "Alquilar",
-          room: "Habitación",
-          new_build: "Obra nueva",
-          all: "Todas"
-        }[modeRaw] || modeRaw;
-        return city ? `${modeLabel} en ${city}` : `${modeLabel} · búsqueda guardada`;
-      }
-
-      function setSaveSearchButtonState(button, state) {
-        if (!button) return;
-        const isMobile = button.id === "mobileSaveSearchBtn";
-        const label = isMobile ? button.querySelector(".mobileSaveSearchLabel") : null;
-
-        button.disabled = state === "saving";
-        button.classList.toggle("is-saved", state === "saved" || state === "existing");
-        button.setAttribute("aria-pressed", (state === "saved" || state === "existing") ? "true" : "false");
-
-        const text =
-          state === "saving" ? "Guardando…" :
-          state === "saved" ? "Guardada" :
-          state === "existing" ? "Ya guardada" :
-          state === "error" ? "Error" :
-          "Guardar";
-
-        if (isMobile && label) label.textContent = text;
-        if (!isMobile) {
-          button.textContent =
-            state === "saving" ? "Guardando…" :
-            state === "saved" ? "Búsqueda guardada" :
-            state === "existing" ? "Ya guardada" :
-            state === "error" ? "Error" :
-            "Guardar búsqueda";
-        }
-      }
-
-      async function saveSearchFromMap(button) {
-        if (!(await userIsLoggedIn())) {
-          openSaveSearchAuthPrompt();
-          return;
+        // Móvil: abrir directamente el listado para ver los anuncios ordenados por recientes.
+        if (isMobileViewport()) {
+          document.body.classList.remove("mobileFiltersOpen");
+          document.body.classList.add("mobileListOpen");
         }
 
-        try {
-          setSaveSearchButtonState(button, "saving");
-          const result = await saveCurrentSearch({
-            name: getSaveSearchName(),
-            map: window.__bhMap,
-            url: window.location.href
-          });
-          setSaveSearchButtonState(button, result?.already_exists ? "existing" : "saved");
-        } catch (err) {
-          console.error(err);
-          setSaveSearchButtonState(button, "error");
-
-          if (err?.message === "LOGIN_REQUIRED") {
-            openSaveSearchAuthPrompt();
-            return;
-          }
-
-          const detail = err?.message || err?.details || err?.hint || String(err);
-          alert("No se pudo guardar la búsqueda. Error real: " + detail);
-          setTimeout(() => setSaveSearchButtonState(button, "idle"), 1400);
-        }
+        applyToggleTexts();
+        notifyLayoutResize();
+        window.dispatchEvent(new CustomEvent("bh:list-order-changed"));
       }
 
       function notifyLayoutResize() {
@@ -555,38 +437,9 @@
         notifyLayoutResize();
       });
 
-      btnClearFilters?.addEventListener("click", () => {
-        clearAllFilters({ mountId: "filtersBarMount" });
-      });
-
-      btnMap?.addEventListener("click", () => {
-        // No permitir ocultar mapa y listado simultáneamente
-        if (grid.classList.contains("hideList")) return;
-        grid.classList.toggle("hideMap");
-        applyToggleTexts();
-        notifyLayoutResize();
-      });
-
-      saveSearchDesktopBtn?.addEventListener("click", () => {
-        saveSearchFromMap(saveSearchDesktopBtn);
-      });
-
-      saveSearchAuthClose?.addEventListener("click", closeSaveSearchAuthPrompt);
-      saveSearchAuthCancelBtn?.addEventListener("click", closeSaveSearchAuthPrompt);
-      saveSearchAuthLoginBtn?.addEventListener("click", openLoginForSavedSearches);
-      saveSearchAuthOverlay?.addEventListener("click", (e) => {
-        if (e.target === saveSearchAuthOverlay) closeSaveSearchAuthPrompt();
-      });
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeSaveSearchAuthPrompt();
-      });
-
       btnList.addEventListener("click", () => {
-        // No permitir ocultar mapa y listado simultáneamente
-        if (grid.classList.contains("hideMap")) return;
         grid.classList.toggle("hideList");
-        applyToggleTexts();
-        notifyLayoutResize();
+          notifyLayoutResize();
       });
 
 
@@ -609,6 +462,9 @@
       applyToggleTexts();
 
       // Orden: escritorio + móvil
+      const orderBtn = document.getElementById("orderBtn");
+      const orderMenu = document.getElementById("orderMenu");
+
       function closeOrderMenu() {
         orderMenu.style.display = "none";
         orderMenu.setAttribute("aria-hidden", "true");
@@ -672,6 +528,12 @@
       // Inicializar mapa
       initMap();
 
+      // Enlaces procedentes de emails de alertas: filtros activos + orden reciente + listado abierto.
+      applyEmailAlertLayout();
+      window.addEventListener("resize", () => {
+        if (emailAlertOptions.isEmailAlert) applyEmailAlertLayout();
+      });
+
       // ====== Mobile search header: sync place label + actions ======
       const mobilePlaceLabel = document.getElementById("mobilePlaceLabel");
       const desktopPlaceLabel = document.getElementById("placeLabel");
@@ -702,7 +564,13 @@
       });
 
       mobileSaveSearchBtn?.addEventListener("click", () => {
-        saveSearchFromMap(mobileSaveSearchBtn);
+        const saved = mobileSaveSearchBtn.classList.toggle("is-saved");
+        mobileSaveSearchBtn.setAttribute(
+          "aria-label",
+          saved ? "Búsqueda guardada" : "Guardar búsqueda"
+        );
+        const lbl = mobileSaveSearchBtn.querySelector(".mobileSaveSearchLabel");
+        if (lbl) lbl.textContent = saved ? "Guardada" : "Guardar";
       });
     </script>
 </body>
