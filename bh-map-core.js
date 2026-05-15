@@ -1153,6 +1153,13 @@ export function initMap(){
   }
 
   async function loadPointsForCurrentView() {
+    // Si el mapa est\u00e1 oculto, no recargamos: getBounds devolver\u00eda valores
+    // inv\u00e1lidos y el listado se vaciar\u00eda. Mantenemos los resultados actuales.
+    if (isMapHidden()){
+      renderList();
+      return;
+    }
+
     const b = getCurrentBounds();
     const z = map.getZoom();
     const f = getParams();
@@ -1779,7 +1786,16 @@ export function initMap(){
   });
 
   // Cuando cambia layout (ocultar/mostrar columnas) Leaflet necesita invalidateSize
+  function isMapHidden(){
+    const mc = document.getElementById("mapCol");
+    if (!mc) return false;
+    if (mc.offsetParent === null) return true; // display:none
+    const r = mc.getBoundingClientRect();
+    return r.width < 2 || r.height < 2;
+  }
+
   function safeInvalidate(){
+    if (isMapHidden()) return; // no tocar el mapa cuando est\u00e1 oculto
     try { map.invalidateSize({ pan: false, animate: false }); } catch {}
     if (sunEnabled) {
       try { updateSunOverlay(); } catch {}
