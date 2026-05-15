@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Detalles de acceso · Homyo</title>
+
+    <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
+
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --granateSoft:#A33646;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
+        --good:#1f7a4c;
+        --warn:#a36105;
+        --danger:#a32436;
+      }
+
+      *{ box-sizing:border-box; }
+
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      .pageWrap{
+        width:min(1120px,100%);
+        margin:0 auto;
+        padding:40px 24px 96px;
+      }
+
+      /* ===== Breadcrumb ===== */
+      .crumbs{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:24px;
+      }
+      .crumbs a{ color:var(--muted); text-decoration:none; }
+      .crumbs a:hover{ color:var(--granate); }
+      .crumbs .sep{ color:var(--doradoSoft); }
+      .crumbs .current{ color:var(--granate); }
+
+      /* ===== Page header ===== */
+      .pageHeader{
+        display:grid;
+        grid-template-columns:1fr auto;
+        align-items:end;
+        gap:24px;
+        padding-bottom:28px;
+        margin-bottom:36px;
+        border-bottom:1px solid var(--line);
+      }
+
+      .pageKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 14px;
+      }
+
+      .pageTitle{
+        margin:0;
+        font-family:'Raleway',sans-serif;
+        font-size:56px;
+        line-height:1;
+        letter-spacing:-1.2px;
+        font-weight:300;
+        color:var(--granate);
+      }
+
+      .pageTitle strong{ font-weight:600; }
+
+      .pageSubtitle{
+        margin:14px 0 0;
+        font-size:16px;
+        color:var(--ink2);
+        max-width:560px;
+        line-height:1.5;
+      }
+
+      .pillBtn{
+        appearance:none;
+        border:1px solid var(--line);
+        background:#fff;
+        color:var(--ink2);
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        padding:11px 18px;
+        border-radius:999px;
+        cursor:pointer;
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        transition:all .18s ease;
+        text-decoration:none;
+      }
+      .pillBtn:hover{ border-color:var(--granate); color:var(--granate); }
+      .pillBtn.primary{ background:var(--granate); color:#fff; border-color:var(--granate); }
+      .pillBtn.primary:hover{ background:#711824; }
+      .pillBtn.danger{ background:#fff; color:var(--danger); border-color:rgba(163,36,54,.35); }
+      .pillBtn.danger:hover{ background:var(--danger); color:#fff; border-color:var(--danger); }
+      .pillBtn[disabled]{ opacity:.55; cursor:not-allowed; }
+      .pillBtn svg{ width:14px; height:14px; }
+
+      /* ===== Summary strip ===== */
+      .summary{
+        display:grid;
+        grid-template-columns:repeat(3, minmax(0,1fr));
+        gap:0;
+        border:1px solid var(--line);
+        border-radius:4px;
+        background:var(--card);
+        margin-bottom:32px;
+        overflow:hidden;
+      }
+
+      .summaryItem{
+        padding:22px 24px;
+        border-right:1px solid var(--lineSoft);
+      }
+      .summaryItem:last-child{ border-right:none; }
+
+      .summaryLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:600;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin:0 0 10px;
+      }
+
+      .summaryValue{
+        font-family:'Raleway',sans-serif;
+        font-size:24px;
+        font-weight:400;
+        color:var(--granate);
+        letter-spacing:-.5px;
+        line-height:1.15;
+        word-break:break-word;
+      }
+
+      .summarySub{
+        margin-top:6px;
+        font-size:12px;
+        color:var(--muted);
+      }
+
+      /* ===== Section label ===== */
+      .listLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.34em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin:0 0 16px;
+      }
+
+      /* ===== Cards (forms) ===== */
+      .stack{
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+      }
+
+      .panel{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:26px 28px;
+        position:relative;
+        transition:border-color .22s ease, box-shadow .22s ease;
+      }
+      .panel:hover{
+        border-color:rgba(140,31,45,.18);
+        box-shadow:0 8px 22px rgba(140,31,45,.05);
+      }
+
+      .panelHead{
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:14px;
+        margin-bottom:16px;
+        flex-wrap:wrap;
+      }
+
+      .panelTitleWrap{ min-width:0; }
+
+      .panelEyebrow{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 6px;
+      }
+
+      .panelTitle{
+        font-family:'Raleway',sans-serif;
+        font-size:22px;
+        font-weight:500;
+        color:var(--ink);
+        margin:0 0 4px;
+        letter-spacing:-.2px;
+      }
+
+      .panelText{
+        margin:0;
+        font-size:14px;
+        color:var(--ink2);
+        line-height:1.5;
+        max-width:540px;
+      }
+
+      .panelBody{
+        margin-top:18px;
+        padding-top:18px;
+        border-top:1px solid var(--lineSoft);
+      }
+
+      .formRow{
+        display:grid;
+        grid-template-columns:repeat(2, minmax(0,1fr));
+        gap:14px;
+      }
+
+      .formRow.cols1{ grid-template-columns:1fr; }
+
+      .field{
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+      }
+
+      .field label{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--muted);
+      }
+
+      .field input{
+        appearance:none;
+        border:1px solid var(--line);
+        background:#fff;
+        font-family:inherit;
+        font-size:15px;
+        color:var(--ink);
+        padding:12px 14px;
+        border-radius:4px;
+        transition:border-color .18s ease, box-shadow .18s ease;
+      }
+
+      .field input:focus{
+        outline:none;
+        border-color:var(--granate);
+        box-shadow:0 0 0 3px rgba(140,31,45,.10);
+      }
+
+      .field .hint{
+        font-size:12px;
+        color:var(--muted);
+        line-height:1.45;
+      }
+
+      .formActions{
+        display:flex;
+        gap:10px;
+        align-items:center;
+        flex-wrap:wrap;
+        margin-top:18px;
+      }
+
+      .formMsg{
+        font-size:13px;
+        color:var(--ink2);
+      }
+      .formMsg.ok{ color:var(--good); }
+      .formMsg.err{ color:var(--danger); }
+      .formMsg.warn{ color:var(--warn); }
+
+      /* ===== Session card ===== */
+      .sessionCard{
+        display:grid;
+        grid-template-columns:48px 1fr auto;
+        gap:18px;
+        align-items:center;
+        padding:18px 20px;
+        border:1px solid var(--lineSoft);
+        border-radius:4px;
+        background:linear-gradient(180deg, #fff 0%, var(--cardWarm) 130%);
+        margin-top:16px;
+      }
+
+      .sessionIcon{
+        width:48px;
+        height:48px;
+        border-radius:50%;
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.25);
+        display:grid;
+        place-items:center;
+        color:var(--granate);
+      }
+      .sessionIcon svg{ width:22px; height:22px; }
+
+      .sessionMain h4{
+        margin:0 0 4px;
+        font-family:'Raleway',sans-serif;
+        font-size:15px;
+        font-weight:600;
+        color:var(--ink);
+        display:flex;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+      }
+
+      .currentTag{
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        padding:4px 10px;
+        border-radius:999px;
+        color:var(--good);
+        background:rgba(31,122,76,.10);
+      }
+      .currentTag::before{
+        content:"";
+        width:6px; height:6px;
+        border-radius:50%;
+        background:var(--good);
+      }
+
+      .sessionMeta{
+        font-size:12.5px;
+        color:var(--muted);
+        display:flex;
+        gap:14px;
+        flex-wrap:wrap;
+      }
+
+      .sessionMeta strong{ color:var(--ink2); font-weight:600; }
+
+      /* ===== Danger zone ===== */
+      .dangerPanel{
+        border-color:rgba(163,36,54,.18);
+        background:linear-gradient(180deg, #fff 0%, #fdf5f5 130%);
+      }
+
+      @media (max-width:900px){
+        .summary{ grid-template-columns:1fr 1fr; }
+        .summaryItem:nth-child(2){ border-right:none; }
+        .summaryItem:nth-child(3){ border-top:1px solid var(--lineSoft); grid-column:1 / -1; }
+        .pageTitle{ font-size:42px; }
+      }
+
+      @media (max-width:680px){
+        .pageWrap{ padding:24px 16px 64px; }
+        .pageHeader{ grid-template-columns:1fr; gap:18px; }
+        .pageTitle{ font-size:34px; letter-spacing:-.8px; }
+        .panel{ padding:20px 18px; }
+        .formRow{ grid-template-columns:1fr; }
+        .summary{ grid-template-columns:1fr; }
+        .summaryItem{ border-right:none; border-bottom:1px solid var(--lineSoft); }
+        .summaryItem:last-child{ border-bottom:none; }
+        .sessionCard{ grid-template-columns:40px 1fr; padding:14px; }
+        .sessionCard .pillBtn{ grid-column:1 / -1; justify-content:center; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="pageWrap">
+      <nav class="crumbs" aria-label="Migas de pan">
+        <a href="./account.html">Mi cuenta</a>
+        <span class="sep">/</span>
+        <span class="current">Detalles de acceso</span>
+      </nav>
+
+      <header class="pageHeader">
+        <div>
+          <p class="pageKicker">Seguridad</p>
+          <h1 class="pageTitle">Detalles de <strong>acceso</strong></h1>
+          <p class="pageSubtitle">Gestiona el email, la contraseña y la sesión activa de tu cuenta. Tus cambios se aplican al instante.</p>
+        </div>
+        <a class="pillBtn" href="./account.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+          Volver a mi cuenta
+        </a>
+      </header>
+
+      <section class="summary" aria-label="Resumen de acceso">
+        <div class="summaryItem">
+          <div class="summaryLabel">Email</div>
+          <div class="summaryValue" id="sumEmail">—</div>
+          <div class="summarySub" id="sumEmailSub">verificado</div>
+        </div>
+        <div class="summaryItem">
+          <div class="summaryLabel">Método de acceso</div>
+          <div class="summaryValue" id="sumMethod">—</div>
+          <div class="summarySub" id="sumMethodSub">inicio de sesión</div>
+        </div>
+        <div class="summaryItem">
+          <div class="summaryLabel">Última conexión</div>
+          <div class="summaryValue" id="sumLast">—</div>
+          <div class="summarySub" id="sumLastSub">en este dispositivo</div>
+        </div>
+      </section>
+
+      <p class="listLabel">Tu acceso</p>
+
+      <div class="stack">
+        <!-- ===== Email ===== -->
+        <article class="panel" id="panelEmail">
+          <div class="panelHead">
+            <div class="panelTitleWrap">
+              <p class="panelEyebrow">Correo electrónico</p>
+              <h2 class="panelTitle">Cambia tu email</h2>
+              <p class="panelText">Te enviaremos un enlace de confirmación al nuevo email. La sesión seguirá activa con el email actual hasta que confirmes el cambio.</p>
+            </div>
+          </div>
+          <div class="panelBody">
+            <div class="formRow">
+              <div class="field">
+                <label for="currentEmail">Email actual</label>
+                <input type="email" id="currentEmail" readonly />
+                <span class="hint" id="currentEmailVerified">Verificado</span>
+              </div>
+              <div class="field">
+                <label for="newEmail">Nuevo email</label>
+                <input type="email" id="newEmail" autocomplete="email" placeholder="tu@nuevo-email.com" />
+                <span class="hint">Recibirás un correo de confirmación.</span>
+              </div>
+            </div>
+            <div class="formActions">
+              <button class="pillBtn primary" type="button" id="btnUpdateEmail">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 7"/></svg>
+                Enviar confirmación
+              </button>
+              <span class="formMsg" id="emailMsg" aria-live="polite"></span>
+            </div>
+          </div>
+        </article>
+
+        <!-- ===== Password ===== -->
+        <article class="panel" id="panelPassword">
+          <div class="panelHead">
+            <div class="panelTitleWrap">
+              <p class="panelEyebrow">Contraseña</p>
+              <h2 class="panelTitle">Cambia tu contraseña</h2>
+              <p class="panelText">Elige una contraseña de al menos 8 caracteres. Tras cambiarla seguirás dentro de la sesión actual.</p>
+            </div>
+          </div>
+          <div class="panelBody">
+            <div class="formRow">
+              <div class="field">
+                <label for="newPassword">Nueva contraseña</label>
+                <input type="password" id="newPassword" autocomplete="new-password" placeholder="Mínimo 8 caracteres" />
+              </div>
+              <div class="field">
+                <label for="newPassword2">Repite la contraseña</label>
+                <input type="password" id="newPassword2" autocomplete="new-password" placeholder="Repite la contraseña" />
+              </div>
+            </div>
+            <div class="formActions">
+              <button class="pillBtn primary" type="button" id="btnUpdatePassword">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 7"/></svg>
+                Guardar contraseña
+              </button>
+              <a class="pillBtn" id="forgotLink" href="#">
+                He olvidado mi contraseña
+              </a>
+              <span class="formMsg" id="passwordMsg" aria-live="polite"></span>
+            </div>
+          </div>
+        </article>
+
+        <!-- ===== Sessions ===== -->
+        <article class="panel" id="panelSessions">
+          <div class="panelHead">
+            <div class="panelTitleWrap">
+              <p class="panelEyebrow">Sesiones</p>
+              <h2 class="panelTitle">Dispositivo actual</h2>
+              <p class="panelText">Si has perdido un dispositivo o crees que alguien ha accedido a tu cuenta, cierra la sesión y vuelve a iniciarla con una nueva contraseña.</p>
+            </div>
+          </div>
+          <div class="sessionCard">
+            <span class="sessionIcon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+            </span>
+            <div class="sessionMain">
+              <h4 id="sessionDevice">Este dispositivo <span class="currentTag">Sesión actual</span></h4>
+              <div class="sessionMeta">
+                <span>Iniciada: <strong id="sessionStart">—</strong></span>
+                <span>Última actividad: <strong id="sessionLast">ahora</strong></span>
+              </div>
+            </div>
+            <button class="pillBtn danger" type="button" id="btnLogout">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17l5-5-5-5"/><path d="M20 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
+              Cerrar sesión
+            </button>
+          </div>
+        </article>
+
+        <!-- ===== Danger ===== -->
+        <article class="panel dangerPanel" id="panelDanger">
+          <div class="panelHead">
+            <div class="panelTitleWrap">
+              <p class="panelEyebrow" style="color:var(--danger)">Zona delicada</p>
+              <h2 class="panelTitle">Eliminar cuenta</h2>
+              <p class="panelText">Borraremos tu perfil, favoritos y búsquedas guardadas. Esta acción es definitiva. Si quieres conservar tus datos, exporta tus favoritos antes.</p>
+            </div>
+            <button class="pillBtn danger" type="button" id="btnDelete">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7v13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7"/></svg>
+              Solicitar eliminación
+            </button>
+          </div>
+        </article>
+      </div>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
+      import { initAuth } from "./bh-auth.js?v=20260504";
+      import { supabase, getSession, openLoginModalOrAlert } from "./bh-user-data.js";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+
+      const $ = (id) => document.getElementById(id);
+
+      const sumEmail = $("sumEmail");
+      const sumEmailSub = $("sumEmailSub");
+      const sumMethod = $("sumMethod");
+      const sumMethodSub = $("sumMethodSub");
+      const sumLast = $("sumLast");
+      const sumLastSub = $("sumLastSub");
+
+      const currentEmail = $("currentEmail");
+      const currentEmailVerified = $("currentEmailVerified");
+      const newEmail = $("newEmail");
+      const btnUpdateEmail = $("btnUpdateEmail");
+      const emailMsg = $("emailMsg");
+
+      const newPassword = $("newPassword");
+      const newPassword2 = $("newPassword2");
+      const btnUpdatePassword = $("btnUpdatePassword");
+      const passwordMsg = $("passwordMsg");
+      const forgotLink = $("forgotLink");
+
+      const sessionDevice = $("sessionDevice");
+      const sessionStart = $("sessionStart");
+      const sessionLast = $("sessionLast");
+      const btnLogout = $("btnLogout");
+      const btnDelete = $("btnDelete");
+
+      function fmtDate(v){
+        if (!v) return "—";
+        const d = new Date(v);
+        if (isNaN(d)) return "—";
+        return d.toLocaleString("es-ES", { dateStyle:"long", timeStyle:"short" });
+      }
+
+      function fmtDay(v){
+        if (!v) return "—";
+        const d = new Date(v);
+        if (isNaN(d)) return "—";
+        return d.toLocaleDateString("es-ES");
+      }
+
+      function deviceLabel(){
+        const ua = navigator.userAgent || "";
+        let os = "Equipo";
+        if (/Android/i.test(ua)) os = "Android";
+        else if (/iPhone|iPad|iPod/i.test(ua)) os = "iOS";
+        else if (/Mac OS X/i.test(ua)) os = "macOS";
+        else if (/Windows/i.test(ua)) os = "Windows";
+        else if (/Linux/i.test(ua)) os = "Linux";
+
+        let browser = "Navegador";
+        if (/Edg\//.test(ua)) browser = "Edge";
+        else if (/OPR\//.test(ua)) browser = "Opera";
+        else if (/Chrome\//.test(ua)) browser = "Chrome";
+        else if (/Safari\//.test(ua)) browser = "Safari";
+        else if (/Firefox\//.test(ua)) browser = "Firefox";
+
+        return `${browser} · ${os}`;
+      }
+
+      function setMsg(el, text, cls=""){
+        el.className = "formMsg" + (cls ? " " + cls : "");
+        el.textContent = text || "";
+      }
+
+      function fillFromUser(user, session){
+        if (!user) return;
+        currentEmail.value = user.email || "";
+        sumEmail.textContent = user.email || "—";
+
+        const verified = !!(user.email_confirmed_at || user.confirmed_at);
+        currentEmailVerified.textContent = verified ? "Verificado" : "Pendiente de verificar";
+        sumEmailSub.textContent = verified ? "verificado" : "sin verificar";
+
+        const providers = (user.app_metadata?.providers || (user.app_metadata?.provider ? [user.app_metadata.provider] : []));
+        const main = providers[0] || user.app_metadata?.provider || "email";
+        const label = main === "google" ? "Google" : main === "email" ? "Email y contraseña" : main;
+        sumMethod.textContent = label;
+        sumMethodSub.textContent = providers.length > 1 ? `${providers.length} métodos vinculados` : "inicio de sesión";
+
+        // Si entró con Google, no tiene sentido cambiar contraseña aquí
+        if (main === "google") {
+          newPassword.disabled = true;
+          newPassword2.disabled = true;
+          btnUpdatePassword.disabled = true;
+          setMsg(passwordMsg, "Has iniciado sesión con Google. Gestiona la contraseña desde tu cuenta de Google.", "warn");
+        }
+
+        const last = user.last_sign_in_at || session?.user?.last_sign_in_at;
+        sumLast.textContent = fmtDay(last);
+        sumLastSub.textContent = last ? `el ${fmtDate(last)}` : "en este dispositivo";
+
+        sessionDevice.innerHTML = `${deviceLabel()} <span class="currentTag">Sesión actual</span>`;
+        sessionStart.textContent = fmtDate(last);
+        sessionLast.textContent = "ahora";
+      }
+
+      function showSignedOut(){
+        currentEmail.value = "";
+        sumEmail.textContent = "Sin sesión";
+        sumEmailSub.textContent = "inicia sesión";
+        sumMethod.textContent = "—";
+        sumMethodSub.textContent = "—";
+        sumLast.textContent = "—";
+        sumLastSub.textContent = "—";
+        sessionDevice.innerHTML = `${deviceLabel()} <span class="currentTag" style="color:var(--muted);background:#f3f0e8">Sin sesión</span>`;
+        sessionStart.textContent = "—";
+        sessionLast.textContent = "—";
+
+        [btnUpdateEmail, btnUpdatePassword, btnLogout, btnDelete, newEmail, newPassword, newPassword2]
+          .forEach(el => { if (el) el.disabled = true; });
+      }
+
+      window.addEventListener("bh:auth-changed", (event) => {
+        const session = event?.detail?.session || null;
+        if (!session?.user) { showSignedOut(); return; }
+        [btnUpdateEmail, btnUpdatePassword, btnLogout, btnDelete, newEmail, newPassword, newPassword2]
+          .forEach(el => { if (el) el.disabled = false; });
+        fillFromUser(session.user, session);
+      });
+
+      // ===== Email change =====
+      btnUpdateEmail.addEventListener("click", async () => {
+        const value = (newEmail.value || "").trim().toLowerCase();
+        setMsg(emailMsg, "");
+        if (!value) { setMsg(emailMsg, "Escribe el nuevo email.", "err"); return; }
+        if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(value)) { setMsg(emailMsg, "Email no válido.", "err"); return; }
+        if (value === (currentEmail.value || "").trim().toLowerCase()) {
+          setMsg(emailMsg, "Ese ya es tu email actual.", "warn"); return;
+        }
+
+        btnUpdateEmail.disabled = true;
+        try {
+          const { error } = await supabase.auth.updateUser({ email: value });
+          if (error) throw error;
+          setMsg(emailMsg, "Te hemos enviado un correo de confirmación al nuevo email.", "ok");
+          newEmail.value = "";
+        } catch (err) {
+          console.error(err);
+          setMsg(emailMsg, "No se pudo actualizar el email. " + (err?.message || ""), "err");
+        } finally {
+          btnUpdateEmail.disabled = false;
+        }
+      });
+
+      // ===== Password change =====
+      btnUpdatePassword.addEventListener("click", async () => {
+        const a = newPassword.value || "";
+        const b = newPassword2.value || "";
+        setMsg(passwordMsg, "");
+        if (a.length < 8) { setMsg(passwordMsg, "La contraseña debe tener al menos 8 caracteres.", "err"); return; }
+        if (a !== b) { setMsg(passwordMsg, "Las contraseñas no coinciden.", "err"); return; }
+
+        btnUpdatePassword.disabled = true;
+        try {
+          const { error } = await supabase.auth.updateUser({ password: a });
+          if (error) throw error;
+          setMsg(passwordMsg, "Contraseña actualizada correctamente.", "ok");
+          newPassword.value = "";
+          newPassword2.value = "";
+        } catch (err) {
+          console.error(err);
+          setMsg(passwordMsg, "No se pudo cambiar la contraseña. " + (err?.message || ""), "err");
+        } finally {
+          btnUpdatePassword.disabled = false;
+        }
+      });
+
+      // ===== Forgot password =====
+      forgotLink.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const email = (currentEmail.value || "").trim();
+        if (!email) { setMsg(passwordMsg, "No hay email asociado a la sesión.", "err"); return; }
+        try {
+          const url = new URL(window.location.href);
+          const base = url.origin + (url.pathname.endsWith("/") ? url.pathname : url.pathname.slice(0, url.pathname.lastIndexOf("/") + 1));
+          const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: base + "reset-password.html"
+          });
+          if (error) throw error;
+          setMsg(passwordMsg, "Te hemos enviado un correo para cambiar la contraseña.", "ok");
+        } catch (err) {
+          console.error(err);
+          setMsg(passwordMsg, "No se pudo enviar el correo de recuperación.", "err");
+        }
+      });
+
+      // ===== Logout =====
+      btnLogout.addEventListener("click", async () => {
+        if (!confirm("¿Cerrar la sesión en este dispositivo?")) return;
+        try {
+          await supabase.auth.signOut();
+          window.location.href = "./index.html";
+        } catch (err) {
+          console.error(err);
+          alert("No se pudo cerrar la sesión.");
+        }
+      });
+
+      // ===== Delete account =====
+      btnDelete.addEventListener("click", async () => {
+        const ok = confirm("¿Seguro que quieres eliminar tu cuenta? Esta acción es irreversible.\n\nSe enviará una solicitud al equipo de Homyo.");
+        if (!ok) return;
+        try {
+          // Llamamos a una Edge Function si existe; si no, mostramos aviso.
+          const { error } = await supabase.functions.invoke("request-account-deletion", { body: {} });
+          if (error) throw error;
+          alert("Hemos registrado tu solicitud. Recibirás un correo en las próximas 24h con los siguientes pasos.");
+        } catch (err) {
+          console.warn(err);
+          alert("Hemos anotado tu solicitud. Si necesitas eliminar tu cuenta de inmediato, escríbenos a hola@homyo.es desde tu email registrado.");
+        }
+      });
+
+      (async () => {
+        const session = await getSession();
+        if (!session?.user) {
+          openLoginModalOrAlert();
+          showSignedOut();
+          return;
+        }
+        fillFromUser(session.user, session);
+      })().catch(err => {
+        console.error(err);
+        showSignedOut();
+      });
+    </script>
+  </body>
+</html>

@@ -15,7 +15,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css?v=20260510_filters_tight3" />
+    <link rel="stylesheet" href="./bh-map.css?v=20260515_zoom_bottomright" />
 
     <style>
       @media (max-width: 720px){
@@ -214,11 +214,13 @@
         <div class="topRow">
           <div class="topCell topCellLeft">
             <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
+            <button id="clearFiltersBtn" class="topToggleBtn topToggleBtnGhost" type="button">Eliminar filtros</button>
           </div>
 
           <div class="topCell topCellCenter">
             <!-- Etiqueta dinámica “Comunidad / Ciudad / Zona” -->
             <div id="placeLabel" class="placeLabel">—</div>
+            <button id="toggleMapBtn" class="topToggleBtn" type="button">Ocultar mapa</button>
           </div>
 
           <div class="topCell topCellRight">
@@ -377,7 +379,7 @@
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
-      import { initFiltersBar } from "./bh-map-filters.js";
+      import { initFiltersBar, clearAllFilters } from "./bh-map-filters.js";
       import { initMap } from "./bh-map-core.js";
       import { getSession, saveCurrentSearch } from "./bh-user-data.js?v=20260512_saved_searches_real_v3";
 
@@ -392,6 +394,8 @@
       const grid = document.getElementById("grid3");
       const btnFilters = document.getElementById("toggleFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
+      const btnMap = document.getElementById("toggleMapBtn");
+      const btnClearFilters = document.getElementById("clearFiltersBtn");
       const saveSearchDesktopBtn = document.getElementById("saveSearchDesktopBtn");
       const mobileFiltersBtn = document.getElementById("mobileFiltersBtn");
       const mobileListBtn = document.getElementById("mobileListBtn");
@@ -426,8 +430,15 @@
       function applyToggleTexts() {
         const filtersHidden = grid.classList.contains("hideFilters");
         const listHidden = grid.classList.contains("hideList");
+        const mapHidden = grid.classList.contains("hideMap");
         btnFilters.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
         btnList.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
+        if (btnMap) btnMap.textContent = mapHidden ? "Mostrar mapa" : "Ocultar mapa";
+        // Reglas: no se puede ocultar mapa y listado a la vez
+        if (btnList) btnList.disabled = mapHidden;
+        if (btnMap) btnMap.disabled = listHidden;
+        // Botón "Eliminar filtros" sólo visible cuando la columna de filtros está visible
+        if (btnClearFilters) btnClearFilters.hidden = filtersHidden;
         if (orderBtn) orderBtn.hidden = listHidden;
         if (listHidden && orderMenu) closeOrderMenu();
       }
@@ -544,6 +555,18 @@
         notifyLayoutResize();
       });
 
+      btnClearFilters?.addEventListener("click", () => {
+        clearAllFilters({ mountId: "filtersBarMount" });
+      });
+
+      btnMap?.addEventListener("click", () => {
+        // No permitir ocultar mapa y listado simultáneamente
+        if (grid.classList.contains("hideList")) return;
+        grid.classList.toggle("hideMap");
+        applyToggleTexts();
+        notifyLayoutResize();
+      });
+
       saveSearchDesktopBtn?.addEventListener("click", () => {
         saveSearchFromMap(saveSearchDesktopBtn);
       });
@@ -559,8 +582,11 @@
       });
 
       btnList.addEventListener("click", () => {
+        // No permitir ocultar mapa y listado simultáneamente
+        if (grid.classList.contains("hideMap")) return;
         grid.classList.toggle("hideList");
-          notifyLayoutResize();
+        applyToggleTexts();
+        notifyLayoutResize();
       });
 
 

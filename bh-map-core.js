@@ -310,6 +310,14 @@ export function initMap(){
     const idStr = String(p.listing_id || "");
     if (idStr && seenSet.has(idStr)) el.classList.add("seen");
 
+    // Etiqueta de precio (oculta por defecto; visible cuando el botón € está activo)
+    if (p.price_eur != null) {
+      const priceLabel = document.createElement("span");
+      priceLabel.className = "dotPrice";
+      priceLabel.textContent = euro(p.price_eur);
+      el.appendChild(priceLabel);
+    }
+
     const icon = L.divIcon({
       className: "",
       html: el,
@@ -924,71 +932,197 @@ export function initMap(){
     return arr;
   }
 
+  function isListExpanded(){
+    // Desktop only: el listado se "expande" cuando el mapa est\u00e1 oculto.
+    const grid = document.getElementById("grid3");
+    if (!grid) return false;
+    if (window.matchMedia && window.matchMedia("(max-width: 768px)").matches) return false;
+    return grid.classList.contains("hideMap");
+  }
+
+  function buildStandardCard(p){
+    const id = String(p.listing_id || "");
+
+    const ph = document.createElement("div");
+    ph.className = "listImgPh";
+    ph.textContent = "Foto";
+
+    const img = (p.main_photo_url)
+      ? (() => {
+          const i = document.createElement("img");
+          i.className = "listImg";
+          i.src = p.main_photo_url;
+          i.alt = "";
+          i.onerror = () => { i.replaceWith(ph); };
+          return i;
+        })()
+      : null;
+
+    const left = document.createElement("div");
+    if (img) left.appendChild(img);
+    else left.appendChild(ph);
+
+    const title = document.createElement("div");
+    title.className = "listTitle";
+    title.textContent = buildListAddressTop(p);
+
+    const sub = document.createElement("div");
+    sub.className = "listSub";
+    sub.textContent = buildAddressBottom(p);
+
+    const price = document.createElement("div");
+    price.className = "listPrice";
+    price.textContent = (p.price_eur != null) ? euro(p.price_eur) : "—";
+
+    const meta = document.createElement("div");
+    meta.className = "listMeta";
+    const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
+    const type = p.property_type ? String(p.property_type) : "—";
+    meta.textContent = `${m2} · ${type}`;
+
+    const agency = document.createElement("div");
+    agency.className = "listAgency";
+    agency.textContent = p.agency_name || "—";
+
+    const right = document.createElement("div");
+    right.appendChild(title);
+    right.appendChild(sub);
+    right.appendChild(price);
+    right.appendChild(meta);
+    right.appendChild(agency);
+
+    const card = document.createElement("div");
+    card.className = "listCard";
+    card.appendChild(left);
+    card.appendChild(right);
+    return card;
+  }
+
+  function buildExpandedCard(p){
+    const id = String(p.listing_id || "");
+
+    // ----- Galer\u00eda: foto principal + dos miniaturas -----
+    const gallery = document.createElement("div");
+    gallery.className = "listGallery";
+
+    // Foto principal
+    if (p.main_photo_url){
+      const main = document.createElement("img");
+      main.className = "listGalleryMain";
+      main.src = p.main_photo_url;
+      main.alt = "";
+      main.onerror = () => {
+        const ph = document.createElement("div");
+        ph.className = "listGalleryMainPh";
+        ph.textContent = "Foto";
+        main.replaceWith(ph);
+      };
+      gallery.appendChild(main);
+    } else {
+      const ph = document.createElement("div");
+      ph.className = "listGalleryMainPh";
+      ph.textContent = "Foto";
+      gallery.appendChild(ph);
+    }
+
+    // Miniaturas (en una implementaci\u00f3n real vendr\u00edan de la galer\u00eda completa
+    // del anuncio; aqu\u00ed reutilizamos la principal o mostramos placeholders).
+    for (let i = 0; i < 2; i++){
+      if (p.main_photo_url){
+        const t = document.createElement("img");
+        t.className = "listGalleryThumb";
+        t.src = p.main_photo_url;
+        t.alt = "";
+        t.onerror = () => {
+          const ph = document.createElement("div");
+          ph.className = "listGalleryThumbPh";
+          ph.textContent = "Foto";
+          t.replaceWith(ph);
+        };
+        gallery.appendChild(t);
+      } else {
+        const ph = document.createElement("div");
+        ph.className = "listGalleryThumbPh";
+        ph.textContent = "Foto";
+        gallery.appendChild(ph);
+      }
+    }
+
+    // Insignia "Nuevo"
+    if (isRecent(p.listed_at, 14)){
+      const b = document.createElement("div");
+      b.className = "listGalleryBadge";
+      b.textContent = "Nuevo";
+      gallery.appendChild(b);
+    }
+
+    // Indicador "+N fotos"
+    const more = document.createElement("div");
+    more.className = "listGalleryMore";
+    more.textContent = "+12 fotos";
+    gallery.appendChild(more);
+
+    // ----- Bloque informativo -----
+    const info = document.createElement("div");
+    info.className = "listInfo";
+
+    const title = document.createElement("div");
+    title.className = "listTitle";
+    title.textContent = buildListAddressTop(p);
+    info.appendChild(title);
+
+    const sub = document.createElement("div");
+    sub.className = "listSub";
+    sub.textContent = buildAddressBottom(p);
+    info.appendChild(sub);
+
+    const price = document.createElement("div");
+    price.className = "listPrice";
+    price.textContent = (p.price_eur != null) ? euro(p.price_eur) : "—";
+    info.appendChild(price);
+
+    const chips = document.createElement("div");
+    chips.className = "listFactsRow";
+
+    function chip(text){
+      const c = document.createElement("span");
+      c.className = "listChip";
+      c.textContent = text;
+      return c;
+    }
+    if (p.useful_area_m2 != null) chips.appendChild(chip(`${p.useful_area_m2} m²`));
+    if (p.bedrooms != null) chips.appendChild(chip(`${p.bedrooms} hab.`));
+    if (p.bathrooms != null) chips.appendChild(chip(`${p.bathrooms} baños`));
+    if (p.property_type) chips.appendChild(chip(String(p.property_type)));
+    if (p.floor != null) chips.appendChild(chip(`Planta ${p.floor}`));
+    if (p.energy_rating) chips.appendChild(chip(`Energía ${p.energy_rating}`));
+    if (chips.childNodes.length) info.appendChild(chips);
+
+    const agency = document.createElement("div");
+    agency.className = "listAgency";
+    agency.textContent = p.agency_name || "—";
+    info.appendChild(agency);
+
+    const card = document.createElement("div");
+    card.className = "listCard expanded";
+    card.appendChild(gallery);
+    card.appendChild(info);
+    return card;
+  }
+
   function renderList(){
     if (!listItemsEl) return;
 
     const rows = sortRows(currentRows);
+    const expanded = isListExpanded();
 
     const frag = document.createDocumentFragment();
     listItemsEl.innerHTML = "";
+    listItemsEl.classList.toggle("expanded", expanded);
 
     rows.forEach((p) => {
       const id = String(p.listing_id || "");
-
-      const img = (p.main_photo_url)
-        ? (() => {
-            const i = document.createElement("img");
-            i.className = "listImg";
-            i.src = p.main_photo_url;
-            i.alt = "";
-            i.onerror = () => {
-              i.replaceWith(ph);
-            };
-            return i;
-          })()
-        : null;
-
-      const ph = document.createElement("div");
-      ph.className = "listImgPh";
-      ph.textContent = "Foto";
-
-      const left = document.createElement("div");
-      if (img) left.appendChild(img);
-      else left.appendChild(ph);
-
-      const title = document.createElement("div");
-      title.className = "listTitle";
-      title.textContent = buildListAddressTop(p);
-
-      const sub = document.createElement("div");
-      sub.className = "listSub";
-      sub.textContent = buildAddressBottom(p);
-
-      const price = document.createElement("div");
-      price.className = "listPrice";
-      price.textContent = (p.price_eur != null) ? euro(p.price_eur) : "—";
-
-      const meta = document.createElement("div");
-      meta.className = "listMeta";
-      const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
-      const type = p.property_type ? String(p.property_type) : "—";
-      meta.textContent = `${m2} · ${type}`;
-
-      const agency = document.createElement("div");
-      agency.className = "listAgency";
-      agency.textContent = p.agency_name || "—";
-
-      const right = document.createElement("div");
-      right.appendChild(title);
-      right.appendChild(sub);
-      right.appendChild(price);
-      right.appendChild(meta);
-      right.appendChild(agency);
-
-      const card = document.createElement("div");
-      card.className = "listCard";
-      card.appendChild(left);
-      card.appendChild(right);
+      const card = expanded ? buildExpandedCard(p) : buildStandardCard(p);
 
       // Hover: resalta marcador sin hacer click (pedido)
       card.addEventListener("mouseenter", () => {
@@ -1537,7 +1671,7 @@ export function initMap(){
     }
   });
 
-  map.addControl(new LocateControl());
+  // (addControl se hace abajo en el orden correcto)
 
   // NUEVO: botón de transporte (placeholder funcional, mismo lenguaje visual
   // que el resto de los controles laterales y a juego con el botón "Vehículo"
@@ -1573,7 +1707,7 @@ export function initMap(){
     }
   });
 
-  map.addControl(new TransportControl());
+  // (addControl se hace abajo en el orden correcto)
 
   const SunControl = L.Control.extend({
     options: { position: "topright" },
@@ -1635,7 +1769,7 @@ export function initMap(){
     }
   });
 
-  map.addControl(new SunControl());
+  // (addControl se hace abajo en el orden correcto)
 
   map.on("moveend", () => { if (sunEnabled) updateSunOverlay(); });
   map.on("zoomend", () => { if (sunEnabled) updateSunOverlay(); });
@@ -1658,6 +1792,9 @@ export function initMap(){
       setTimeout(() => safeInvalidate(), 120);
       setTimeout(() => safeInvalidate(), 260);
     });
+    // Re-render del listado: la presentaci\u00f3n cambia cuando el mapa se oculta
+    // (tarjeta compacta vs. tarjeta ampliada con galer\u00eda).
+    try { renderList(); } catch(_) {}
   });
 
   const AreasControl = L.Control.extend({
@@ -1800,7 +1937,69 @@ export function initMap(){
     }
   });
 
+  // ====== Botón Precios (€) ======
+  // Activa una vista "precios visibles" en los marcadores. Solo se puede
+  // activar con suficiente zoom (16+), igual que el sol, para que las etiquetas
+  // no se acumulen.
+  const ZOOM_PRICE_MIN = 16;
+  let priceModeEnabled = false;
+
+  function setPriceMode(next){
+    priceModeEnabled = !!next;
+    document.body.classList.toggle("priceMode", priceModeEnabled);
+  }
+
+  const PriceControl = L.Control.extend({
+    options: { position: "topright" },
+    onAdd: function() {
+      const container = L.DomUtil.create("div", "quickCol");
+      L.DomEvent.disableClickPropagation(container);
+      L.DomEvent.disableScrollPropagation(container);
+
+      const btn = L.DomUtil.create("div", "qBtn", container);
+      btn.id = "priceBtn";
+      btn.title = "Precios";
+      btn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6H9.5a4.5 4.5 0 0 0 0 9H15"></path>
+          <path d="M18 10.5H6"></path>
+          <path d="M14 19a6 6 0 0 1-5.5-3.5"></path>
+        </svg>
+      `;
+
+      function setBtnEnabled(){
+        const ok = map.getZoom() >= ZOOM_PRICE_MIN;
+        btn.classList.toggle("disabled", !ok);
+        btn.title = ok ? "Precios" : `Acércate para ver precios (zoom ${ZOOM_PRICE_MIN}+)`;
+        if (!ok && priceModeEnabled) {
+          btn.classList.remove("active");
+          setPriceMode(false);
+        }
+      }
+
+      btn.addEventListener("click", () => {
+        const ok = map.getZoom() >= ZOOM_PRICE_MIN;
+        if (!ok) return;
+        const next = !priceModeEnabled;
+        btn.classList.toggle("active", next);
+        setPriceMode(next);
+      });
+
+      map.on("zoomend", setBtnEnabled);
+      setBtnEnabled();
+
+      return container;
+    }
+  });
+
+  // ====== Orden definitivo de los controles laterales (de arriba a abajo) ======
+  // 1) Ubicación  2) Área por puntos + Área dibujo libre  3) Transporte
+  // 4) Sol        5) Precios (€)
+  map.addControl(new LocateControl());
   map.addControl(new AreasControl());
+  map.addControl(new TransportControl());
+  map.addControl(new SunControl());
+  map.addControl(new PriceControl());
 
   // Etiqueta dinámica “Comunidad / Ciudad / Zona” según centro del mapa
   // (cache + throttle para no spamear Nominatim)

@@ -66,8 +66,8 @@ body{
   align-items: center;
 }
 
-.topCellLeft{ justify-content: flex-start; }
-.topCellCenter{ justify-content: center; }
+.topCellLeft{ justify-content: flex-start; gap: 10px; }
+.topCellCenter{ justify-content: space-between; gap: 14px; }
 .topCellRight{ justify-content: flex-end; position: relative; }
 
 .topToggleBtn{
@@ -90,6 +90,31 @@ body{
   border-color: rgba(140,31,45,0.38);
   box-shadow: 0 2px 8px rgba(140,31,45,0.08);
 }
+
+.topToggleBtn[disabled]{
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.topToggleBtn[disabled]:hover{
+  background: #fff;
+  border-color: rgba(140,31,45,0.22);
+  box-shadow: none;
+}
+
+/* Variante "Eliminar filtros": gris sutil, se vuelve granate al pasar el ratón */
+.topToggleBtnGhost{
+  background: transparent;
+  border-color: rgba(0,0,0,0.14);
+  color: rgba(0,0,0,0.55);
+}
+.topToggleBtnGhost:hover{
+  background: rgba(140,31,45,0.05);
+  border-color: rgba(140,31,45,0.32);
+  color: #8C1F2D;
+  box-shadow: none;
+}
+.topToggleBtnGhost[hidden]{ display: none; }
 
 .placeLabel{
   display: inline-flex;
@@ -190,6 +215,18 @@ body{
   grid-template-columns: 1fr;
 }
 
+/* Ocultar mapa: la columna de filtros conserva su ancho fijo y el
+   listado se expande para ocupar todo el espacio libre */
+.grid3.hideMap{
+  grid-template-columns: var(--sideW) 1fr;
+}
+.grid3.hideMap.hideFilters{
+  grid-template-columns: 1fr;
+}
+.grid3.hideMap #mapCol{
+  display: none;
+}
+
 /* Columnas */
 .col{
   height: 100%;
@@ -288,8 +325,64 @@ body{
   border: 3px solid #F2E9D8;
   box-shadow: 0 1px 4px rgba(0,0,0,0.25);
   transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  position: relative;
 }
 .dot:hover { transform: scale(1.12); }
+
+/* Etiqueta de precio: oculta salvo en modo precios, en cuyo caso la propia
+   bolita se ensancha y muestra el precio en su interior (manteniendo los
+   mismos colores: dorado / crema / granate según estado). */
+.dotPrice {
+  display: none;
+}
+
+.priceMode .dot {
+  width: auto;
+  height: auto;
+  min-width: 20px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  /* La bolita original tenía iconAnchor [10,10] (centro en latlng). Como ahora
+     crece, recentramos: -50% del propio tamaño + los 10px del ancla. */
+  transform: translate(calc(-50% + 10px), calc(-50% + 10px));
+}
+
+.priceMode .dot:hover {
+  transform: translate(calc(-50% + 10px), calc(-50% + 10px)) scale(1.06);
+}
+
+.priceMode .dotPrice {
+  display: inline;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: #5A2A00;
+}
+
+/* Vistos: mantienen fondo crema + borde dorado; texto granate */
+.priceMode .dot.seen .dotPrice {
+  color: #8A1F2D;
+}
+
+/* Activo: mantiene granate con borde dorado; texto crema */
+.priceMode .dot.active {
+  transform: translate(calc(-50% + 10px), calc(-50% + 10px)) scale(1.05);
+}
+.priceMode .dot.active .dotPrice {
+  color: #FFFDFA;
+}
+
+/* Hover desde el listado (.dot.hover) en modo precios: solo un realce sutil */
+.priceMode .dot.hover {
+  transform: translate(calc(-50% + 10px), calc(-50% + 10px)) scale(1.08);
+  box-shadow: 0 10px 24px rgba(138,31,45,0.18);
+}
 
 /* Anuncio visto: crema con borde dorado */
 .dot.seen{
@@ -679,6 +772,24 @@ body{
 /* Posición interna: pequeño respiro respecto al borde del mapa */
 .leaflet-top.leaflet-left{
   padding: 12px 0 0 12px;
+}
+
+/* Desktop: mover los botones +/- del zoom desde la esquina superior-izquierda
+   a la inferior-derecha del mapa, en la misma vertical que los iconos de la
+   derecha (.quickCol) y justo encima de la atribución "Leaflet | OpenStreetMap…".
+   En móvil ya se ocultan más abajo, por lo que esto solo aplica a desktop. */
+@media (min-width: 769px){
+  .mapWrap .leaflet-control-container .leaflet-top.leaflet-left{
+    top: auto;
+    bottom: 26px;
+    left: auto;
+    right: 0;
+    padding: 0;
+  }
+  .mapWrap .leaflet-control-container .leaflet-top.leaflet-left .leaflet-control-zoom{
+    margin: 0 10px 0 0;
+    float: right;
+  }
 }
 
 /* Controles rápidos (Sol / áreas / geolocalización) */
@@ -2687,5 +2798,199 @@ body.saveSearchAuthOpen{
   .saveSearchAuthSecondary{
     width:100%;
     justify-content:center;
+  }
+}
+
+
+
+/* ===== Expanded list view (desktop) when map column is hidden =====
+   La columna de filtros conserva su ancho fijo; el listado se expande
+   ocupando el resto. Cada tarjeta muestra más información y una
+   galería con varias fotos en lugar de una sola miniatura. */
+@media (min-width: 769px){
+  .placeLabel{
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .grid3.hideMap #listCol{
+    border-color: rgba(140,31,45,0.10);
+  }
+
+  /* Cuando el mapa está oculto la rejilla de la lista pasa a multi-columna
+     para aprovechar el ancho disponible. */
+  .grid3.hideMap .listItems{
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)) !important;
+    gap: 14px !important;
+    padding: 16px !important;
+    align-items: stretch !important;
+  }
+
+  /* Tarjeta ampliada: imagen grande arriba, contenido debajo */
+  .grid3.hideMap .listCard.expanded{
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: none !important;
+    padding: 0 !important;
+    overflow: hidden;
+    border-radius: 6px !important;
+    border: 1px solid var(--bh-border) !important;
+    background: #fff !important;
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+  }
+  .grid3.hideMap .listCard.expanded:hover{
+    border-color: rgba(140,31,45,0.32) !important;
+    box-shadow: 0 10px 28px rgba(140,31,45,0.10) !important;
+    transform: translateY(-2px);
+  }
+
+  /* Galería: foto principal + dos miniaturas en una columna lateral */
+  .listGallery{
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 92px;
+    grid-template-rows: 110px 110px;
+    gap: 4px;
+    background: #f5f1ea;
+    height: 224px;
+  }
+  .listGalleryMain{
+    grid-row: 1 / span 2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #f1ece1;
+    display: block;
+  }
+  .listGalleryMainPh{
+    grid-row: 1 / span 2;
+    width: 100%;
+    height: 100%;
+    background: #f1ece1;
+    color: #b9b1a6;
+    font-family: 'Raleway','Montserrat',system-ui,sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: grid;
+    place-items: center;
+  }
+  .listGalleryThumb{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #ece5d6;
+    display: block;
+  }
+  .listGalleryThumbPh{
+    width: 100%;
+    height: 100%;
+    background: #ece5d6;
+    color: #b9b1a6;
+    font-family: 'Raleway','Montserrat',system-ui,sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: grid;
+    place-items: center;
+  }
+  .listGalleryMore{
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+  }
+  .listGalleryBadge{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #C4962A;
+    color: #FFFDFA;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Bloque informativo (debajo de la galería) */
+  .grid3.hideMap .listCard.expanded .listInfo{
+    padding: 14px 16px 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    min-width: 0;
+  }
+  .grid3.hideMap .listCard.expanded .listTitle{
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #8C1F2D !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.25 !important;
+  }
+  .grid3.hideMap .listCard.expanded .listSub{
+    font-size: 13px !important;
+    color: rgba(0,0,0,0.62) !important;
+    margin-top: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .grid3.hideMap .listCard.expanded .listPrice{
+    font-size: 22px !important;
+    font-weight: 900 !important;
+    color: #111 !important;
+    margin-top: 4px !important;
+  }
+  .grid3.hideMap .listCard.expanded .listFactsRow{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    margin-top: 6px;
+  }
+  .listChip{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: rgba(196,150,42,0.10);
+    border: 1px solid rgba(196,150,42,0.20);
+    color: #6b5217;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .grid3.hideMap .listCard.expanded .listAgency{
+    font-size: 12.5px !important;
+    color: rgba(0,0,0,0.55) !important;
+    margin-top: auto !important;
+    padding-top: 8px !important;
+    border-top: 1px solid rgba(0,0,0,0.06) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* Cuando además se ocultan los filtros, la rejilla puede usar tarjetas
+     más anchas. */
+  .grid3.hideMap.hideFilters .listItems{
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+    padding: 18px !important;
+    gap: 16px !important;
   }
 }

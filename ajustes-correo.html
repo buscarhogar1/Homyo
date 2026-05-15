@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ajustes de correo · Homyo</title>
+
+    <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
+
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --granateSoft:#A33646;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
+        --good:#1f7a4c;
+        --warn:#a36105;
+        --danger:#a32436;
+      }
+
+      *{ box-sizing:border-box; }
+
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      .pageWrap{
+        width:min(1120px,100%);
+        margin:0 auto;
+        padding:40px 24px 96px;
+      }
+
+      /* ===== Breadcrumb ===== */
+      .crumbs{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:24px;
+      }
+      .crumbs a{ color:var(--muted); text-decoration:none; }
+      .crumbs a:hover{ color:var(--granate); }
+      .crumbs .sep{ color:var(--doradoSoft); }
+      .crumbs .current{ color:var(--granate); }
+
+      /* ===== Page header ===== */
+      .pageHeader{
+        display:grid;
+        grid-template-columns:1fr auto;
+        align-items:end;
+        gap:24px;
+        padding-bottom:28px;
+        margin-bottom:36px;
+        border-bottom:1px solid var(--line);
+      }
+
+      .pageKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 14px;
+      }
+
+      .pageTitle{
+        margin:0;
+        font-family:'Raleway',sans-serif;
+        font-size:56px;
+        line-height:1;
+        letter-spacing:-1.2px;
+        font-weight:300;
+        color:var(--granate);
+      }
+      .pageTitle strong{ font-weight:600; }
+
+      .pageSubtitle{
+        margin:14px 0 0;
+        font-size:16px;
+        color:var(--ink2);
+        max-width:580px;
+        line-height:1.5;
+      }
+
+      .pillBtn{
+        appearance:none;
+        border:1px solid var(--line);
+        background:#fff;
+        color:var(--ink2);
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        padding:11px 18px;
+        border-radius:999px;
+        cursor:pointer;
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        transition:all .18s ease;
+        text-decoration:none;
+      }
+      .pillBtn:hover{ border-color:var(--granate); color:var(--granate); }
+      .pillBtn.primary{ background:var(--granate); color:#fff; border-color:var(--granate); }
+      .pillBtn.primary:hover{ background:#711824; }
+      .pillBtn.ghost{ background:transparent; }
+      .pillBtn[disabled]{ opacity:.55; cursor:not-allowed; }
+      .pillBtn svg{ width:14px; height:14px; }
+
+      /* ===== Summary ===== */
+      .summary{
+        display:grid;
+        grid-template-columns:repeat(3, minmax(0,1fr));
+        gap:0;
+        border:1px solid var(--line);
+        border-radius:4px;
+        background:var(--card);
+        margin-bottom:32px;
+        overflow:hidden;
+      }
+
+      .summaryItem{
+        padding:22px 24px;
+        border-right:1px solid var(--lineSoft);
+      }
+      .summaryItem:last-child{ border-right:none; }
+
+      .summaryLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:600;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin:0 0 10px;
+      }
+
+      .summaryValue{
+        font-family:'Raleway',sans-serif;
+        font-size:30px;
+        font-weight:400;
+        color:var(--granate);
+        letter-spacing:-.8px;
+        line-height:1;
+      }
+
+      .summarySub{
+        margin-top:6px;
+        font-size:12px;
+        color:var(--muted);
+      }
+
+      /* ===== Master toggle banner ===== */
+      .masterBar{
+        background:linear-gradient(180deg, #fff 0%, var(--cardWarm) 130%);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:22px 26px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:20px;
+        margin-bottom:32px;
+        flex-wrap:wrap;
+      }
+
+      .masterBar h2{
+        font-family:'Raleway',sans-serif;
+        font-size:22px;
+        font-weight:500;
+        margin:0 0 4px;
+        color:var(--ink);
+        letter-spacing:-.2px;
+      }
+      .masterBar p{
+        margin:0;
+        font-size:14px;
+        color:var(--ink2);
+        max-width:560px;
+      }
+      .masterBar p strong{ color:var(--granate); }
+
+      /* ===== Section label ===== */
+      .listLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.34em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin:0 0 16px;
+      }
+
+      /* ===== Group panel ===== */
+      .panel{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:8px 0;
+        transition:border-color .22s ease, box-shadow .22s ease;
+      }
+      .panel + .panel{ margin-top:14px; }
+      .panel:hover{
+        border-color:rgba(140,31,45,.18);
+        box-shadow:0 8px 22px rgba(140,31,45,.05);
+      }
+
+      .panelHead{
+        padding:20px 26px 18px;
+        border-bottom:1px solid var(--lineSoft);
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:14px;
+      }
+
+      .panelTitleWrap{ min-width:0; }
+
+      .panelEyebrow{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 6px;
+      }
+
+      .panelTitle{
+        font-family:'Raleway',sans-serif;
+        font-size:21px;
+        font-weight:500;
+        color:var(--ink);
+        margin:0;
+        letter-spacing:-.2px;
+      }
+
+      /* ===== Preference rows ===== */
+      .prefRow{
+        display:grid;
+        grid-template-columns:48px 1fr auto;
+        align-items:center;
+        gap:18px;
+        padding:18px 26px;
+        border-bottom:1px solid var(--lineSoft);
+      }
+      .prefRow:last-child{ border-bottom:none; }
+
+      .prefIcon{
+        width:42px;
+        height:42px;
+        border-radius:50%;
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.25);
+        display:grid;
+        place-items:center;
+        color:var(--granate);
+      }
+      .prefIcon svg{ width:20px; height:20px; }
+
+      .prefBody h3{
+        margin:0 0 3px;
+        font-family:'Raleway',sans-serif;
+        font-size:16px;
+        font-weight:600;
+        color:var(--ink);
+        letter-spacing:-.1px;
+      }
+
+      .prefBody p{
+        margin:0;
+        font-size:13.5px;
+        color:var(--ink2);
+        line-height:1.45;
+      }
+
+      .prefMeta{
+        display:flex;
+        gap:14px;
+        font-size:12px;
+        color:var(--muted);
+        margin-top:6px;
+      }
+
+      .prefMeta strong{ color:var(--ink2); font-weight:600; }
+
+      /* ===== Toggle ===== */
+      .toggle{
+        --track:#e7dfd0;
+        --on:var(--granate);
+        position:relative;
+        width:48px;
+        height:28px;
+        flex-shrink:0;
+        cursor:pointer;
+      }
+      .toggle input{
+        position:absolute;
+        opacity:0;
+        inset:0;
+        cursor:pointer;
+        margin:0;
+      }
+      .toggle .track{
+        position:absolute;
+        inset:0;
+        background:var(--track);
+        border-radius:999px;
+        transition:background .2s ease;
+      }
+      .toggle .thumb{
+        position:absolute;
+        top:3px;
+        left:3px;
+        width:22px;
+        height:22px;
+        background:#fff;
+        border-radius:50%;
+        box-shadow:0 1px 3px rgba(0,0,0,.18);
+        transition:transform .2s ease;
+      }
+      .toggle input:checked + .track{ background:var(--on); }
+      .toggle input:checked + .track + .thumb{ transform:translateX(20px); }
+      .toggle input:disabled + .track{ opacity:.45; }
+      .toggle input:disabled ~ .thumb{ opacity:.65; }
+      .toggle input:focus-visible + .track{
+        outline:2px solid rgba(140,31,45,.35);
+        outline-offset:2px;
+      }
+
+      /* ===== Frequency segmented control ===== */
+      .freqOpts{
+        display:inline-flex;
+        gap:4px;
+        background:var(--lineSoft);
+        padding:3px;
+        border-radius:999px;
+        flex-wrap:wrap;
+      }
+      .freqOpt{
+        appearance:none;
+        border:none;
+        background:transparent;
+        font-family:inherit;
+        font-size:12px;
+        color:var(--ink2);
+        padding:6px 14px;
+        border-radius:999px;
+        cursor:pointer;
+        transition:all .18s ease;
+      }
+      .freqOpt.active{
+        background:var(--granate);
+        color:#fff;
+        box-shadow:0 2px 6px rgba(140,31,45,.18);
+      }
+      .freqOpt:not(.active):hover{ color:var(--granate); }
+      .freqOpt[disabled]{ cursor:not-allowed; opacity:.55; }
+
+      .freqWrap{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        padding:14px 26px 18px;
+      }
+
+      .freqLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--muted);
+      }
+
+      /* ===== Schedule card ===== */
+      .scheduleCard{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:24px 26px;
+        margin-top:14px;
+      }
+      .scheduleCard h3{
+        font-family:'Raleway',sans-serif;
+        font-size:18px;
+        font-weight:500;
+        margin:0 0 4px;
+        color:var(--ink);
+      }
+      .scheduleCard p{
+        margin:0 0 14px;
+        font-size:13.5px;
+        color:var(--ink2);
+      }
+      .scheduleRow{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:14px;
+      }
+      .field{ display:flex; flex-direction:column; gap:6px; }
+      .field label{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--muted);
+      }
+      .field select{
+        appearance:none;
+        border:1px solid var(--line);
+        background:#fff;
+        font-family:inherit;
+        font-size:14.5px;
+        color:var(--ink);
+        padding:11px 36px 11px 14px;
+        border-radius:4px;
+        cursor:pointer;
+        background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%238C1F2D' stroke-width='1.6' stroke-linecap='round'><path d='m3 5 3 3 3-3'/></svg>");
+        background-repeat:no-repeat;
+        background-position:right 12px center;
+        background-size:12px;
+      }
+      .field select:focus{
+        outline:none;
+        border-color:var(--granate);
+        box-shadow:0 0 0 3px rgba(140,31,45,.10);
+      }
+
+      /* ===== Save bar ===== */
+      .saveBar{
+        margin-top:28px;
+        padding:20px 24px;
+        border:1px solid var(--line);
+        border-radius:4px;
+        background:var(--card);
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:16px;
+        flex-wrap:wrap;
+      }
+
+      .saveBar .left{
+        font-size:13.5px;
+        color:var(--ink2);
+      }
+
+      .saveBar .left strong{
+        color:var(--granate);
+        font-family:'Raleway',sans-serif;
+        font-weight:600;
+      }
+
+      .saveActions{
+        display:flex;
+        gap:10px;
+        align-items:center;
+        flex-wrap:wrap;
+      }
+
+      .saveMsg{
+        font-size:13px;
+        color:var(--ink2);
+      }
+      .saveMsg.ok{ color:var(--good); }
+      .saveMsg.err{ color:var(--danger); }
+
+      /* ===== Unsubscribe footnote ===== */
+      .footnoteCard{
+        margin-top:22px;
+        border:1px dashed var(--doradoSoft);
+        border-radius:4px;
+        background:linear-gradient(180deg, var(--cardWarm) 0%, #fff 100%);
+        padding:24px 26px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:18px;
+        flex-wrap:wrap;
+      }
+      .footnoteCard h3{
+        font-family:'Raleway',sans-serif;
+        font-size:18px;
+        font-weight:400;
+        margin:0 0 6px;
+        color:var(--granate);
+      }
+      .footnoteCard p{
+        margin:0;
+        color:var(--ink2);
+        font-size:13.5px;
+        max-width:560px;
+        line-height:1.5;
+      }
+
+      /* ===== Disabled state (master off) ===== */
+      .panel.disabled{ opacity:.55; }
+      .panel.disabled .prefIcon{ filter:grayscale(.4); }
+      .panel.disabled .toggle input{ pointer-events:none; }
+
+      @media (max-width:900px){
+        .summary{ grid-template-columns:1fr 1fr; }
+        .summaryItem:nth-child(2){ border-right:none; }
+        .summaryItem:nth-child(3){ border-top:1px solid var(--lineSoft); grid-column:1 / -1; }
+        .pageTitle{ font-size:42px; }
+      }
+
+      @media (max-width:680px){
+        .pageWrap{ padding:24px 16px 64px; }
+        .pageHeader{ grid-template-columns:1fr; gap:18px; }
+        .pageTitle{ font-size:34px; letter-spacing:-.8px; }
+        .summary{ grid-template-columns:1fr; }
+        .summaryItem{ border-right:none; border-bottom:1px solid var(--lineSoft); }
+        .summaryItem:last-child{ border-bottom:none; }
+        .prefRow{ grid-template-columns:42px 1fr; gap:14px; padding:16px 18px; }
+        .prefRow .toggle{ grid-column:1 / -1; justify-self:flex-end; }
+        .freqWrap{ padding:12px 18px 16px; }
+        .panelHead{ padding:16px 18px; }
+        .scheduleRow{ grid-template-columns:1fr; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="pageWrap">
+      <nav class="crumbs" aria-label="Migas de pan">
+        <a href="./account.html">Mi cuenta</a>
+        <span class="sep">/</span>
+        <span class="current">Ajustes de correo</span>
+      </nav>
+
+      <header class="pageHeader">
+        <div>
+          <p class="pageKicker">Comunicaciones</p>
+          <h1 class="pageTitle">Ajustes de <strong>correo</strong></h1>
+          <p class="pageSubtitle">Elige qué avisos quieres recibir y con qué frecuencia. Puedes cambiarlo cuando quieras; los cambios se aplican al instante.</p>
+        </div>
+        <a class="pillBtn" href="./account.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+          Volver a mi cuenta
+        </a>
+      </header>
+
+      <section class="summary" aria-label="Resumen">
+        <div class="summaryItem">
+          <div class="summaryLabel">Avisos activos</div>
+          <div class="summaryValue" id="sumActive">0</div>
+          <div class="summarySub">de 5 categorías</div>
+        </div>
+        <div class="summaryItem">
+          <div class="summaryLabel">Frecuencia base</div>
+          <div class="summaryValue" id="sumFreq">—</div>
+          <div class="summarySub">resumen de nuevas viviendas</div>
+        </div>
+        <div class="summaryItem">
+          <div class="summaryLabel">Email de envío</div>
+          <div class="summaryValue" id="sumEmail" style="font-size:18px">—</div>
+          <div class="summarySub">cuenta verificada</div>
+        </div>
+      </section>
+
+      <section class="masterBar">
+        <div>
+          <h2>Recibir correos de Homyo</h2>
+          <p>Cuando lo desactivas dejamos de enviarte cualquier email salvo los avisos críticos de seguridad de tu cuenta. <strong>Recomendado: mantener activado.</strong></p>
+        </div>
+        <label class="toggle" aria-label="Recibir correos de Homyo">
+          <input type="checkbox" id="masterToggle" checked />
+          <span class="track"></span>
+          <span class="thumb"></span>
+        </label>
+      </section>
+
+      <p class="listLabel">Tipos de aviso</p>
+
+      <!-- ===== Properties ===== -->
+      <article class="panel" id="panelProperties">
+        <div class="panelHead">
+          <div class="panelTitleWrap">
+            <p class="panelEyebrow">Viviendas</p>
+            <h2 class="panelTitle">Nuevas viviendas y favoritos</h2>
+          </div>
+        </div>
+
+        <div class="prefRow">
+          <span class="prefIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+          </span>
+          <div class="prefBody">
+            <h3>Nuevas viviendas para tus búsquedas</h3>
+            <p>Recibe un correo cuando aparezcan anuncios que coincidan con tus búsquedas guardadas.</p>
+            <div class="prefMeta"><span><strong id="savedSearchCount">0</strong> búsquedas activas</span></div>
+          </div>
+          <label class="toggle" aria-label="Activar avisos de nuevas viviendas">
+            <input type="checkbox" data-key="newMatches" checked />
+            <span class="track"></span><span class="thumb"></span>
+          </label>
+        </div>
+
+        <div class="prefRow">
+          <span class="prefIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5s-6.7-4.3-8.8-8C1.6 9.7 2.4 6.7 5.1 5.4c2.2-1.1 4.5-.4 5.9 1.3 1.4-1.7 3.7-2.4 5.9-1.3 2.7 1.3 3.5 4.3 1.9 7.1C18.7 16.2 12 20.5 12 20.5Z"/></svg>
+          </span>
+          <div class="prefBody">
+            <h3>Cambios en tus favoritos</h3>
+            <p>Te avisamos si baja el precio o cambia el estado (vendido, alquilado, retirado) de una vivienda que tengas guardada.</p>
+          </div>
+          <label class="toggle" aria-label="Activar avisos de favoritos">
+            <input type="checkbox" data-key="favoriteChanges" checked />
+            <span class="track"></span><span class="thumb"></span>
+          </label>
+        </div>
+
+        <div class="prefRow">
+          <span class="prefIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </span>
+          <div class="prefBody">
+            <h3>Bajadas de precio en tu zona</h3>
+            <p>Resumen mensual con las mejores rebajas en los barrios donde sueles buscar.</p>
+          </div>
+          <label class="toggle" aria-label="Activar avisos de bajadas de precio">
+            <input type="checkbox" data-key="priceDrops" />
+            <span class="track"></span><span class="thumb"></span>
+          </label>
+        </div>
+
+        <div class="freqWrap">
+          <span class="freqLabel">Frecuencia</span>
+          <div class="freqOpts" id="freqGlobal" role="radiogroup" aria-label="Frecuencia de los avisos de viviendas">
+            <button class="freqOpt" type="button" data-freq="instant">Instantáneo</button>
+            <button class="freqOpt active" type="button" data-freq="daily">Diario</button>
+            <button class="freqOpt" type="button" data-freq="weekly">Semanal</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== Account ===== -->
+      <article class="panel" id="panelAccount">
+        <div class="panelHead">
+          <div class="panelTitleWrap">
+            <p class="panelEyebrow">Cuenta</p>
+            <h2 class="panelTitle">Seguridad y actividad</h2>
+          </div>
+        </div>
+
+        <div class="prefRow">
+          <span class="prefIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="1.5"/><path d="M8 10.5V7.5A4 4 0 0 1 12 3.5a4 4 0 0 1 4 4v3"/></svg>
+          </span>
+          <div class="prefBody">
+            <h3>Avisos de seguridad</h3>
+            <p>Nuevos inicios de sesión, cambios de contraseña o de email. Estos avisos no se pueden desactivar por completo.</p>
+          </div>
+          <label class="toggle" aria-label="Avisos de seguridad (siempre activos)">
+            <input type="checkbox" data-key="security" checked disabled />
+            <span class="track"></span><span class="thumb"></span>
+          </label>
+        </div>
+
+        <div class="prefRow">
+          <span class="prefIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </span>
+          <div class="prefBody">
+            <h3>Recordatorios de cuenta</h3>
+            <p>Te recordamos que confirmes tu email, completes tu perfil o revises búsquedas con muchas coincidencias.</p>
+          </div>
+          <label class="toggle" aria-label="Activar recordatorios de cuenta">
+            <input type="checkbox" data-key="accountReminders" checked />
+            <span class="track"></span><span class="thumb"></span>
+          </label>
+        </div>
+      </article>
+
+      <!-- ===== Product & marketing ===== -->
+      <article class="panel" id="panelProduct">
+        <div class="panelHead">
+          <div class="panelTitleWrap">
+            <p class="panelEyebrow">Homyo</p>
+            <h2 class="panelTitle">Producto y novedades</h2>
+          </div>
+        </div>
+
+        <div class="prefRow">
+          <span class="prefIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h13l5 5v9a1 1 0 0 1-1 1H3z"/><path d="M16 5v5h5"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+          </span>
+          <div class="prefBody">
+            <h3>Novedades del producto</h3>
+            <p>Cuando lanzamos nuevas funciones del mapa o de los filtros que mejoran tu búsqueda.</p>
+          </div>
+          <label class="toggle" aria-label="Activar novedades del producto">
+            <input type="checkbox" data-key="productNews" checked />
+            <span class="track"></span><span class="thumb"></span>
+          </label>
+        </div>
+
+        <div class="prefRow">
+          <span class="prefIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5V9a2 2 0 0 0-2-2h-4l-2-3H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h7"/><path d="M17 16h4"/><path d="M19 14v4"/></svg>
+          </span>
+          <div class="prefBody">
+            <h3>Consejos e historias del sector</h3>
+            <p>Guías sobre cómo comprar, hipotecas, reformas y entrevistas. Como máximo dos correos al mes.</p>
+          </div>
+          <label class="toggle" aria-label="Activar consejos e historias">
+            <input type="checkbox" data-key="editorial" />
+            <span class="track"></span><span class="thumb"></span>
+          </label>
+        </div>
+
+        <div class="prefRow">
+          <span class="prefIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4"/><path d="m10 6-6 6 6 6"/></svg>
+          </span>
+          <div class="prefBody">
+            <h3>Promociones de socios</h3>
+            <p>Ofertas seleccionadas de inmobiliarias y servicios para tu mudanza. Solo si das tu consentimiento.</p>
+          </div>
+          <label class="toggle" aria-label="Activar promociones de socios">
+            <input type="checkbox" data-key="partners" />
+            <span class="track"></span><span class="thumb"></span>
+          </label>
+        </div>
+      </article>
+
+      <!-- ===== Schedule ===== -->
+      <section class="scheduleCard" aria-label="Cuándo enviar los correos">
+        <h3>¿Cuándo prefieres recibir los correos?</h3>
+        <p>Para los avisos diarios y semanales, podemos enviarlos a la hora que mejor te encaje.</p>
+        <div class="scheduleRow">
+          <div class="field">
+            <label for="digestDay">Día del resumen semanal</label>
+            <select id="digestDay">
+              <option value="mon">Lunes</option>
+              <option value="tue">Martes</option>
+              <option value="wed">Miércoles</option>
+              <option value="thu">Jueves</option>
+              <option value="fri">Viernes</option>
+              <option value="sat">Sábado</option>
+              <option value="sun">Domingo</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="digestHour">Hora preferida</label>
+            <select id="digestHour">
+              <option value="8">08:00</option>
+              <option value="9" selected>09:00</option>
+              <option value="13">13:00</option>
+              <option value="18">18:00</option>
+              <option value="21">21:00</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Save bar ===== -->
+      <div class="saveBar">
+        <div class="left" id="saveLeft">Los cambios se guardan automáticamente en tu cuenta.</div>
+        <div class="saveActions">
+          <span class="saveMsg" id="saveMsg" aria-live="polite"></span>
+          <button class="pillBtn ghost" type="button" id="btnReset">Restablecer</button>
+          <button class="pillBtn primary" type="button" id="btnSave">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4L19 7"/></svg>
+            Guardar cambios
+          </button>
+        </div>
+      </div>
+
+      <div class="footnoteCard">
+        <div>
+          <h3>¿Demasiados correos?</h3>
+          <p>Puedes darte de baja desde el pie de cualquier correo que te enviemos. Los avisos críticos de seguridad seguirán llegando para proteger tu cuenta.</p>
+        </div>
+        <button class="pillBtn" type="button" id="btnUnsubAll">Desactivar todo</button>
+      </div>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
+      import { initAuth } from "./bh-auth.js?v=20260504";
+      import { supabase, getSession, listSavedSearches, openLoginModalOrAlert } from "./bh-user-data.js";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+
+      const $ = (id) => document.getElementById(id);
+
+      const DEFAULTS = {
+        master: true,
+        newMatches: true,
+        favoriteChanges: true,
+        priceDrops: false,
+        accountReminders: true,
+        productNews: true,
+        editorial: false,
+        partners: false,
+        security: true,
+        frequency: "daily",
+        digestDay: "mon",
+        digestHour: "9"
+      };
+
+      const masterToggle = $("masterToggle");
+      const togglesAll = () => Array.from(document.querySelectorAll('input[type="checkbox"][data-key]'));
+      const freqOpts = Array.from(document.querySelectorAll("#freqGlobal .freqOpt"));
+      const digestDay = $("digestDay");
+      const digestHour = $("digestHour");
+      const sumActive = $("sumActive");
+      const sumFreq = $("sumFreq");
+      const sumEmail = $("sumEmail");
+      const savedSearchCount = $("savedSearchCount");
+      const btnSave = $("btnSave");
+      const btnReset = $("btnReset");
+      const btnUnsubAll = $("btnUnsubAll");
+      const saveMsg = $("saveMsg");
+      const saveLeft = $("saveLeft");
+
+      let state = { ...DEFAULTS };
+      let serverState = { ...DEFAULTS };
+      let dirty = false;
+
+      function setMsg(text, cls=""){
+        saveMsg.className = "saveMsg" + (cls ? " " + cls : "");
+        saveMsg.textContent = text || "";
+      }
+
+      function freqLabel(f){
+        return ({ instant:"Instantáneo", daily:"Diario", weekly:"Semanal" })[f] || "Diario";
+      }
+
+      function applyToUI(){
+        masterToggle.checked = state.master !== false;
+        togglesAll().forEach(input => {
+          const k = input.dataset.key;
+          if (k === "security") { input.checked = true; return; }
+          input.checked = !!state[k];
+        });
+        freqOpts.forEach(b => b.classList.toggle("active", b.dataset.freq === (state.frequency || "daily")));
+        digestDay.value = state.digestDay || "mon";
+        digestHour.value = String(state.digestHour || "9");
+        applyMasterVisualState();
+        recomputeSummary();
+      }
+
+      function applyMasterVisualState(){
+        const on = state.master !== false;
+        document.querySelectorAll(".panel").forEach(p => p.classList.toggle("disabled", !on));
+        togglesAll().forEach(input => {
+          if (input.dataset.key === "security") return;
+          input.disabled = !on;
+        });
+        freqOpts.forEach(b => b.disabled = !on);
+        digestDay.disabled = !on;
+        digestHour.disabled = !on;
+      }
+
+      function recomputeSummary(){
+        const trackedKeys = ["newMatches","favoriteChanges","priceDrops","accountReminders","productNews","editorial","partners"];
+        const groupKeysForSummary = ["newMatches","favoriteChanges","accountReminders","productNews"];
+        const activeCount = state.master === false
+          ? 0
+          : groupKeysForSummary.filter(k => state[k]).length + (state.priceDrops ? 1 : 0);
+        sumActive.textContent = String(Math.min(activeCount, 5));
+        sumFreq.textContent = state.master === false ? "Sin envíos" : freqLabel(state.frequency);
+      }
+
+      function markDirty(){
+        dirty = true;
+        setMsg("Hay cambios sin guardar.", "");
+      }
+
+      function snapshotFromUI(){
+        const next = { ...state };
+        next.master = masterToggle.checked;
+        togglesAll().forEach(input => {
+          const k = input.dataset.key;
+          if (k === "security") return;
+          next[k] = input.checked;
+        });
+        const activeFreq = freqOpts.find(b => b.classList.contains("active"));
+        next.frequency = activeFreq?.dataset.freq || "daily";
+        next.digestDay = digestDay.value;
+        next.digestHour = digestHour.value;
+        return next;
+      }
+
+      // ===== Wiring =====
+      masterToggle.addEventListener("change", () => {
+        state = { ...state, master: masterToggle.checked };
+        applyMasterVisualState();
+        recomputeSummary();
+        markDirty();
+      });
+
+      document.addEventListener("change", (e) => {
+        const cb = e.target.closest('input[type="checkbox"][data-key]');
+        if (!cb || cb.id === "masterToggle") return;
+        const k = cb.dataset.key;
+        if (k === "security") return;
+        state[k] = cb.checked;
+        recomputeSummary();
+        markDirty();
+      });
+
+      freqOpts.forEach(btn => btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+        freqOpts.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.frequency = btn.dataset.freq;
+        recomputeSummary();
+        markDirty();
+      }));
+
+      digestDay.addEventListener("change", () => { state.digestDay = digestDay.value; markDirty(); });
+      digestHour.addEventListener("change", () => { state.digestHour = digestHour.value; markDirty(); });
+
+      btnReset.addEventListener("click", () => {
+        state = { ...serverState };
+        applyToUI();
+        dirty = false;
+        setMsg("Cambios descartados.", "");
+      });
+
+      btnUnsubAll.addEventListener("click", () => {
+        if (!confirm("¿Desactivar todos los correos (excepto avisos de seguridad)?")) return;
+        state = {
+          ...state,
+          master: false,
+          newMatches:false, favoriteChanges:false, priceDrops:false,
+          accountReminders:false, productNews:false, editorial:false, partners:false
+        };
+        applyToUI();
+        markDirty();
+      });
+
+      btnSave.addEventListener("click", async () => {
+        const next = snapshotFromUI();
+        btnSave.disabled = true;
+        setMsg("Guardando…", "");
+        try {
+          const { error } = await supabase.auth.updateUser({
+            data: { email_preferences: next }
+          });
+          if (error) throw error;
+          serverState = { ...next };
+          state = { ...next };
+          dirty = false;
+          setMsg("Preferencias guardadas.", "ok");
+          setTimeout(() => setMsg(""), 2400);
+        } catch (err) {
+          console.error(err);
+          // Fallback: guardar en localStorage para no perder el cambio
+          try {
+            localStorage.setItem("bh_email_prefs", JSON.stringify(next));
+            serverState = { ...next };
+            state = { ...next };
+            dirty = false;
+            setMsg("Guardado en este dispositivo.", "ok");
+          } catch (_e) {
+            setMsg("No se pudieron guardar las preferencias.", "err");
+          }
+        } finally {
+          btnSave.disabled = false;
+        }
+      });
+
+      window.addEventListener("beforeunload", (e) => {
+        if (!dirty) return;
+        e.preventDefault();
+        e.returnValue = "";
+      });
+
+      function loadFromUser(user){
+        sumEmail.textContent = user?.email || "—";
+        let prefs = user?.user_metadata?.email_preferences;
+        if (!prefs) {
+          try {
+            const raw = localStorage.getItem("bh_email_prefs");
+            if (raw) prefs = JSON.parse(raw);
+          } catch (_e) {}
+        }
+        serverState = { ...DEFAULTS, ...(prefs || {}) };
+        state = { ...serverState };
+        applyToUI();
+        setMsg("");
+      }
+
+      function showSignedOut(){
+        sumEmail.textContent = "Sin sesión";
+        savedSearchCount.textContent = "0";
+        masterToggle.disabled = true;
+        togglesAll().forEach(i => i.disabled = true);
+        freqOpts.forEach(b => b.disabled = true);
+        digestDay.disabled = true;
+        digestHour.disabled = true;
+        btnSave.disabled = true;
+        btnReset.disabled = true;
+        btnUnsubAll.disabled = true;
+        saveLeft.textContent = "Inicia sesión para gestionar tus avisos.";
+      }
+
+      window.addEventListener("bh:auth-changed", (event) => {
+        const session = event?.detail?.session || null;
+        if (!session?.user) { showSignedOut(); return; }
+        loadFromUser(session.user);
+      });
+
+      (async () => {
+        const session = await getSession();
+        if (!session?.user) {
+          openLoginModalOrAlert();
+          showSignedOut();
+          return;
+        }
+        loadFromUser(session.user);
+
+        try {
+          const searches = await listSavedSearches();
+          const activeCount = (searches || []).filter(s => s.active).length;
+          savedSearchCount.textContent = String(activeCount);
+        } catch (err) {
+          console.warn("No se pudieron cargar búsquedas guardadas", err);
+        }
+      })().catch(err => {
+        console.error(err);
+        showSignedOut();
+      });
+    </script>
+  </body>
+</html>

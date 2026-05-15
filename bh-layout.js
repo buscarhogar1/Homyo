@@ -48,21 +48,40 @@ function renderHeader({ showMiniSearch, root }) {
           </div>
 
           <nav class="bhSideNav">
+            <a href="./account.html" class="bhSideLink">
+              Cuenta usuario
+            </a>
+
+            <a href="./cuenta-inmobiliaria.html" class="bhSideLink">
+              Cuenta inmobiliaria
+            </a>
+
             <a href="./registro-inmobiliaria.html" class="bhSideLink">
               Registrar inmobiliaria
             </a>
 
-            <a href="./terminos.html" class="bhSideLink">
-              Términos de uso
-            </a>
+            <div class="bhSideGroup" id="bhLegalGroup">
+              <button type="button" class="bhSideLink bhSideGroupToggle" id="bhLegalToggle" aria-expanded="false" aria-controls="bhLegalSub">
+                <span>Información legal</span>
+                <svg class="bhSideChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
+              </button>
 
-            <a href="./privacidad.html" class="bhSideLink">
-              Política de privacidad
-            </a>
+              <div class="bhSideSub" id="bhLegalSub" hidden>
+                <a href="./terminos.html" class="bhSideSubLink">
+                  Términos de uso
+                </a>
 
-            <a href="./cookies.html" class="bhSideLink">
-              Política de cookies
-            </a>
+                <a href="./privacidad.html" class="bhSideSubLink">
+                  Política de privacidad
+                </a>
+
+                <a href="./cookies.html" class="bhSideSubLink">
+                  Política de cookies
+                </a>
+              </div>
+            </div>
           </nav>
 
           <div class="bhSideFooter">
@@ -259,6 +278,24 @@ export function initLayout(opts = {}) {
   menuBtn?.addEventListener("click", openSideMenu);
   sideClose?.addEventListener("click", closeSideMenu);
   sideOverlay?.addEventListener("click", closeSideMenu);
+
+  const legalToggle = document.getElementById("bhLegalToggle");
+  const legalSub = document.getElementById("bhLegalSub");
+  const legalGroup = document.getElementById("bhLegalGroup");
+
+  legalToggle?.addEventListener("click", () => {
+    const expanded = legalToggle.getAttribute("aria-expanded") === "true";
+    const next = !expanded;
+    legalToggle.setAttribute("aria-expanded", next ? "true" : "false");
+    if (legalSub) {
+      if (next) {
+        legalSub.removeAttribute("hidden");
+      } else {
+        legalSub.setAttribute("hidden", "");
+      }
+    }
+    legalGroup?.classList.toggle("open", next);
+  });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape"){

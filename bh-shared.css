@@ -740,6 +740,63 @@ body.bhMenuOpen{
   color:#8C1F2D;
 }
 
+.bhSideGroup{
+  display:flex;
+  flex-direction:column;
+}
+
+.bhSideGroupToggle{
+  appearance:none;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  width:100%;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  font:inherit;
+  color:inherit;
+}
+
+.bhSideChevron{
+  width:16px;
+  height:16px;
+  flex:0 0 auto;
+  transition:transform .2s ease;
+}
+
+.bhSideGroup.open .bhSideChevron{
+  transform:rotate(180deg);
+}
+
+.bhSideSub{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding:2px 0 6px 14px;
+  margin-left:8px;
+  border-left:1px solid #efe7d8;
+}
+
+.bhSideSubLink{
+  text-decoration:none;
+  color:#5c544a;
+  font-family:'Raleway',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:.04em;
+  padding:12px 14px;
+  border-radius:12px;
+  transition:all .18s ease;
+}
+
+.bhSideSubLink:hover{
+  background:#f8f0df;
+  color:#8C1F2D;
+}
+
 .bhSideFooter{
   margin-top:auto;
   padding:24px 28px;

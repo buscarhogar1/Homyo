@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Conversación · Homyo</title>
+
+    <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
+
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --granateDark:#711824;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
+        --good:#1f7a4c;
+      }
+      *{ box-sizing:border-box; }
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      .pageWrap{
+        width:min(1080px,100%);
+        margin:0 auto;
+        padding:32px 24px 96px;
+      }
+
+      .crumbs{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:22px;
+      }
+      .crumbs a{ color:var(--muted); text-decoration:none; }
+      .crumbs a:hover{ color:var(--granate); }
+      .crumbs .sep{ color:var(--doradoSoft); }
+      .crumbs .current{ color:var(--granate); }
+
+      /* ===== Conversation header card ===== */
+      .convHead{
+        display:grid;
+        grid-template-columns: 130px 1fr auto;
+        gap:20px;
+        align-items:stretch;
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:0;
+        margin-bottom:24px;
+        overflow:hidden;
+      }
+      .convHeadMedia{
+        background:linear-gradient(135deg, var(--cardWarm) 0%, #f6ead2 100%);
+        display:grid; place-items:center;
+        color:var(--dorado);
+      }
+      .convHeadMedia svg{ width:42px; height:42px; opacity:.7; }
+      .convHeadBody{
+        padding:20px 0;
+        min-width:0;
+      }
+      .convHeadAgency{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 8px;
+      }
+      .convHeadTitle{
+        margin:0 0 6px;
+        font-family:'Raleway',sans-serif;
+        font-size:30px;
+        line-height:1.1;
+        font-weight:400;
+        color:var(--granate);
+        letter-spacing:-.5px;
+      }
+      .convHeadMeta{
+        font-size:14px;
+        color:var(--ink2);
+      }
+      .convHeadMeta .price{ color:var(--granate); font-weight:600; }
+      .convHeadActions{
+        padding:20px 20px 20px 0;
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        justify-content:center;
+        align-items:flex-end;
+      }
+      .iconBtn{
+        appearance:none;
+        background:#fff;
+        border:1px solid var(--line);
+        border-radius:999px;
+        padding:9px 14px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        color:var(--ink2);
+        cursor:pointer;
+        text-decoration:none;
+        display:inline-flex;
+        align-items:center;
+        gap:7px;
+        transition:all .15s ease;
+      }
+      .iconBtn:hover{ border-color:var(--granate); color:var(--granate); }
+      .iconBtn.danger:hover{ border-color:#b94747; color:#b94747; }
+      .iconBtn svg{ width:13px; height:13px; }
+
+      /* ===== Thread ===== */
+      .threadWrap{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        overflow:hidden;
+      }
+      .threadHeader{
+        padding:14px 22px;
+        background:var(--cardWarm);
+        border-bottom:1px solid var(--line);
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        flex-wrap:wrap;
+        gap:10px;
+      }
+      .threadHeaderLeft{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--granate);
+      }
+      .threadHeaderRight{
+        font-size:12.5px;
+        color:var(--muted);
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+      }
+      .threadHeaderRight::before{
+        content:"";
+        width:7px; height:7px;
+        border-radius:50%;
+        background:var(--good);
+      }
+
+      .thread{
+        padding:28px 24px;
+        display:flex;
+        flex-direction:column;
+        gap:18px;
+        background:#fdfaf2;
+      }
+
+      .daySep{
+        text-align:center;
+        position:relative;
+        margin:8px 0 4px;
+      }
+      .daySep span{
+        display:inline-block;
+        font-family:'Raleway',sans-serif;
+        font-size:10.5px;
+        font-weight:600;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        color:var(--muted);
+        background:#fdfaf2;
+        padding:0 12px;
+        position:relative;
+        z-index:1;
+      }
+      .daySep::before{
+        content:"";
+        position:absolute;
+        top:50%; left:0; right:0;
+        height:1px;
+        background:var(--line);
+      }
+
+      .msg{
+        max-width:78%;
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+      }
+      .msg.out{ align-self:flex-end; align-items:flex-end; }
+      .msg.in{ align-self:flex-start; align-items:flex-start; }
+
+      .msgHeader{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.16em;
+        text-transform:uppercase;
+        color:var(--muted);
+        display:flex;
+        gap:8px;
+        align-items:center;
+      }
+      .msg.out .msgHeader{ color:var(--granate); }
+
+      .bubble{
+        padding:14px 18px;
+        border-radius:14px;
+        font-size:15px;
+        line-height:1.55;
+        white-space:pre-wrap;
+        word-wrap:break-word;
+      }
+      .msg.out .bubble{
+        background:var(--granate);
+        color:#fff;
+        border-bottom-right-radius:4px;
+      }
+      .msg.in .bubble{
+        background:#fff;
+        color:var(--ink);
+        border:1px solid var(--line);
+        border-bottom-left-radius:4px;
+      }
+      .msg .time{
+        font-size:11px;
+        color:var(--muted);
+      }
+
+      /* Visit request card */
+      .visitCard{
+        max-width:78%;
+        align-self:flex-end;
+        background:#fff;
+        border:1px solid rgba(196,150,42,.4);
+        border-radius:14px;
+        border-bottom-right-radius:4px;
+        overflow:hidden;
+      }
+      .visitCard .vcHead{
+        padding:12px 16px;
+        background:var(--cardWarm);
+        border-bottom:1px solid rgba(196,150,42,.3);
+        display:flex;
+        align-items:center;
+        gap:10px;
+      }
+      .visitCard .vcIcon{
+        width:30px; height:30px;
+        border-radius:50%;
+        background:var(--granate);
+        color:#fff;
+        display:grid; place-items:center;
+      }
+      .visitCard .vcIcon svg{ width:15px; height:15px; }
+      .visitCard .vcTitle{
+        font-family:'Raleway',sans-serif;
+        font-weight:600;
+        font-size:13px;
+        letter-spacing:.04em;
+        color:var(--granate);
+      }
+      .visitCard .vcBody{
+        padding:14px 16px 16px;
+        font-size:14px;
+        color:var(--ink);
+      }
+      .visitCard .vcRow{
+        display:grid;
+        grid-template-columns: 90px 1fr;
+        gap:10px;
+        padding:6px 0;
+        border-bottom:1px solid var(--lineSoft);
+      }
+      .visitCard .vcRow:last-child{ border-bottom:none; }
+      .visitCard .vcKey{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.15em;
+        text-transform:uppercase;
+        color:var(--muted);
+        align-self:center;
+      }
+      .visitCard .vcVal{
+        font-size:14px;
+        color:var(--ink);
+        line-height:1.4;
+      }
+      .visitCard .vcChips{
+        display:flex; flex-wrap:wrap; gap:4px;
+      }
+      .vcChip{
+        background:var(--cardWarm);
+        color:var(--granate);
+        padding:3px 10px;
+        border-radius:999px;
+        font-size:12.5px;
+        font-weight:500;
+      }
+      .visitCard .time{
+        text-align:right;
+        margin-top:6px;
+        font-size:11px;
+        color:var(--muted);
+      }
+
+      /* Auto / system message (agency auto-reply) */
+      .msg.auto .bubble{
+        background:#fff;
+        color:var(--ink);
+        border:1px dashed rgba(196,150,42,.5);
+        border-bottom-left-radius:4px;
+      }
+      .msg.auto .msgHeader::before{
+        content:"";
+        width:6px; height:6px;
+        border-radius:50%;
+        background:var(--dorado);
+      }
+
+      /* Composer */
+      .composer{
+        border-top:1px solid var(--line);
+        background:#fff;
+        padding:16px 20px;
+        display:flex;
+        gap:12px;
+        align-items:flex-end;
+      }
+      .composer textarea{
+        flex:1;
+        min-height:50px;
+        max-height:160px;
+        padding:12px 14px;
+        border:1px solid var(--line);
+        border-radius:12px;
+        background:#fff;
+        font-family:inherit;
+        font-size:15px;
+        line-height:1.45;
+        resize:none;
+        color:var(--ink);
+        transition:border-color .18s ease, box-shadow .18s ease;
+      }
+      .composer textarea:focus{
+        outline:none;
+        border-color:var(--granate);
+        box-shadow:0 0 0 3px rgba(140,31,45,.08);
+      }
+      .composer .sendBtn{
+        appearance:none;
+        border:none;
+        background:var(--granate);
+        color:#fff;
+        width:50px; height:50px;
+        border-radius:50%;
+        cursor:pointer;
+        display:grid; place-items:center;
+        box-shadow:inset 0 -2px 0 var(--dorado);
+        transition:background .15s ease;
+        flex-shrink:0;
+      }
+      .composer .sendBtn:hover{ background:var(--granateDark); }
+      .composer .sendBtn[disabled]{ opacity:.55; cursor:not-allowed; }
+      .composer .sendBtn svg{ width:20px; height:20px; }
+
+      /* Empty / not found */
+      .errorCard{
+        display:none;
+        text-align:center;
+        padding:64px 28px;
+        background:var(--cardWarm);
+        border:1px dashed var(--line);
+        border-radius:4px;
+      }
+      .errorCard.show{ display:block; }
+      .errorCard h3{
+        font-family:'Raleway',sans-serif;
+        color:var(--granate);
+        font-size:24px;
+        margin:0 0 8px;
+        font-weight:400;
+      }
+      .errorCard p{ color:var(--ink2); margin:0 0 22px; }
+
+      @media (max-width:760px){
+        .pageWrap{ padding:20px 14px 64px; }
+        .convHead{ grid-template-columns: 90px 1fr; gap:14px; }
+        .convHeadActions{
+          grid-column: 1 / -1;
+          flex-direction:row;
+          padding:0 16px 16px;
+          align-items:center;
+          justify-content:flex-start;
+          flex-wrap:wrap;
+        }
+        .convHeadTitle{ font-size:22px; }
+        .msg{ max-width:92%; }
+        .visitCard{ max-width:92%; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="pageWrap">
+      <nav class="crumbs" aria-label="Migas de pan">
+        <a href="./account.html">Mi cuenta</a>
+        <span class="sep">/</span>
+        <a href="./anuncios-contactados.html">Anuncios contactados</a>
+        <span class="sep">/</span>
+        <span class="current" id="crumbCurrent">Conversación</span>
+      </nav>
+
+      <section class="convHead" id="convHead">
+        <div class="convHeadMedia">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 4h16v16H4z"/><path d="m4 16 5-5 4 4 2-2 5 5"/><circle cx="9" cy="8" r="1.5"/></svg>
+        </div>
+        <div class="convHeadBody">
+          <p class="convHeadAgency" id="hdAgency">Inmobiliaria</p>
+          <h1 class="convHeadTitle" id="hdTitle">Cargando…</h1>
+          <div class="convHeadMeta">
+            <span id="hdLocation">—</span> · <span class="price" id="hdPrice">—</span>
+          </div>
+        </div>
+        <div class="convHeadActions">
+          <a class="iconBtn" id="goListingBtn" href="#" title="Ver anuncio">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>
+            Ver anuncio
+          </a>
+          <button class="iconBtn danger" id="deleteBtn" type="button" title="Eliminar conversación">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+            Eliminar
+          </button>
+        </div>
+      </section>
+
+      <section class="threadWrap" id="threadWrap">
+        <div class="threadHeader">
+          <span class="threadHeaderLeft">Conversación por correo</span>
+          <span class="threadHeaderRight">A través de Homyo</span>
+        </div>
+        <div class="thread" id="thread"></div>
+        <form class="composer" id="composerForm" autocomplete="off">
+          <textarea id="composerInput" placeholder="Escribe a la inmobiliaria…" rows="1"></textarea>
+          <button class="sendBtn" type="submit" title="Enviar mensaje" aria-label="Enviar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </button>
+        </form>
+      </section>
+
+      <section class="errorCard" id="errorCard">
+        <h3>No encontramos esta conversación</h3>
+        <p>Es posible que la hayas eliminado o que aún no hayas escrito a esta inmobiliaria.</p>
+        <a class="iconBtn" href="./anuncios-contactados.html">Volver a mis conversaciones</a>
+      </section>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
+      import { initAuth } from "./bh-auth.js?v=20260504";
+      import { getSession, openLoginModalOrAlert } from "./bh-user-data.js";
+      import { getConversation, appendMessage, deleteConversation } from "./bh-conversations.js?v=1";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+
+      const $ = (id) => document.getElementById(id);
+
+      function getParam(name){
+        return new URL(window.location.href).searchParams.get(name);
+      }
+      function euro(n){
+        if (n == null) return "—";
+        return new Intl.NumberFormat("es-ES", { style:"currency", currency:"EUR", maximumFractionDigits:0 }).format(n);
+      }
+      function fmtTime(iso){
+        const d = new Date(iso); if (isNaN(d)) return "";
+        return d.toLocaleTimeString("es-ES", { hour:"2-digit", minute:"2-digit" });
+      }
+      function fmtDayKey(iso){
+        const d = new Date(iso); if (isNaN(d)) return "—";
+        return d.toLocaleDateString("es-ES", { day:"numeric", month:"long", year:"numeric" });
+      }
+      function escapeHTML(s){
+        return String(s||"").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+      }
+
+      const DAY_LABELS = { mon:"Lun", tue:"Mar", wed:"Mié", thu:"Jue", fri:"Vie", sat:"Sáb", sun:"Dom" };
+
+      function renderVisit(visit){
+        const days = (visit.days || []).map(d => `<span class="vcChip">${DAY_LABELS[d] || d}</span>`).join("");
+        const periods = (visit.periods || []).length === 0
+          ? `<span class="vcChip">Cualquier momento</span>`
+          : (visit.periods || []).map(p => `<span class="vcChip">${p === "morning" ? "Mañana" : p === "afternoon" ? "Tarde" : p}</span>`).join("");
+        const slots = (visit.slots || []).length
+          ? (visit.slots || []).map(s => `<span class="vcChip">${escapeHTML(s)}</span>`).join("")
+          : `<span class="vcChip">Cualquier franja</span>`;
+        const notes = visit.notes
+          ? `<div class="vcRow"><span class="vcKey">Notas</span><span class="vcVal">${escapeHTML(visit.notes)}</span></div>`
+          : "";
+        return `
+          <div class="vcHead">
+            <span class="vcIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="1.5"/><path d="M3.5 10h17"/><path d="M8 3v4"/><path d="M16 3v4"/></svg></span>
+            <span class="vcTitle">Solicitud de visita</span>
+          </div>
+          <div class="vcBody">
+            <div class="vcRow"><span class="vcKey">Días</span><span class="vcVal"><span class="vcChips">${days || `<span class="vcChip">Cualquier día</span>`}</span></span></div>
+            <div class="vcRow"><span class="vcKey">Momento</span><span class="vcVal"><span class="vcChips">${periods}</span></span></div>
+            <div class="vcRow"><span class="vcKey">Franjas</span><span class="vcVal"><span class="vcChips">${slots}</span></span></div>
+            ${notes}
+          </div>
+        `;
+      }
+
+      function renderThread(conv){
+        const thread = $("thread");
+        thread.innerHTML = "";
+        let lastDayKey = "";
+        (conv.messages || []).forEach(m => {
+          const dayKey = fmtDayKey(m.created_at);
+          if (dayKey !== lastDayKey){
+            const sep = document.createElement("div");
+            sep.className = "daySep";
+            sep.innerHTML = `<span>${dayKey}</span>`;
+            thread.appendChild(sep);
+            lastDayKey = dayKey;
+          }
+          if (m.kind === "visit_request"){
+            const node = document.createElement("div");
+            node.className = "visitCard";
+            node.innerHTML = renderVisit(m.visit || {}) + `<div class="time" style="padding:6px 16px 12px;">Enviado ${fmtTime(m.created_at)}</div>`;
+            thread.appendChild(node);
+            return;
+          }
+          const node = document.createElement("div");
+          const isOut = m.direction === "out";
+          const isAuto = m.kind === "auto";
+          node.className = "msg " + (isOut ? "out" : isAuto ? "in auto" : "in");
+          const author = isOut ? "Tú" : (m.author || "Inmobiliaria");
+          node.innerHTML = `
+            <div class="msgHeader"><span>${escapeHTML(author)}</span>${isAuto ? `<span>· Respuesta automática</span>` : ""}</div>
+            <div class="bubble">${escapeHTML(m.body || "")}</div>
+            <span class="time">${fmtTime(m.created_at)}</span>
+          `;
+          thread.appendChild(node);
+        });
+        // scroll to bottom
+        thread.scrollTop = thread.scrollHeight;
+        window.scrollTo({ top: document.body.scrollHeight, behavior:"smooth" });
+      }
+
+      // ----- bootstrap -----
+      const listingId = getParam("id");
+      $("goListingBtn").href = `./listing.html?id=${encodeURIComponent(listingId || "")}`;
+
+      let session = null;
+      let conv = null;
+
+      function showError(){
+        $("convHead").style.display = "none";
+        $("threadWrap").style.display = "none";
+        $("errorCard").classList.add("show");
+      }
+
+      (async () => {
+        session = await getSession();
+        if (!session?.user){
+          openLoginModalOrAlert();
+          showError();
+          return;
+        }
+        if (!listingId){ showError(); return; }
+        conv = getConversation(session.user.id, listingId);
+        if (!conv){ showError(); return; }
+
+        const snap = conv.listing_snapshot || {};
+        $("hdAgency").textContent = snap.agency_name || "Inmobiliaria";
+        $("hdTitle").textContent = snap.address || "Anuncio";
+        $("hdLocation").textContent = [snap.postcode, snap.city, snap.neighborhood].filter(Boolean).join(" · ") || "—";
+        $("hdPrice").textContent = euro(snap.price_eur);
+        $("crumbCurrent").textContent = snap.address || "Conversación";
+
+        renderThread(conv);
+      })().catch(err => { console.error(err); showError(); });
+
+      // ----- composer -----
+      const composerInput = $("composerInput");
+      composerInput.addEventListener("input", () => {
+        composerInput.style.height = "auto";
+        composerInput.style.height = Math.min(composerInput.scrollHeight, 160) + "px";
+      });
+
+      $("composerForm").addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        const body = composerInput.value.trim();
+        if (!body || !session?.user || !conv) return;
+        const sent = appendMessage(session.user.id, listingId, {
+          direction:"out",
+          kind:"message",
+          author: session.user.email || "Tú",
+          body
+        });
+        conv.messages = [...(conv.messages || []), sent];
+        composerInput.value = "";
+        composerInput.style.height = "auto";
+        renderThread(conv);
+      });
+
+      // ----- delete -----
+      $("deleteBtn").addEventListener("click", () => {
+        if (!conv || !session?.user) return;
+        const ok = confirm("¿Eliminar esta conversación? Se perderán todos los mensajes guardados.");
+        if (!ok) return;
+        deleteConversation(session.user.id, listingId);
+        window.location.href = "./anuncios-contactados.html";
+      });
+    </script>
+  </body>
+</html>

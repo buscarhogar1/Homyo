@@ -1172,27 +1172,20 @@
 .agencyCard{
   border:1px solid rgba(140,31,45,0.18) !important;
   border-radius:14px !important;
-  box-shadow:0 1px 0 rgba(140,31,45,0.06);
+  box-shadow:0 1px 0 rgba(140,31,45,0.04);
+  background:#fff !important;
 }
 .agencyTop{
   background:#FFFDFA !important;
-  border-bottom:1px solid rgba(196,150,42,0.45) !important;
+  border-bottom:1px solid rgba(140,31,45,0.12) !important;
   padding:20px 18px 18px !important;
   position:relative !important;
 }
-.agencyTop::after{
-  content:"";
-  position:absolute;
-  left:0; right:0; bottom:-1px;
-  height:2px;
-  background:linear-gradient(90deg, transparent 0%, #C4962A 30%, #C4962A 70%, transparent 100%);
-  opacity:0.55;
-  pointer-events:none;
-}
 .agencyLogoFrame{
-  border:1px solid #C4962A !important;
+  border:1px solid rgba(140,31,45,0.18) !important;
   border-radius:12px !important;
-  box-shadow:0 0 0 3px rgba(196,150,42,0.12), 0 1px 2px rgba(140,31,45,0.06) !important;
+  background:#fff !important;
+  box-shadow:0 1px 2px rgba(140,31,45,0.06) !important;
 }
 .agencyLogoFallback{
   color:#8C1F2D !important;
@@ -1206,44 +1199,37 @@
   letter-spacing:0.04em !important;
   font-size:17px !important;
   padding-bottom:12px !important;
-  border-bottom:1px solid rgba(196,150,42,0.35) !important;
+  border-bottom:1px solid rgba(140,31,45,0.10) !important;
   position:relative !important;
-}
-.agencyName::after{
-  content:"";
-  display:block;
-  width:36px;
-  height:2px;
-  background:#C4962A;
-  margin-top:10px;
-  border-radius:2px;
+  margin-bottom:0 !important;
 }
 .agencyBody .cta{
-  border:1px solid #8C1F2D !important;
-  background:#FFFDFA !important;
+  border:1px solid rgba(140,31,45,0.35) !important;
+  background:#fff !important;
   color:#8C1F2D !important;
   border-radius:10px !important;
   font-weight:600 !important;
-  transition:background 160ms ease, color 160ms ease, border-color 160ms ease;
+  transition:background 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 .agencyBody .cta:hover:not([disabled]){
   background:rgba(140,31,45,0.06) !important;
+  border-color:#8C1F2D !important;
 }
 .agencyBody .cta.ctaPrimary{
   background:#8C1F2D !important;
   border-color:#8C1F2D !important;
-  color:#FFFDFA !important;
+  color:#fff !important;
   font-weight:700 !important;
   letter-spacing:0.02em !important;
-  box-shadow:inset 0 -2px 0 #C4962A !important;
+  box-shadow:none !important;
 }
 .agencyBody .cta.ctaPrimary:hover:not([disabled]){
-  background:#741724 !important;
-  border-color:#741724 !important;
-  box-shadow:inset 0 -2px 0 #C4962A, 0 4px 12px rgba(140,31,45,0.18) !important;
+  background:#711824 !important;
+  border-color:#711824 !important;
+  box-shadow:0 4px 12px rgba(140,31,45,0.18) !important;
 }
 .agencyBody .cta.ctaPrimary .ctaIcon svg{
-  stroke:#C4962A !important;
+  stroke:#fff !important;
 }
 .agencyBody .cta.ctaGhost{
   border-color:rgba(140,31,45,0.35) !important;
@@ -1265,7 +1251,7 @@
   .mobileBottomCta{
     padding:6px 10px calc(6px + env(safe-area-inset-bottom)) !important;
     background:#FFFDFA !important;
-    border-top:2px solid #C4962A !important;
+    border-top:1px solid rgba(140,31,45,0.18) !important;
     box-shadow:0 -4px 14px rgba(140,31,45,0.08) !important;
     gap:6px !important;
   }
@@ -1273,8 +1259,8 @@
   .mobileBottomCtaBtn{
     height:44px !important;
     border-radius:10px !important;
-    border:1px solid #8C1F2D !important;
-    background:#FFFDFA !important;
+    border:1px solid rgba(140,31,45,0.35) !important;
+    background:#fff !important;
     color:#8C1F2D !important;
     font-size:14px !important;
     font-weight:600 !important;
@@ -1288,15 +1274,15 @@
 
   .mobileBottomCtaBtnPrimary{
     background:#8C1F2D !important;
-    color:#FFFDFA !important;
+    color:#fff !important;
     border-color:#8C1F2D !important;
     font-weight:700 !important;
     letter-spacing:0.02em !important;
-    box-shadow:inset 0 -2px 0 #C4962A !important;
+    box-shadow:none !important;
   }
 
   .mobileBottomCtaBtnPrimary svg{
-    stroke:#C4962A !important;
+    stroke:#fff !important;
   }
 
   .mobileBottomCtaBtnSquare{
@@ -2508,21 +2494,22 @@ function renderFeatures(row) {
           window.location.href = phoneHref;
         };
 
-        contactBtn.onclick = () => {
-          if (!hasEmail) return;
-          window.location.href = emailHref;
-        };
+        // Both "Ponerse en contacto" and "Solicitar una visita" now open the
+        // in-app contactar page (no mailto, no system mail client).
+        const listingIdForContact = getParam("id") || "";
+        const contactHref = "./contactar.html?id=" + encodeURIComponent(listingIdForContact);
+        const visitHref = contactHref + "&mode=visit";
 
-        visitBtn.onclick = () => {
-          if (!hasEmail) return;
-          const subject = encodeURIComponent("Solicitud de visita");
-          window.location.href = "mailto:" + emailText + "?subject=" + subject;
-        };
+        // Enable contact / visit buttons even if the agency has no email —
+        // the conversation lives inside Homyo.
+        contactBtn.disabled = false;
+        visitBtn.disabled = false;
+        stickyContactBtnEl.disabled = false;
+        if (mobileBottomContactBtnEl) mobileBottomContactBtnEl.disabled = false;
 
-        stickyContactBtnEl.onclick = () => {
-          if (!hasEmail) return;
-          window.location.href = emailHref;
-        };
+        contactBtn.onclick = () => { window.location.href = contactHref; };
+        visitBtn.onclick = () => { window.location.href = visitHref; };
+        stickyContactBtnEl.onclick = () => { window.location.href = contactHref; };
 
         if (mobileBottomPhoneBtnEl){
           mobileBottomPhoneBtnEl.onclick = () => {
@@ -2537,10 +2524,7 @@ function renderFeatures(row) {
         }
 
         if (mobileBottomContactBtnEl){
-          mobileBottomContactBtnEl.onclick = () => {
-            if (!hasEmail) return;
-            window.location.href = emailHref;
-          };
+          mobileBottomContactBtnEl.onclick = () => { window.location.href = contactHref; };
         }
       }
 

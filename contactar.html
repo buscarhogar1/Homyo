@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Contactar con la inmobiliaria · Homyo</title>
+
+    <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
+
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --granateSoft:#A33646;
+        --granateDark:#711824;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
+        --good:#1f7a4c;
+      }
+
+      *{ box-sizing:border-box; }
+
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      .pageWrap{
+        width:min(1080px,100%);
+        margin:0 auto;
+        padding:40px 24px 96px;
+      }
+
+      .crumbs{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:22px;
+      }
+      .crumbs a{ color:var(--muted); text-decoration:none; }
+      .crumbs a:hover{ color:var(--granate); }
+      .crumbs .sep{ color:var(--doradoSoft); }
+      .crumbs .current{ color:var(--granate); }
+
+      .pageHeader{
+        padding-bottom:24px;
+        margin-bottom:28px;
+        border-bottom:1px solid var(--line);
+      }
+      .pageKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 14px;
+      }
+      .pageTitle{
+        margin:0;
+        font-family:'Raleway',sans-serif;
+        font-size:52px;
+        line-height:1;
+        letter-spacing:-1.2px;
+        font-weight:300;
+        color:var(--granate);
+      }
+      .pageTitle strong{ font-weight:600; }
+      .pageSubtitle{
+        margin:14px 0 0;
+        font-size:16px;
+        color:var(--ink2);
+        max-width:620px;
+        line-height:1.5;
+      }
+
+      /* ===== Layout 2 columns ===== */
+      .contentGrid{
+        display:grid;
+        grid-template-columns: 1fr 340px;
+        gap:32px;
+        align-items:start;
+      }
+      @media (max-width:900px){
+        .contentGrid{ grid-template-columns:1fr; }
+      }
+
+      /* ===== Listing summary card (sidebar) ===== */
+      .listingCard{
+        position:sticky;
+        top:24px;
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        overflow:hidden;
+      }
+      .listingMedia{
+        aspect-ratio: 4 / 3;
+        background:linear-gradient(135deg, var(--cardWarm) 0%, #f6ead2 100%);
+        display:grid;
+        place-items:center;
+        color:var(--dorado);
+        opacity:.7;
+        position:relative;
+      }
+      .listingMedia svg{ width:48px; height:48px; }
+      .listingMedia .badge{
+        position:absolute;
+        top:12px; left:12px;
+        background:rgba(255,253,250,.95);
+        color:var(--granate);
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        padding:6px 10px;
+        border-radius:2px;
+      }
+      .listingBody{ padding:18px 20px 20px; }
+      .listingPrice{
+        font-family:'Raleway',sans-serif;
+        font-size:24px;
+        font-weight:600;
+        color:var(--granate);
+        letter-spacing:-.5px;
+        line-height:1;
+        margin:0 0 10px;
+      }
+      .listingTitle{
+        margin:0;
+        font-size:15px;
+        font-weight:500;
+        color:var(--ink);
+        line-height:1.35;
+      }
+      .listingLocation{
+        font-size:13px;
+        color:var(--muted);
+        margin-top:6px;
+      }
+      .listingSpecs{
+        display:flex;
+        gap:14px;
+        font-size:12.5px;
+        color:var(--ink2);
+        padding-top:12px;
+        margin-top:12px;
+        border-top:1px solid var(--lineSoft);
+      }
+      .listingSpecs span{ display:inline-flex; gap:5px; align-items:center; }
+
+      .agencyMini{
+        padding:14px 20px;
+        background:var(--cardWarm);
+        border-top:1px solid var(--line);
+        display:flex;
+        align-items:center;
+        gap:12px;
+      }
+      .agencyMiniLogo{
+        width:42px; height:42px;
+        border-radius:8px;
+        border:1px solid rgba(196,150,42,.4);
+        background:#fff;
+        display:grid;
+        place-items:center;
+        font-family:'Raleway',sans-serif;
+        font-weight:700;
+        color:var(--granate);
+        letter-spacing:1px;
+        font-size:14px;
+        flex-shrink:0;
+      }
+      .agencyMiniInfo{ min-width:0; }
+      .agencyMiniLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:600;
+        letter-spacing:.22em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 3px;
+      }
+      .agencyMiniName{
+        margin:0;
+        font-size:14px;
+        font-weight:600;
+        color:var(--granate);
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+
+      /* ===== Form sections ===== */
+      .section{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        padding:28px 30px 30px;
+        margin-bottom:18px;
+      }
+      .section + .section{ margin-top:0; }
+
+      .sectionLabel{
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.3em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 10px;
+      }
+      .sectionTitle{
+        font-family:'Raleway',sans-serif;
+        margin:0 0 6px;
+        font-size:24px;
+        line-height:1.15;
+        font-weight:500;
+        color:var(--granate);
+        letter-spacing:-.4px;
+      }
+      .sectionHelp{
+        margin:0 0 22px;
+        font-size:14.5px;
+        line-height:1.5;
+        color:var(--ink2);
+      }
+
+      .textareaWrap{
+        position:relative;
+      }
+      textarea.msgArea{
+        width:100%;
+        min-height:170px;
+        padding:14px 16px;
+        border:1px solid var(--line);
+        border-radius:4px;
+        background:#fff;
+        font-family:inherit;
+        font-size:15px;
+        line-height:1.5;
+        color:var(--ink);
+        resize:vertical;
+        transition:border-color .18s ease, box-shadow .18s ease;
+      }
+      textarea.msgArea:focus{
+        outline:none;
+        border-color:var(--granate);
+        box-shadow:0 0 0 3px rgba(140,31,45,.08);
+      }
+      .charCount{
+        position:absolute;
+        bottom:10px;
+        right:14px;
+        font-size:11.5px;
+        color:var(--muted);
+        background:#fff;
+        padding:1px 4px;
+        pointer-events:none;
+      }
+
+      .templateRow{
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+        margin-top:14px;
+      }
+      .templateChip{
+        appearance:none;
+        background:#fff;
+        border:1px solid var(--line);
+        color:var(--ink2);
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:500;
+        letter-spacing:.04em;
+        padding:8px 12px;
+        border-radius:999px;
+        cursor:pointer;
+        transition:all .15s ease;
+      }
+      .templateChip:hover{
+        border-color:var(--granate);
+        color:var(--granate);
+        background:#fff;
+      }
+
+      /* ===== Visit toggle card ===== */
+      .visitToggle{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:16px;
+        padding:18px 22px;
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.3);
+        border-radius:4px;
+        cursor:pointer;
+        transition:border-color .18s ease;
+      }
+      .visitToggle:hover{
+        border-color:var(--dorado);
+      }
+      .visitToggle.isOpen{
+        border-color:var(--granate);
+        background:#fff;
+      }
+      .visitToggleLeft{
+        display:flex;
+        align-items:center;
+        gap:16px;
+        min-width:0;
+      }
+      .visitToggleIcon{
+        width:48px; height:48px;
+        border-radius:50%;
+        background:#fff;
+        border:1px solid rgba(196,150,42,.4);
+        display:grid;
+        place-items:center;
+        color:var(--granate);
+        flex-shrink:0;
+      }
+      .visitToggleIcon svg{ width:22px; height:22px; }
+      .visitToggle.isOpen .visitToggleIcon{
+        background:var(--granate);
+        color:#fff;
+        border-color:var(--granate);
+      }
+      .visitToggleTitle{
+        font-family:'Raleway',sans-serif;
+        font-size:17px;
+        font-weight:600;
+        color:var(--granate);
+        margin:0 0 3px;
+      }
+      .visitToggleSub{
+        font-size:13.5px;
+        color:var(--ink2);
+        margin:0;
+      }
+      .visitSwitch{
+        position:relative;
+        width:46px; height:26px;
+        background:#fff;
+        border:1px solid var(--line);
+        border-radius:999px;
+        flex-shrink:0;
+        transition:background .2s ease, border-color .2s ease;
+      }
+      .visitSwitch::after{
+        content:"";
+        position:absolute;
+        top:2px; left:2px;
+        width:20px; height:20px;
+        border-radius:50%;
+        background:var(--muted);
+        transition:transform .22s ease, background .22s ease;
+      }
+      .visitToggle.isOpen .visitSwitch{
+        background:var(--granate);
+        border-color:var(--granate);
+      }
+      .visitToggle.isOpen .visitSwitch::after{
+        transform:translateX(20px);
+        background:#fff;
+      }
+
+      /* ===== Visit details panel ===== */
+      .visitPanel{
+        display:none;
+        margin-top:18px;
+        padding-top:6px;
+      }
+      .visitPanel.isOpen{ display:block; }
+
+      .fieldGroup{ margin-bottom:24px; }
+      .fieldGroup:last-child{ margin-bottom:0; }
+
+      .fieldLabel{
+        display:flex;
+        align-items:baseline;
+        justify-content:space-between;
+        gap:12px;
+        font-family:'Raleway',sans-serif;
+        font-size:13px;
+        font-weight:600;
+        letter-spacing:.06em;
+        color:var(--ink);
+        margin:0 0 12px;
+        text-transform:uppercase;
+      }
+      .fieldHint{
+        font-family:system-ui,sans-serif;
+        font-size:12px;
+        font-weight:400;
+        letter-spacing:0;
+        text-transform:none;
+        color:var(--muted);
+      }
+
+      /* Day chips */
+      .dayGrid{
+        display:grid;
+        grid-template-columns:repeat(7, minmax(0,1fr));
+        gap:8px;
+      }
+      .dayChip{
+        appearance:none;
+        background:#fff;
+        border:1px solid var(--line);
+        border-radius:8px;
+        padding:12px 4px;
+        cursor:pointer;
+        text-align:center;
+        transition:all .15s ease;
+        font-family:inherit;
+        color:var(--ink2);
+        position:relative;
+      }
+      .dayChip:hover{ border-color:var(--dorado); }
+      .dayChip .dayShort{
+        display:block;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:6px;
+      }
+      .dayChip .dayLong{
+        display:block;
+        font-size:15px;
+        font-weight:500;
+      }
+      .dayChip.isActive{
+        background:var(--granate);
+        border-color:var(--granate);
+      }
+      .dayChip.isActive .dayShort,
+      .dayChip.isActive .dayLong{
+        color:#fff;
+      }
+      .dayChip.isActive::after{
+        content:"";
+        position:absolute;
+        bottom:6px; left:50%;
+        transform:translateX(-50%);
+        width:18px; height:2px;
+        background:var(--dorado);
+        border-radius:1px;
+      }
+      @media (max-width:680px){
+        .dayGrid{ grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px; }
+        .dayChip{ padding:10px 2px; }
+        .dayChip .dayLong{ display:none; }
+        .dayChip .dayShort{ margin-bottom:0; font-size:13px; }
+      }
+
+      /* Time-of-day segmented */
+      .periodGrid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+      }
+      .periodChip{
+        appearance:none;
+        background:#fff;
+        border:1px solid var(--line);
+        border-radius:10px;
+        padding:18px 18px;
+        cursor:pointer;
+        text-align:left;
+        display:flex;
+        align-items:center;
+        gap:14px;
+        transition:all .15s ease;
+        font-family:inherit;
+      }
+      .periodChip:hover{ border-color:var(--dorado); }
+      .periodChipIcon{
+        width:40px; height:40px;
+        border-radius:50%;
+        background:var(--cardWarm);
+        display:grid; place-items:center;
+        color:var(--dorado);
+        flex-shrink:0;
+      }
+      .periodChipIcon svg{ width:22px; height:22px; }
+      .periodChipBody{ flex:1; min-width:0; }
+      .periodChipTitle{
+        font-family:'Raleway',sans-serif;
+        font-size:15px;
+        font-weight:600;
+        color:var(--ink);
+        margin:0 0 2px;
+      }
+      .periodChipSub{
+        font-size:12.5px;
+        color:var(--muted);
+        margin:0;
+      }
+      .periodChip.isActive{
+        border-color:var(--granate);
+        background:#fff;
+        box-shadow:inset 0 0 0 1px var(--granate);
+      }
+      .periodChip.isActive .periodChipIcon{
+        background:var(--granate);
+        color:#fff;
+      }
+      .periodChip.isActive .periodChipTitle{ color:var(--granate); }
+
+      /* Time slot chips */
+      .slotGrid{
+        display:grid;
+        grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));
+        gap:8px;
+      }
+      .slotChip{
+        appearance:none;
+        background:#fff;
+        border:1px solid var(--line);
+        border-radius:999px;
+        padding:11px 14px;
+        cursor:pointer;
+        font-family:inherit;
+        font-size:14px;
+        color:var(--ink);
+        text-align:center;
+        transition:all .15s ease;
+      }
+      .slotChip:hover{ border-color:var(--dorado); }
+      .slotChip.isActive{
+        background:var(--granate);
+        border-color:var(--granate);
+        color:#fff;
+        font-weight:600;
+      }
+      .slotChip[disabled]{
+        opacity:.4;
+        cursor:not-allowed;
+      }
+
+      .visitNotes{
+        width:100%;
+        min-height:78px;
+        padding:12px 14px;
+        border:1px solid var(--line);
+        border-radius:4px;
+        background:#fff;
+        font-family:inherit;
+        font-size:14px;
+        line-height:1.5;
+        color:var(--ink);
+        resize:vertical;
+      }
+      .visitNotes:focus{
+        outline:none;
+        border-color:var(--granate);
+        box-shadow:0 0 0 3px rgba(140,31,45,.08);
+      }
+
+      /* Summary preview */
+      .visitSummary{
+        background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.3);
+        border-radius:4px;
+        padding:16px 18px;
+        margin-top:6px;
+        font-size:14px;
+        color:var(--ink);
+        line-height:1.55;
+      }
+      .visitSummary strong{ color:var(--granate); font-weight:600; }
+      .visitSummary .muted{ color:var(--muted); }
+
+      /* ===== Footer / submit ===== */
+      .submitRow{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:18px;
+        margin-top:8px;
+        padding:22px 30px;
+        background:#fff;
+        border:1px solid var(--line);
+        border-radius:4px;
+        flex-wrap:wrap;
+      }
+      .submitInfo{
+        font-size:13px;
+        color:var(--muted);
+        max-width:420px;
+        line-height:1.45;
+      }
+      .submitInfo strong{ color:var(--ink2); font-weight:600; }
+      .submitBtn{
+        appearance:none;
+        border:none;
+        background:var(--granate);
+        color:#fff;
+        font-family:'Raleway',sans-serif;
+        font-size:13px;
+        font-weight:600;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        padding:16px 32px;
+        border-radius:4px;
+        cursor:pointer;
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+        box-shadow:inset 0 -2px 0 var(--dorado);
+        transition:background .18s ease;
+      }
+      .submitBtn:hover{ background:var(--granateDark); }
+      .submitBtn[disabled]{ opacity:.55; cursor:not-allowed; }
+      .submitBtn svg{ width:16px; height:16px; }
+
+      /* Success state */
+      .successCard{
+        display:none;
+        background:var(--card);
+        border:1px solid rgba(31,122,76,.3);
+        border-radius:4px;
+        padding:40px 36px;
+        text-align:center;
+      }
+      .successCard.show{ display:block; }
+      .successIcon{
+        width:72px; height:72px;
+        margin:0 auto 18px;
+        border-radius:50%;
+        background:rgba(31,122,76,.1);
+        display:grid; place-items:center;
+        color:var(--good);
+      }
+      .successIcon svg{ width:36px; height:36px; }
+      .successTitle{
+        font-family:'Raleway',sans-serif;
+        font-size:28px;
+        font-weight:500;
+        color:var(--granate);
+        margin:0 0 10px;
+        letter-spacing:-.4px;
+      }
+      .successText{
+        color:var(--ink2);
+        font-size:15px;
+        line-height:1.55;
+        margin:0 0 26px;
+        max-width:460px;
+        margin-left:auto;
+        margin-right:auto;
+      }
+      .successActions{
+        display:flex;
+        gap:10px;
+        justify-content:center;
+        flex-wrap:wrap;
+      }
+      .successActions a{
+        text-decoration:none;
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        padding:13px 22px;
+        border-radius:999px;
+        transition:all .15s ease;
+      }
+      .successActions a.primary{
+        background:var(--granate);
+        color:#fff;
+        box-shadow:inset 0 -2px 0 var(--dorado);
+      }
+      .successActions a.primary:hover{ background:var(--granateDark); }
+      .successActions a.ghost{
+        background:#fff;
+        color:var(--ink2);
+        border:1px solid var(--line);
+      }
+      .successActions a.ghost:hover{
+        border-color:var(--granate);
+        color:var(--granate);
+      }
+
+      .errorBanner{
+        display:none;
+        background:#fdf1f1;
+        border:1px solid #e8b8b8;
+        color:#7a1b1b;
+        border-radius:4px;
+        padding:12px 16px;
+        margin-bottom:18px;
+        font-size:14px;
+      }
+      .errorBanner.show{ display:block; }
+
+      @media (max-width:680px){
+        .pageWrap{ padding:24px 16px 64px; }
+        .pageTitle{ font-size:34px; letter-spacing:-.6px; }
+        .pageSubtitle{ font-size:14.5px; }
+        .section{ padding:22px 20px; }
+        .submitRow{ padding:18px 20px; }
+        .submitBtn{ width:100%; justify-content:center; }
+        .listingCard{ position:static; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="pageWrap">
+      <nav class="crumbs" aria-label="Migas de pan">
+        <a href="#" id="crumbBack">Volver al anuncio</a>
+        <span class="sep">/</span>
+        <span class="current">Contactar</span>
+      </nav>
+
+      <header class="pageHeader">
+        <p class="pageKicker">Contactar</p>
+        <h1 class="pageTitle">Habla con la <strong>inmobiliaria</strong></h1>
+        <p class="pageSubtitle">Envía un mensaje sobre este anuncio sin salir de Homyo. Si lo prefieres, pide también una visita: tú eliges los días y franja horaria que mejor te encajan.</p>
+      </header>
+
+      <div class="errorBanner" id="errorBanner"></div>
+
+      <!-- SUCCESS VIEW -->
+      <section class="successCard" id="successCard">
+        <div class="successIcon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <h2 class="successTitle">Mensaje enviado</h2>
+        <p class="successText" id="successText">Hemos enviado tu mensaje a la inmobiliaria. Te avisaremos en cuanto respondan dentro de Homyo. Puedes ver y continuar la conversación desde tu cuenta.</p>
+        <div class="successActions">
+          <a class="primary" id="goConversation" href="#">Ver la conversación</a>
+          <a class="ghost" id="goListing" href="#">Volver al anuncio</a>
+        </div>
+      </section>
+
+      <!-- FORM VIEW -->
+      <div class="contentGrid" id="formView">
+        <div>
+          <!-- MENSAJE -->
+          <section class="section">
+            <p class="sectionLabel">Paso 1</p>
+            <h2 class="sectionTitle">Tu mensaje</h2>
+            <p class="sectionHelp">Cuéntale a la inmobiliaria por qué te interesa la vivienda o pregunta lo que necesites. La conversación queda guardada en tu cuenta.</p>
+
+            <div class="textareaWrap">
+              <textarea class="msgArea" id="msgArea" maxlength="1200" placeholder="Hola, estoy interesado/a en esta vivienda. ¿Podrían darme más información sobre…?"></textarea>
+              <span class="charCount" id="charCount">0 / 1200</span>
+            </div>
+
+            <div class="templateRow" aria-label="Plantillas rápidas">
+              <button class="templateChip" type="button" data-template="info">Más información</button>
+              <button class="templateChip" type="button" data-template="financiacion">Sobre la financiación</button>
+              <button class="templateChip" type="button" data-template="negociable">¿Es negociable el precio?</button>
+              <button class="templateChip" type="button" data-template="disponible">¿Sigue disponible?</button>
+            </div>
+          </section>
+
+          <!-- SOLICITAR VISITA -->
+          <section class="section">
+            <p class="sectionLabel">Paso 2 · Opcional</p>
+            <h2 class="sectionTitle">Solicitar una visita</h2>
+            <p class="sectionHelp">¿Quieres ir a verla? Marca los días que sueles tener libre y la franja horaria que mejor te encaje. La inmobiliaria te propondrá un hueco.</p>
+
+            <div class="visitToggle" id="visitToggle" role="button" tabindex="0" aria-pressed="false">
+              <div class="visitToggleLeft">
+                <span class="visitToggleIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3.5" y="5" width="17" height="15" rx="1.5"/>
+                    <path d="M3.5 10h17"/>
+                    <path d="M8 3v4"/>
+                    <path d="M16 3v4"/>
+                  </svg>
+                </span>
+                <div>
+                  <p class="visitToggleTitle">Quiero solicitar una visita</p>
+                  <p class="visitToggleSub">Te preguntaremos cuándo te viene bien</p>
+                </div>
+              </div>
+              <span class="visitSwitch" aria-hidden="true"></span>
+            </div>
+
+            <div class="visitPanel" id="visitPanel">
+
+              <div class="fieldGroup" style="margin-top:26px;">
+                <p class="fieldLabel">
+                  <span>¿Qué días te van bien?</span>
+                  <span class="fieldHint">Puedes elegir varios</span>
+                </p>
+                <div class="dayGrid" id="dayGrid">
+                  <button class="dayChip" type="button" data-day="mon"><span class="dayShort">Lu</span><span class="dayLong">Lun</span></button>
+                  <button class="dayChip" type="button" data-day="tue"><span class="dayShort">Ma</span><span class="dayLong">Mar</span></button>
+                  <button class="dayChip" type="button" data-day="wed"><span class="dayShort">Mi</span><span class="dayLong">Mié</span></button>
+                  <button class="dayChip" type="button" data-day="thu"><span class="dayShort">Ju</span><span class="dayLong">Jue</span></button>
+                  <button class="dayChip" type="button" data-day="fri"><span class="dayShort">Vi</span><span class="dayLong">Vie</span></button>
+                  <button class="dayChip" type="button" data-day="sat"><span class="dayShort">Sa</span><span class="dayLong">Sáb</span></button>
+                  <button class="dayChip" type="button" data-day="sun"><span class="dayShort">Do</span><span class="dayLong">Dom</span></button>
+                </div>
+              </div>
+
+              <div class="fieldGroup">
+                <p class="fieldLabel">
+                  <span>¿Mañana o tarde?</span>
+                  <span class="fieldHint">Cualquiera de las dos también vale</span>
+                </p>
+                <div class="periodGrid" id="periodGrid">
+                  <button class="periodChip" type="button" data-period="morning">
+                    <span class="periodChipIcon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="13" r="4"/>
+                        <path d="M12 4v2"/>
+                        <path d="M4.93 6.93l1.41 1.41"/>
+                        <path d="M19.07 6.93l-1.41 1.41"/>
+                        <path d="M3 18h18"/>
+                      </svg>
+                    </span>
+                    <span class="periodChipBody">
+                      <span class="periodChipTitle">Mañana</span>
+                      <span class="periodChipSub">de 9:00 a 14:00</span>
+                    </span>
+                  </button>
+                  <button class="periodChip" type="button" data-period="afternoon">
+                    <span class="periodChipIcon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 13a8 8 0 1 1-9.95-7.77A6 6 0 0 0 21 13z"/>
+                      </svg>
+                    </span>
+                    <span class="periodChipBody">
+                      <span class="periodChipTitle">Tarde</span>
+                      <span class="periodChipSub">de 16:00 a 20:00</span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="fieldGroup">
+                <p class="fieldLabel">
+                  <span>Franja horaria</span>
+                  <span class="fieldHint">Elige las que mejor te encajen</span>
+                </p>
+                <div class="slotGrid" id="slotGrid">
+                  <!-- slots injected by JS -->
+                </div>
+              </div>
+
+              <div class="fieldGroup">
+                <p class="fieldLabel">
+                  <span>Notas para la visita</span>
+                  <span class="fieldHint">Opcional</span>
+                </p>
+                <textarea class="visitNotes" id="visitNotes" maxlength="400" placeholder="¿Quieres añadir algo? Por ejemplo: «prefiero ver primero la cocina» o «iremos dos personas»."></textarea>
+              </div>
+
+              <div class="visitSummary" id="visitSummary">
+                <span class="muted">Selecciona días y franja horaria para previsualizar tu solicitud.</span>
+              </div>
+
+            </div>
+
+          </section>
+
+          <div class="submitRow">
+            <div class="submitInfo">
+              <strong>Sin abandonar la app.</strong> Tu mensaje no abre el correo del ordenador: se queda dentro de Homyo y la respuesta te llega aquí.
+            </div>
+            <button class="submitBtn" type="button" id="submitBtn">
+              <span id="submitBtnLabel">Enviar mensaje</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <aside>
+          <div class="listingCard" id="listingCard">
+            <div class="listingMedia">
+              <span class="badge" id="listingBadge">Anuncio</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 4h16v16H4z"/><path d="m4 16 5-5 4 4 2-2 5 5"/><circle cx="9" cy="8" r="1.5"/></svg>
+            </div>
+            <div class="listingBody">
+              <p class="listingPrice" id="listingPrice">—</p>
+              <h3 class="listingTitle" id="listingTitle">Cargando…</h3>
+              <p class="listingLocation" id="listingLocation">—</p>
+              <div class="listingSpecs" id="listingSpecs"></div>
+            </div>
+            <div class="agencyMini">
+              <div class="agencyMiniLogo" id="agencyLogo">AG</div>
+              <div class="agencyMiniInfo">
+                <p class="agencyMiniLabel">Anuncia</p>
+                <p class="agencyMiniName" id="agencyName">—</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
+      import { initAuth } from "./bh-auth.js?v=20260504";
+      import { getSession, openLoginModalOrAlert, supabase } from "./bh-user-data.js";
+      import { addOrUpdateConversation } from "./bh-conversations.js?v=1";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+
+      // ----- helpers -----
+      const $ = (id) => document.getElementById(id);
+      function getParam(name){
+        const u = new URL(window.location.href);
+        return u.searchParams.get(name);
+      }
+      function euro(n){
+        if (n == null) return "—";
+        return new Intl.NumberFormat("es-ES", { style:"currency", currency:"EUR", maximumFractionDigits:0 }).format(n);
+      }
+      function text(v, fallback="—"){ return v == null || String(v).trim()==="" ? fallback : String(v).trim(); }
+      function getInitials(name){
+        const s = String(name||"").trim();
+        if (!s) return "AG";
+        const parts = s.split(/\s+/).filter(Boolean);
+        const first = parts[0]?.charAt(0) || "";
+        const second = parts[1]?.charAt(0) || "";
+        return (first + second).toUpperCase() || "AG";
+      }
+      function buildCleanTitle(row){
+        const rawStreet = String(row.street_name || "").trim();
+        const street = rawStreet.replace(/^(calle|avenida|av\.?|plaza|paseo|camino|ronda|carretera|carrer|rua|ru\.)\s+/i, "").trim();
+        const number = String(row.street_number || "").trim();
+        const floor = String(row.floor || "").trim();
+        const door = String(row.door || "").trim();
+        let clean = street || "";
+        if (number) clean += (clean ? " " : "") + number;
+        if (floor) clean += (clean ? ", " : "") + floor;
+        if (door) clean += (clean ? " " : "") + door;
+        if (clean) return clean;
+        return String(row.address_display || "Dirección").trim();
+      }
+
+      // ----- params -----
+      const listingId = getParam("id");
+      const initialMode = getParam("mode"); // "contact" | "visit"
+      const backUrl = `./listing.html?id=${encodeURIComponent(listingId || "")}`;
+      $("crumbBack").href = backUrl;
+      $("goListing").href = backUrl;
+
+      if (!listingId){
+        const eb = $("errorBanner");
+        eb.textContent = "Falta el parámetro ?id=… No se puede contactar.";
+        eb.classList.add("show");
+      }
+
+      // ----- character count -----
+      const msgArea = $("msgArea");
+      const charCount = $("charCount");
+      msgArea.addEventListener("input", () => {
+        charCount.textContent = `${msgArea.value.length} / 1200`;
+      });
+
+      // ----- templates -----
+      const templates = {
+        info: "Hola, estoy interesado/a en esta vivienda. ¿Podrían enviarme más información y resolverme algunas dudas?",
+        financiacion: "Hola, me interesa esta vivienda. ¿Podrían orientarme sobre la financiación disponible y los gastos asociados a la compra?",
+        negociable: "Hola, me gustaría saber si el precio publicado es negociable y en qué condiciones.",
+        disponible: "Hola, ¿sigue disponible este anuncio? Me gustaría avanzar con la inmobiliaria si todavía está en venta."
+      };
+      document.querySelectorAll(".templateChip").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const t = templates[btn.dataset.template];
+          if (!t) return;
+          msgArea.value = t;
+          msgArea.dispatchEvent(new Event("input"));
+          msgArea.focus();
+        });
+      });
+
+      // ----- visit toggle -----
+      let visitOn = false;
+      const visitToggle = $("visitToggle");
+      const visitPanel = $("visitPanel");
+      const submitBtnLabel = $("submitBtnLabel");
+      function setVisitState(on){
+        visitOn = on;
+        visitToggle.classList.toggle("isOpen", on);
+        visitToggle.setAttribute("aria-pressed", on ? "true" : "false");
+        visitPanel.classList.toggle("isOpen", on);
+        submitBtnLabel.textContent = on ? "Enviar mensaje y solicitar visita" : "Enviar mensaje";
+        if (on) refreshSummary();
+      }
+      visitToggle.addEventListener("click", () => setVisitState(!visitOn));
+      visitToggle.addEventListener("keydown", (e) => {
+        if (e.key === " " || e.key === "Enter"){ e.preventDefault(); setVisitState(!visitOn); }
+      });
+
+      // ----- days -----
+      const selectedDays = new Set();
+      document.querySelectorAll(".dayChip").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const d = btn.dataset.day;
+          if (selectedDays.has(d)) selectedDays.delete(d);
+          else selectedDays.add(d);
+          btn.classList.toggle("isActive", selectedDays.has(d));
+          refreshSlots();
+          refreshSummary();
+        });
+      });
+
+      // ----- period (morning / afternoon) -----
+      const selectedPeriods = new Set();
+      document.querySelectorAll(".periodChip").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const p = btn.dataset.period;
+          if (selectedPeriods.has(p)) selectedPeriods.delete(p);
+          else selectedPeriods.add(p);
+          btn.classList.toggle("isActive", selectedPeriods.has(p));
+          refreshSlots();
+          refreshSummary();
+        });
+      });
+
+      // ----- slots -----
+      const MORNING_SLOTS = ["09:00 – 10:00", "10:00 – 11:00", "11:00 – 12:00", "12:00 – 13:00", "13:00 – 14:00"];
+      const AFTERNOON_SLOTS = ["16:00 – 17:00", "17:00 – 18:00", "18:00 – 19:00", "19:00 – 20:00"];
+      const selectedSlots = new Set();
+      const slotGrid = $("slotGrid");
+
+      function refreshSlots(){
+        const showMorning = selectedPeriods.has("morning") || selectedPeriods.size === 0;
+        const showAfternoon = selectedPeriods.has("afternoon") || selectedPeriods.size === 0;
+        const slots = [];
+        if (showMorning) slots.push(...MORNING_SLOTS);
+        if (showAfternoon) slots.push(...AFTERNOON_SLOTS);
+
+        // remove unselected slots that are no longer visible
+        Array.from(selectedSlots).forEach(s => { if (!slots.includes(s)) selectedSlots.delete(s); });
+
+        slotGrid.innerHTML = "";
+        slots.forEach(s => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "slotChip" + (selectedSlots.has(s) ? " isActive" : "");
+          b.textContent = s;
+          b.addEventListener("click", () => {
+            if (selectedSlots.has(s)) selectedSlots.delete(s);
+            else selectedSlots.add(s);
+            b.classList.toggle("isActive", selectedSlots.has(s));
+            refreshSummary();
+          });
+          slotGrid.appendChild(b);
+        });
+      }
+      refreshSlots();
+
+      // ----- summary -----
+      const DAY_LABELS = { mon:"Lunes", tue:"Martes", wed:"Miércoles", thu:"Jueves", fri:"Viernes", sat:"Sábado", sun:"Domingo" };
+      const visitSummary = $("visitSummary");
+      function refreshSummary(){
+        if (selectedDays.size === 0 && selectedPeriods.size === 0 && selectedSlots.size === 0){
+          visitSummary.innerHTML = `<span class="muted">Selecciona días y franja horaria para previsualizar tu solicitud.</span>`;
+          return;
+        }
+        const days = Array.from(selectedDays).map(d => DAY_LABELS[d]).join(", ") || "—";
+        let period = "Cualquier momento";
+        if (selectedPeriods.has("morning") && !selectedPeriods.has("afternoon")) period = "Solo por la mañana";
+        else if (selectedPeriods.has("afternoon") && !selectedPeriods.has("morning")) period = "Solo por la tarde";
+        else if (selectedPeriods.has("morning") && selectedPeriods.has("afternoon")) period = "Mañana o tarde";
+        const slots = Array.from(selectedSlots);
+        const slotsTxt = slots.length ? slots.join(" · ") : "Cualquier franja";
+        visitSummary.innerHTML = `Solicitarás una visita los <strong>${days}</strong>. <strong>${period}.</strong> Franjas: <strong>${slotsTxt}</strong>.`;
+      }
+
+      // ----- fetch listing detail -----
+      let listingRow = null;
+      async function loadListing(){
+        if (!listingId) return;
+        try {
+          const { data, error } = await supabase
+            .from("listing_detail_public")
+            .select("listing_id, price_eur, agency_name, agency_email, agency_phone, property_type, useful_area_m2, bedrooms, bathrooms, floor, door, street_name, street_number, address_display, postcode, city, neighborhood, listing_mode")
+            .eq("listing_id", listingId)
+            .maybeSingle();
+          if (error) throw error;
+          listingRow = data || null;
+          renderSidebar(listingRow);
+        } catch (e){
+          console.warn("No se pudo cargar el anuncio", e);
+        }
+      }
+      function renderSidebar(row){
+        if (!row){
+          $("listingTitle").textContent = "Anuncio";
+          return;
+        }
+        $("listingPrice").textContent = euro(row.price_eur);
+        $("listingTitle").textContent = buildCleanTitle(row);
+        $("listingLocation").textContent = [row.postcode, row.city, row.neighborhood].filter(Boolean).join(" · ") || "—";
+        $("agencyName").textContent = row.agency_name || "—";
+        $("agencyLogo").textContent = getInitials(row.agency_name);
+        const specs = $("listingSpecs");
+        specs.innerHTML = "";
+        const parts = [];
+        if (row.bedrooms != null) parts.push(`${row.bedrooms} hab.`);
+        if (row.bathrooms != null) parts.push(`${row.bathrooms} baños`);
+        if (row.useful_area_m2 != null) parts.push(`${row.useful_area_m2} m²`);
+        parts.forEach(p => { const s = document.createElement("span"); s.textContent = p; specs.appendChild(s); });
+        const mode = String(row.listing_mode || "buy");
+        $("listingBadge").textContent = mode === "rent" ? "Alquiler" : mode === "newbuild" ? "Obra nueva" : "Venta";
+      }
+      loadListing();
+
+      // ----- pre-open visit if requested from listing -----
+      if (initialMode === "visit"){
+        setVisitState(true);
+        // scroll to visit section after a tick
+        setTimeout(() => { document.getElementById("visitToggle")?.scrollIntoView({ block:"start", behavior:"smooth" }); }, 200);
+      }
+
+      // ----- submit -----
+      const submitBtn = $("submitBtn");
+      submitBtn.addEventListener("click", async () => {
+        const msg = msgArea.value.trim();
+        if (!msg){
+          const eb = $("errorBanner");
+          eb.textContent = "Escribe un mensaje antes de enviar.";
+          eb.classList.add("show");
+          msgArea.focus();
+          return;
+        }
+        const session = await getSession();
+        if (!session?.user){
+          openLoginModalOrAlert();
+          return;
+        }
+        $("errorBanner").classList.remove("show");
+        submitBtn.disabled = true;
+
+        const visitRequest = visitOn ? {
+          days: Array.from(selectedDays),
+          periods: Array.from(selectedPeriods),
+          slots: Array.from(selectedSlots),
+          notes: $("visitNotes").value.trim()
+        } : null;
+
+        const conversation = {
+          listing_id: listingId,
+          listing_snapshot: listingRow ? {
+            address: buildCleanTitle(listingRow),
+            city: listingRow.city || null,
+            neighborhood: listingRow.neighborhood || null,
+            postcode: listingRow.postcode || null,
+            price_eur: listingRow.price_eur ?? null,
+            bedrooms: listingRow.bedrooms ?? null,
+            bathrooms: listingRow.bathrooms ?? null,
+            useful_area_m2: listingRow.useful_area_m2 ?? null,
+            listing_mode: listingRow.listing_mode || "buy",
+            agency_name: listingRow.agency_name || null,
+            agency_email: listingRow.agency_email || null,
+            agency_phone: listingRow.agency_phone || null
+          } : null,
+          new_messages: []
+        };
+
+        const now = new Date().toISOString();
+        conversation.new_messages.push({
+          id: "m_" + Date.now() + "_" + Math.random().toString(36).slice(2,8),
+          direction: "out",
+          author: session.user.email || "Tú",
+          kind: "message",
+          body: msg,
+          created_at: now
+        });
+
+        if (visitRequest){
+          conversation.new_messages.push({
+            id: "v_" + Date.now() + "_" + Math.random().toString(36).slice(2,8),
+            direction: "out",
+            author: session.user.email || "Tú",
+            kind: "visit_request",
+            visit: visitRequest,
+            created_at: new Date(Date.now() + 1).toISOString()
+          });
+        }
+
+        // simulate agency auto-acknowledgement so the conversation feels real
+        conversation.new_messages.push({
+          id: "auto_" + Date.now() + "_" + Math.random().toString(36).slice(2,8),
+          direction: "in",
+          author: listingRow?.agency_name || "Inmobiliaria",
+          kind: "auto",
+          body: "Gracias por tu mensaje. Hemos recibido tu consulta y un agente te responderá en menos de 24 horas a través de Homyo." + (visitRequest ? " Revisaremos tu disponibilidad y te propondremos un hueco para la visita." : ""),
+          created_at: new Date(Date.now() + 2000).toISOString()
+        });
+
+        try {
+          addOrUpdateConversation(session.user.id, conversation);
+        } catch (e){
+          console.error("No se pudo guardar la conversación", e);
+        }
+
+        // show success
+        document.getElementById("formView").style.display = "none";
+        const success = $("successCard");
+        success.classList.add("show");
+        $("successText").textContent = visitRequest
+          ? "Hemos enviado tu mensaje y tu solicitud de visita a la inmobiliaria. Te avisaremos en cuanto respondan dentro de Homyo. Puedes ver y continuar la conversación desde tu cuenta."
+          : "Hemos enviado tu mensaje a la inmobiliaria. Te avisaremos en cuanto respondan dentro de Homyo. Puedes ver y continuar la conversación desde tu cuenta.";
+        $("goConversation").href = `./conversacion.html?id=${encodeURIComponent(listingId)}`;
+        window.scrollTo({ top:0, behavior:"smooth" });
+      });
+    </script>
+  </body>
+</html>

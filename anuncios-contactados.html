@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Anuncios contactados · Homyo</title>
+
+    <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
+    <link rel="stylesheet" href="./bh-header-overrides.css?v=20260504" />
+
+    <style>
+      :root{
+        --bg:#FFFDFA;
+        --granate:#8C1F2D;
+        --granateDark:#711824;
+        --dorado:#C4962A;
+        --doradoSoft:#E2B84C;
+        --ink:#1d1a17;
+        --ink2:#4a4640;
+        --muted:#8a857d;
+        --line:#ece6db;
+        --lineSoft:#f3ede2;
+        --card:#FFFFFF;
+        --cardWarm:#fbf5e9;
+        --good:#1f7a4c;
+      }
+
+      *{ box-sizing:border-box; }
+
+      body{
+        background:var(--bg);
+        color:var(--ink);
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      }
+
+      .pageWrap{
+        width:min(1120px,100%);
+        margin:0 auto;
+        padding:40px 24px 96px;
+      }
+
+      .crumbs{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        letter-spacing:.28em;
+        text-transform:uppercase;
+        color:var(--muted);
+        margin-bottom:24px;
+      }
+      .crumbs a{ color:var(--muted); text-decoration:none; }
+      .crumbs a:hover{ color:var(--granate); }
+      .crumbs .sep{ color:var(--doradoSoft); }
+      .crumbs .current{ color:var(--granate); }
+
+      .pageHeader{
+        display:grid;
+        grid-template-columns:1fr auto;
+        align-items:end;
+        gap:24px;
+        padding-bottom:28px;
+        margin-bottom:36px;
+        border-bottom:1px solid var(--line);
+      }
+      .pageKicker{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.32em;
+        text-transform:uppercase;
+        color:var(--dorado);
+        margin:0 0 14px;
+      }
+      .pageTitle{
+        margin:0;
+        font-family:'Raleway',sans-serif;
+        font-size:56px;
+        line-height:1;
+        letter-spacing:-1.2px;
+        font-weight:300;
+        color:var(--granate);
+      }
+      .pageTitle strong{ font-weight:600; }
+      .pageSubtitle{
+        margin:14px 0 0;
+        font-size:16px;
+        color:var(--ink2);
+        max-width:580px;
+        line-height:1.5;
+      }
+      .pillBtn{
+        appearance:none;
+        border:1px solid var(--line);
+        background:#fff;
+        color:var(--ink2);
+        font-family:'Raleway',sans-serif;
+        font-size:11px;
+        font-weight:600;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        padding:11px 18px;
+        border-radius:999px;
+        cursor:pointer;
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        text-decoration:none;
+        transition:all .18s ease;
+      }
+      .pillBtn:hover{ border-color:var(--granate); color:var(--granate); }
+      .pillBtn.primary{ background:var(--granate); color:#fff; border-color:var(--granate); }
+      .pillBtn.primary:hover{ background:var(--granateDark); }
+      .pillBtn svg{ width:14px; height:14px; }
+
+      /* ===== List ===== */
+      .convList{
+        display:flex;
+        flex-direction:column;
+        gap:14px;
+      }
+      .convRow{
+        display:grid;
+        grid-template-columns: 120px 1fr auto;
+        gap:22px;
+        align-items:stretch;
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:4px;
+        overflow:hidden;
+        text-decoration:none;
+        color:inherit;
+        transition:all .22s ease;
+        position:relative;
+      }
+      .convRow:hover{
+        border-color:rgba(140,31,45,.25);
+        box-shadow:0 14px 28px rgba(140,31,45,.07);
+        transform:translateY(-2px);
+      }
+      .convRow::before{
+        content:"";
+        position:absolute;
+        left:0; top:0; bottom:0;
+        width:3px;
+        background:var(--granate);
+        transform:scaleY(0);
+        transform-origin:top;
+        transition:transform .25s ease;
+      }
+      .convRow:hover::before{ transform:scaleY(1); }
+
+      .convMedia{
+        aspect-ratio:1/1;
+        background:linear-gradient(135deg, var(--cardWarm) 0%, #f6ead2 100%);
+        display:grid; place-items:center;
+        color:var(--dorado);
+        opacity:.7;
+      }
+      .convMedia svg{ width:40px; height:40px; }
+
+      .convBody{
+        padding:18px 6px 18px 0;
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+        min-width:0;
+      }
+      .convTopline{
+        display:flex;
+        gap:10px;
+        align-items:center;
+        flex-wrap:wrap;
+      }
+      .convAgency{
+        font-family:'Raleway',sans-serif;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.18em;
+        text-transform:uppercase;
+        color:var(--dorado);
+      }
+      .convBadge{
+        font-family:'Raleway',sans-serif;
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        padding:3px 8px;
+        border-radius:2px;
+        background:var(--cardWarm);
+        color:var(--granate);
+      }
+      .convBadge.visit{
+        background:rgba(31,122,76,.12);
+        color:var(--good);
+      }
+      .convTitle{
+        margin:0;
+        font-family:'Raleway',sans-serif;
+        font-size:20px;
+        font-weight:500;
+        color:var(--ink);
+        letter-spacing:-.3px;
+      }
+      .convLocation{
+        font-size:13.5px;
+        color:var(--muted);
+      }
+      .convPreview{
+        margin-top:6px;
+        color:var(--ink2);
+        font-size:14px;
+        line-height:1.45;
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
+      }
+
+      .convMeta{
+        padding:18px 22px 18px 6px;
+        display:flex;
+        flex-direction:column;
+        align-items:flex-end;
+        justify-content:space-between;
+        gap:10px;
+        min-width:140px;
+        text-align:right;
+      }
+      .convPrice{
+        font-family:'Raleway',sans-serif;
+        font-size:22px;
+        font-weight:600;
+        color:var(--granate);
+        letter-spacing:-.4px;
+        line-height:1;
+      }
+      .convTime{
+        font-size:12.5px;
+        color:var(--muted);
+      }
+      .convCount{
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        font-size:12.5px;
+        color:var(--ink2);
+      }
+      .convCount svg{ width:14px; height:14px; color:var(--dorado); }
+
+      .convArrow{
+        align-self:flex-end;
+        width:32px; height:32px;
+        border-radius:50%;
+        display:grid; place-items:center;
+        color:var(--granate);
+        transition:transform .22s ease;
+      }
+      .convRow:hover .convArrow{ transform:translateX(4px); }
+      .convArrow svg{ width:16px; height:16px; }
+
+      /* Empty state */
+      .emptyState{
+        display:none;
+        text-align:center;
+        padding:64px 24px;
+        border:1px dashed var(--line);
+        border-radius:4px;
+        background:var(--cardWarm);
+      }
+      .emptyState.show{ display:block; }
+      .emptyIcon{
+        width:64px; height:64px;
+        margin:0 auto 18px;
+        border-radius:50%;
+        background:#fff;
+        border:1px solid rgba(196,150,42,.4);
+        display:grid; place-items:center;
+        color:var(--granate);
+      }
+      .emptyIcon svg{ width:30px; height:30px; }
+      .emptyState h3{
+        font-family:'Raleway',sans-serif;
+        color:var(--granate);
+        font-size:24px;
+        margin:0 0 8px;
+        font-weight:400;
+      }
+      .emptyState p{
+        color:var(--ink2);
+        max-width:460px;
+        margin:0 auto 22px;
+        line-height:1.5;
+      }
+
+      @media (max-width:760px){
+        .pageWrap{ padding:24px 16px 64px; }
+        .pageTitle{ font-size:38px; letter-spacing:-.8px; }
+        .pageHeader{ grid-template-columns:1fr; }
+        .convRow{ grid-template-columns: 92px 1fr; }
+        .convMeta{
+          grid-column: 1 / -1;
+          flex-direction:row;
+          align-items:center;
+          justify-content:space-between;
+          padding:0 18px 18px;
+          text-align:left;
+          min-width:0;
+        }
+        .convArrow{ display:none; }
+        .convBody{ padding:14px 14px 6px 0; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="bhHeader"></div>
+
+    <main class="pageWrap">
+      <nav class="crumbs" aria-label="Migas de pan">
+        <a href="./account.html">Mi cuenta</a>
+        <span class="sep">/</span>
+        <span class="current">Anuncios contactados</span>
+      </nav>
+
+      <header class="pageHeader">
+        <div>
+          <p class="pageKicker">Tus conversaciones</p>
+          <h1 class="pageTitle">Anuncios <strong>contactados</strong></h1>
+          <p class="pageSubtitle">Aquí están todas las viviendas con las que has hablado a través de Homyo. Pulsa cualquier anuncio para abrir la conversación con la inmobiliaria.</p>
+        </div>
+        <div>
+          <a class="pillBtn primary" href="./map.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Explorar el mapa
+          </a>
+        </div>
+      </header>
+
+      <section class="convList" id="convList" aria-live="polite"></section>
+
+      <section class="emptyState" id="emptyState" aria-hidden="true">
+        <div class="emptyIcon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </div>
+        <h3>Aún no has contactado con ningún anuncio</h3>
+        <p>Cuando escribas a una inmobiliaria desde la ficha de una vivienda, la conversación aparecerá aquí para que la sigas sin perder el hilo.</p>
+        <a class="pillBtn primary" href="./map.html">Ir al mapa</a>
+      </section>
+    </main>
+
+    <div id="bhFooter"></div>
+
+    <script type="module">
+      import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
+      import { initAuth } from "./bh-auth.js?v=20260504";
+      import { getSession, openLoginModalOrAlert } from "./bh-user-data.js";
+      import { listConversations } from "./bh-conversations.js?v=1";
+
+      initLayout({ showMiniSearch: false });
+      initAuth();
+
+      const list = document.getElementById("convList");
+      const empty = document.getElementById("emptyState");
+
+      function euro(n){
+        if (n == null) return "—";
+        return new Intl.NumberFormat("es-ES", { style:"currency", currency:"EUR", maximumFractionDigits:0 }).format(n);
+      }
+      function fmtRelative(iso){
+        if (!iso) return "—";
+        const d = new Date(iso); if (isNaN(d)) return "—";
+        const now = new Date();
+        const diffMs = now - d;
+        const min = Math.round(diffMs / 60000);
+        if (min < 1) return "Ahora mismo";
+        if (min < 60) return `Hace ${min} min`;
+        const hr = Math.round(min/60);
+        if (hr < 24) return `Hace ${hr} h`;
+        const days = Math.round(hr/24);
+        if (days < 7) return `Hace ${days} ${days===1?"día":"días"}`;
+        return d.toLocaleDateString("es-ES", { day:"numeric", month:"short" });
+      }
+      function lastOutgoingPreview(conv){
+        const msgs = (conv.messages || []).slice().reverse();
+        const own = msgs.find(m => m.direction === "out" && m.kind === "message");
+        if (own) return own.body;
+        const any = msgs.find(m => m.kind === "message");
+        if (any) return any.body;
+        const visit = msgs.find(m => m.kind === "visit_request");
+        if (visit) return "Has solicitado una visita.";
+        return "Conversación iniciada.";
+      }
+      function hasVisitRequest(conv){
+        return (conv.messages || []).some(m => m.kind === "visit_request");
+      }
+
+      function render(rows){
+        list.innerHTML = "";
+        if (!rows.length){
+          empty.classList.add("show");
+          empty.setAttribute("aria-hidden","false");
+          return;
+        }
+        empty.classList.remove("show");
+        empty.setAttribute("aria-hidden","true");
+
+        rows.forEach(conv => {
+          const snap = conv.listing_snapshot || {};
+          const a = document.createElement("a");
+          a.className = "convRow";
+          a.href = `./conversacion.html?id=${encodeURIComponent(conv.listing_id)}`;
+          a.innerHTML = `
+            <div class="convMedia">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 4h16v16H4z"/><path d="m4 16 5-5 4 4 2-2 5 5"/><circle cx="9" cy="8" r="1.5"/></svg>
+            </div>
+            <div class="convBody">
+              <div class="convTopline">
+                <span class="convAgency">${(snap.agency_name || "Inmobiliaria").replace(/</g,"&lt;")}</span>
+                ${hasVisitRequest(conv) ? `<span class="convBadge visit">Visita solicitada</span>` : `<span class="convBadge">Mensaje enviado</span>`}
+              </div>
+              <h2 class="convTitle">${(snap.address || "Anuncio").replace(/</g,"&lt;")}</h2>
+              <div class="convLocation">${[snap.postcode, snap.city, snap.neighborhood].filter(Boolean).join(" · ") || "—"}</div>
+              <p class="convPreview">${lastOutgoingPreview(conv).replace(/</g,"&lt;")}</p>
+            </div>
+            <div class="convMeta">
+              <span class="convPrice">${euro(snap.price_eur)}</span>
+              <span class="convTime">${fmtRelative(conv.last_message_at || conv.created_at)}</span>
+              <span class="convCount">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                ${(conv.messages || []).length} ${(conv.messages || []).length === 1 ? "mensaje" : "mensajes"}
+              </span>
+              <span class="convArrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+              </span>
+            </div>
+          `;
+          list.appendChild(a);
+        });
+      }
+
+      (async () => {
+        const session = await getSession();
+        if (!session?.user){
+          openLoginModalOrAlert();
+          empty.classList.add("show");
+          empty.setAttribute("aria-hidden","false");
+          return;
+        }
+        const rows = listConversations(session.user.id);
+        render(rows);
+      })().catch(err => {
+        console.error(err);
+        empty.classList.add("show");
+      });
+    </script>
+  </body>
+</html>
