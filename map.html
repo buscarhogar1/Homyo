@@ -15,7 +15,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css?v=20260517_badges_v1" />
+    <link rel="stylesheet" href="./bh-map.css?v=20260510_filters_tight3" />
 
     <style>
       @media (max-width: 720px){
@@ -214,7 +214,6 @@
         <div class="topRow">
           <div class="topCell topCellLeft">
             <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
-            <button id="clearFiltersBtn" class="topToggleBtn clearFiltersBtn" type="button">Eliminar filtros</button>
           </div>
 
           <div class="topCell topCellCenter">
@@ -225,7 +224,6 @@
           <div class="topCell topCellRight">
             <div class="topRightTools">
               <button id="orderBtn" class="topToggleBtn" type="button">Ordenar por</button>
-              <button id="saveSearchDesktopBtn" class="topToggleBtn saveSearchDesktopBtn" type="button">Guardar búsqueda</button>
               <button id="toggleListBtn" class="topToggleBtn" type="button">Ocultar listado</button>
 
               <!-- Menú desplegable de orden -->
@@ -367,19 +365,6 @@
       import { initFiltersBar } from "./bh-map-filters.js";
       import { initMap } from "./bh-map-core.js";
 
-      const initialUrlParams = new URL(window.location.href).searchParams;
-      window.__bhListOrder = initialUrlParams.get("order") || "date_desc";
-
-      function isMobileViewport() {
-        return window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
-      }
-
-      const emailAlertOptions = {
-        isEmailAlert: initialUrlParams.get("source") === "email_alert" || initialUrlParams.get("source") === "saved_search",
-        view: initialUrlParams.get("view") || "",
-        order: initialUrlParams.get("order") || "date_desc"
-      };
-
       // Header / auth
       initLayout({ showMiniSearch: true });
       initAuth();
@@ -391,8 +376,6 @@
       const grid = document.getElementById("grid3");
       const btnFilters = document.getElementById("toggleFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
-      const btnClearFilters = document.getElementById("clearFiltersBtn");
-      const saveSearchDesktopBtn = document.getElementById("saveSearchDesktopBtn");
       const mobileFiltersBtn = document.getElementById("mobileFiltersBtn");
       const mobileListBtn = document.getElementById("mobileListBtn");
       const mobileFiltersCloseBtn = document.getElementById("mobileFiltersCloseBtn");
@@ -421,39 +404,19 @@
         const listHidden = grid.classList.contains("hideList");
         btnFilters.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
         btnList.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
-        if (btnClearFilters) btnClearFilters.hidden = filtersHidden;
-      }
-
-      function clearMapFilters() {
-        const paramsToRemove = [
-          "price_min", "price_max",
-          "since_days", "availability",
-          "useful_min", "useful_max",
-          "built_min", "built_max",
-          "bedrooms_min", "bathrooms_min",
-          "outdoor_type", "orientations", "energy",
-          "build_periods", "parking", "storage", "accessibility",
-          "quick"
-        ];
-        const url = new URL(window.location.href);
-        paramsToRemove.forEach((key) => url.searchParams.delete(key));
-        window.location.href = url.toString();
-      }
-
-      function toggleDesktopSavedSearch() {
-        if (!saveSearchDesktopBtn) return;
-        const saved = saveSearchDesktopBtn.classList.toggle("is-saved");
-        saveSearchDesktopBtn.textContent = saved ? "Búsqueda guardada" : "Guardar búsqueda";
-        saveSearchDesktopBtn.setAttribute("aria-pressed", saved ? "true" : "false");
       }
 
       function applyEmailAlertLayout() {
         if (!emailAlertOptions.isEmailAlert) return;
 
         window.__bhListOrder = emailAlertOptions.order || "date_desc";
-        grid.classList.remove("hideList");
 
-        if (isMobileViewport() && emailAlertOptions.view === "list") {
+        // Desktop: mapa + listado visibles.
+        grid.classList.remove("hideList");
+        grid.classList.remove("hideMap");
+
+        // Móvil: abrir directamente el listado para ver los anuncios ordenados por recientes.
+        if (isMobileViewport()) {
           document.body.classList.remove("mobileFiltersOpen");
           document.body.classList.add("mobileListOpen");
         }
@@ -473,9 +436,6 @@
         applyToggleTexts();
         notifyLayoutResize();
       });
-
-      btnClearFilters?.addEventListener("click", clearMapFilters);
-      saveSearchDesktopBtn?.addEventListener("click", toggleDesktopSavedSearch);
 
       btnList.addEventListener("click", () => {
         grid.classList.toggle("hideList");
@@ -568,6 +528,7 @@
       // Inicializar mapa
       initMap();
 
+      // Enlaces procedentes de emails de alertas: filtros activos + orden reciente + listado abierto.
       applyEmailAlertLayout();
       window.addEventListener("resize", () => {
         if (emailAlertOptions.isEmailAlert) applyEmailAlertLayout();
