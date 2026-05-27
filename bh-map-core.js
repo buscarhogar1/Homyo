@@ -187,16 +187,7 @@ export function initMap(){
 
     setPhoto(p.main_photo_url || null);
 
-    const cardBadge = getListingBadge(p);
-    badgeNewEl.classList.remove("badgeNew-general", "badgeNew-search");
-    if (cardBadge) {
-      badgeNewEl.textContent = cardBadge.text;
-      badgeNewEl.classList.add(`badgeNew-${cardBadge.type}`);
-      badgeNewEl.style.display = "inline-flex";
-    } else {
-      badgeNewEl.textContent = "Nuevo";
-      badgeNewEl.style.display = "none";
-    }
+    badgeNewEl.style.display = isRecent(p.listed_at, 14) ? "inline-flex" : "none";
 
     const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
     const type = p.property_type ? String(p.property_type) : "—";
@@ -269,38 +260,7 @@ export function initMap(){
 
   const initialParams = getParams();
 
-  const initialUrlParams = new URL(window.location.href).searchParams;
-  const initialOrderFromUrl = initialUrlParams.get("order") || "";
-  const allowedListOrders = new Set([
-    "date_desc",
-    "date_asc",
-    "price_asc",
-    "price_desc",
-    "size_asc",
-    "size_desc"
-  ]);
-
-  if (allowedListOrders.has(initialOrderFromUrl)) {
-    window.__bhListOrder = initialOrderFromUrl;
-  }
-
-  const initialViewFromUrl = initialUrlParams.get("view") || "";
-
-  function applyInitialUrlView() {
-    if (initialViewFromUrl !== "list") return;
-
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    if (!isMobile) return;
-
-    document.body.classList.remove("mobileFiltersOpen");
-    document.body.classList.add("mobileListOpen");
-
-    try {
-      window.dispatchEvent(new CustomEvent("bh:layout-resize"));
-    } catch {}
-  }
-
-  const urlParamsForBadges = initialUrlParams;
+  const urlParamsForBadges = new URL(window.location.href).searchParams;
   const savedSearchIdForBadges = urlParamsForBadges.get("saved_search_id") || "";
   const sourceForBadges = urlParamsForBadges.get("source") || "";
   const hasSavedSearchBadgeContext = Boolean(savedSearchIdForBadges) && (
@@ -1146,7 +1106,7 @@ export function initMap(){
     debounceTimer = setTimeout(async () => {
       try {
         await loadNewInSearchIds();
-        await loadPointsForCurrentView();
+      await loadPointsForCurrentView();
       } catch (e) {
         const msg = (e && e.message) ? e.message : String(e);
         setStatus(`Error: ${msg}`);
@@ -1965,9 +1925,6 @@ export function initMap(){
         map.setView(initialCityCenter, 13, { animate: false });
       }
 
-      applyInitialUrlView();
-
-      await loadNewInSearchIds();
       await loadPointsForCurrentView();
 
       // etiqueta inicial
