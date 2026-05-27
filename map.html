@@ -214,7 +214,6 @@
         <div class="topRow">
           <div class="topCell topCellLeft">
             <button id="toggleFiltersBtn" class="topToggleBtn" type="button">Ocultar filtros</button>
-            <button id="clearFiltersBtn" class="topToggleBtn clearFiltersBtn" type="button">Eliminar filtros</button>
           </div>
 
           <div class="topCell topCellCenter">
@@ -224,7 +223,6 @@
 
           <div class="topCell topCellRight">
             <div class="topRightTools">
-              <button id="saveSearchDesktopBtn" class="topToggleBtn saveSearchDesktopBtn" type="button">Guardar búsqueda</button>
               <button id="orderBtn" class="topToggleBtn" type="button">Ordenar por</button>
               <button id="toggleListBtn" class="topToggleBtn" type="button">Ocultar listado</button>
 
@@ -353,19 +351,6 @@
     </div>
     <div id="bhFooter" hidden style="display:none !important;"></div>
 
-    <div id="saveSearchAuthOverlay" class="saveSearchAuthOverlay" aria-hidden="true">
-      <div class="saveSearchAuthModal" role="dialog" aria-modal="true" aria-labelledby="saveSearchAuthTitle">
-        <button id="saveSearchAuthClose" class="saveSearchAuthClose" type="button" aria-label="Cerrar">×</button>
-        <div class="saveSearchAuthKicker">Búsquedas guardadas</div>
-        <h2 id="saveSearchAuthTitle" class="saveSearchAuthTitle">Inicia sesión para guardar búsquedas</h2>
-        <p class="saveSearchAuthText">Para guardar opciones de búsqueda necesitas acceder a tu cuenta. Así podrás recuperar tus filtros más adelante.</p>
-        <div class="saveSearchAuthActions">
-          <button id="saveSearchAuthLoginBtn" class="saveSearchAuthPrimary" type="button">Iniciar sesión para guardar búsquedas</button>
-          <button id="saveSearchAuthCancelBtn" class="saveSearchAuthSecondary" type="button">Ahora no</button>
-        </div>
-      </div>
-    </div>
-
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -380,6 +365,9 @@
       import { initFiltersBar } from "./bh-map-filters.js";
       import { initMap } from "./bh-map-core.js";
 
+      const initialUrlParams = new URL(window.location.href).searchParams;
+      window.__bhListOrder = initialUrlParams.get("order") || "date_desc";
+
       // Header / auth
       initLayout({ showMiniSearch: true });
       initAuth();
@@ -391,52 +379,12 @@
       const grid = document.getElementById("grid3");
       const btnFilters = document.getElementById("toggleFiltersBtn");
       const btnList = document.getElementById("toggleListBtn");
-      const btnClearFilters = document.getElementById("clearFiltersBtn");
-      const saveSearchDesktopBtn = document.getElementById("saveSearchDesktopBtn");
       const mobileFiltersBtn = document.getElementById("mobileFiltersBtn");
       const mobileListBtn = document.getElementById("mobileListBtn");
       const mobileFiltersCloseBtn = document.getElementById("mobileFiltersCloseBtn");
       const mobileListCloseBtn = document.getElementById("mobileListCloseBtn");
       const mobileOrderBtn = document.getElementById("mobileOrderBtn");
       const mobileOrderMenu = document.getElementById("mobileOrderMenu");
-      const orderBtn = document.getElementById("orderBtn");
-      const orderMenu = document.getElementById("orderMenu");
-      const saveSearchAuthOverlay = document.getElementById("saveSearchAuthOverlay");
-      const saveSearchAuthClose = document.getElementById("saveSearchAuthClose");
-      const saveSearchAuthCancelBtn = document.getElementById("saveSearchAuthCancelBtn");
-      const saveSearchAuthLoginBtn = document.getElementById("saveSearchAuthLoginBtn");
-
-      const initialUrlParams = new URLSearchParams(window.location.search);
-      const emailAlertOptions = {
-        isEmailAlert: initialUrlParams.get("source") === "email_alert",
-        savedSearchId: initialUrlParams.get("saved_search_id") || "",
-        order: initialUrlParams.get("order") || "date_desc",
-        view: initialUrlParams.get("view") || ""
-      };
-
-      function isMobileViewport() {
-        return window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
-      }
-
-      function applyEmailAlertLayout() {
-        if (!emailAlertOptions.isEmailAlert) return;
-
-        window.__bhListOrder = emailAlertOptions.order || "date_desc";
-
-        // Web: mapa + listado visibles.
-        grid.classList.remove("hideList");
-        grid.classList.remove("hideMap");
-
-        // Móvil: abrir directamente el listado.
-        if (isMobileViewport()) {
-          document.body.classList.remove("mobileFiltersOpen");
-          document.body.classList.add("mobileListOpen");
-        }
-
-        applyToggleTexts();
-        notifyLayoutResize();
-        window.dispatchEvent(new CustomEvent("bh:list-order-changed"));
-      }
 
       function closeMobilePanels() {
         document.body.classList.remove("mobileFiltersOpen");
@@ -459,60 +407,6 @@
         const listHidden = grid.classList.contains("hideList");
         btnFilters.textContent = filtersHidden ? "Mostrar filtros" : "Ocultar filtros";
         btnList.textContent = listHidden ? "Mostrar listado" : "Ocultar listado";
-        if (btnClearFilters) btnClearFilters.hidden = filtersHidden;
-        if (orderBtn) orderBtn.hidden = listHidden;
-        if (listHidden) closeOrderMenu();
-      }
-
-      function clearMapFilters() {
-        const paramsToRemove = [
-          "price_min", "price_max",
-          "since_days", "availability",
-          "useful_min", "useful_max",
-          "built_min", "built_max",
-          "bedrooms_min", "bathrooms_min",
-          "outdoor_type", "orientations", "energy",
-          "build_periods", "parking", "storage", "accessibility",
-          "quick"
-        ];
-        const url = new URL(window.location.href);
-        paramsToRemove.forEach((key) => url.searchParams.delete(key));
-        window.location.href = url.toString();
-      }
-
-      function userIsLoggedIn() {
-        return !!(window.BH_AUTH_SESSION?.user || document.body.classList.contains("bh-authenticated"));
-      }
-
-      function openSaveSearchAuthPrompt() {
-        if (!saveSearchAuthOverlay) return;
-        saveSearchAuthOverlay.classList.add("open");
-        saveSearchAuthOverlay.setAttribute("aria-hidden", "false");
-        document.body.classList.add("saveSearchAuthOpen");
-      }
-
-      function closeSaveSearchAuthPrompt() {
-        if (!saveSearchAuthOverlay) return;
-        saveSearchAuthOverlay.classList.remove("open");
-        saveSearchAuthOverlay.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("saveSearchAuthOpen");
-      }
-
-      function openLoginForSavedSearches() {
-        closeSaveSearchAuthPrompt();
-        const navLogin = document.getElementById("navLogin");
-        if (navLogin) navLogin.click();
-      }
-
-      function toggleDesktopSavedSearch() {
-        if (!saveSearchDesktopBtn) return;
-        if (!userIsLoggedIn()) {
-          openSaveSearchAuthPrompt();
-          return;
-        }
-        const saved = saveSearchDesktopBtn.classList.toggle("is-saved");
-        saveSearchDesktopBtn.textContent = saved ? "Búsqueda guardada" : "Guardar búsqueda";
-        saveSearchDesktopBtn.setAttribute("aria-pressed", saved ? "true" : "false");
       }
 
       function notifyLayoutResize() {
@@ -526,22 +420,9 @@
         notifyLayoutResize();
       });
 
-      btnClearFilters?.addEventListener("click", clearMapFilters);
-      saveSearchDesktopBtn?.addEventListener("click", toggleDesktopSavedSearch);
-      saveSearchAuthClose?.addEventListener("click", closeSaveSearchAuthPrompt);
-      saveSearchAuthCancelBtn?.addEventListener("click", closeSaveSearchAuthPrompt);
-      saveSearchAuthLoginBtn?.addEventListener("click", openLoginForSavedSearches);
-      saveSearchAuthOverlay?.addEventListener("click", (e) => {
-        if (e.target === saveSearchAuthOverlay) closeSaveSearchAuthPrompt();
-      });
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeSaveSearchAuthPrompt();
-      });
-
       btnList.addEventListener("click", () => {
         grid.classList.toggle("hideList");
-        applyToggleTexts();
-        notifyLayoutResize();
+          notifyLayoutResize();
       });
 
 
@@ -564,6 +445,9 @@
       applyToggleTexts();
 
       // Orden: escritorio + móvil
+      const orderBtn = document.getElementById("orderBtn");
+      const orderMenu = document.getElementById("orderMenu");
+
       function closeOrderMenu() {
         orderMenu.style.display = "none";
         orderMenu.setAttribute("aria-hidden", "true");
@@ -627,11 +511,23 @@
       // Inicializar mapa
       initMap();
 
-      // Enlaces procedentes de emails de alertas: filtros activos + orden reciente + listado abierto.
-      applyEmailAlertLayout();
-      window.addEventListener("resize", () => {
-        if (emailAlertOptions.isEmailAlert) applyEmailAlertLayout();
-      });
+      // Apertura desde email o búsqueda guardada:
+      // móvil -> abre listado; escritorio -> mantiene mapa + listado.
+      const isEmailAlertOpen = initialUrlParams.get("source") === "email_alert";
+      const shouldOpenListFromLink = isEmailAlertOpen && initialUrlParams.get("view") === "list";
+
+      if (shouldOpenListFromLink) {
+        grid.classList.remove("hideList");
+        grid.classList.remove("hideMap");
+        applyToggleTexts();
+
+        setTimeout(() => {
+          if (window.matchMedia && window.matchMedia("(max-width: 768px)").matches) {
+            openMobileList();
+          }
+          notifyLayoutResize();
+        }, 250);
+      }
 
       // ====== Mobile search header: sync place label + actions ======
       const mobilePlaceLabel = document.getElementById("mobilePlaceLabel");
@@ -663,10 +559,6 @@
       });
 
       mobileSaveSearchBtn?.addEventListener("click", () => {
-        if (!userIsLoggedIn()) {
-          openSaveSearchAuthPrompt();
-          return;
-        }
         const saved = mobileSaveSearchBtn.classList.toggle("is-saved");
         mobileSaveSearchBtn.setAttribute(
           "aria-label",

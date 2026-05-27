@@ -2139,9 +2139,7 @@ body{
 
 /* Botones superiores — alineados al branding Homyo (granate / dorado, 3.5px) */
 #toggleFiltersBtn,
-#clearFiltersBtn,
 #orderBtn,
-#saveSearchDesktopBtn,
 #toggleListBtn{
   height: 36px !important;
   padding: 0 16px !important;
@@ -2160,9 +2158,7 @@ body{
 }
 
 #toggleFiltersBtn:hover,
-#clearFiltersBtn:hover,
 #orderBtn:hover,
-#saveSearchDesktopBtn:hover,
 #toggleListBtn:hover{
   border-color: rgba(196,150,42,0.55) !important;
   background: rgba(196,150,42,0.045) !important;
@@ -2180,37 +2176,6 @@ body{
     calc(100% - 9px) 51% !important;
   background-size: 5px 5px, 5px 5px !important;
   background-repeat: no-repeat !important;
-}
-
-
-#clearFiltersBtn[hidden]{
-  display:none !important;
-}
-
-.topCellLeft{
-  gap:10px !important;
-}
-
-#saveSearchDesktopBtn{
-  border-color:rgba(196,150,42,0.55) !important;
-  background:rgba(196,150,42,0.08) !important;
-  color:var(--bh-granate) !important;
-  box-shadow:0 2px 8px rgba(196,150,42,0.10) !important;
-}
-
-#saveSearchDesktopBtn:hover,
-#saveSearchDesktopBtn.is-saved{
-  border-color:rgba(196,150,42,0.85) !important;
-  background:rgba(196,150,42,0.18) !important;
-  color:var(--bh-granate) !important;
-  box-shadow:0 4px 14px rgba(196,150,42,0.16) !important;
-}
-
-@media (max-width:768px){
-  #clearFiltersBtn,
-  #saveSearchDesktopBtn{
-    display:none !important;
-  }
 }
 
 .orderMenu{
@@ -2559,18 +2524,15 @@ body{
 }
 
 
-/* =====================================================================
-   BADGES NUEVO / NUEVO EN TU BÚSQUEDA
-   ===================================================================== */
-
+/* ===== HOMYO LISTING BADGES: NUEVO / NUEVO EN TU BÚSQUEDA ===== */
 .listMediaWrap{
-  position: relative !important;
-  width: 100px !important;
-  height: 88px !important;
-  border-radius: 3.5px !important;
-  overflow: hidden !important;
-  flex: 0 0 auto !important;
-  background: #f5f1ea !important;
+  position: relative;
+  width: 92px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f1f2f4;
+  flex: 0 0 92px;
 }
 
 .listMediaWrap .listImg,
@@ -2580,68 +2542,41 @@ body{
   border-radius: 0 !important;
 }
 
-.listBadge,
-.listGalleryBadge{
+.listBadge{
   position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 5;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  max-width: calc(100% - 16px);
-  min-height: 18px;
+  top: 7px;
+  left: 7px;
+  z-index: 3;
+  max-width: calc(100% - 14px);
   padding: 4px 7px;
-  border-radius: 3.5px;
+  border-radius: 999px;
   font-family: 'Raleway','Montserrat',system-ui,sans-serif;
   font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: .08em;
   line-height: 1;
+  letter-spacing: .07em;
   text-transform: uppercase;
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(29,26,23,0.16);
-  pointer-events: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 5px 14px rgba(0,0,0,0.16);
 }
 
-.listBadge-general,
-.listGalleryBadge-general,
-.badgeNew-general{
-  background: var(--bh-dorado, #C4962A) !important;
-  color: #FFFDFA !important;
+.listBadge-general{
+  background: #E2B84C;
+  color: #FFFDFA;
 }
 
-.listBadge-search,
-.listGalleryBadge-search,
-.badgeNew-search{
-  background: var(--bh-granate, #8C1F2D) !important;
-  color: #FFFDFA !important;
+.listBadge-search{
+  background: #8C1F2D;
+  color: #FFFDFA;
 }
 
-.listGalleryBadge{
-  top: 10px;
-  left: 10px;
-  min-height: 22px;
-  padding: 5px 10px;
-  font-size: 10.5px;
-}
-
-.badgeNew{
-  max-width: calc(100% - 20px);
-  white-space: nowrap;
-}
-
-@media (max-width: 768px){
-  .listMediaWrap{
-    width: 110px !important;
-    height: 96px !important;
-  }
-
+@media (max-width:768px){
   .listBadge{
     top: 7px;
     left: 7px;
-    padding: 4px 6px;
-    font-size: 8.8px;
-    letter-spacing: .06em;
+    padding: 4px 7px;
+    font-size: 9px;
   }
 }

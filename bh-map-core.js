@@ -1,3 +1,5 @@
+import { supabase } from "./bh-user-data.js";
+
 /*
   bh-map-core.js
 
@@ -110,81 +112,6 @@ export function initMap(){
     return diff >= 0 && diff <= days * 24 * 60 * 60 * 1000;
   }
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const savedSearchIdFromUrl = (urlParams.get("saved_search_id") || "").trim();
-  const sourceFromUrl = (urlParams.get("source") || "").trim();
-  const hasSavedSearchContext =
-    !!savedSearchIdFromUrl &&
-    (sourceFromUrl === "email_alert" || sourceFromUrl === "saved_search");
-
-  const NEW_IN_SEARCH_DAYS = 1;
-  const GENERAL_NEW_DAYS = 3;
-
-  let newInSearchIds = new Set();
-
-  async function loadNewInSearchIds(){
-    if (!hasSavedSearchContext) return;
-
-    try {
-      const since = new Date(Date.now() - NEW_IN_SEARCH_DAYS * 24 * 60 * 60 * 1000).toISOString();
-
-      const url =
-        `${SUPABASE_URL}/rest/v1/saved_search_matches` +
-        `?select=listing_id` +
-        `&saved_search_id=eq.${encodeURIComponent(savedSearchIdFromUrl)}` +
-        `&matched_at=gte.${encodeURIComponent(since)}`;
-
-      const res = await fetch(url, {
-        method: "GET",
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`
-        }
-      });
-
-      if (!res.ok) {
-        console.warn("No se pudieron cargar los anuncios nuevos en la búsqueda", await res.text());
-        return;
-      }
-
-      const rows = await res.json();
-      newInSearchIds = new Set((rows || []).map((r) => String(r.listing_id)));
-      window.__BH_NEW_IN_SEARCH_IDS = newInSearchIds;
-    } catch (e) {
-      console.warn("Error cargando nuevos en búsqueda", e);
-    }
-  }
-
-  function getListingBadge(p){
-    const id = String(p?.listing_id || "");
-
-    if (id && newInSearchIds.has(id)) {
-      return {
-        text: "Nuevo en tu búsqueda",
-        type: "search"
-      };
-    }
-
-    if (isRecent(p?.listed_at, GENERAL_NEW_DAYS)) {
-      return {
-        text: "Nuevo",
-        type: "general"
-      };
-    }
-
-    return null;
-  }
-
-  function appendListingBadge(parent, p, className = "listBadge"){
-    const badge = getListingBadge(p);
-    if (!badge) return;
-
-    const el = document.createElement("div");
-    el.className = `${className} ${className}-${badge.type}`;
-    el.textContent = badge.text;
-    parent.appendChild(el);
-  }
-
   function iconArea() {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>';
   }
@@ -260,15 +187,7 @@ export function initMap(){
 
     setPhoto(p.main_photo_url || null);
 
-    const cardBadge = getListingBadge(p);
-    if (cardBadge) {
-      badgeNewEl.textContent = cardBadge.text;
-      badgeNewEl.classList.remove("badgeNew-general", "badgeNew-search");
-      badgeNewEl.classList.add(`badgeNew-${cardBadge.type}`);
-      badgeNewEl.style.display = "inline-flex";
-    } else {
-      badgeNewEl.style.display = "none";
-    }
+    badgeNewEl.style.display = isRecent(p.listed_at, 14) ? "inline-flex" : "none";
 
     const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
     const type = p.property_type ? String(p.property_type) : "—";
@@ -340,6 +259,77 @@ export function initMap(){
   }
 
   const initialParams = getParams();
+
+  const urlParamsForBadges = new URL(window.location.href).searchParams;
+  const savedSearchIdForBadges = urlParamsForBadges.get("saved_search_id") || "";
+  const sourceForBadges = urlParamsForBadges.get("source") || "";
+  const hasSavedSearchBadgeContext = Boolean(savedSearchIdForBadges) && (
+    sourceForBadges === "email_alert" ||
+    sourceForBadges === "saved_search"
+  );
+
+  const newInSearchIds = new Set();
+
+  async function loadNewInSearchIds(){
+    newInSearchIds.clear();
+
+    if (!hasSavedSearchBadgeContext) return;
+
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+    try {
+      const { data, error } = await supabase
+        .from("saved_search_matches")
+        .select("listing_id")
+        .eq("saved_search_id", savedSearchIdForBadges)
+        .gte("matched_at", since);
+
+      if (error) throw error;
+
+      (data || []).forEach((row) => {
+        if (row?.listing_id) newInSearchIds.add(String(row.listing_id));
+      });
+    } catch (e) {
+      console.warn("No se pudieron cargar las etiquetas de búsqueda guardada", e);
+    }
+  }
+
+  function getListingBadge(p){
+    const id = String(p?.listing_id || "");
+
+    if (hasSavedSearchBadgeContext && id && newInSearchIds.has(id)) {
+      return { text: "Nuevo en tu búsqueda", type: "search" };
+    }
+
+    if (isRecent(p?.listed_at, 3)) {
+      return { text: "Nuevo", type: "general" };
+    }
+
+    return null;
+  }
+
+  function createListBadge(p){
+    const badge = getListingBadge(p);
+    if (!badge) return null;
+
+    const el = document.createElement("div");
+    el.className = `listBadge listBadge-${badge.type}`;
+    el.textContent = badge.text;
+    return el;
+  }
+
+  function createListMediaWrap(p, img, ph){
+    const mediaWrap = document.createElement("div");
+    mediaWrap.className = "listMediaWrap";
+
+    if (img) mediaWrap.appendChild(img);
+    else mediaWrap.appendChild(ph);
+
+    const badge = createListBadge(p);
+    if (badge) mediaWrap.appendChild(badge);
+
+    return mediaWrap;
+  }
 
   let map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
   window.__bhMap = map;
@@ -1023,9 +1013,7 @@ export function initMap(){
       ph.className = "listImgPh";
       ph.textContent = "Foto";
 
-      const left = document.createElement("div");
-      if (img) left.appendChild(img);
-      else left.appendChild(ph);
+      const left = createListMediaWrap(p, img, ph);
 
       const title = document.createElement("div");
       title.className = "listTitle";
@@ -1117,7 +1105,8 @@ export function initMap(){
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
       try {
-        await loadPointsForCurrentView();
+        await loadNewInSearchIds();
+      await loadPointsForCurrentView();
       } catch (e) {
         const msg = (e && e.message) ? e.message : String(e);
         setStatus(`Error: ${msg}`);
@@ -1920,8 +1909,6 @@ export function initMap(){
     try {
       wireHeaderMiniSearch();
       wireHeaderNav();
-
-      await loadNewInSearchIds();
 
       let initialCityCenter = null;
 
