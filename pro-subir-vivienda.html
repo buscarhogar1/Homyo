@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Subir vivienda · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      /* Stepper */
+      .wzStepper{ display:flex; gap:0; border:1px solid var(--line); border-radius:var(--rad); background:#fff; overflow:hidden; margin-bottom:26px; }
+      .wzStep{ flex:1 1 0; padding:14px 12px; display:flex; align-items:center; gap:11px; border-right:1px solid var(--line); position:relative; cursor:pointer; min-width:0; transition:background .15s ease; }
+      .wzStep:last-child{ border-right:none; }
+      .wzStep:hover{ background:var(--bg); }
+      .wzStep .n{ width:28px; height:28px; flex:0 0 auto; border-radius:50%; border:1px solid var(--line); display:grid; place-items:center; font-family:'Raleway',sans-serif; font-size:12.5px; font-weight:600; color:var(--muted); background:#fff; }
+      .wzStep .t{ font-family:'Raleway',sans-serif; font-size:12px; font-weight:600; color:var(--ink2); line-height:1.2; min-width:0; }
+      .wzStep .t .s{ display:block; font-size:9.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:1px; }
+      .wzStep.active .n{ background:var(--granate); border-color:var(--granate); color:#fff; }
+      .wzStep.active .t{ color:var(--granate); }
+      .wzStep.active::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background:var(--granate); }
+      .wzStep.done .n{ background:var(--dorado); border-color:var(--dorado); color:#fff; }
+      @media (max-width:900px){ .wzStepper{ overflow-x:auto; } .wzStep{ min-width:160px; } }
+
+      .wzPanel{ display:none; }
+      .wzPanel.active{ display:block; }
+      .opCards{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+      @media (max-width:560px){ .opCards{ grid-template-columns:1fr; } }
+      .opCard{ position:relative; border:1px solid var(--line); border-radius:var(--rad); padding:18px 20px 18px 46px; cursor:pointer; background:#fff; transition:all .15s ease; }
+      .opCard:hover{ border-color:var(--granateSoft); }
+      .opCard input{ position:absolute; left:18px; top:20px; accent-color:var(--granate); }
+      .opCard h4{ margin:0 0 3px; font-family:'Raleway',sans-serif; font-size:15px; font-weight:600; color:var(--ink); }
+      .opCard p{ margin:0; font-size:12.5px; color:var(--muted); line-height:1.4; }
+      .opCard.isOn{ border-color:var(--granate); background:linear-gradient(180deg,#fff,var(--cardWarm)); }
+
+      /* Dropzone */
+      .dropzone{ border:1.5px dashed var(--line); border-radius:var(--rad); background:linear-gradient(180deg,#fff,var(--bg)); padding:38px 28px; text-align:center; cursor:pointer; transition:all .16s ease; }
+      .dropzone:hover{ border-color:var(--granateSoft); background:var(--cardWarm); }
+      .dropzone.filled{ border-style:solid; border-color:rgba(31,122,76,.4); background:var(--goodSoft); }
+      .dzIc{ width:58px; height:58px; margin:0 auto 16px; border-radius:50%; background:var(--cardWarm); border:1px solid rgba(196,150,42,.3); color:var(--granate); display:grid; place-items:center; }
+      .dropzone.filled .dzIc{ background:#fff; color:var(--good); border-color:rgba(31,122,76,.3); }
+      .dzIc svg{ width:26px; height:26px; }
+      .dropzone h4{ margin:0 0 6px; font-family:'Raleway',sans-serif; font-size:17px; font-weight:500; color:var(--ink); }
+      .dropzone p{ margin:0 auto; max-width:380px; font-size:13px; color:var(--muted); line-height:1.5; }
+
+      /* Photo grid */
+      .photoGrid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+      @media (max-width:760px){ .photoGrid{ grid-template-columns:repeat(2,1fr); } }
+      .photoSlot{ position:relative; aspect-ratio:4/3; border:1px dashed var(--line); border-radius:var(--rad); background:repeating-linear-gradient(45deg,#fff,#fff 9px,var(--bg) 9px,var(--bg) 18px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; transition:all .15s ease; padding:10px; text-align:center; }
+      .photoSlot:hover{ border-color:var(--granateSoft); }
+      .photoSlot.filled{ border-style:solid; border-color:rgba(31,122,76,.4); background:var(--goodSoft); }
+      .photoSlot .pn{ font-family:'Raleway',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+      .photoSlot.filled .pn{ color:var(--good); }
+      .photoSlot .order{ position:absolute; top:7px; left:7px; width:20px; height:20px; border-radius:50%; background:#fff; border:1px solid var(--line); font-family:'Raleway',sans-serif; font-size:11px; font-weight:600; color:var(--muted); display:grid; place-items:center; }
+      .photoSlot.filled .order{ background:var(--good); color:#fff; border-color:var(--good); }
+      .photoSlot svg{ width:22px; height:22px; color:var(--muted); }
+      .photoSlot.filled svg{ color:var(--good); }
+
+      .descBlock{ margin-bottom:18px; }
+      .descBlock .bh{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:7px; }
+      .descBlock .bh .bt{ font-family:'Raleway',sans-serif; font-size:13px; font-weight:600; color:var(--ink); letter-spacing:.02em; }
+      .descBlock .bh .cnt{ font-size:11px; color:var(--muted); }
+
+      /* Checklist */
+      .ckList{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--rad); overflow:hidden; }
+      .ckList li{ display:flex; align-items:center; gap:14px; padding:15px 18px; background:#fff; }
+      .ckBox{ width:24px; height:24px; flex:0 0 auto; border-radius:50%; display:grid; place-items:center; }
+      .ckBox svg{ width:14px; height:14px; }
+      .ck-ok .ckBox{ background:var(--goodSoft); color:var(--good); }
+      .ck-block .ckBox{ background:var(--dangerSoft); color:var(--danger); }
+      .ckBody{ flex:1 1 auto; min-width:0; }
+      .ckBody h5{ margin:0 0 1px; font-family:'Raleway',sans-serif; font-size:14px; font-weight:600; color:var(--ink); }
+      .ckBody p{ margin:0; font-size:12.5px; color:var(--muted); }
+      .ckTag{ font-family:'Raleway',sans-serif; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; padding:4px 8px; border-radius:3px; }
+      .ck-ok .ckTag{ background:var(--goodSoft); color:var(--good); }
+      .ck-block .ckTag{ background:var(--dangerSoft); color:var(--danger); }
+
+      .wzFoot{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:24px; padding-top:22px; border-top:1px solid var(--lineSoft); flex-wrap:wrap; }
+      .wzFoot .hint{ font-size:12.5px; color:var(--muted); }
+      .wzFoot .btns{ display:flex; gap:10px; }
+      .valBadge{ display:inline-flex; align-items:center; gap:7px; font-family:'Raleway',sans-serif; font-size:11px; font-weight:600; letter-spacing:.06em; padding:6px 12px; border-radius:999px; }
+    </style>
+  </head>
+  <body>
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="kicker">Asistente de publicación</p>
+              <h1 class="pageTitle">Subir <strong>vivienda</strong></h1>
+              <p class="pageLede">Te guiamos paso a paso. Una vivienda solo se publica cuando cumple el estándar de calidad de Homyo: plano, superficies, fotos y certificado.</p>
+            </div>
+            <div class="pageHeadActions">
+              <a class="btn ghost" href="pro-viviendas.html">Guardar borrador</a>
+            </div>
+          </div>
+
+          <!-- STEPPER -->
+          <div class="wzStepper" id="wzStepper">
+            <div class="wzStep active" data-step="1"><span class="n">1</span><span class="t"><span class="s">Paso 1</span>Identificación</span></div>
+            <div class="wzStep" data-step="2"><span class="n">2</span><span class="t"><span class="s">Paso 2</span>Datos principales</span></div>
+            <div class="wzStep" data-step="3"><span class="n">3</span><span class="t"><span class="s">Paso 3</span>Plano</span></div>
+            <div class="wzStep" data-step="4"><span class="n">4</span><span class="t"><span class="s">Paso 4</span>Fotografías</span></div>
+            <div class="wzStep" data-step="5"><span class="n">5</span><span class="t"><span class="s">Paso 5</span>Certificado</span></div>
+            <div class="wzStep" data-step="6"><span class="n">6</span><span class="t"><span class="s">Paso 6</span>Descripción</span></div>
+            <div class="wzStep" data-step="7"><span class="n">7</span><span class="t"><span class="s">Paso 7</span>Revisión</span></div>
+          </div>
+
+          <!-- STEP 1 -->
+          <section class="wzPanel active card" data-panel="1">
+            <p class="cardLabel">Paso 1 · Identificación</p>
+            <h2 class="cardTitle">Identifica la vivienda</h2>
+            <p class="muted" style="margin:0 0 22px; font-size:14px; line-height:1.55;">Empezamos por la referencia catastral. Nos permite validar la vivienda y evitar anuncios duplicados.</p>
+            <div class="formGrid">
+              <div class="field full">
+                <label class="fieldLabel">Referencia catastral <span class="req">obligatorio</span></label>
+                <div style="display:flex; gap:10px; align-items:flex-start;">
+                  <input class="input" id="catastral" placeholder="20 caracteres (ej. 9872023VH5797S0001WX)" maxlength="20" style="flex:1 1 auto;" />
+                  <button type="button" class="btn ghost" id="valBtn" style="flex:0 0 auto;">Validar</button>
+                </div>
+                <span id="valResult" class="hide"></span>
+                <p class="fieldHint">¿No la tienes? La encuentras en el recibo del IBI o en la <a href="#">Sede del Catastro</a>.</p>
+              </div>
+              <div class="field full"><label class="fieldLabel">Dirección <span class="req">obligatorio</span></label><input class="input" placeholder="Calle, número, piso, puerta" /></div>
+              <div class="field"><label class="fieldLabel">Municipio <span class="req">obligatorio</span></label><input class="input" placeholder="Madrid" /></div>
+              <div class="field"><label class="fieldLabel">Barrio o zona <span class="req">obligatorio</span></label><input class="input" placeholder="Chamberí" /></div>
+              <div class="field">
+                <label class="fieldLabel">Tipo de operación <span class="req">obligatorio</span></label>
+                <div class="opCards" style="margin-top:2px;">
+                  <label class="opCard isOn"><input type="radio" name="op" checked /><h4>Venta</h4><p>Precio de venta del inmueble</p></label>
+                  <label class="opCard"><input type="radio" name="op" /><h4>Alquiler</h4><p>Renta mensual</p></label>
+                </div>
+              </div>
+              <div class="field"><label class="fieldLabel">Tipo de inmueble <span class="req">obligatorio</span></label>
+                <select class="input"><option value="">Selecciona…</option><option>Piso</option><option>Ático</option><option>Dúplex</option><option>Estudio</option><option>Casa o chalet</option><option>Casa adosada</option><option>Local</option><option>Garaje</option></select>
+              </div>
+            </div>
+            <div class="wzFoot">
+              <span class="hint">El borrador se guarda automáticamente.</span>
+              <div class="btns"><a class="btn ghost" href="pro-viviendas.html">Cancelar</a><button type="button" class="btn primary" data-go="2">Continuar</button></div>
+            </div>
+          </section>
+
+          <!-- STEP 2 -->
+          <section class="wzPanel card" data-panel="2">
+            <p class="cardLabel">Paso 2 · Datos principales</p>
+            <h2 class="cardTitle">Datos principales</h2>
+            <p class="muted" style="margin:0 0 22px; font-size:14px; line-height:1.55;">La superficie útil interior y la exterior se declaran por separado. Es uno de los compromisos de claridad de Homyo.</p>
+            <div class="formGrid">
+              <div class="field"><label class="fieldLabel">Precio <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">€</span><input class="input" type="text" placeholder="485.000" /></div></div>
+              <div class="field"><label class="fieldLabel">Estado de conservación <span class="req">obligatorio</span></label><select class="input"><option value="">Selecciona…</option><option>Obra nueva</option><option>Reformado</option><option>Buen estado</option><option>A reformar</option></select></div>
+              <div class="field"><label class="fieldLabel">Superficie útil interior <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">m²</span><input class="input" type="number" placeholder="92" /></div><p class="fieldHint">Solo el interior habitable. No sumes terraza ni exterior aquí.</p></div>
+              <div class="field"><label class="fieldLabel">Superficie exterior <span class="opt">(declarada aparte)</span></label><div class="inputCombo"><span class="prefix">m²</span><input class="input" type="number" placeholder="14" /></div><p class="fieldHint">Terraza, balcón o patio. Se muestra por separado en el anuncio.</p></div>
+              <div class="field"><label class="fieldLabel">Dormitorios <span class="req">obligatorio</span></label><input class="input" type="number" placeholder="3" /></div>
+              <div class="field"><label class="fieldLabel">Baños <span class="req">obligatorio</span></label><input class="input" type="number" placeholder="2" /></div>
+              <div class="field"><label class="fieldLabel">Año de construcción <span class="opt">(opcional)</span></label><input class="input" type="number" placeholder="1978" /></div>
+              <div class="field"><label class="fieldLabel">Planta <span class="opt">(opcional)</span></label><input class="input" placeholder="4ª" /></div>
+              <div class="field"><label class="fieldLabel">Ascensor <span class="req">obligatorio</span></label><select class="input"><option value="">Selecciona…</option><option>Sí</option><option>No</option></select></div>
+            </div>
+            <div class="wzFoot">
+              <span class="hint">Superficie útil ≠ superficie construida. Declara la útil interior.</span>
+              <div class="btns"><button type="button" class="btn ghost" data-go="1">Volver</button><button type="button" class="btn primary" data-go="3">Continuar</button></div>
+            </div>
+          </section>
+
+          <!-- STEP 3 -->
+          <section class="wzPanel card" data-panel="3">
+            <p class="cardLabel">Paso 3 · Plano</p>
+            <h2 class="cardTitle">Plano en planta <span style="font-size:13px; color:var(--granate); font-weight:600; letter-spacing:.02em;">· obligatorio</span></h2>
+            <div class="callout" style="margin-bottom:20px;">
+              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
+              <div><h4>El plano es obligatorio para publicar</h4><p>Sube el plano en planta de la vivienda. Debe seguir el estándar visual de Homyo: planta limpia, orientación marcada y superficies coherentes con las declaradas. Si no tienes plano, podemos generarlo a partir de tus medidas.</p></div>
+            </div>
+            <div class="dropzone" id="dzPlano">
+              <div class="dzIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg></div>
+              <h4>Arrastra el plano o haz clic para subir</h4>
+              <p>PDF, PNG o JPG · hasta 12 MB · mínimo 1.200 px de ancho</p>
+            </div>
+            <div id="planoVal" class="hide" style="margin-top:16px;"></div>
+            <div class="wzFoot">
+              <span class="hint">¿No tienes plano? <a href="pro-soporte.html" style="color:var(--granate);">Consulta la guía del plano obligatorio</a>.</span>
+              <div class="btns"><button type="button" class="btn ghost" data-go="2">Volver</button><button type="button" class="btn primary" data-go="4">Continuar</button></div>
+            </div>
+          </section>
+
+          <!-- STEP 4 -->
+          <section class="wzPanel card" data-panel="4">
+            <p class="cardLabel">Paso 4 · Fotografías</p>
+            <h2 class="cardTitle">Reportaje fotográfico</h2>
+            <p class="muted" style="margin:0 0 18px; font-size:14px; line-height:1.55;">Mínimo 6 fotografías en este orden recomendado. Imágenes nítidas, horizontales y bien iluminadas. La primera será la foto principal del anuncio.</p>
+            <div class="spread" style="margin-bottom:14px;">
+              <span class="pill gold" id="photoCount">0 / 6 mínimas</span>
+              <span class="muted" style="font-size:12.5px;">Calidad mínima: 1.600 px · horizontal</span>
+            </div>
+            <div class="photoGrid" id="photoGrid">
+              <div class="photoSlot" data-photo><span class="order">1</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg><span class="pn">Fachada / exterior</span></div>
+              <div class="photoSlot" data-photo><span class="order">2</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 14h18"/></svg><span class="pn">Salón</span></div>
+              <div class="photoSlot" data-photo><span class="order">3</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 9v12"/></svg><span class="pn">Cocina</span></div>
+              <div class="photoSlot" data-photo><span class="order">4</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18h18M5 10V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/></svg><span class="pn">Dormitorios</span></div>
+              <div class="photoSlot" data-photo><span class="order">5</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 12V5a2 2 0 0 1 2-2c1 0 2 .8 2 2"/><path d="M4 12h16v2a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M7 22l1-2M17 22l-1-2"/></svg><span class="pn">Baños</span></div>
+              <div class="photoSlot" data-photo><span class="order">6</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21h18M5 21V8h14v13M9 21v-6h6v6"/></svg><span class="pn">Terraza / exterior</span></div>
+              <div class="photoSlot" data-photo><span class="order">+</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg><span class="pn">Más fotos</span></div>
+              <div class="photoSlot" data-photo><span class="order">+</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg><span class="pn">Más fotos</span></div>
+            </div>
+            <div class="wzFoot">
+              <span class="hint">Evita marcas de agua, collages o fotos de portales. <a href="pro-soporte.html" style="color:var(--granate);">Ver estándar fotográfico</a>.</span>
+              <div class="btns"><button type="button" class="btn ghost" data-go="3">Volver</button><button type="button" class="btn primary" data-go="5">Continuar</button></div>
+            </div>
+          </section>
+
+          <!-- STEP 5 -->
+          <section class="wzPanel card" data-panel="5">
+            <p class="cardLabel">Paso 5 · Certificación energética</p>
+            <h2 class="cardTitle">Certificado energético</h2>
+            <p class="muted" style="margin:0 0 20px; font-size:14px; line-height:1.55;">Es obligatorio por ley para anunciar una vivienda. Sube el certificado o, si está en trámite, márcalo dentro de la ventana temporal permitida.</p>
+            <div class="formGrid" style="margin-bottom:18px;">
+              <div class="field"><label class="fieldLabel">Letra de consumo <span class="req">obligatorio</span></label><select class="input"><option value="">—</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>En trámite</option></select></div>
+              <div class="field"><label class="fieldLabel">Letra de emisiones <span class="req">obligatorio</span></label><select class="input"><option value="">—</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>En trámite</option></select></div>
+            </div>
+            <div class="dropzone" id="dzCert">
+              <div class="dzIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 14l2 2 4-4"/></svg></div>
+              <h4>Sube el certificado energético</h4>
+              <p>PDF emitido por el técnico certificador</p>
+            </div>
+            <label class="checkRow" id="enTramite" style="margin-top:18px; padding:14px 16px; border:1px solid var(--line); border-radius:var(--rad); background:var(--bg);">
+              <input type="checkbox" id="tramiteCheck" /> <span><strong>El certificado está en trámite.</strong> Dispones de <strong>15 días</strong> desde la publicación para aportarlo. Pasado ese plazo, la vivienda se despublica automáticamente.</span>
+            </label>
+            <div class="wzFoot">
+              <span class="hint">Homyo solo permite "en trámite" durante una ventana temporal limitada.</span>
+              <div class="btns"><button type="button" class="btn ghost" data-go="4">Volver</button><button type="button" class="btn primary" data-go="6">Continuar</button></div>
+            </div>
+          </section>
+
+          <!-- STEP 6 -->
+          <section class="wzPanel card" data-panel="6">
+            <p class="cardLabel">Paso 6 · Descripción</p>
+            <h2 class="cardTitle">Descripción estructurada</h2>
+            <p class="muted" style="margin:0 0 22px; font-size:14px; line-height:1.55;">Nada de un texto único. Divide la información en bloques para que el comprador encuentre lo que busca de un vistazo.</p>
+            <div class="descBlock"><div class="bh"><span class="bt">Resumen de la vivienda</span><span class="cnt">recomendado · 280 car.</span></div><textarea class="input" placeholder="Piso exterior reformado en Chamberí, muy luminoso, en finca con ascensor…"></textarea></div>
+            <div class="descBlock"><div class="bh"><span class="bt">Distribución</span><span class="cnt">opcional</span></div><textarea class="input" placeholder="Salón-comedor, cocina independiente, 3 dormitorios (1 suite), 2 baños…"></textarea></div>
+            <div class="descBlock"><div class="bh"><span class="bt">Estado y calidades</span><span class="cnt">opcional</span></div><textarea class="input" placeholder="Reforma integral de 2023, suelo de roble, ventanas de climalit, A/A…"></textarea></div>
+            <div class="descBlock"><div class="bh"><span class="bt">Entorno</span><span class="cnt">opcional</span></div><textarea class="input" placeholder="A 3 min del metro Iglesia, zona de comercios, colegios y zonas verdes…"></textarea></div>
+            <div class="descBlock" style="margin-bottom:0;"><div class="bh"><span class="bt">Información adicional</span><span class="cnt">opcional</span></div><textarea class="input" placeholder="Gastos de comunidad, orientación, plaza de garaje opcional…"></textarea></div>
+            <div class="wzFoot">
+              <span class="hint">Texto claro y honesto. Sin mayúsculas sostenidas ni datos de contacto en la descripción.</span>
+              <div class="btns"><button type="button" class="btn ghost" data-go="5">Volver</button><button type="button" class="btn primary" data-go="7">Continuar</button></div>
+            </div>
+          </section>
+
+          <!-- STEP 7 -->
+          <section class="wzPanel card" data-panel="7">
+            <p class="cardLabel">Paso 7 · Revisión final</p>
+            <h2 class="cardTitle">Revisión antes de publicar</h2>
+            <p class="muted" style="margin:0 0 22px; font-size:14px; line-height:1.55;">Homyo prioriza calidad y claridad. Si falta algún requisito bloqueante, la vivienda no se puede publicar todavía.</p>
+            <ul class="ckList">
+              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Precio definido</h5><p>485.000 €</p></div><span class="ckTag">Correcto</span></li>
+              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Superficie útil interior declarada</h5><p>92 m² útiles interiores</p></div><span class="ckTag">Correcto</span></li>
+              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Superficie exterior separada</h5><p>14 m² de terraza, declarados aparte</p></div><span class="ckTag">Correcto</span></li>
+              <li class="ck-block" id="ckPlano"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg></span><div class="ckBody"><h5>Plano en planta</h5><p>Bloqueante: aún no has subido el plano</p></div><span class="ckTag">Bloqueante</span></li>
+              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Fotografías mínimas</h5><p>6 fotografías en el orden recomendado</p></div><span class="ckTag">Correcto</span></li>
+              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Certificado energético</h5><p>Aportado · letra E</p></div><span class="ckTag">Correcto</span></li>
+              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Descripción estructurada</h5><p>Resumen y distribución completos</p></div><span class="ckTag">Correcto</span></li>
+              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Referencia catastral validada</h5><p>9872023VH5797S0001WX · sin duplicados</p></div><span class="ckTag">Correcto</span></li>
+            </ul>
+            <label class="checkRow" style="margin-top:18px;"><input type="checkbox" id="dispoCheck" /> Confirmo que la vivienda está <strong>disponible</strong> y que los datos son veraces.</label>
+            <div class="callout dangerc" id="blockNote" style="margin-top:18px;">
+              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></span>
+              <div><h4>No se puede publicar todavía</h4><p>Falta 1 requisito bloqueante: el plano en planta. Vuelve al paso 3 para subirlo. (Pulsa "Marcar plano subido" para simular que lo añades.)</p></div>
+              <button type="button" class="btn ghost sm cAct" id="fakePlano">Marcar plano subido</button>
+            </div>
+            <div class="wzFoot">
+              <span class="hint" id="footHint">1 requisito bloqueante pendiente.</span>
+              <div class="btns"><button type="button" class="btn ghost" data-go="6">Volver</button><button type="button" class="btn primary" id="publishBtn" disabled>Enviar a revisión</button></div>
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.PRO_PAGE = { active: "subir", title: "Subir vivienda", crumb: "Viviendas · Nueva publicación" };
+    </script>
+    <script src="pro-shell.js"></script>
+    <script>
+      var steps = document.querySelectorAll(".wzStep");
+      var panels = document.querySelectorAll(".wzPanel");
+      function goStep(n) {
+        steps.forEach(function (s) {
+          var sn = +s.getAttribute("data-step");
+          s.classList.toggle("active", sn === n);
+          s.classList.toggle("done", sn < n);
+        });
+        panels.forEach(function (p) { p.classList.toggle("active", +p.getAttribute("data-panel") === n); });
+        document.querySelector(".proMain").scrollIntoView({ block: "start" });
+        window.scrollTo(0, 0);
+      }
+      document.querySelectorAll("[data-go]").forEach(function (b) {
+        b.addEventListener("click", function () { goStep(+b.getAttribute("data-go")); });
+      });
+      steps.forEach(function (s) { s.addEventListener("click", function () { goStep(+s.getAttribute("data-step")); }); });
+
+      // catastral validation
+      document.getElementById("valBtn").addEventListener("click", function () {
+        var r = document.getElementById("valResult");
+        r.classList.remove("hide");
+        r.className = "valBadge"; r.style.marginTop = "10px";
+        r.style.background = "var(--goodSoft)"; r.style.color = "var(--good)";
+        r.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Referencia válida · sin duplicados en Homyo';
+        r.style.display = "inline-flex"; r.style.alignItems = "center"; r.style.gap = "7px";
+      });
+
+      // operation cards
+      document.querySelectorAll(".opCard").forEach(function (c) {
+        c.addEventListener("click", function () {
+          c.parentElement.querySelectorAll(".opCard").forEach(function (x) { x.classList.remove("isOn"); });
+          c.classList.add("isOn");
+        });
+      });
+
+      // dropzones
+      ["dzPlano", "dzCert"].forEach(function (id) {
+        var dz = document.getElementById(id);
+        dz.addEventListener("click", function () {
+          dz.classList.add("filled");
+          dz.querySelector("h4").textContent = "Archivo subido correctamente";
+          dz.querySelector("p").innerHTML = id === "dzPlano" ? "plano-planta.pdf · validando estándar Homyo…" : "certificado-energetico.pdf";
+          if (id === "dzPlano") {
+            var v = document.getElementById("planoVal");
+            v.classList.remove("hide");
+            v.innerHTML = '<div class="callout okc"><span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 6 9 17l-5-5"/></svg></span><div><h4>Plano validado</h4><p>Cumple el estándar visual de Homyo. Superficies coherentes con las declaradas.</p></div></div>';
+            markPlanoDone();
+          }
+        });
+      });
+
+      // photos
+      var photoCount = 0;
+      document.querySelectorAll("[data-photo]").forEach(function (p) {
+        p.addEventListener("click", function () {
+          if (!p.classList.contains("filled")) { p.classList.add("filled"); photoCount++; }
+          else { p.classList.remove("filled"); photoCount--; }
+          var el = document.getElementById("photoCount");
+          el.textContent = photoCount + " / 6 mínimas";
+          el.className = "pill " + (photoCount >= 6 ? "ok" : "gold");
+        });
+      });
+
+      // step 7 checklist gating
+      var planoDone = false;
+      function markPlanoDone() {
+        planoDone = true;
+        var li = document.getElementById("ckPlano");
+        li.className = "ck-ok";
+        li.querySelector(".ckBox").innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>';
+        li.querySelector("p").textContent = "plano-planta.pdf · validado";
+        li.querySelector(".ckTag").textContent = "Correcto";
+        document.getElementById("blockNote").classList.add("hide");
+        refreshPublish();
+      }
+      document.getElementById("fakePlano").addEventListener("click", markPlanoDone);
+      var dispo = document.getElementById("dispoCheck");
+      function refreshPublish() {
+        var ok = planoDone && dispo.checked;
+        document.getElementById("publishBtn").disabled = !ok;
+        document.getElementById("footHint").textContent = ok ? "Todo listo. Se enviará a revisión de Homyo." : (!planoDone ? "1 requisito bloqueante pendiente." : "Confirma la disponibilidad para continuar.");
+      }
+      dispo.addEventListener("change", refreshPublish);
+      document.getElementById("publishBtn").addEventListener("click", function () {
+        window.location.href = "pro-viviendas.html";
+      });
+    </script>
+  </body>
+</html>

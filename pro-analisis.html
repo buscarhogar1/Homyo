@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Análisis · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      .twoCol{ display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
+      @media (max-width:900px){ .twoCol{ grid-template-columns:1fr; } }
+      /* weekly bars */
+      .barChart{ display:flex; align-items:flex-end; gap:10px; height:200px; padding-top:10px; }
+      .barCol{ flex:1 1 0; display:flex; flex-direction:column; align-items:center; gap:9px; height:100%; justify-content:flex-end; }
+      .barStack{ width:100%; max-width:34px; display:flex; flex-direction:column; justify-content:flex-end; gap:3px; height:100%; }
+      .barViews{ background:linear-gradient(180deg,var(--doradoSoft),var(--dorado)); border-radius:3px 3px 0 0; min-height:4px; }
+      .barLeads{ background:var(--granate); border-radius:3px; min-height:3px; }
+      .barLabel{ font-family:'Raleway',sans-serif; font-size:11px; color:var(--muted); font-weight:600; }
+      .chartLegend{ display:flex; gap:18px; margin-top:14px; }
+      .chartLegend span{ font-size:12.5px; color:var(--ink2); display:inline-flex; align-items:center; gap:7px; }
+      .chartLegend .sw{ width:11px; height:11px; border-radius:3px; }
+      /* ranked list */
+      .rankList{ list-style:none; margin:0; padding:0; }
+      .rankItem{ padding:14px 0; border-top:1px solid var(--lineSoft); }
+      .rankItem:first-child{ border-top:none; }
+      .rankTop{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+      .rankName{ font-size:13.5px; color:var(--ink); font-weight:500; }
+      .rankName .z{ color:var(--muted); font-weight:400; font-size:12px; }
+      .rankVal{ font-family:'Raleway',sans-serif; font-weight:600; font-size:13.5px; color:var(--granate); white-space:nowrap; }
+      .rankTrack{ height:6px; border-radius:999px; background:var(--lineSoft); overflow:hidden; }
+      .rankTrack > span{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--dorado),var(--granateSoft)); }
+      .rankTrack.low > span{ background:linear-gradient(90deg,#d9c9a8,#c9a96a); }
+      .miniMeta{ font-size:11.5px; color:var(--muted); margin-top:5px; }
+    </style>
+  </head>
+  <body>
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="kicker">Rendimiento real</p>
+              <h1 class="pageTitle"><strong>Análisis</strong></h1>
+              <p class="pageLede">Cómo se comportan tus anuncios de verdad. Sin posicionamiento de pago, sin rankings comprados: solo datos para mejorar tus viviendas.</p>
+            </div>
+            <div class="pageHeadActions">
+              <div class="seg" id="rangeSeg"><button class="isOn">30 días</button><button>90 días</button><button>Año</button></div>
+            </div>
+          </div>
+
+          <!-- WITH DATA -->
+          <div id="viewData">
+            <section class="grid c4">
+              <div class="kpi"><p class="kpiLabel">Visualizaciones</p><p class="kpiValue">9.2<span class="u">K</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+8 % vs. periodo anterior</span></div>
+              <div class="kpi"><p class="kpiLabel">Contactos recibidos</p><p class="kpiValue">47</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+12 % vs. periodo anterior</span></div>
+              <div class="kpi"><p class="kpiLabel">Tasa de contacto</p><p class="kpiValue">3.8<span class="u">%</span></p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>Media sector 3,1 %</span></div>
+              <div class="kpi"><p class="kpiLabel">Visualizaciones / vivienda</p><p class="kpiValue">511</p><span class="kpiFoot down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 10 6 6 6-6"/></svg>−3 % vs. periodo anterior</span></div>
+            </section>
+
+            <!-- EVOLUTION -->
+            <div class="sectionHead"><h2>Evolución semanal</h2></div>
+            <div class="card">
+              <div class="barChart" id="barChart"></div>
+              <div class="chartLegend">
+                <span><span class="sw" style="background:var(--dorado)"></span>Visualizaciones</span>
+                <span><span class="sw" style="background:var(--granate)"></span>Contactos</span>
+              </div>
+            </div>
+
+            <div class="twoCol" style="margin-top:16px;">
+              <div class="card">
+                <p class="cardLabel">Viviendas más consultadas</p>
+                <ul class="rankList">
+                  <li class="rankItem"><div class="rankTop"><span class="rankName">Ático · Calle Ferraz 12 <span class="z">· Moncloa</span></span><span class="rankVal">1.840 vis.</span></div><div class="rankTrack"><span style="width:100%"></span></div><div class="miniMeta">14 contactos · tasa 0,8 %</div></li>
+                  <li class="rankItem"><div class="rankTop"><span class="rankName">Chalet · Av. de Europa 9 <span class="z">· Pozuelo</span></span><span class="rankVal">1.510 vis.</span></div><div class="rankTrack"><span style="width:82%"></span></div><div class="miniMeta">21 contactos · tasa 1,4 %</div></li>
+                  <li class="rankItem"><div class="rankTop"><span class="rankName">Piso · Calle Bravo Murillo 200 <span class="z">· Tetuán</span></span><span class="rankVal">1.190 vis.</span></div><div class="rankTrack"><span style="width:65%"></span></div><div class="miniMeta">17 contactos · tasa 1,4 %</div></li>
+                  <li class="rankItem"><div class="rankTop"><span class="rankName">Piso · Calle Velázquez 80 <span class="z">· Salamanca</span></span><span class="rankVal">940 vis.</span></div><div class="rankTrack"><span style="width:51%"></span></div><div class="miniMeta">9 contactos · tasa 1,0 %</div></li>
+                </ul>
+              </div>
+              <div class="card">
+                <p class="cardLabel">Viviendas con bajo rendimiento</p>
+                <ul class="rankList">
+                  <li class="rankItem"><div class="rankTop"><span class="rankName">Estudio · Calle Fuencarral 120 <span class="z">· Chamberí</span></span><span class="rankVal">62 vis.</span></div><div class="rankTrack low"><span style="width:14%"></span></div><div class="miniMeta">0 contactos · revisa precio y fotos</div></li>
+                  <li class="rankItem"><div class="rankTop"><span class="rankName">Piso · Calle Embajadores 45 <span class="z">· Centro</span></span><span class="rankVal">118 vis.</span></div><div class="rankTrack low"><span style="width:24%"></span></div><div class="miniMeta">1 contacto · tasa 0,8 %</div></li>
+                  <li class="rankItem"><div class="rankTop"><span class="rankName">Piso · Calle López de Hoyos 70 <span class="z">· Chamartín</span></span><span class="rankVal">143 vis.</span></div><div class="rankTrack low"><span style="width:30%"></span></div><div class="miniMeta">1 contacto · sin actualizar 48 días</div></li>
+                </ul>
+                <div class="callout infoc" style="margin-top:16px;">
+                  <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></span>
+                  <div><p style="margin:0;">Para mejorar el rendimiento revisa el precio, las fotografías y la descripción. <strong>Homyo no ofrece pagar por más visibilidad.</strong></p></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- COMPARATIVA -->
+            <div class="sectionHead"><h2>Comparativa interna entre tus anuncios</h2></div>
+            <div class="tableWrap">
+              <table class="proTable stack">
+                <thead><tr><th>Vivienda</th><th>Visualizaciones</th><th>Contactos</th><th>Tasa de contacto</th><th>vs. tu media</th></tr></thead>
+                <tbody>
+                  <tr><td class="noLabel strong">Ático · Calle Ferraz 12</td><td data-th="Visualizaciones">1.840</td><td data-th="Contactos">14</td><td data-th="Tasa">0,8 %</td><td data-th="vs media"><span class="pill warnp">−21 %</span></td></tr>
+                  <tr><td class="noLabel strong">Chalet · Av. de Europa 9</td><td data-th="Visualizaciones">1.510</td><td data-th="Contactos">21</td><td data-th="Tasa">1,4 %</td><td data-th="vs media"><span class="pill ok">+38 %</span></td></tr>
+                  <tr><td class="noLabel strong">Piso · Bravo Murillo 200</td><td data-th="Visualizaciones">1.190</td><td data-th="Contactos">17</td><td data-th="Tasa">1,4 %</td><td data-th="vs media"><span class="pill ok">+34 %</span></td></tr>
+                  <tr><td class="noLabel strong">Estudio · Fuencarral 120</td><td data-th="Visualizaciones">62</td><td data-th="Contactos">0</td><td data-th="Tasa">0 %</td><td data-th="vs media"><span class="pill dangerp">−100 %</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- ALERTAS -->
+            <div class="sectionHead"><h2>Alertas</h2></div>
+            <div class="stack-sm">
+              <div class="callout warnc">
+                <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 1.5"/></svg></span>
+                <div><h4>3 anuncios con más de 60 días sin actualizar</h4><p>Confirma la disponibilidad para mantenerlos publicados y evitar penalizar tu rendimiento.</p></div>
+                <a class="btn ghost sm cAct" href="pro-viviendas.html">Revisar</a>
+              </div>
+              <div class="callout warnc">
+                <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></span>
+                <div><h4>1 vivienda lleva 90 días publicada sin contactos</h4><p>El estudio de Calle Fuencarral 120 no recibe contactos. Te sugerimos revisar precio y reportaje fotográfico.</p></div>
+                <a class="btn ghost sm cAct" href="pro-revision-calidad.html">Ver anuncio</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- NO DATA -->
+          <div id="viewNone" class="hide">
+            <div class="emptyState">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></span>
+              <h3>Todavía no hay métricas suficientes</h3>
+              <p>Cuando tus viviendas lleven unos días publicadas empezarás a ver visualizaciones, contactos y comparativas aquí. Publica tu primera vivienda para empezar a medir.</p>
+              <div class="actions"><a class="btn primary" href="pro-subir-vivienda.html">Subir vivienda</a><a class="btn ghost" href="pro-viviendas.html">Ver mis viviendas</a></div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.PRO_PAGE = {
+        active: "analisis", title: "Análisis", crumb: "Áurea Inmobiliaria · Últimos 30 días",
+        states: [{ id: "data", label: "Con datos" }, { id: "none", label: "Sin métricas (vacío)" }],
+        onState: function (id) {
+          document.getElementById("viewData").classList.toggle("hide", id === "none");
+          document.getElementById("viewNone").classList.toggle("hide", id !== "none");
+        }
+      };
+    </script>
+    <script src="pro-shell.js"></script>
+    <script>
+      var weeks = [
+        { w: "Sem 1", v: 58, l: 22 }, { w: "Sem 2", v: 72, l: 30 }, { w: "Sem 3", v: 64, l: 26 },
+        { w: "Sem 4", v: 88, l: 40 }, { w: "Sem 5", v: 79, l: 34 }, { w: "Sem 6", v: 95, l: 46 }, { w: "Sem 7", v: 100, l: 52 }
+      ];
+      document.getElementById("barChart").innerHTML = weeks.map(function (k) {
+        return '<div class="barCol"><div class="barStack">' +
+          '<div class="barViews" style="height:' + k.v + '%"></div>' +
+          '<div class="barLeads" style="height:' + (k.l * 0.42) + '%"></div>' +
+          '</div><span class="barLabel">' + k.w + '</span></div>';
+      }).join("");
+      document.querySelectorAll("#rangeSeg button").forEach(function (b) {
+        b.addEventListener("click", function () {
+          document.querySelectorAll("#rangeSeg button").forEach(function (x) { x.classList.remove("isOn"); });
+          b.classList.add("isOn");
+        });
+      });
+    </script>
+  </body>
+</html>

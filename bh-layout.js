@@ -40,7 +40,7 @@ function renderHeader({ showMiniSearch, root }) {
 
         <aside class="bhSideMenu" id="bhSideMenu" aria-hidden="true">
           <div class="bhSideMenuTop">
-            <div class="bhSideMenuBrand">HOMYO</div>
+            <div class="bhSideMenuBrand">H<span class="brandO">O</span>MY<span class="brandO">O</span></div>
 
             <button type="button" class="bhSideClose" id="bhSideClose" aria-label="Cerrar menú">
               ×
@@ -111,7 +111,7 @@ function renderHeader({ showMiniSearch, root }) {
         </aside>
 
         <a class="brand" href="${root}" aria-label="Ir a inicio">
-          <span class="brandText">HOMYO</span>
+          <span class="brandText">H<span class="brandO">O</span>MY<span class="brandO">O</span></span>
         </a>
 
         ${mini}

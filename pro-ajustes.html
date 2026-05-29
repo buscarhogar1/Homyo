@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ajustes · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      .setLayout{ display:grid; grid-template-columns:220px 1fr; gap:26px; align-items:start; }
+      @media (max-width:900px){ .setLayout{ grid-template-columns:1fr; } .setNav{ position:static !important; flex-direction:row !important; overflow-x:auto; } }
+      .setNav{ position:sticky; top:24px; display:flex; flex-direction:column; gap:2px; }
+      .setNav a{ text-decoration:none; color:var(--ink2); font-size:14px; padding:10px 14px; border-radius:var(--rad); white-space:nowrap; transition:all .14s ease; }
+      .setNav a:hover{ background:var(--lineSoft); }
+      .setNav a.isOn{ background:var(--cardWarm); color:var(--granate); font-weight:600; }
+      .setCard{ background:#fff; border:1px solid var(--line); border-radius:var(--rad); padding:26px 28px; margin-bottom:16px; }
+      .setCard h2{ margin:0 0 4px; font-family:'Raleway',sans-serif; font-size:20px; font-weight:500; color:var(--granate); letter-spacing:-.2px; }
+      .setCard .sub{ margin:0 0 20px; font-size:13.5px; color:var(--ink2); line-height:1.5; }
+      .toggleRow{ display:flex; align-items:center; justify-content:space-between; gap:18px; padding:15px 0; border-top:1px solid var(--lineSoft); }
+      .toggleRow:first-of-type{ border-top:none; }
+      .toggleRow .tl h5{ margin:0 0 2px; font-family:'Raleway',sans-serif; font-size:14px; font-weight:600; color:var(--ink); }
+      .toggleRow .tl p{ margin:0; font-size:12.5px; color:var(--muted); line-height:1.45; max-width:440px; }
+      .switch{ position:relative; width:46px; height:26px; flex:0 0 auto; cursor:pointer; }
+      .switch input{ opacity:0; width:0; height:0; }
+      .switch .sl{ position:absolute; inset:0; background:var(--line); border-radius:999px; transition:background .18s ease; }
+      .switch .sl::before{ content:""; position:absolute; left:3px; top:3px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.2); transition:transform .18s ease; }
+      .switch input:checked + .sl{ background:var(--granate); }
+      .switch input:checked + .sl::before{ transform:translateX(20px); }
+      .dangerZone{ border-color:rgba(176,50,71,.3); }
+      .dangerZone h2{ color:var(--danger); }
+    </style>
+  </head>
+  <body>
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="kicker">Configuración</p>
+              <h1 class="pageTitle"><strong>Ajustes</strong></h1>
+              <p class="pageLede">Gestiona tu cuenta, la seguridad y cómo y cuándo te avisamos.</p>
+            </div>
+          </div>
+
+          <div class="setLayout">
+            <nav class="setNav" id="setNav">
+              <a href="#cuenta" class="isOn">Datos de cuenta</a>
+              <a href="#seguridad">Seguridad</a>
+              <a href="#notif">Notificaciones</a>
+              <a href="#email">Preferencias de email</a>
+              <a href="#dispo">Disponibilidad</a>
+              <a href="#baja">Baja de cuenta</a>
+            </nav>
+
+            <div>
+              <!-- CUENTA -->
+              <section class="setCard" id="cuenta">
+                <h2>Datos de cuenta</h2>
+                <p class="sub">Información de acceso de la persona responsable de la cuenta.</p>
+                <div class="formGrid">
+                  <div class="field"><label class="fieldLabel">Nombre</label><input class="input" value="Marta Sanz López" /></div>
+                  <div class="field"><label class="fieldLabel">Email de acceso</label><input class="input" value="marta@aureainmobiliaria.es" /></div>
+                  <div class="field"><label class="fieldLabel">Teléfono</label><div class="inputCombo"><span class="prefix">+34</span><input class="input" value="612 345 678" /></div></div>
+                  <div class="field"><label class="fieldLabel">Idioma</label><select class="input"><option>Español</option><option>Català</option><option>English</option></select></div>
+                </div>
+                <button class="btn primary" style="margin-top:18px;">Guardar</button>
+              </section>
+
+              <!-- SEGURIDAD -->
+              <section class="setCard" id="seguridad">
+                <h2>Seguridad</h2>
+                <p class="sub">Protege el acceso a tu cuenta profesional.</p>
+                <div class="formGrid">
+                  <div class="field full"><label class="fieldLabel">Contraseña</label><div style="display:flex; gap:10px;"><input class="input" type="password" value="············" disabled /><button class="btn ghost" style="flex:0 0 auto;">Cambiar</button></div></div>
+                </div>
+                <div class="toggleRow" style="margin-top:8px;"><div class="tl"><h5>Verificación en dos pasos (2FA)</h5><p>Pediremos un código adicional al iniciar sesión desde un dispositivo nuevo.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+                <div class="toggleRow"><div class="tl"><h5>Avisos de inicio de sesión</h5><p>Te avisamos por email si alguien accede desde un equipo desconocido.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+              </section>
+
+              <!-- NOTIFICACIONES -->
+              <section class="setCard" id="notif">
+                <h2>Notificaciones</h2>
+                <p class="sub">Elige qué avisos quieres recibir dentro del entorno profesional.</p>
+                <div class="toggleRow"><div class="tl"><h5>Nuevos contactos</h5><p>Cuando un interesado solicita información de una de tus viviendas.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+                <div class="toggleRow"><div class="tl"><h5>Estado de revisión de anuncios</h5><p>Cuando una vivienda se aprueba o se rechaza en revisión.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+                <div class="toggleRow"><div class="tl"><h5>Avisos del estándar de calidad</h5><p>Plano pendiente, certificado en trámite o fotografías insuficientes.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+                <div class="toggleRow"><div class="tl"><h5>Avisos de facturación</h5><p>Inicio de facturación, recibos disponibles y fin del periodo gratuito.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+              </section>
+
+              <!-- EMAIL -->
+              <section class="setCard" id="email">
+                <h2>Preferencias de email</h2>
+                <p class="sub">Con qué frecuencia te enviamos resúmenes por correo.</p>
+                <div class="field" style="max-width:320px;"><label class="fieldLabel">Resumen de actividad</label><select class="input"><option>Diario</option><option>Cada 2 días</option><option>Semanal</option><option>Desactivado</option></select></div>
+                <div class="toggleRow" style="margin-top:14px;"><div class="tl"><h5>Resumen de contactos sin gestionar</h5><p>Te recordamos los contactos que llevan más de 24 h sin respuesta.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+                <div class="toggleRow"><div class="tl"><h5>Novedades de producto de Homyo</h5><p>Mejoras del entorno profesional. Nunca publicidad de terceros.</p></div><label class="switch"><input type="checkbox" /><span class="sl"></span></label></div>
+              </section>
+
+              <!-- DISPONIBILIDAD -->
+              <section class="setCard" id="dispo">
+                <h2>Confirmaciones de disponibilidad</h2>
+                <p class="sub">Homyo te pide confirmar periódicamente que tus viviendas siguen disponibles. Así el portal mantiene anuncios reales y actualizados.</p>
+                <div class="field" style="max-width:320px;"><label class="fieldLabel">Pedir confirmación cada</label><select class="input"><option>30 días</option><option selected>60 días</option><option>90 días</option></select></div>
+                <div class="toggleRow" style="margin-top:14px;"><div class="tl"><h5>Recordatorio antes de despublicar</h5><p>Te avisamos 7 días antes de pausar un anuncio sin confirmar.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+              </section>
+
+              <!-- BAJA -->
+              <section class="setCard dangerZone" id="baja">
+                <h2>Baja de cuenta profesional</h2>
+                <p class="sub">Al darte de baja se despublicarán todas tus viviendas y perderás el acceso al panel. Esta acción no se puede deshacer. Conservaremos tus facturas según la normativa fiscal vigente.</p>
+                <button class="btn danger">Solicitar baja de la cuenta</button>
+              </section>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.PRO_PAGE = { active: "ajustes", title: "Ajustes", crumb: "Áurea Inmobiliaria · Configuración" };
+    </script>
+    <script src="pro-shell.js"></script>
+    <script>
+      var navLinks = document.querySelectorAll("#setNav a");
+      navLinks.forEach(function (a) {
+        a.addEventListener("click", function () {
+          navLinks.forEach(function (x) { x.classList.remove("isOn"); });
+          a.classList.add("isOn");
+        });
+      });
+    </script>
+  </body>
+</html>

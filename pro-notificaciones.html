@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Notificaciones · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      .nFilter{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+      .nf{ appearance:none; cursor:pointer; background:#fff; border:1px solid var(--line); border-radius:999px; padding:8px 15px; font-size:13px; color:var(--ink2); font-family:inherit; }
+      .nf.isOn{ border-color:var(--granate); background:var(--cardWarm); color:var(--granate); font-weight:600; }
+      .nGroupLabel{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:24px 0 12px; }
+      .nGroupLabel:first-child{ margin-top:0; }
+      .nList{ display:flex; flex-direction:column; gap:10px; }
+      .nItem{ display:grid; grid-template-columns:44px 1fr auto; gap:15px; padding:17px 20px; border:1px solid var(--line); border-radius:var(--rad); background:#fff; align-items:flex-start; text-decoration:none; color:inherit; transition:border-color .15s ease, box-shadow .15s ease; }
+      .nItem:hover{ border-color:rgba(140,31,45,.22); box-shadow:var(--shadowCard); }
+      .nItem.unread{ background:linear-gradient(90deg, rgba(196,150,42,.06), #fff 60%); }
+      .nIc{ width:44px; height:44px; border-radius:50%; display:grid; place-items:center; flex:0 0 auto; }
+      .nIc svg{ width:19px; height:19px; }
+      .nBody h4{ margin:0 0 3px; font-family:'Raleway',sans-serif; font-size:15px; font-weight:600; color:var(--ink); display:flex; align-items:center; gap:9px; }
+      .nDotNew{ width:8px; height:8px; border-radius:50%; background:var(--granate); }
+      .nBody p{ margin:0; font-size:13.5px; color:var(--ink2); line-height:1.5; }
+      .nRight{ display:flex; flex-direction:column; align-items:flex-end; gap:8px; white-space:nowrap; }
+      .nWhen{ font-size:11.5px; color:var(--muted); }
+      @media (max-width:620px){ .nItem{ grid-template-columns:44px 1fr; } .nRight{ grid-column:2; align-items:flex-start; flex-direction:row; } }
+    </style>
+  </head>
+  <body>
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="kicker">Centro de avisos</p>
+              <h1 class="pageTitle"><strong>Notificaciones</strong></h1>
+              <p class="pageLede">Todo lo que necesita tu atención en un único lugar: viviendas, contactos, calidad y facturación.</p>
+            </div>
+            <div class="pageHeadActions"><button class="btn ghost" id="markAll">Marcar todas como leídas</button></div>
+          </div>
+
+          <div class="nFilter" id="nFilter">
+            <button class="nf isOn" data-f="all">Todas</button>
+            <button class="nf" data-f="unread">Sin leer</button>
+            <button class="nf" data-f="viviendas">Viviendas</button>
+            <button class="nf" data-f="contactos">Contactos</button>
+            <button class="nf" data-f="facturacion">Facturación</button>
+          </div>
+
+          <div id="nWrap"></div>
+
+          <div id="nEmpty" class="hide">
+            <div class="emptyState">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
+              <h3>No tienes notificaciones aquí</h3>
+              <p>Cuando haya algo que requiera tu atención —un nuevo contacto, un anuncio aprobado o un aviso de calidad— aparecerá en este centro.</p>
+              <div class="actions"><a class="btn ghost" href="pro-panel.html">Volver al panel</a></div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.PRO_PAGE = { active: null, title: "Notificaciones", crumb: "Áurea Inmobiliaria · Centro de notificaciones" };
+    </script>
+    <script src="pro-shell.js"></script>
+    <script>
+      function ic(name){ return window.proIcon ? window.proIcon(name,1.8) : ""; }
+      var TONE = {
+        ok:["var(--goodSoft)","var(--good)"], warnp:["var(--warnSoft)","var(--warn)"],
+        dangerp:["var(--dangerSoft)","var(--danger)"], infop:["var(--infoSoft)","var(--info)"], neutral:["var(--lineSoft)","var(--ink2)"]
+      };
+      var N = [
+        { g:"Hoy", cat:"viviendas", tone:"warnp", ic:"subir", unread:true, t:"Vivienda pendiente de completar", d:"Piso en Calle Hortaleza 88 — faltan fotografías y certificado energético para poder publicarla.", when:"Hace 20 min", href:"pro-subir-vivienda.html" },
+        { g:"Hoy", cat:"contactos", tone:"ok", ic:"contactos", unread:true, t:"Nueva solicitud de contacto", d:"Lucía Bravo está interesada en el Ático en Calle Ferraz 12 y quiere visitarlo esta semana.", when:"Hace 1 h", href:"pro-contactos.html" },
+        { g:"Hoy", cat:"viviendas", tone:"dangerp", ic:"revision", unread:true, t:"Anuncio rechazado por falta de plano", d:"El dúplex en Calle Goya 41 ha sido rechazado en revisión. Sube el plano en planta para reenviarlo.", when:"Hace 3 h", href:"pro-revision-calidad.html" },
+        { g:"Esta semana", cat:"viviendas", tone:"warnp", ic:"viviendas", unread:true, t:"Falta confirmar disponibilidad", d:"3 viviendas llevan más de 60 días sin actualizar. Confirma que siguen disponibles.", when:"Ayer", href:"pro-viviendas.html" },
+        { g:"Esta semana", cat:"viviendas", tone:"infop", ic:"subir", unread:false, t:"Certificado energético pendiente", d:"El chalet en Pozuelo está publicado en trámite. Quedan 9 días para aportar el certificado.", when:"Hace 2 días", href:"pro-viviendas.html" },
+        { g:"Esta semana", cat:"contactos", tone:"ok", ic:"revision", unread:false, t:"Anuncio aprobado y publicado", d:"El piso reformado en Calle Velázquez 80 ya está visible en Homyo.", when:"Hace 2 días", href:"pro-viviendas.html" },
+        { g:"Antes", cat:"viviendas", tone:"neutral", ic:"viviendas", unread:false, t:"Una vivienda vuelve a estar disponible", d:"Otra agencia ha retirado un inmueble en Calle Alcalá 211. Ya puedes volver a publicarlo.", when:"Hace 4 días", href:"pro-viviendas.html" },
+        { g:"Antes", cat:"facturacion", tone:"neutral", ic:"facturacion", unread:false, t:"Recordatorio de fin de periodo gratuito", d:"Tu periodo de agencia fundadora termina el 18 de mayo. Después se factura por vivienda publicada.", when:"Hace 6 días", href:"pro-facturacion.html" }
+      ];
+      var wrap = document.getElementById("nWrap");
+      function render(filter){
+        var list = N.filter(function(n){
+          if (filter==="all") return true;
+          if (filter==="unread") return n.unread;
+          return n.cat===filter;
+        });
+        document.getElementById("nEmpty").classList.toggle("hide", list.length>0);
+        wrap.classList.toggle("hide", list.length===0);
+        var groups = {}; var order=[];
+        list.forEach(function(n){ if(!groups[n.g]){groups[n.g]=[];order.push(n.g);} groups[n.g].push(n); });
+        wrap.innerHTML = order.map(function(g){
+          return '<div class="nGroupLabel">'+g+'</div><div class="nList">'+groups[g].map(function(n){
+            var c = TONE[n.tone]||TONE.neutral;
+            return '<a class="nItem'+(n.unread?' unread':'')+'" href="'+n.href+'">'+
+              '<span class="nIc" style="background:'+c[0]+';color:'+c[1]+'">'+ic(n.ic)+'</span>'+
+              '<span class="nBody"><h4>'+n.t+(n.unread?'<span class="nDotNew"></span>':'')+'</h4><p>'+n.d+'</p></span>'+
+              '<span class="nRight"><span class="nWhen">'+n.when+'</span></span></a>';
+          }).join("")+'</div>';
+        }).join("");
+      }
+      render("all");
+      document.querySelectorAll("#nFilter .nf").forEach(function(b){
+        b.addEventListener("click", function(){
+          document.querySelectorAll("#nFilter .nf").forEach(function(x){x.classList.remove("isOn");});
+          b.classList.add("isOn"); render(b.getAttribute("data-f"));
+        });
+      });
+      document.getElementById("markAll").addEventListener("click", function(){
+        N.forEach(function(n){ n.unread=false; });
+        var on=document.querySelector("#nFilter .nf.isOn").getAttribute("data-f");
+        render(on); this.textContent="Todas marcadas como leídas"; this.disabled=true;
+      });
+    </script>
+  </body>
+</html>

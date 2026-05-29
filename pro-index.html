@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Área profesional · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      body{ background:var(--bg); }
+      .ixTop{ background:#fff; border-bottom:1px solid var(--line); padding:0 30px; height:var(--topbarH); display:flex; align-items:center; gap:12px; }
+      .ixTop .brand{ font-family:'Raleway',sans-serif; font-size:24px; font-weight:627; letter-spacing:.24em; color:var(--granate); text-decoration:none; }
+      .ixTop .tag{ font-family:'Raleway',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:#fff; background:var(--dorado); padding:3px 6px; border-radius:3px; }
+      .ixTop .right{ margin-left:auto; }
+      .ixWrap{ width:min(1180px,100%); margin:0 auto; padding:42px 28px 90px; }
+      .ixHero h1{ font-family:'Raleway',sans-serif; font-size:46px; font-weight:300; color:var(--granate); letter-spacing:-1px; margin:0 0 14px; max-width:760px; }
+      .ixHero h1 strong{ font-weight:600; }
+      .ixHero p{ font-size:16px; line-height:1.6; color:var(--ink2); max-width:640px; margin:0; }
+      .flowTag{ display:inline-flex; align-items:center; gap:9px; font-family:'Raleway',sans-serif; font-size:11px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--dorado); margin:34px 0 16px; }
+      .flowTag .ln{ height:1px; width:48px; background:var(--dorado); opacity:.5; }
+      .ixGrid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+      @media (max-width:960px){ .ixGrid{ grid-template-columns:repeat(2,1fr); } }
+      @media (max-width:560px){ .ixGrid{ grid-template-columns:1fr; } }
+      .ixCard{ display:flex; flex-direction:column; gap:10px; padding:22px 22px 20px; border:1px solid var(--line); border-radius:var(--rad); background:#fff; text-decoration:none; color:inherit; position:relative; overflow:hidden; transition:all .2s ease; }
+      .ixCard::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--granate); transform:scaleY(0); transform-origin:top; transition:transform .24s ease; }
+      .ixCard:hover{ border-color:rgba(140,31,45,.22); box-shadow:var(--shadowCard); transform:translateY(-2px); }
+      .ixCard:hover::before{ transform:scaleY(1); }
+      .ixIc{ width:42px; height:42px; border-radius:50%; background:var(--cardWarm); border:1px solid rgba(196,150,42,.3); color:var(--granate); display:grid; place-items:center; }
+      .ixIc svg{ width:20px; height:20px; }
+      .ixCard h3{ margin:0; font-family:'Raleway',sans-serif; font-size:16px; font-weight:600; color:var(--ink); }
+      .ixCard p{ margin:0; font-size:12.5px; color:var(--muted); line-height:1.45; }
+      .ixNum{ position:absolute; top:16px; right:18px; font-family:'Raleway',sans-serif; font-size:12px; font-weight:600; color:var(--lineSoft); }
+      .ixCard:hover .ixNum{ color:var(--doradoSoft); }
+      .ixNote{ font-size:13px; color:var(--muted); margin-top:12px; display:flex; align-items:center; gap:9px; }
+      .ixNote svg{ width:16px; height:16px; color:var(--granate); }
+    </style>
+  </head>
+  <body>
+    <header class="ixTop">
+      <a class="brand" href="index.html">H<span class="brandO">O</span>MY<span class="brandO">O</span></a><span class="tag">Pro</span>
+      <div class="right"><a class="btn primary sm" href="pro-panel.html">Entrar al panel</a></div>
+    </header>
+
+    <main class="ixWrap">
+      <section class="ixHero">
+        <p class="kicker">Entorno profesional · prototipo navegable</p>
+        <h1>El sistema completo para <strong>profesionales inmobiliarios</strong></h1>
+        <p>Todo el recorrido, desde la solicitud de acceso hasta el entorno privado una vez aprobada la inmobiliaria. Plataforma verificada, estándar de calidad obligatorio y un modelo transparente: 6,99 €/vivienda al mes, sin destacados.</p>
+        <p class="ixNote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Cada pantalla es responsive (desktop y móvil) e incluye sus estados desde el botón "Estado demo".</p>
+      </section>
+
+      <!-- ANTES DE APROBACIÓN -->
+      <div class="flowTag"><span class="ln"></span>Antes de la aprobación · acceso y alta</div>
+      <div class="ixGrid">
+        <a class="ixCard" href="pro-acceso.html"><span class="ixNum">01</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><h3>Acceso profesional</h3><p>Login de inmobiliaria o profesional + solicitar acceso.</p></a>
+        <a class="ixCard" href="pro-registro.html"><span class="ixNum">02</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg></span><h3>Alta de inmobiliaria</h3><p>Formulario serio de solicitud con documentación.</p></a>
+        <a class="ixCard" href="pro-solicitud-recibida.html"><span class="ixNum">03</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 6 9 17l-5-5"/></svg></span><h3>Solicitud recibida</h3><p>Pantalla de estado pendiente con resumen y próximos pasos.</p></a>
+        <a class="ixCard" href="pro-cuenta-pendiente.html"><span class="ixNum">04</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span><h3>Cuenta en revisión</h3><p>Acceso bloqueado mientras se revisa la solicitud.</p></a>
+      </div>
+
+      <!-- ENTORNO APROBADO -->
+      <div class="flowTag"><span class="ln"></span>Entorno profesional aprobado</div>
+      <div class="ixGrid">
+        <a class="ixCard" href="pro-panel.html"><span class="ixNum">05</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9.5h14V10"/></svg></span><h3>Panel</h3><p>Dashboard con estado, avisos y accesos rápidos.</p></a>
+        <a class="ixCard" href="pro-viviendas.html"><span class="ixNum">06</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><h3>Viviendas</h3><p>Inventario con estados y aviso de duplicados.</p></a>
+        <a class="ixCard" href="pro-subir-vivienda.html"><span class="ixNum">07</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg></span><h3>Subir vivienda</h3><p>Asistente guiado en 7 pasos con plano obligatorio.</p></a>
+        <a class="ixCard" href="pro-revision-calidad.html"><span class="ixNum">08</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><h3>Revisión de calidad</h3><p>Bloqueantes, advertencias y vista previa pública.</p></a>
+        <a class="ixCard" href="pro-contactos.html"><span class="ixNum">09</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><h3>Contactos</h3><p>Leads directos, sin reventa de datos.</p></a>
+        <a class="ixCard" href="pro-analisis.html"><span class="ixNum">10</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><h3>Análisis</h3><p>Rendimiento real, sin posicionamiento de pago.</p></a>
+        <a class="ixCard" href="pro-perfil.html"><span class="ixNum">11</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21h18M5 21V8l7-5 7 5v13"/></svg></span><h3>Perfil</h3><p>Datos públicos, fiscales y documentación verificada.</p></a>
+        <a class="ixCard" href="pro-equipo.html"><span class="ixNum">12</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3.2"/><path d="M2.6 20c1.1-3.4 11.7-3.4 12.8 0"/><circle cx="17" cy="9" r="2.6"/></svg></span><h3>Equipo</h3><p>Roles, permisos e invitaciones.</p></a>
+        <a class="ixCard" href="pro-facturacion.html"><span class="ixNum">13</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span><h3>Facturación</h3><p>6,99 €/vivienda/mes y periodo de fundadora.</p></a>
+        <a class="ixCard" href="pro-ajustes.html"><span class="ixNum">14</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H1a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 4.6 7a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V1a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H23a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span><h3>Ajustes</h3><p>Cuenta, seguridad, disponibilidad y baja.</p></a>
+        <a class="ixCard" href="pro-notificaciones.html"><span class="ixNum">15</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><h3>Notificaciones</h3><p>Centro de avisos del entorno profesional.</p></a>
+        <a class="ixCard" href="pro-soporte.html"><span class="ixNum">16</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M9.1 9.1a3 3 0 0 1 5.7 1c0 2-3 2.5-3 4"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></span><h3>Soporte</h3><p>FAQ, guías del estándar y contacto.</p></a>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Panel · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      .heroBand{
+        background:linear-gradient(135deg,#fff 0%, var(--cardWarm) 130%);
+        border:1px solid var(--line); border-radius:var(--rad);
+        padding:28px 32px; position:relative; overflow:hidden;
+        display:flex; align-items:center; gap:24px; flex-wrap:wrap;
+      }
+      .heroBand::after{
+        content:""; position:absolute; right:-90px; top:-90px; width:280px; height:280px;
+        border-radius:50%; background:radial-gradient(circle,rgba(196,150,42,.15) 0%,transparent 66%);
+      }
+      .heroLogo{
+        width:74px; height:74px; flex:0 0 auto; border-radius:var(--rad);
+        background:#fff; border:1px solid var(--line); display:grid; place-items:center;
+        font-family:'Raleway',sans-serif; font-weight:600; font-size:26px; color:var(--granate);
+        box-shadow:0 8px 22px rgba(140,31,45,.06); position:relative; z-index:1;
+      }
+      .heroBody{ position:relative; z-index:1; min-width:0; flex:1 1 auto; }
+      .heroBody h1{
+        margin:0 0 8px; font-family:'Raleway',sans-serif; font-weight:300;
+        font-size:32px; line-height:1.05; letter-spacing:-.6px; color:var(--granate);
+      }
+      .heroBody h1 strong{ font-weight:600; }
+      .heroPills{ display:flex; gap:9px; flex-wrap:wrap; }
+      .heroDate{ position:relative; z-index:1; text-align:right; font-size:12.5px; color:var(--muted); }
+      .heroDate .big{ font-family:'Raleway',sans-serif; font-size:15px; color:var(--ink); font-weight:600; display:block; }
+      @media (max-width:620px){ .heroDate{ text-align:left; } }
+
+      .statRow{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-top:14px; }
+      @media (max-width:1080px){ .statRow{ grid-template-columns:repeat(3,1fr); } }
+      @media (max-width:560px){ .statRow{ grid-template-columns:repeat(2,1fr); } }
+      .statMini{
+        background:#fff; border:1px solid var(--line); border-radius:var(--rad);
+        padding:15px 16px; text-decoration:none; color:inherit; transition:all .16s ease;
+      }
+      .statMini:hover{ border-color:rgba(140,31,45,.25); box-shadow:var(--shadowCard); }
+      .statMini .n{ font-family:'Raleway',sans-serif; font-size:25px; font-weight:500; color:var(--ink); line-height:1; }
+      .statMini.alert .n{ color:var(--granate); }
+      .statMini .l{ font-size:11.5px; color:var(--muted); margin-top:7px; line-height:1.3; }
+
+      .quickGrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+      @media (max-width:760px){ .quickGrid{ grid-template-columns:1fr; } }
+      .quick{
+        display:flex; flex-direction:column; gap:12px;
+        background:#fff; border:1px solid var(--line); border-radius:var(--rad);
+        padding:24px 24px 22px; text-decoration:none; color:inherit;
+        position:relative; overflow:hidden; transition:all .2s ease;
+      }
+      .quick::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--granate); transform:scaleY(0); transform-origin:top; transition:transform .24s ease; }
+      .quick:hover{ border-color:rgba(140,31,45,.22); box-shadow:var(--shadowCard); transform:translateY(-2px); }
+      .quick:hover::before{ transform:scaleY(1); }
+      .quickIc{
+        width:46px; height:46px; border-radius:50%; background:var(--cardWarm);
+        border:1px solid rgba(196,150,42,.3); color:var(--granate); display:grid; place-items:center;
+        transition:all .2s ease;
+      }
+      .quick:hover .quickIc{ background:var(--granate); color:#fff; border-color:var(--granate); }
+      .quickIc svg{ width:21px; height:21px; }
+      .quick h3{ margin:0; font-family:'Raleway',sans-serif; font-size:19px; font-weight:500; color:var(--ink); letter-spacing:-.2px; }
+      .quick p{ margin:0; font-size:13.5px; line-height:1.5; color:var(--ink2); }
+      .quick .go{ margin-top:auto; font-family:'Raleway',sans-serif; font-size:11px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--granate); display:inline-flex; align-items:center; gap:7px; }
+      .quick .go svg{ width:14px; height:14px; transition:transform .2s ease; }
+      .quick:hover .go svg{ transform:translateX(3px); }
+
+      .twoCol{ display:grid; grid-template-columns:1fr 360px; gap:16px; align-items:start; }
+      @media (max-width:980px){ .twoCol{ grid-template-columns:1fr; } }
+
+      .actList{ list-style:none; margin:0; padding:0; }
+      .actList li{ display:grid; grid-template-columns:40px 1fr auto; gap:14px; align-items:center; padding:15px 0; border-top:1px solid var(--lineSoft); }
+      .actList li:first-child{ border-top:none; padding-top:4px; }
+      .actIc{ width:40px; height:40px; border-radius:50%; display:grid; place-items:center; flex:0 0 auto; }
+      .actIc svg{ width:17px; height:17px; }
+      .actBody h5{ margin:0 0 2px; font-family:'Raleway',sans-serif; font-size:14px; font-weight:600; color:var(--ink); }
+      .actBody p{ margin:0; font-size:12.5px; color:var(--ink2); line-height:1.4; }
+      .actBody p b{ color:var(--granate); font-weight:600; }
+      .actWhen{ font-size:11px; color:var(--muted); white-space:nowrap; letter-spacing:.04em; }
+
+      .perfBar{ display:flex; flex-direction:column; gap:14px; }
+      .perfRow .pl{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; }
+      .perfRow .pl .k{ color:var(--ink2); }
+      .perfRow .pl .v{ font-family:'Raleway',sans-serif; font-weight:600; color:var(--ink); }
+      .track{ height:7px; border-radius:999px; background:var(--lineSoft); overflow:hidden; }
+      .track > span{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--dorado),var(--granateSoft)); }
+
+      .modelNote{ display:flex; gap:13px; align-items:flex-start; font-size:13px; color:var(--ink2); line-height:1.55; }
+      .modelNote svg{ width:20px; height:20px; color:var(--good); flex:0 0 auto; margin-top:1px; }
+    </style>
+  </head>
+  <body>
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain">
+
+          <!-- HERO -->
+          <section class="heroBand">
+            <div class="heroLogo">ÁI</div>
+            <div class="heroBody">
+              <h1>Hola, <strong>Áurea Inmobiliaria</strong></h1>
+              <div class="heroPills">
+                <span class="pill ok"><span class="dot"></span>Cuenta aprobada</span>
+                <span class="pill gold">Agencia fundadora · 3 meses gratis</span>
+                <span class="pill neutral">Madrid · Chamberí, Salamanca, Retiro</span>
+              </div>
+            </div>
+            <div class="heroDate">
+              <span class="big">Jueves, 28 de mayo</span>
+              Última conexión: hoy, 09:14
+            </div>
+          </section>
+
+          <!-- KPIs -->
+          <section class="grid c4" style="margin-top:16px;">
+            <div class="kpi">
+              <p class="kpiLabel">Viviendas activas</p>
+              <p class="kpiValue">18</p>
+              <span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>Publicadas en Homyo</span>
+            </div>
+            <div class="kpi">
+              <p class="kpiLabel">Contactos este mes</p>
+              <p class="kpiValue">47</p>
+              <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+12 % vs. abril</span>
+            </div>
+            <div class="kpi">
+              <p class="kpiLabel">Visualizaciones · 30 días</p>
+              <p class="kpiValue">9.2<span class="u">K</span></p>
+              <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+8 % últimos 30 días</span>
+            </div>
+            <div class="kpi">
+              <p class="kpiLabel">Tasa de contacto</p>
+              <p class="kpiValue">3.8<span class="u">%</span></p>
+              <span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>Media del sector: 3,1 %</span>
+            </div>
+          </section>
+
+          <!-- AVISOS IMPORTANTES -->
+          <div class="sectionHead"><h2>Avisos importantes</h2><a class="btnLink" href="pro-notificaciones.html">Ver todo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></div>
+          <div class="stack-sm">
+            <div class="callout dangerc">
+              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></span>
+              <div><h4>1 anuncio rechazado por no cumplir el estándar</h4><p>El dúplex en Calle Goya 41 fue rechazado por falta de plano en planta. Corrígelo para volver a enviarlo a revisión.</p></div>
+              <a class="btn ghost sm cAct" href="pro-revision-calidad.html">Revisar</a>
+            </div>
+            <div class="callout warnc">
+              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 1.5"/></svg></span>
+              <div><h4>3 viviendas necesitan confirmar disponibilidad</h4><p>Llevan más de 60 días sin actualizar. Confirma que siguen disponibles para mantenerlas publicadas.</p></div>
+              <a class="btn ghost sm cAct" href="pro-viviendas.html">Confirmar</a>
+            </div>
+            <div class="callout warnc">
+              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span>
+              <div><h4>4 viviendas pendientes de completar</h4><p>Tienes borradores sin terminar. Añade plano, fotografías y certificado energético para poder publicarlas.</p></div>
+              <a class="btn ghost sm cAct" href="pro-viviendas.html">Continuar</a>
+            </div>
+          </div>
+
+          <!-- ESTADO DEL INVENTARIO -->
+          <div class="sectionHead"><h2>Estado del inventario</h2><a class="btnLink" href="pro-viviendas.html">Ir a viviendas <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></div>
+          <div class="statRow">
+            <a class="statMini" href="pro-viviendas.html"><div class="n">18</div><div class="l">Publicadas</div></a>
+            <a class="statMini" href="pro-viviendas.html"><div class="n">4</div><div class="l">En borrador</div></a>
+            <a class="statMini" href="pro-viviendas.html"><div class="n">2</div><div class="l">Pendientes de revisión</div></a>
+            <a class="statMini alert" href="pro-viviendas.html"><div class="n">1</div><div class="l">Rechazadas</div></a>
+            <a class="statMini" href="pro-viviendas.html"><div class="n">3</div><div class="l">Necesitan actualización</div></a>
+            <a class="statMini" href="pro-viviendas.html"><div class="n">2</div><div class="l">Retiradas</div></a>
+          </div>
+
+          <!-- ACCESOS RÁPIDOS -->
+          <div class="sectionHead"><h2>Accesos rápidos</h2></div>
+          <div class="quickGrid">
+            <a class="quick" href="pro-subir-vivienda.html">
+              <span class="quickIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span>
+              <h3>Subir vivienda</h3>
+              <p>Asistente guiado por pasos: identificación, datos, plano, fotos, certificado y descripción.</p>
+              <span class="go">Empezar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            </a>
+            <a class="quick" href="pro-viviendas.html">
+              <span class="quickIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+              <h3>Revisar viviendas</h3>
+              <p>Gestiona tu inventario, edita anuncios y comprueba qué cumple el estándar de calidad.</p>
+              <span class="go">Abrir inventario <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            </a>
+            <a class="quick" href="pro-analisis.html">
+              <span class="quickIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></span>
+              <h3>Ver análisis</h3>
+              <p>Visualizaciones, contactos y rendimiento real de cada anuncio. Sin posicionamiento de pago.</p>
+              <span class="go">Abrir análisis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            </a>
+          </div>
+
+          <!-- ACTIVIDAD + RENDIMIENTO -->
+          <div class="twoCol" style="margin-top:42px;">
+            <div class="card">
+              <div class="spread" style="margin-bottom:8px;">
+                <p class="cardLabel mt0">Actividad reciente</p>
+                <a class="btnLink" href="pro-contactos.html">Contactos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+              </div>
+              <ul class="actList">
+                <li>
+                  <span class="actIc" style="background:var(--goodSoft);color:var(--good)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+                  <div class="actBody"><h5>Nuevo contacto recibido</h5><p><b>Lucía Bravo</b> · Ático en Calle Ferraz 12 · quiere visitar esta semana</p></div>
+                  <span class="actWhen">Hace 1 h</span>
+                </li>
+                <li>
+                  <span class="actIc" style="background:var(--goodSoft);color:var(--good)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+                  <div class="actBody"><h5>Anuncio aprobado y publicado</h5><p>Piso reformado en Calle Velázquez 80 ya está visible en Homyo</p></div>
+                  <span class="actWhen">Hace 5 h</span>
+                </li>
+                <li>
+                  <span class="actIc" style="background:var(--dangerSoft);color:var(--danger)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></span>
+                  <div class="actBody"><h5>Anuncio rechazado en revisión</h5><p>Dúplex en Calle Goya 41 · motivo: <b>falta plano en planta</b></p></div>
+                  <span class="actWhen">Hace 3 h</span>
+                </li>
+                <li>
+                  <span class="actIc" style="background:var(--cardWarm);color:var(--granate)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+                  <div class="actBody"><h5>Factura disponible</h5><p>Periodo gratuito de fundadora activo · próxima factura estimada: <b>125,82 €</b></p></div>
+                  <span class="actWhen">Ayer</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="stack-sm">
+              <div class="card">
+                <p class="cardLabel">Rendimiento general</p>
+                <div class="perfBar">
+                  <div class="perfRow">
+                    <div class="pl"><span class="k">Anuncios que cumplen estándar</span><span class="v">16 / 18</span></div>
+                    <div class="track"><span style="width:89%"></span></div>
+                  </div>
+                  <div class="perfRow">
+                    <div class="pl"><span class="k">Tasa de respuesta a contactos</span><span class="v">94 %</span></div>
+                    <div class="track"><span style="width:94%"></span></div>
+                  </div>
+                  <div class="perfRow">
+                    <div class="pl"><span class="k">Anuncios actualizados &lt; 60 días</span><span class="v">15 / 18</span></div>
+                    <div class="track"><span style="width:83%"></span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card warm">
+                <div class="modelNote">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+                  <span>En Homyo no vendemos destacados, boosts ni posicionamiento de pago. Tu rendimiento depende solo de la calidad y la disponibilidad real de tus anuncios.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.PRO_PAGE = { active: "panel", title: "Panel", crumb: "Áurea Inmobiliaria · Cuenta aprobada" };
+    </script>
+    <script src="pro-shell.js"></script>
+  </body>
+</html>

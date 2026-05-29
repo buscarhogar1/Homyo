@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Revisión de calidad · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      .listHead{ display:grid; grid-template-columns:120px 1fr auto; gap:20px; align-items:center; }
+      @media (max-width:680px){ .listHead{ grid-template-columns:90px 1fr; } .listHead .lhActions{ grid-column:1 / -1; } }
+      .listThumb{ width:120px; height:88px; border-radius:var(--rad); overflow:hidden; border:1px solid var(--line); background:repeating-linear-gradient(45deg,#f3ece0,#f3ece0 8px,#ece3d4 8px,#ece3d4 16px); }
+      .listHead h2{ margin:0 0 6px; font-family:'Raleway',sans-serif; font-size:24px; font-weight:500; color:var(--ink); letter-spacing:-.3px; }
+      .listMeta{ display:flex; flex-wrap:wrap; gap:8px; }
+      .lhActions{ display:flex; gap:9px; }
+
+      .scoreBand{ display:grid; grid-template-columns:auto 1fr auto; gap:26px; align-items:center; }
+      @media (max-width:680px){ .scoreBand{ grid-template-columns:1fr; text-align:center; } }
+      .ring{ position:relative; width:96px; height:96px; }
+      .ring svg{ transform:rotate(-90deg); }
+      .ring .pct{ position:absolute; inset:0; display:grid; place-items:center; font-family:'Raleway',sans-serif; font-weight:600; font-size:26px; color:var(--granate); }
+      .scoreBody h3{ margin:0 0 6px; font-family:'Raleway',sans-serif; font-size:22px; font-weight:500; color:var(--granate); }
+      .scoreBody p{ margin:0; font-size:14px; color:var(--ink2); line-height:1.5; }
+      .scoreLegend{ display:flex; gap:18px; flex-wrap:wrap; }
+      .scoreLegend span{ font-size:12.5px; color:var(--ink2); display:inline-flex; align-items:center; gap:7px; }
+      .scoreLegend .d{ width:9px; height:9px; border-radius:50%; }
+
+      .twoCol{ display:grid; grid-template-columns:1fr 380px; gap:18px; align-items:start; }
+      @media (max-width:980px){ .twoCol{ grid-template-columns:1fr; } }
+
+      .reqGroup{ margin-bottom:8px; }
+      .reqList{ list-style:none; margin:0; padding:0; }
+      .reqItem{ display:flex; gap:14px; padding:16px 18px; border:1px solid var(--line); border-radius:var(--rad); background:#fff; margin-bottom:10px; align-items:flex-start; }
+      .reqItem .ri{ width:30px; height:30px; flex:0 0 auto; border-radius:50%; display:grid; place-items:center; }
+      .reqItem .ri svg{ width:16px; height:16px; }
+      .reqItem h5{ margin:0 0 3px; font-family:'Raleway',sans-serif; font-size:14.5px; font-weight:600; color:var(--ink); }
+      .reqItem p{ margin:0; font-size:13px; color:var(--ink2); line-height:1.5; }
+      .reqItem .act{ margin-left:auto; flex:0 0 auto; align-self:center; }
+      .ri-block{ border-color:rgba(176,50,71,.3); } .ri-block .ri{ background:var(--dangerSoft); color:var(--danger); }
+      .ri-warn .ri{ background:var(--warnSoft); color:var(--warn); }
+      .ri-ok .ri{ background:var(--goodSoft); color:var(--good); }
+      .groupTitle{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:22px 0 12px; display:flex; align-items:center; gap:10px; }
+      .groupTitle .gc{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:700; padding:1px 8px; border-radius:999px; }
+
+      /* preview */
+      .previewCard{ position:sticky; top:24px; border:1px solid var(--line); border-radius:var(--rad); overflow:hidden; background:#fff; }
+      .pvHead{ padding:11px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; background:var(--bg); }
+      .pvHead .t{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+      .pvImg{ height:170px; background:repeating-linear-gradient(45deg,#f3ece0,#f3ece0 9px,#ece3d4 9px,#ece3d4 18px); position:relative; }
+      .pvImg .badge{ position:absolute; top:12px; left:12px; }
+      .pvBody{ padding:18px 20px 22px; }
+      .pvPrice{ font-family:'Raleway',sans-serif; font-size:26px; font-weight:600; color:var(--granate); }
+      .pvAddr{ font-size:13.5px; color:var(--ink2); margin:4px 0 14px; }
+      .pvSpecs{ display:flex; gap:16px; flex-wrap:wrap; padding:14px 0; border-top:1px solid var(--lineSoft); border-bottom:1px solid var(--lineSoft); }
+      .pvSpec{ font-size:13px; color:var(--ink2); } .pvSpec b{ display:block; font-family:'Raleway',sans-serif; font-size:16px; color:var(--ink); }
+      .pvWatermark{ margin-top:14px; font-size:12px; color:var(--muted); display:flex; align-items:center; gap:8px; }
+    </style>
+  </head>
+  <body>
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain">
+
+          <a class="btnLink" href="pro-viviendas.html" style="margin-bottom:16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:rotate(180deg)"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>Volver a viviendas</a>
+
+          <!-- LISTING HEADER -->
+          <section class="card" style="margin-bottom:14px;">
+            <div class="listHead">
+              <span class="listThumb"></span>
+              <div>
+                <p class="kicker" style="margin-bottom:8px;">Revisión de calidad</p>
+                <h2>Dúplex · Calle Goya 41</h2>
+                <div class="listMeta">
+                  <span class="pill dangerp"><span class="dot"></span>Rechazada</span>
+                  <span class="pill neutral">Salamanca, Madrid</span>
+                  <span class="pill neutral">Ref. 3201914VK4730S0007BD</span>
+                  <span class="pill neutral">540.000 €</span>
+                </div>
+              </div>
+              <div class="lhActions">
+                <a class="btn ghost" href="pro-subir-vivienda.html">Editar vivienda</a>
+              </div>
+            </div>
+          </section>
+
+          <!-- SCORE -->
+          <section class="card warm" style="margin-bottom:26px;">
+            <div class="scoreBand">
+              <div class="ring">
+                <svg width="96" height="96"><circle cx="48" cy="48" r="42" fill="none" stroke="var(--lineSoft)" stroke-width="8"/><circle cx="48" cy="48" r="42" fill="none" stroke="var(--dorado)" stroke-width="8" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="58"/></svg>
+                <span class="pct">78</span>
+              </div>
+              <div class="scoreBody">
+                <h3>Aún no se puede publicar</h3>
+                <p>El anuncio está casi listo, pero tiene <strong>1 requisito bloqueante</strong> sin resolver. La puntuación mide la integridad del anuncio, no su posición: en Homyo no se puede mejorar la visibilidad pagando.</p>
+              </div>
+              <div class="scoreLegend" style="flex-direction:column; gap:9px;">
+                <span><span class="d" style="background:var(--danger)"></span>1 bloqueante</span>
+                <span><span class="d" style="background:var(--warn)"></span>2 advertencias</span>
+                <span><span class="d" style="background:var(--good)"></span>6 correctos</span>
+              </div>
+            </div>
+          </section>
+
+          <div class="twoCol">
+            <div>
+              <!-- BLOQUEANTES -->
+              <div class="groupTitle">Requisitos bloqueantes <span class="gc" style="background:var(--dangerSoft);color:var(--danger)">1</span></div>
+              <ul class="reqList">
+                <li class="reqItem ri-block">
+                  <span class="ri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+                  <div><h5>Falta plano en planta</h5><p>El plano es obligatorio para publicar en Homyo. Súbelo en el paso 3 del asistente. Debe seguir el estándar visual y reflejar las superficies declaradas.</p></div>
+                  <a class="btn ghost sm act" href="pro-subir-vivienda.html">Subir plano</a>
+                </li>
+              </ul>
+
+              <!-- ADVERTENCIAS -->
+              <div class="groupTitle">Recomendaciones de mejora <span class="gc" style="background:var(--warnSoft);color:var(--warn)">2</span></div>
+              <ul class="reqList">
+                <li class="reqItem ri-warn">
+                  <span class="ri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></span>
+                  <div><h5>Las fotografías no siguen el orden recomendado</h5><p>La foto principal es de un dormitorio. Recomendamos empezar por fachada o salón para mejorar la primera impresión.</p></div>
+                </li>
+                <li class="reqItem ri-warn">
+                  <span class="ri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></span>
+                  <div><h5>Descripción del entorno vacía</h5><p>El bloque "Entorno" está sin completar. Añadir transporte y servicios cercanos mejora el interés del anuncio.</p></div>
+                </li>
+              </ul>
+
+              <!-- CORRECTOS -->
+              <div class="groupTitle">Información completa <span class="gc" style="background:var(--goodSoft);color:var(--good)">6</span></div>
+              <ul class="reqList">
+                <li class="reqItem ri-ok"><span class="ri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div><h5>Superficie útil interior declarada</h5><p>118 m² útiles interiores, separados de la superficie exterior. Correcto.</p></div></li>
+                <li class="reqItem ri-ok"><span class="ri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div><h5>Superficie exterior separada</h5><p>22 m² de terraza declarados aparte de la superficie útil.</p></div></li>
+                <li class="reqItem ri-ok"><span class="ri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div><h5>Precio definido</h5><p>540.000 € · coherente con la zona.</p></div></li>
+                <li class="reqItem ri-ok"><span class="ri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div><h5>Certificado energético</h5><p>Aportado · letra D.</p></div></li>
+                <li class="reqItem ri-ok"><span class="ri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div><h5>Referencia catastral validada</h5><p>Sin duplicados en Homyo.</p></div></li>
+                <li class="reqItem ri-ok"><span class="ri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div><h5>8 fotografías subidas</h5><p>Por encima del mínimo de 6. Buena resolución.</p></div></li>
+              </ul>
+            </div>
+
+            <!-- PREVIEW -->
+            <div>
+              <div class="previewCard">
+                <div class="pvHead"><span class="t">Vista previa pública</span><a class="btnLink" href="listing.html">Abrir</a></div>
+                <div class="pvImg"><span class="badge pill solid" style="background:var(--granate);color:#fff;">Borrador</span></div>
+                <div class="pvBody">
+                  <div class="pvPrice">540.000 €</div>
+                  <div class="pvAddr">Dúplex en Calle Goya 41 · Salamanca, Madrid</div>
+                  <div class="pvSpecs">
+                    <span class="pvSpec"><b>118 m²</b>útil interior</span>
+                    <span class="pvSpec"><b>22 m²</b>terraza</span>
+                    <span class="pvSpec"><b>4</b>dorm.</span>
+                    <span class="pvSpec"><b>3</b>baños</span>
+                  </div>
+                  <div class="pvWatermark">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--danger)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    Sin plano · no visible para compradores hasta resolver el bloqueante
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.PRO_PAGE = { active: "viviendas", title: "Revisión de calidad", crumb: "Viviendas · Dúplex Calle Goya 41" };
+    </script>
+    <script src="pro-shell.js"></script>
+  </body>
+</html>

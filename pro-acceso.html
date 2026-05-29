@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Acceso profesional · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      .backLink{
+        position:absolute; top:26px; left:26px; z-index:3;
+        font-family:'Raleway',sans-serif; font-size:11.5px; font-weight:600;
+        letter-spacing:.16em; text-transform:uppercase; color:#fff;
+        text-decoration:none; display:inline-flex; align-items:center; gap:8px; opacity:.85;
+      }
+      .backLink svg{ width:15px; height:15px; }
+      @media (max-width:880px){ .backLink{ color:var(--granate); } }
+      .accStat{
+        margin-top:30px; padding-top:24px; border-top:1px solid rgba(255,255,255,.18);
+        position:relative; z-index:1;
+      }
+      .accStat a{ color:#fff; font-weight:600; text-decoration:underline; }
+      .roleTabs{ display:flex; gap:8px; margin-bottom:22px; }
+      .roleTab{
+        flex:1 1 0; appearance:none; cursor:pointer; text-align:left;
+        background:#fff; border:1px solid var(--line); border-radius:var(--rad);
+        padding:14px 16px; transition:all .16s ease;
+      }
+      .roleTab.isOn{ border-color:var(--granate); background:var(--cardWarm); box-shadow:0 6px 18px -10px rgba(140,31,45,.35); }
+      .roleTab .rt{ font-family:'Raleway',sans-serif; font-weight:600; font-size:14px; color:var(--ink); display:flex; align-items:center; gap:8px; }
+      .roleTab .rt svg{ width:17px; height:17px; color:var(--granate); }
+      .roleTab .rd{ font-size:11.5px; color:var(--muted); margin-top:4px; line-height:1.35; }
+      .pwLabelRow{ display:flex; justify-content:space-between; align-items:baseline; }
+      .pwLabelRow a{ font-size:12px; color:var(--granate); text-decoration:none; }
+      .verifiedNote{ display:flex; gap:10px; align-items:flex-start; background:var(--goodSoft); border:1px solid rgba(31,122,76,.2); border-radius:var(--rad); padding:13px 15px; font-size:12.5px; color:var(--ink2); line-height:1.5; margin-top:4px; }
+      .verifiedNote svg{ width:18px; height:18px; color:var(--good); flex:0 0 auto; margin-top:1px; }
+    </style>
+  </head>
+  <body>
+    <div class="authPage">
+      <aside class="authAside">
+        <a class="backLink" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>Volver a Homyo</a>
+        <div class="authAsideBrand">H<span class="brandO">O</span>MY<span class="brandO">O</span></div>
+        <div class="authAsideBody">
+          <p class="authCardKicker" style="color:var(--doradoSoft)">Área profesional</p>
+          <h2>La plataforma de los <strong>profesionales inmobiliarios</strong> verificados.</h2>
+          <p>Homyo no es un portal abierto a cualquiera. Cada inmobiliaria pasa por una verificación manual antes de poder publicar. Anuncios reales, datos contrastados y estándar de calidad común.</p>
+          <ul class="authAsidePoints">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>Acceso solo para inmobiliarias verificadas</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Anuncios con plano, superficies útiles y certificado</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Sin destacados ni posicionamiento de pago</li>
+          </ul>
+          <div class="accStat">
+            ¿Aún no operas en Homyo? <a href="pro-registro.html">Solicita acceso profesional →</a>
+          </div>
+        </div>
+      </aside>
+
+      <main class="authMain">
+        <div class="authCard">
+          <p class="authCardKicker">Acceso profesional</p>
+          <h1 class="authCardTitle">Entra en tu <strong>cuenta</strong></h1>
+          <p class="authCardSub">Inicia sesión como inmobiliaria o profesional inmobiliario para gestionar tus viviendas, contactos y análisis.</p>
+
+          <div class="roleTabs" id="roleTabs">
+            <button type="button" class="roleTab isOn" data-role="agencia">
+              <span class="rt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21V13h4v8"/></svg>Inmobiliaria</span>
+              <span class="rd">Cuenta de agencia con equipo y varias viviendas</span>
+            </button>
+            <button type="button" class="roleTab" data-role="profesional">
+              <span class="rt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.5 19.5c2.1-3.7 12.9-3.7 15 0"/></svg>Profesional</span>
+              <span class="rd">Agente colegiado o autónomo que opera por su cuenta</span>
+            </button>
+          </div>
+
+          <form class="authForm" id="loginForm" novalidate>
+            <div class="field">
+              <label class="fieldLabel" for="email">Email profesional</label>
+              <input class="input" type="email" id="email" placeholder="nombre@inmobiliaria.com" autocomplete="email" />
+            </div>
+            <div class="field">
+              <div class="pwLabelRow">
+                <label class="fieldLabel" for="pw">Contraseña</label>
+                <a href="reset-password.html">¿La olvidaste?</a>
+              </div>
+              <input class="input" type="password" id="pw" placeholder="Tu contraseña" autocomplete="current-password" />
+            </div>
+            <label class="checkRow" style="margin-top:2px;"><input type="checkbox" checked /> Mantener la sesión iniciada en este equipo</label>
+            <a class="btn primary block" href="pro-panel.html" style="margin-top:4px;">Iniciar sesión</a>
+          </form>
+
+          <div class="verifiedNote">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+            <span>Si tu solicitud aún está en revisión, podrás iniciar sesión pero verás el estado de tu cuenta. <a href="pro-cuenta-pendiente.html" style="color:var(--granate);font-weight:600;">Ver ejemplo</a></span>
+          </div>
+
+          <div class="authFoot">
+            ¿Tu inmobiliaria todavía no está en Homyo?<br />
+            <a href="pro-registro.html">Solicitar acceso profesional</a> · <a href="contacto.html?tipo=inmobiliaria">Hablar con el equipo</a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.querySelectorAll(".roleTab").forEach(function (t) {
+        t.addEventListener("click", function () {
+          document.querySelectorAll(".roleTab").forEach(function (x) { x.classList.remove("isOn"); });
+          t.classList.add("isOn");
+        });
+      });
+    </script>
+  </body>
+</html>

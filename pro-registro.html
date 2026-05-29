@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Solicitar acceso profesional · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      body{ background:var(--bg); }
+      .regTop{
+        background:#fff; border-bottom:1px solid var(--line);
+        height:var(--topbarH); display:flex; align-items:center; padding:0 28px;
+      }
+      .regTop .brand{ font-family:'Raleway',sans-serif; font-size:23px; font-weight:627; letter-spacing:.24em; color:var(--granate); text-decoration:none; }
+      .regTop .tag{ font-family:'Raleway',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:#fff; background:var(--dorado); padding:3px 6px; border-radius:3px; margin-left:10px; }
+      .regTop .right{ margin-left:auto; font-size:13px; color:var(--ink2); }
+      .regTop .right a{ color:var(--granate); font-weight:600; text-decoration:none; }
+      .regWrap{ width:min(1120px,100%); margin:0 auto; padding:38px 24px 90px; }
+      .regGrid{ display:grid; grid-template-columns:1fr 330px; gap:30px; align-items:start; }
+      @media (max-width:980px){ .regGrid{ grid-template-columns:1fr; } }
+      .formCard{ background:#fff; border:1px solid var(--line); border-radius:var(--rad); padding:30px 32px; }
+      .formCard + .formCard{ margin-top:14px; }
+      .fcLabel{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:600; letter-spacing:.28em; text-transform:uppercase; color:var(--dorado); margin:0 0 8px; }
+      .fcTitle{ font-family:'Raleway',sans-serif; font-size:23px; font-weight:500; color:var(--granate); letter-spacing:-.3px; margin:0 0 7px; }
+      .fcHelp{ font-size:14px; color:var(--ink2); line-height:1.55; margin:0 0 22px; max-width:600px; }
+      .stickySide{ position:sticky; top:24px; display:flex; flex-direction:column; gap:14px; }
+      .uploadRow{ display:grid; grid-template-columns:42px 1fr auto; gap:14px; align-items:center; background:#fff; border:1px dashed var(--line); border-radius:var(--rad); padding:14px 16px; }
+      .uploadRow.isFilled{ border-style:solid; border-color:rgba(31,122,76,.4); background:var(--goodSoft); }
+      .uIc{ width:42px; height:42px; border-radius:50%; background:var(--cardWarm); border:1px solid rgba(196,150,42,.3); color:var(--granate); display:grid; place-items:center; }
+      .uIc svg{ width:19px; height:19px; }
+      .uploadRow.isFilled .uIc{ background:#fff; color:var(--good); border-color:rgba(31,122,76,.3); }
+      .uBody h4{ margin:0 0 2px; font-family:'Raleway',sans-serif; font-size:14px; font-weight:600; color:var(--ink); display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+      .uBody p{ margin:0; font-size:12.5px; color:var(--ink2); line-height:1.4; }
+      .uReq{ font-size:9.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; padding:2px 6px; border-radius:2px; background:var(--granate); color:#fff; }
+      .uReq.opt{ background:var(--lineSoft); color:var(--muted); }
+      .uFile{ display:none; font-size:12px; color:var(--good); margin-top:3px; align-items:center; gap:6px; }
+      .uploadRow.isFilled .uFile{ display:inline-flex; }
+      .infoSteps{ list-style:none; margin:0; padding:0 0 0 6px; position:relative; }
+      .infoSteps::before{ content:""; position:absolute; left:13px; top:5px; bottom:5px; width:1px; background:var(--line); }
+      .infoSteps li{ position:relative; padding:0 0 18px 36px; }
+      .infoSteps li:last-child{ padding-bottom:0; }
+      .infoSteps li::before{ content:""; position:absolute; left:6px; top:2px; width:15px; height:15px; border-radius:50%; background:#fff; border:2px solid var(--dorado); }
+      .infoSteps li.cur::before{ background:var(--granate); border-color:var(--granate); box-shadow:0 0 0 4px rgba(140,31,45,.12); }
+      .infoSteps h5{ margin:0 0 3px; font-family:'Raleway',sans-serif; font-size:13.5px; font-weight:600; color:var(--ink); }
+      .infoSteps p{ margin:0; font-size:12.5px; color:var(--muted); line-height:1.5; }
+      .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+      .chip{ font-size:13px; padding:7px 13px; border:1px solid var(--line); border-radius:999px; background:#fff; cursor:pointer; color:var(--ink2); transition:all .14s ease; }
+      .chip.isOn{ border-color:var(--granate); background:var(--cardWarm); color:var(--granate); font-weight:600; }
+    </style>
+  </head>
+  <body>
+    <header class="regTop">
+      <a class="brand" href="index.html">H<span class="brandO">O</span>MY<span class="brandO">O</span></a><span class="tag">Pro</span>
+      <div class="right">¿Ya tienes cuenta? <a href="pro-acceso.html">Iniciar sesión</a></div>
+    </header>
+
+    <main class="regWrap">
+      <p class="kicker">Alta profesional · Solicitud de acceso</p>
+      <h1 class="pageTitle" style="font-size:42px;">Solicita el acceso de tu <strong>inmobiliaria</strong> a Homyo</h1>
+      <p class="pageLede" style="max-width:680px;">Esto no es un registro automático. Completas la solicitud, nuestro equipo verifica los datos de tu inmobiliaria y, cuando todo cuadra, activamos tu acceso profesional. Te avisamos por email en cada paso.</p>
+
+      <div class="regGrid" style="margin-top:30px;">
+        <form id="regForm" novalidate>
+          <!-- DATOS DE LA INMOBILIARIA -->
+          <section class="formCard">
+            <p class="fcLabel">1 · La inmobiliaria</p>
+            <h2 class="fcTitle">Datos de la inmobiliaria</h2>
+            <p class="fcHelp">Tienen que coincidir con los datos fiscales oficiales. Verificaremos el CIF/NIF en fuentes públicas.</p>
+            <div class="formGrid">
+              <div class="field full"><label class="fieldLabel">Nombre comercial <span class="req">obligatorio</span></label><input class="input" placeholder="Ej. Áurea Inmobiliaria" /></div>
+              <div class="field"><label class="fieldLabel">Razón social <span class="req">obligatorio</span></label><input class="input" placeholder="Áurea Gestión Inmobiliaria, S.L." /></div>
+              <div class="field"><label class="fieldLabel">CIF / NIF profesional <span class="req">obligatorio</span></label><input class="input" placeholder="B12345678" maxlength="9" /></div>
+              <div class="field"><label class="fieldLabel">Web de la inmobiliaria <span class="opt">(opcional)</span></label><input class="input" type="url" placeholder="https://" /></div>
+              <div class="field"><label class="fieldLabel">Nº API o colegio profesional <span class="opt">(si aplica)</span></label><input class="input" placeholder="Ej. API Madrid · Nº 1234" /></div>
+            </div>
+          </section>
+
+          <!-- PERSONA RESPONSABLE -->
+          <section class="formCard">
+            <p class="fcLabel">2 · Responsable</p>
+            <h2 class="fcTitle">Persona responsable de la cuenta</h2>
+            <p class="fcHelp">Será el administrador principal. Le enviaremos el aviso de aprobación y podrá invitar a su equipo.</p>
+            <div class="formGrid">
+              <div class="field"><label class="fieldLabel">Nombre y apellidos <span class="req">obligatorio</span></label><input class="input" placeholder="Marta Sanz López" autocomplete="name" /></div>
+              <div class="field"><label class="fieldLabel">Cargo <span class="opt">(opcional)</span></label><input class="input" placeholder="Gerente" /></div>
+              <div class="field"><label class="fieldLabel">Email profesional <span class="req">obligatorio</span></label><input class="input" type="email" placeholder="responsable@inmobiliaria.com" autocomplete="email" /></div>
+              <div class="field"><label class="fieldLabel">Teléfono <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">+34</span><input class="input" type="tel" placeholder="612 345 678" /></div></div>
+            </div>
+          </section>
+
+          <!-- OFICINA Y ACTIVIDAD -->
+          <section class="formCard">
+            <p class="fcLabel">3 · Actividad</p>
+            <h2 class="fcTitle">Oficina y actividad profesional</h2>
+            <p class="fcHelp">Dónde operáis y a qué volumen. Nos ayuda a entender vuestra actividad antes de aprobar el acceso.</p>
+            <div class="formGrid">
+              <div class="field full"><label class="fieldLabel">Dirección de oficina <span class="req">obligatorio</span></label><input class="input" placeholder="Calle, número, piso" /></div>
+              <div class="field"><label class="fieldLabel">Ciudad <span class="req">obligatorio</span></label><input class="input" placeholder="Madrid" /></div>
+              <div class="field"><label class="fieldLabel">Código postal <span class="opt">(opcional)</span></label><input class="input" placeholder="28010" maxlength="5" /></div>
+            </div>
+            <div class="field full" style="margin-top:18px;">
+              <label class="fieldLabel">Zonas de trabajo <span class="req">obligatorio</span></label>
+              <p class="fieldHint" style="margin-bottom:8px;">Selecciona o escribe las zonas donde gestionáis viviendas.</p>
+              <div class="chips" id="zonas">
+                <span class="chip">Chamberí</span><span class="chip">Salamanca</span><span class="chip">Retiro</span>
+                <span class="chip">Centro</span><span class="chip">Chamartín</span><span class="chip">Pozuelo</span>
+                <span class="chip">Las Rozas</span><span class="chip">+ Añadir zona</span>
+              </div>
+            </div>
+            <div class="field full" style="margin-top:18px;">
+              <label class="fieldLabel">Número aproximado de viviendas gestionadas <span class="req">obligatorio</span></label>
+              <select class="input"><option value="">Selecciona un rango…</option><option>1 – 10 viviendas</option><option>11 – 30 viviendas</option><option>31 – 75 viviendas</option><option>76 – 150 viviendas</option><option>Más de 150 viviendas</option></select>
+            </div>
+          </section>
+
+          <!-- ACREDITACIÓN -->
+          <section class="formCard">
+            <p class="fcLabel">4 · Acreditación</p>
+            <h2 class="fcTitle">Documentación acreditativa</h2>
+            <p class="fcHelp">Solo el equipo de verificación de Homyo puede ver estos documentos. Aceptamos PDF, JPG o PNG de hasta 8 MB.</p>
+            <div class="stack-sm">
+              <div class="uploadRow" data-up><span class="uIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg></span>
+                <div class="uBody"><h4>Tarjeta de identificación fiscal (CIF) <span class="uReq">Obligatorio</span></h4><p>Documento de Hacienda con el CIF de la empresa.</p><span class="uFile">documento-cif.pdf</span></div>
+                <button type="button" class="btn ghost sm uBtn">Subir</button></div>
+              <div class="uploadRow" data-up><span class="uIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M14 10h5M14 14h4"/></svg></span>
+                <div class="uBody"><h4>DNI / NIE del responsable <span class="uReq">Obligatorio</span></h4><p>Anverso y reverso de la persona responsable.</p><span class="uFile">dni-responsable.pdf</span></div>
+                <button type="button" class="btn ghost sm uBtn">Subir</button></div>
+              <div class="uploadRow" data-up><span class="uIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M15 3v5h5"/></svg></span>
+                <div class="uBody"><h4>Acreditación profesional <span class="uReq opt">Si procede</span></h4><p>Nota del Registro Mercantil, alta de autónomo o colegiación API.</p><span class="uFile">acreditacion.pdf</span></div>
+                <button type="button" class="btn ghost sm uBtn">Subir</button></div>
+            </div>
+          </section>
+
+          <!-- CONDICIONES -->
+          <section class="formCard">
+            <p class="fcLabel">5 · Condiciones</p>
+            <h2 class="fcTitle">Condiciones profesionales</h2>
+            <div class="stack-sm" style="gap:14px;">
+              <label class="checkRow"><input type="checkbox" id="c1" /> Acepto las <a href="terminos.html">condiciones profesionales de Homyo</a> y el estándar de publicación (plano obligatorio, superficies útiles declaradas y certificado energético).</label>
+              <label class="checkRow"><input type="checkbox" id="c2" /> Confirmo que los datos aportados son veraces y que la información será <strong>revisada manualmente antes de aprobar el acceso</strong>. Entiendo que el alta no es automática.</label>
+              <label class="checkRow"><input type="checkbox" id="c3" /> Acepto la <a href="privacidad.html">política de privacidad</a> y el tratamiento de la documentación con fines de verificación.</label>
+            </div>
+            <div class="spread" style="margin-top:26px; padding-top:22px; border-top:1px solid var(--lineSoft); flex-wrap:wrap; gap:14px;">
+              <span class="muted" style="font-size:12.5px;">Revisaremos tu solicitud en un plazo orientativo de 24–48 h laborables.</span>
+              <div class="row-sm">
+                <a class="btn ghost" href="index.html">Cancelar</a>
+                <button type="submit" class="btn primary" id="submitBtn" disabled>Enviar solicitud de acceso</button>
+              </div>
+            </div>
+          </section>
+        </form>
+
+        <!-- SIDEBAR -->
+        <aside class="stickySide">
+          <div class="card">
+            <p class="cardLabel">Cómo funciona el alta</p>
+            <ul class="infoSteps">
+              <li class="cur"><h5>1 · Envías la solicitud</h5><p>Completas este formulario con los datos y la documentación de tu inmobiliaria.</p></li>
+              <li><h5>2 · Verificamos manualmente</h5><p>Nuestro equipo contrasta los datos fiscales y la acreditación profesional.</p></li>
+              <li><h5>3 · Te avisamos por email</h5><p>Recibes la confirmación cuando tu acceso profesional ha sido aprobado.</p></li>
+              <li><h5>4 · Empiezas a publicar</h5><p>Accedes al panel, subes tus viviendas y gestionas tus contactos.</p></li>
+            </ul>
+          </div>
+          <div class="callout">
+            <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg></span>
+            <div><h4>Plataforma verificada</h4><p>Solo aprobamos inmobiliarias y profesionales reales. Por eso pedimos documentación: protege a los compradores y a tu reputación.</p></div>
+          </div>
+          <div class="card warm">
+            <p class="cardLabel">Modelo transparente</p>
+            <p style="font-size:13.5px; line-height:1.55; color:var(--ink2); margin:0 0 10px;">6,99 € por vivienda publicada al mes. Sin destacados, sin boosts, sin posicionamiento de pago.</p>
+            <p style="font-size:13px; line-height:1.5; color:var(--muted); margin:0;">Las agencias fundadoras disfrutan de un periodo gratuito al activar la cuenta.</p>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      // upload mock
+      document.querySelectorAll(".uBtn").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var row = b.closest("[data-up]");
+          row.classList.toggle("isFilled");
+          b.textContent = row.classList.contains("isFilled") ? "Cambiar" : "Subir";
+        });
+      });
+      // zonas chips
+      document.querySelectorAll("#zonas .chip").forEach(function (c) {
+        if (c.textContent.indexOf("Añadir") === -1) c.addEventListener("click", function () { c.classList.toggle("isOn"); });
+      });
+      // legal → enable submit
+      var checks = ["c1", "c2", "c3"].map(function (id) { return document.getElementById(id); });
+      var btn = document.getElementById("submitBtn");
+      function refresh() { btn.disabled = !checks.every(function (c) { return c.checked; }); }
+      checks.forEach(function (c) { c.addEventListener("change", refresh); });
+      document.getElementById("regForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        window.location.href = "pro-solicitud-recibida.html";
+      });
+    </script>
+  </body>
+</html>

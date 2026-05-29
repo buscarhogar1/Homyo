@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Solicitud recibida · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      body{ background:var(--bg); }
+      .regTop{ background:#fff; border-bottom:1px solid var(--line); height:var(--topbarH); display:flex; align-items:center; padding:0 28px; }
+      .regTop .brand{ font-family:'Raleway',sans-serif; font-size:23px; font-weight:627; letter-spacing:.24em; color:var(--granate); text-decoration:none; }
+      .regTop .tag{ font-family:'Raleway',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:#fff; background:var(--dorado); padding:3px 6px; border-radius:3px; margin-left:10px; }
+      .wrap{ width:min(880px,100%); margin:0 auto; padding:48px 24px 90px; }
+      .doneCard{ background:#fff; border:1px solid var(--line); border-radius:var(--rad); overflow:hidden; }
+      .doneHead{ text-align:center; padding:52px 40px 40px; background:linear-gradient(180deg,var(--cardWarm) 0%, #fff 100%); border-bottom:1px solid var(--line); position:relative; }
+      .doneIc{ width:78px; height:78px; margin:0 auto 22px; border-radius:50%; background:#fff; border:1px solid rgba(31,122,76,.3); color:var(--good); display:grid; place-items:center; box-shadow:0 12px 28px -12px rgba(31,122,76,.35); }
+      .doneIc svg{ width:36px; height:36px; }
+      .doneKick{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:600; letter-spacing:.3em; text-transform:uppercase; color:var(--dorado); margin:0 0 12px; }
+      .doneTitle{ font-family:'Raleway',sans-serif; font-size:40px; font-weight:300; color:var(--granate); letter-spacing:-.8px; margin:0 0 14px; }
+      .doneTitle strong{ font-weight:600; }
+      .doneSub{ max-width:520px; margin:0 auto; font-size:15.5px; line-height:1.6; color:var(--ink2); }
+      .refPill{ display:inline-flex; gap:8px; align-items:center; margin-top:22px; padding:9px 18px; background:#fff; border:1px solid var(--line); border-radius:999px; font-family:'Raleway',sans-serif; font-size:12px; font-weight:600; letter-spacing:.12em; }
+      .refPill .k{ color:var(--muted); } .refPill .v{ color:var(--granate); }
+      .doneBody{ display:grid; grid-template-columns:1fr 1fr; gap:34px; padding:34px 40px 40px; }
+      @media (max-width:720px){ .doneBody{ grid-template-columns:1fr; padding:28px 22px 32px; } .doneTitle{ font-size:30px; } .doneHead{ padding:38px 22px 30px; } }
+      .blkLabel{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:600; letter-spacing:.24em; text-transform:uppercase; color:var(--dorado); margin:0 0 16px; }
+      .sumList{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:11px; }
+      .sumList li{ display:grid; grid-template-columns:130px 1fr; gap:12px; font-size:13.5px; }
+      .sumList .k{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); padding-top:1px; }
+      .sumList .v{ color:var(--ink); }
+      .nextSteps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+      .nextSteps li{ display:flex; gap:12px; align-items:flex-start; padding:14px 16px; background:var(--cardWarm); border:1px solid rgba(196,150,42,.3); border-radius:var(--rad); }
+      .nextSteps .ni{ width:30px; height:30px; flex:0 0 auto; border-radius:50%; background:#fff; border:1px solid rgba(196,150,42,.4); color:var(--granate); display:grid; place-items:center; }
+      .nextSteps .ni svg{ width:14px; height:14px; }
+      .nextSteps h5{ margin:0 0 2px; font-family:'Raleway',sans-serif; font-size:13.5px; font-weight:600; color:var(--ink); }
+      .nextSteps p{ margin:0; font-size:12.5px; line-height:1.45; color:var(--ink2); }
+      .doneActions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; padding:0 40px 44px; }
+      .estBox{ display:flex; gap:13px; align-items:center; background:var(--bg); border:1px solid var(--line); border-radius:var(--rad); padding:16px 18px; margin-top:16px; }
+      .estBox svg{ width:22px; height:22px; color:var(--granate); flex:0 0 auto; }
+      .estBox .t{ font-size:13px; color:var(--ink2); line-height:1.5; }
+      .estBox .t b{ color:var(--ink); }
+    </style>
+  </head>
+  <body>
+    <header class="regTop"><a class="brand" href="index.html">H<span class="brandO">O</span>MY<span class="brandO">O</span></a><span class="tag">Pro</span></header>
+
+    <main class="wrap">
+      <div class="doneCard">
+        <div class="doneHead">
+          <div class="doneIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <p class="doneKick">Estado: en revisión</p>
+          <h1 class="doneTitle">Solicitud <strong>recibida</strong></h1>
+          <p class="doneSub">Estamos revisando la información de tu inmobiliaria. Te avisaremos por email cuando tu acceso profesional haya sido aprobado.</p>
+          <span class="refPill"><span class="k">Referencia</span><span class="v">HMY-PRO-2026-0418</span></span>
+        </div>
+
+        <div class="doneBody">
+          <div>
+            <p class="blkLabel">Resumen de los datos enviados</p>
+            <ul class="sumList">
+              <li><span class="k">Inmobiliaria</span><span class="v">Áurea Inmobiliaria</span></li>
+              <li><span class="k">Razón social</span><span class="v">Áurea Gestión Inmobiliaria, S.L.</span></li>
+              <li><span class="k">CIF</span><span class="v">B12345678</span></li>
+              <li><span class="k">Responsable</span><span class="v">Marta Sanz López</span></li>
+              <li><span class="k">Email</span><span class="v">marta@aureainmobiliaria.es</span></li>
+              <li><span class="k">Teléfono</span><span class="v">+34 612 345 678</span></li>
+              <li><span class="k">Ciudad</span><span class="v">Madrid</span></li>
+              <li><span class="k">Zonas</span><span class="v">Chamberí, Salamanca, Retiro</span></li>
+              <li><span class="k">Documentación</span><span class="v">3 documentos adjuntos</span></li>
+            </ul>
+            <div class="estBox">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 1.5"/></svg>
+              <span class="t"><b>Plazo orientativo: 24–48 h laborables.</b> Es una estimación, no una aprobación automática. Algunas verificaciones pueden requerir documentación adicional.</span>
+            </div>
+          </div>
+
+          <div>
+            <p class="blkLabel">Próximos pasos</p>
+            <ul class="nextSteps">
+              <li><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 6 12 13 2 6"/><rect x="2" y="5" width="20" height="14" rx="2"/></svg></span>
+                <div><h5>Revisa tu email</h5><p>Te escribiremos a marta@aureainmobiliaria.es. Comprueba también spam.</p></div></li>
+              <li><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+                <div><h5>Quizá te pidamos algo más</h5><p>Si falta documentación o un dato no cuadra, te lo indicaremos por email.</p></div></li>
+              <li><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg></span>
+                <div><h5>Activamos tu cuenta</h5><p>Al aprobarte, accedes al panel y puedes empezar a subir viviendas.</p></div></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="doneActions">
+          <a class="btn ghost" href="index.html">Volver al inicio</a>
+          <a class="btn primary" href="contacto.html?tipo=inmobiliaria">Contactar con soporte</a>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -84,11 +84,22 @@
   margin-top:0 !important;
   color:#8C1F2D;
   font-family:'Raleway','Montserrat',system-ui,sans-serif;
-  font-size:43px;
-  font-weight:600;
+  font-size:44px;
+  font-weight:627;
   letter-spacing:0.35em;
   line-height:1;
   text-transform:uppercase;
+}
+
+/* Make the O's read as perfect circles (Raleway's O is slightly oval).
+   Widen horizontally only — same font, weight, size, letter-spacing.
+   Tune --brand-o-scale to taste. */
+#bhHeader .brandText .brandO,
+.brandText .brandO{
+  --brand-o-scale:1.065;
+  display:inline-block;
+  transform:scaleX(var(--brand-o-scale));
+  transform-origin:center;
 }
 
 #bhHeader .navActionIconSvg,
@@ -116,6 +127,14 @@
 @media (max-width:720px){
   :root{
     --headerH:56px;
+  }
+
+  /* Ocultar la mini-búsqueda del header en móvil: en map.html la sustituye
+     .mobileSearchHeader, y dejarla visible empuja .rightGroup (icono de
+     iniciar sesión) fuera de la pantalla por su min-width:280px. */
+  #bhHeader .miniSearch,
+  .miniSearch{
+    display:none !important;
   }
 
   #bhHeader .topbar,

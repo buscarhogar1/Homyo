@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Facturación · Homyo Pro</title>
+    <link rel="stylesheet" href="pro.css" />
+    <style>
+      .bigSum{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+      @media (max-width:760px){ .bigSum{ grid-template-columns:1fr; } }
+      .sumCard{ background:#fff; border:1px solid var(--line); border-radius:var(--rad); padding:24px 26px; }
+      .sumCard.feature{ background:linear-gradient(160deg,#fff,var(--cardWarm) 150%); }
+      .sumCard .sl{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin:0 0 12px; }
+      .sumCard .sv{ font-family:'Raleway',sans-serif; font-size:38px; font-weight:500; color:var(--granate); letter-spacing:-.8px; line-height:1; }
+      .sumCard .sv small{ font-size:15px; color:var(--muted); font-weight:500; letter-spacing:0; }
+      .sumCard .sh{ font-size:12.5px; color:var(--ink2); margin-top:10px; line-height:1.45; }
+      .calc{ font-family:'Raleway',sans-serif; font-size:14px; color:var(--ink2); }
+      .calc b{ color:var(--granate); }
+      .twoCol{ display:grid; grid-template-columns:1fr 320px; gap:16px; align-items:start; }
+      @media (max-width:980px){ .twoCol{ grid-template-columns:1fr; } }
+      .payCard{ display:flex; align-items:center; gap:14px; padding:16px 18px; border:1px solid var(--line); border-radius:var(--rad); background:#fff; }
+      .payLogo{ width:46px; height:32px; border-radius:5px; background:var(--ink); color:#fff; display:grid; place-items:center; font-family:'Raleway',sans-serif; font-weight:700; font-size:12px; letter-spacing:.05em; flex:0 0 auto; }
+      .noUpsell{ display:flex; gap:13px; align-items:flex-start; }
+      .noUpsell svg{ width:20px; height:20px; color:var(--good); flex:0 0 auto; margin-top:1px; }
+    </style>
+  </head>
+  <body>
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="kicker">Suscripción y pagos</p>
+              <h1 class="pageTitle"><strong>Facturación</strong></h1>
+              <p class="pageLede">Un modelo simple y transparente: pagas por vivienda publicada al mes. Sin destacados, sin anuncios premium, sin posicionamiento de pago.</p>
+            </div>
+          </div>
+
+          <!-- FOUNDER BANNER -->
+          <div id="founderBanner" class="callout okc" style="margin-bottom:18px;">
+            <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z"/></svg></span>
+            <div><h4>Agencia fundadora · periodo gratuito activo</h4><p>Como agencia fundadora, no pagas nada durante <strong>3 meses</strong>. Tu periodo gratuito termina el <strong>18 de mayo de 2026</strong>. A partir de ahí se factura por vivienda publicada al mes.</p></div>
+          </div>
+
+          <!-- SUMMARY -->
+          <div class="bigSum">
+            <div class="sumCard"><p class="sl">Precio por vivienda activa</p><div class="sv">6,99 <small>€/mes</small></div><p class="sh">Precio de lanzamiento. Solo pagas por las viviendas publicadas.</p></div>
+            <div class="sumCard"><p class="sl">Viviendas activas</p><div class="sv">18</div><p class="sh">Borradores, rechazadas y retiradas no se facturan.</p></div>
+            <div class="sumCard feature"><p class="sl">Total mensual estimado</p><div class="sv" id="totalVal">125,82 <small>€/mes</small></div><p class="sh" id="totalNote">Bonificado al 100 % durante el periodo de fundadora.</p></div>
+          </div>
+
+          <div class="card" style="margin-top:14px;">
+            <p class="calc"><b>18 viviendas</b> activas × <b>6,99 €</b> = <b>125,82 €/mes</b> · próximo cargo estimado el <b>18 jun 2026</b> (al terminar el periodo gratuito).</p>
+          </div>
+
+          <div class="twoCol" style="margin-top:42px;">
+            <div>
+              <!-- INVOICES -->
+              <div class="sectionHead" style="margin-top:0;"><h2>Facturas</h2><a class="btnLink" href="#">Descargar todas</a></div>
+
+              <div id="viewInvoices" class="tableWrap">
+                <table class="proTable stack">
+                  <thead><tr><th>Periodo</th><th>Concepto</th><th>Viviendas</th><th>Importe</th><th>Estado</th><th></th></tr></thead>
+                  <tbody>
+                    <tr><td class="noLabel strong">Mayo 2026</td><td data-th="Concepto">Periodo fundadora</td><td data-th="Viviendas">18</td><td data-th="Importe" class="strong">0,00 €</td><td data-th="Estado"><span class="pill ok"><span class="dot"></span>Bonificada</span></td><td class="noLabel"><button class="iconBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></button></td></tr>
+                    <tr><td class="noLabel strong">Abril 2026</td><td data-th="Concepto">Periodo fundadora</td><td data-th="Viviendas">16</td><td data-th="Importe" class="strong">0,00 €</td><td data-th="Estado"><span class="pill ok"><span class="dot"></span>Bonificada</span></td><td class="noLabel"><button class="iconBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></button></td></tr>
+                    <tr><td class="noLabel strong">Marzo 2026</td><td data-th="Concepto">Periodo fundadora</td><td data-th="Viviendas">12</td><td data-th="Importe" class="strong">0,00 €</td><td data-th="Estado"><span class="pill ok"><span class="dot"></span>Bonificada</span></td><td class="noLabel"><button class="iconBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div id="viewNoInvoices" class="hide">
+                <div class="emptyState">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+                  <h3>Todavía no hay facturas</h3>
+                  <p>Mientras dure tu periodo gratuito de fundadora no se genera ninguna factura. Cuando empiece la facturación, tus recibos mensuales aparecerán aquí para descargarlos en PDF.</p>
+                  <div class="actions"><a class="btn ghost" href="pro-soporte.html">Ver cómo funciona el cobro</a></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SIDE -->
+            <aside class="stack-sm">
+              <div class="card">
+                <p class="cardLabel">Estado de la suscripción</p>
+                <div class="stack-sm">
+                  <div class="spread"><span class="muted" style="font-size:13px;">Plan</span><span class="strong rl">Por vivienda</span></div>
+                  <div class="spread"><span class="muted" style="font-size:13px;">Estado</span><span class="pill ok"><span class="dot"></span>Activa · fundadora</span></div>
+                  <div class="spread"><span class="muted" style="font-size:13px;">Fin periodo gratuito</span><span class="strong">18 may 2026</span></div>
+                  <div class="spread"><span class="muted" style="font-size:13px;">Próximo cargo</span><span class="strong">18 jun 2026</span></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="spread" style="margin-bottom:12px;"><p class="cardLabel mt0">Método de pago</p><button class="btnLink">Cambiar</button></div>
+                <div class="payCard"><span class="payLogo">VISA</span><div><div class="rl strong" style="font-size:14px;">···· ···· ···· 4421</div><div class="muted" style="font-size:12px;">Caduca 09/28 · Marta Sanz</div></div></div>
+                <p class="fieldHint" style="margin-top:12px;">Se domicilia automáticamente al inicio de cada mes una vez termine el periodo gratuito.</p>
+              </div>
+              <div class="card warm">
+                <div class="noUpsell">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+                  <span style="font-size:13px; color:var(--ink2); line-height:1.55;">En Homyo no existen destacados, boosts ni rankings pagados. Nunca te cobraremos por aparecer más arriba. El precio es el mismo para todas las viviendas.</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.PRO_PAGE = {
+        active: "facturacion", title: "Facturación", crumb: "Áurea Inmobiliaria · Periodo fundadora",
+        states: [
+          { id: "founder", label: "Periodo gratuito (fundadora)" },
+          { id: "active", label: "Facturación activa" },
+          { id: "none", label: "Sin facturas (vacío)" }
+        ],
+        onState: function (id) {
+          document.getElementById("founderBanner").classList.toggle("hide", id !== "founder");
+          document.getElementById("viewNoInvoices").classList.toggle("hide", id !== "none");
+          document.getElementById("viewInvoices").classList.toggle("hide", id === "none");
+          var total = document.getElementById("totalVal");
+          var note = document.getElementById("totalNote");
+          if (id === "active") { total.innerHTML = '125,82 <small>€/mes</small>'; note.textContent = "Se cobrará el 1 de cada mes según viviendas activas."; }
+          else if (id === "none") { total.innerHTML = '0,00 <small>€/mes</small>'; note.textContent = "Aún no hay viviendas activas que facturar."; }
+          else { total.innerHTML = '125,82 <small>€/mes</small>'; note.textContent = "Bonificado al 100 % durante el periodo de fundadora."; }
+        }
+      };
+    </script>
+    <script src="pro-shell.js"></script>
+  </body>
+</html>
