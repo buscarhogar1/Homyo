@@ -519,16 +519,24 @@
         align-items:center;
         gap:8px;
         padding:10px 14px;
-        border-radius:12px;
-        border:1px solid var(--border);
+        border-radius:10px;
+        border:1px solid rgba(140,31,45,0.35);
         background:#fff;
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
         font-size:14px;
+        font-weight:600;
         cursor:pointer;
         text-decoration:none;
-        color:#111;
+        color:#8C1F2D;
         width: fit-content;
+        transition:background 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
       }
-      .gmapsBtn:hover{ background:#f6f7f9; }
+      .gmapsBtn:hover{
+        background:rgba(140,31,45,0.06);
+        border-color:#8C1F2D;
+        box-shadow:0 4px 12px rgba(140,31,45,0.12);
+      }
+      .gmapsBtn svg{ stroke:currentColor; }
 
       .stickyBar{
         position:fixed;
@@ -1533,6 +1541,10 @@
           <div id="mainMap"></div>
 
           <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
             Calcular tiempo de viaje con Google Maps
           </a>
         </div>
@@ -1932,7 +1944,10 @@
             boxZoom: false,
             keyboard: false
           }).setView([lat, lng], 15);
-          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(miniMap);
+          L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap &copy; CARTO"
+          }).addTo(miniMap);
         } else {
           miniMap.setView([lat, lng], 15);
         }
@@ -1950,7 +1965,10 @@
 
         if (!mainMap) {
           mainMap = L.map("mainMap", { zoomControl: true, attributionControl: false, scrollWheelZoom: false }).setView([lat, lng], 14);
-          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(mainMap);
+          L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap &copy; CARTO"
+          }).addTo(mainMap);
         } else {
           mainMap.setView([lat, lng], 14);
         }
