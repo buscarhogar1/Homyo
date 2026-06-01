@@ -542,9 +542,13 @@
       const btnPoints = L.DomUtil.create("div", "qBtn", wrapPoints);
       btnPoints.title = "Área por puntos";
       btnPoints.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2l4 8-4 12-4-12 4-8z"></path>
-          <path d="M12 10l8 2-8 2-8-2 8-2z"></path>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 8l6-4 8 5-3 8-9-1z"></path>
+          <circle cx="5" cy="8" r="1.3"></circle>
+          <circle cx="11" cy="4" r="1.3"></circle>
+          <circle cx="19" cy="9" r="1.3"></circle>
+          <circle cx="16" cy="17" r="1.3"></circle>
+          <circle cx="7" cy="16" r="1.3"></circle>
         </svg>
       `;
 
@@ -561,9 +565,9 @@
       const btnFree = L.DomUtil.create("div", "qBtn", wrapFree);
       btnFree.title = "Área dibujo libre";
       btnFree.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 17c3-6 6-6 9 0s6 6 9 0"></path>
-          <path d="M3 7c3 6 6 6 9 0s6-6 9 0"></path>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 19l1.5-4L16 5.5l3 3L9.5 18z"></path>
+          <path d="M14 7.5l3 3"></path>
         </svg>
       `;
 

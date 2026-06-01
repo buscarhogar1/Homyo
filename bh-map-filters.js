@@ -366,17 +366,20 @@ function selectOneControl({ options, initial, onChange, collapseAfter }) {
   }};
 }
 
-function multiSelectControl({ options, initialValues, onChange }) {
+function multiSelectControl({ options, initialValues, onChange, collapseAfter }) {
   const body = el("div", { class: "fBody" });
   const col = el("div", { class: "fOptCol" });
   const selected = new Set((initialValues || []).map(String));
   const name = `m_${Math.random().toString(36).slice(2, 9)}`;
 
+  const extraRows = [];
+  let hasHiddenSelection = false;
+
   function emit() {
     onChange?.(Array.from(selected));
   }
 
-  options.forEach(([value, label]) => {
+  options.forEach(([value, label], idx) => {
     const id = `${name}_${String(value).replace(/[^a-z0-9_-]/gi, "_")}`;
     const input = el("input", { type: "checkbox", id, value });
     if (selected.has(String(value))) input.checked = true;
@@ -393,9 +396,32 @@ function multiSelectControl({ options, initialValues, onChange }) {
     ]);
 
     col.appendChild(row);
+
+    if (collapseAfter != null && idx >= collapseAfter) {
+      extraRows.push(row);
+      if (selected.has(String(value))) hasHiddenSelection = true;
+    }
   });
 
   body.appendChild(col);
+
+  // "Ver más / Ver menos" toggle when the list is long
+  if (collapseAfter != null && extraRows.length > 0) {
+    let expanded = false;
+    const toggle = el("button", { type: "button", class: "fMoreToggle" });
+
+    const setState = (open) => {
+      expanded = open;
+      extraRows.forEach(r => { r.classList.toggle("fOptHidden", !open); });
+      toggle.textContent = open ? "Ver menos" : `Ver ${extraRows.length} más`;
+    };
+
+    toggle.addEventListener("click", () => setState(!expanded));
+
+    // Auto-expand if any active selection is hidden inside the extra rows
+    setState(hasHiddenSelection);
+    body.appendChild(toggle);
+  }
   return {
     el: body,
     getValues: () => Array.from(selected),
@@ -503,16 +529,19 @@ export function initFiltersBar({ mountId }) {
   {
     const c = multiSelectControl({
       options: [
-        ["pre1960", "Antes de 1960"],
-        ["1960_1970", "1960–1970"],
-        ["1970_1980", "1970–1980"],
-        ["1980_1990", "1980–1990"],
-        ["1990_2000", "1990–2000"],
-        ["2000_2010", "2000–2010"],
+        ["2020_plus", "2020+"],
         ["2010_2020", "2010–2020"],
-        ["2020_plus", "2020+"]
+        ["2000_2010", "2000–2010"],
+        ["1990_2000", "1990–2000"],
+        ["1980_1990", "1980–1990"],
+        ["1970_1980", "1970–1980"],
+        ["1960_1970", "1960–1970"],
+        ["1950_1960", "1950–1960"],
+        ["1940_1950", "1940–1950"],
+        ["pre1940", "Antes de 1940"]
       ],
       initialValues: p.buildPeriods,
+      collapseAfter: 5,
       onChange: (vals) => {
         setURLParam("build_periods", toCSV(vals));
         touch();
@@ -823,18 +852,15 @@ export function initFiltersBar({ mountId }) {
     const c = selectOneControl({
       options: [
         ["pending", "Pendiente"],
-        ["A+++++", "A+++++"],
-        ["A++++", "A++++"],
-        ["A+++", "A+++"],
-        ["A++", "A++"],
-        ["A+", "A+"],
-        ["A", "A"],
-        ["B", "B"],
-        ["C", "C"],
-        ["D", "D"],
-        ["E", "E"],
-        ["F", "F"],
-        ["G", "G"]
+        ["A++", "> A++"],
+        ["A+", "> A+"],
+        ["A", "> A"],
+        ["B", "> B"],
+        ["C", "> C"],
+        ["D", "> D"],
+        ["E", "> E"],
+        ["F", "> F"],
+        ["G", "> G"]
       ],
       initial: p.energyChoice,
       collapseAfter: 5,
@@ -845,7 +871,7 @@ export function initFiltersBar({ mountId }) {
     });
 
     const blk = filterBlock({
-      title: "Mínimo certificado energético",
+      title: "Certificado energético",
       isActiveFn: () => !!getParamsFromURL().energyChoice,
       onClear: () => {
         c.clear();

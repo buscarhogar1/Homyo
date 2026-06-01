@@ -331,7 +331,10 @@ export function initMap(){
     return mediaWrap;
   }
 
-  let map = L.map("map").setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+  let map = L.map("map", {
+    zoomSnap: 0.25,   // permite niveles fraccionarios (13.25, 13.5, ...)
+    zoomDelta: 0.75,  // cada clic en +/- mueve 0.75 niveles (entre medio y entero)
+  }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
   window.__bhMap = map;
 
   L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
@@ -1573,10 +1576,10 @@ export function initMap(){
       const btn = L.DomUtil.create("div", "qBtn", container);
       btn.title = "Mi ubicación";
       btn.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M12 2v3"></path><path d="M12 19v3"></path>
-          <path d="M2 12h3"></path><path d="M19 12h3"></path>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 19s5.5-5 5.5-10A5.5 5.5 0 1 0 6.5 9c0 5 5.5 10 5.5 10z"></path>
+          <circle cx="12" cy="9" r="2.1"></circle>
+          <path d="M8 21.5h8"></path>
         </svg>
       `;
 
@@ -1624,10 +1627,11 @@ export function initMap(){
       btn.title = "Transporte";
       btn.innerHTML = `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 17h14"></path>
-          <path d="M6 17l1.2-5.4A2 2 0 0 1 9.15 10h5.7a2 2 0 0 1 1.95 1.6L18 17"></path>
-          <circle cx="8" cy="17.5" r="1.6"></circle>
-          <circle cx="16" cy="17.5" r="1.6"></circle>
+          <circle cx="12" cy="12" r="8"></circle>
+          <circle cx="12" cy="12" r="2.2"></circle>
+          <path d="M12 14.2V20"></path>
+          <path d="M9.9 11l-6.8-2.4"></path>
+          <path d="M14.1 11l6.8-2.4"></path>
         </svg>
       `;
 
@@ -1656,12 +1660,12 @@ export function initMap(){
       btn.id = "sunBtn";
       btn.title = "Sol";
       btn.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="4"></circle>
-          <path d="M12 2v2"></path><path d="M12 20v2"></path>
-          <path d="M4.93 4.93l1.41 1.41"></path><path d="M17.66 17.66l1.41 1.41"></path>
-          <path d="M2 12h2"></path><path d="M20 12h2"></path>
-          <path d="M4.93 19.07l1.41-1.41"></path><path d="M17.66 6.34l1.41-1.41"></path>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2.5 20h19"></path>
+          <path d="M6 20a6 6 0 0 1 12 0"></path>
+          <path d="M12 3v3"></path>
+          <path d="M4 9l1.8 1.8"></path>
+          <path d="M20 9l-1.8 1.8"></path>
         </svg>
       `;
 
@@ -1753,9 +1757,13 @@ export function initMap(){
       const btnPoints = L.DomUtil.create("div", "qBtn", wrapPoints);
       btnPoints.title = "Área por puntos";
       btnPoints.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2l4 8-4 12-4-12 4-8z"></path>
-          <path d="M12 10l8 2-8 2-8-2 8-2z"></path>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 8l6-4 8 5-3 8-9-1z"></path>
+          <circle cx="5" cy="8" r="1.3"></circle>
+          <circle cx="11" cy="4" r="1.3"></circle>
+          <circle cx="19" cy="9" r="1.3"></circle>
+          <circle cx="16" cy="17" r="1.3"></circle>
+          <circle cx="7" cy="16" r="1.3"></circle>
         </svg>
       `;
 
@@ -1772,9 +1780,9 @@ export function initMap(){
       const btnFree = L.DomUtil.create("div", "qBtn", wrapFree);
       btnFree.title = "Área dibujo libre";
       btnFree.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 17c3-6 6-6 9 0s6 6 9 0"></path>
-          <path d="M3 7c3 6 6 6 9 0s6-6 9 0"></path>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 19l1.5-4L16 5.5l3 3L9.5 18z"></path>
+          <path d="M14 7.5l3 3"></path>
         </svg>
       `;
 

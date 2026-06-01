@@ -126,14 +126,14 @@
 
         .mobileSaveSearchBtn{
           flex: 0 0 auto;
-          width: 32px;
-          height: 32px;
+          width: 34px;
+          height: 34px;
           padding: 0;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: 0;
-          border-radius: 999px;
+          border-radius: 3.5px;
           border: 1px solid #8C1F2D;
           background: #8C1F2D;
           color: #FFFDFA;
@@ -154,8 +154,8 @@
           transform: translateY(1px);
         }
         .mobileSaveSearchIcon{
-          width: 16px;
-          height: 16px;
+          width: 17.6px;
+          height: 17.6px;
           display: block;
           flex: 0 0 auto;
         }
@@ -208,17 +208,8 @@
 
     <!-- Contenedor general de la página del mapa -->
 
-    <div class="mobileSearchHeader" aria-hidden="true">
-      <button id="mobileBackBtn" class="mobileBackBtn" type="button" aria-label="Volver">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M15 18l-6-6 6-6"/>
-        </svg>
-      </button>
-
-      <div class="mobileSearchHeaderInfo">
-        <div id="mobilePlaceLabel" class="mobileSearchHeaderPlace">—</div>
-        <button id="mobileNewSearchBtn" class="mobileSearchHeaderEdit" type="button">Nueva búsqueda</button>
-      </div>
+    <div class="mobileActionsRow" aria-hidden="true">
+      <button id="mobileFiltersBtn" class="mobileActionBtn" type="button">Filtros</button>
 
       <button id="mobileSaveSearchBtn" class="mobileSaveSearchBtn" type="button" aria-label="Guardar búsqueda">
         <svg class="mobileSaveSearchIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -227,10 +218,7 @@
         </svg>
         <span class="mobileSaveSearchLabel">Guardar</span>
       </button>
-    </div>
 
-    <div class="mobileActionsRow" aria-hidden="true">
-      <button id="mobileFiltersBtn" class="mobileActionBtn" type="button">Filtros</button>
       <button id="mobileListBtn" class="mobileActionBtn" type="button">Listado</button>
     </div>
 
@@ -406,7 +394,7 @@
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
-      import { initFiltersBar, clearAllFilters } from "./bh-map-filters.js?v=20260515_hidemap_v1";
+      import { initFiltersBar, clearAllFilters } from "./bh-map-filters.js?v=20260601_construccion_periodos";
       import { initMap } from "./bh-map-core.js?v=20260531_hidemap_keeplist";
       import { getSession, saveCurrentSearch } from "./bh-user-data.js?v=20260512_saved_searches_real_v3";
 

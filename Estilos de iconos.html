@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Homyo · Estilos de iconos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; }
+
+  /* ===== Iconos · base ===== */
+  .ic {
+    width: 26px; height: 26px;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .iLabel {
+    font-family: 'Raleway', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #8A1F2D;
+    opacity: .78;
+    white-space: nowrap;
+  }
+
+  .tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px; height: 58px;
+    border-radius: 18px;
+    transition: all .18s ease;
+  }
+
+  /* 01 · Línea fina acristalado (actual) */
+  .t-glass {
+    border: 1px solid rgba(138,31,45,.12);
+    background: rgba(255,255,255,.72);
+    box-shadow: 0 10px 24px rgba(138,31,45,.06), inset 0 1px 0 rgba(255,255,255,.9);
+    backdrop-filter: blur(10px);
+  }
+  .t-glass .ic { stroke: #8A1F2D; stroke-width: 1.6; }
+
+  /* 02 · Azulejo tintado */
+  .t-tint { background: rgba(138,31,45,.08); border-radius: 16px; }
+  .t-tint .ic { stroke: #8A1F2D; stroke-width: 1.9; }
+
+  /* 03 · Trazo grueso suelto */
+  .t-bare { background: transparent; }
+  .t-bare .ic { stroke: #8A1F2D; stroke-width: 2.4; width: 30px; height: 30px; }
+
+  /* 04 · Sello granate */
+  .t-badgeB { background: #8A1F2D; border-radius: 50%; box-shadow: 0 8px 20px rgba(138,31,45,.22); }
+  .t-badgeB .ic { stroke: #FBEDE2; stroke-width: 1.8; }
+
+  /* 05 · Sello dorado */
+  .t-badgeG { background: #E2B84C; border-radius: 50%; box-shadow: 0 8px 20px rgba(226,184,76,.30); }
+  .t-badgeG .ic { stroke: #7A1A26; stroke-width: 1.9; }
+
+  /* 06 · Anillo */
+  .t-ring { border: 2px solid #8A1F2D; border-radius: 50%; background: transparent; }
+  .t-ring .ic { stroke: #8A1F2D; stroke-width: 1.6; }
+
+  /* 07 · Azulejo dorado */
+  .t-goldtile { background: rgba(226,184,76,.22); border-radius: 16px; }
+  .t-goldtile .ic { stroke: #8A1F2D; stroke-width: 1.8; }
+
+  /* 08 · Acento dorado */
+  .t-accent {
+    position: relative;
+    border: 1px solid rgba(138,31,45,.12);
+    background: rgba(255,255,255,.86);
+    box-shadow: 0 10px 24px rgba(138,31,45,.06), inset 0 1px 0 rgba(255,255,255,.9);
+    border-radius: 18px;
+  }
+  .t-accent::after {
+    content: '';
+    position: absolute; top: 8px; right: 8px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #E2B84C;
+  }
+  .t-accent .ic { stroke: #8A1F2D; stroke-width: 1.7; }
+
+  /* 09 · Cuadrado nítido */
+  .t-sharp { border: 1.5px solid #8A1F2D; border-radius: 6px; background: #fff; }
+  .t-sharp .ic { stroke: #8A1F2D; stroke-width: 2; }
+
+  /* 10 · Pastilla con etiqueta */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 16px 9px 13px;
+    border: 1.5px solid #8A1F2D;
+    border-radius: 999px;
+    color: #8A1F2D;
+    background: rgba(255,255,255,.55);
+  }
+  .pill .ic { width: 18px; height: 18px; stroke: #8A1F2D; stroke-width: 1.8; }
+  .pill span {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700; font-size: 11px;
+    letter-spacing: .12em; text-transform: uppercase;
+  }
+
+  /* ===== Tarjeta de estilo ===== */
+  .styleCard {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 24px 26px 26px;
+    display: flex;
+    flex-direction: column;
+    background: #FBF8F4;
+  }
+  .styleHead {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .styleNum {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800; font-size: 12px;
+    color: #E2B84C; letter-spacing: .12em;
+  }
+  .styleName {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700; font-size: 16px;
+    color: #3a2b2e;
+  }
+  .styleDesc {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500; font-size: 11.5px;
+    color: #a89a93; margin-left: auto;
+    text-align: right;
+  }
+  .iconWrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .iconRow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+
+<script type="text/babel">
+const { DesignCanvas, DCSection, DCArtboard } = window;
+
+// ===== Los 5 iconos (modos de búsqueda Homyo) =====
+const ICONS = [
+  { key: 'location', label: 'Ubicación', svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/>' },
+  { key: 'area',     label: 'Área',      svg: '<path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h16"/><path d="M14 8l4 2-2 4-5-1z"/>' },
+  { key: 'trace',    label: 'Trazo',     svg: '<path d="M4 17c3-6 6-9 16-10"/>' },
+  { key: 'sun',      label: 'Sol',       svg: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/>' },
+  { key: 'vehicle',  label: 'Vehículo',  svg: '<path d="M5 17h14"/><path d="M7 17V9h10v8"/><circle cx="9" cy="17" r="1.5"/><circle cx="15" cy="17" r="1.5"/>' },
+];
+
+function Glyph({ inner }) {
+  return <svg className="ic" viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: inner }} />;
+}
+
+// Estilos basados en tile + label
+const STYLES = [
+  { n: '01', id: 'glass',    name: 'Línea fina · acristalado', desc: 'Estilo actual refinado' },
+  { n: '02', id: 'tint',     name: 'Azulejo tintado',          desc: 'Granate suave, sin borde' },
+  { n: '03', id: 'bare',     name: 'Trazo grueso suelto',      desc: 'Sin contenedor · stroke 2.4' },
+  { n: '04', id: 'badgeB',   name: 'Sello granate',            desc: 'Círculo macizo · icono crema' },
+  { n: '05', id: 'badgeG',   name: 'Sello dorado',             desc: 'Círculo oro · icono granate' },
+  { n: '06', id: 'ring',     name: 'Anillo',                   desc: 'Círculo perfilado · 2px' },
+  { n: '07', id: 'goldtile', name: 'Azulejo dorado',           desc: 'Fondo oro suave' },
+  { n: '08', id: 'accent',   name: 'Acento dorado',            desc: 'Glass + punto oro' },
+  { n: '09', id: 'sharp',    name: 'Cuadrado nítido',          desc: 'Esquinas marcadas' },
+  { n: '10', id: 'pill',     name: 'Pastilla con etiqueta',    desc: 'Icono + texto en línea' },
+];
+
+function StyleCard({ s }) {
+  return (
+    <div className="styleCard">
+      <div className="styleHead">
+        <span className="styleNum">{s.n}</span>
+        <span className="styleName">{s.name}</span>
+        <span className="styleDesc">{s.desc}</span>
+      </div>
+      <div className="iconWrap">
+        {s.id === 'pill' ? (
+          <div className="iconRow" style={{ gap: 14 }}>
+            {ICONS.map((ic) => (
+              <span className="pill" key={ic.key}>
+                <Glyph inner={ic.svg} />
+                <span>{ic.label}</span>
+              </span>
+            ))}
+          </div>
+        ) : (
+          <div className="iconRow">
+            {ICONS.map((ic) => (
+              <div className="cell" key={ic.key}>
+                <div className={'tile t-' + s.id}>
+                  <Glyph inner={ic.svg} />
+                </div>
+                <div className="iLabel">{ic.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <DesignCanvas>
+      <DCSection id="iconos" title="Estilos de iconos · Homyo" subtitle="10 tratamientos para los 5 modos de búsqueda — todos sobre branding granate + oro">
+        {STYLES.map((s) => (
+          <DCArtboard key={s.id} id={s.id} label={s.n + ' · ' + s.name} width={620} height={250}>
+            <StyleCard s={s} />
+          </DCArtboard>
+        ))}
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
