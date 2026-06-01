@@ -13,6 +13,13 @@
 
   const areasLayer = L.layerGroup().addTo(map);
 
+  // The first vertex doubles as the "close" target, so make it noticeably
+  // bigger than the rest and give it an even larger invisible tap zone
+  // (bumped further on touch devices where precise tapping is hard).
+  const IS_TOUCH = !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+  const FIRST_VERTEX_RADIUS = IS_TOUCH ? 30 : 30;
+  const FIRST_VERTEX_HIT_RADIUS = IS_TOUCH ? 40 : 40;
+
   const areaState = {
     pointsActive: false,
     freehandActive: false,
@@ -24,6 +31,7 @@
     points: [],
     tempLine: null,
     tempFirstMarker: null,
+    tempFirstHalo: null,
     tempVertexMarkers: [],
     tempLivePoly: null,
 
@@ -56,6 +64,11 @@
     if (areaState.tempFirstMarker) {
       areasLayer.removeLayer(areaState.tempFirstMarker);
       areaState.tempFirstMarker = null;
+    }
+
+    if (areaState.tempFirstHalo) {
+      areasLayer.removeLayer(areaState.tempFirstHalo);
+      areaState.tempFirstHalo = null;
     }
 
     areaState.tempVertexMarkers.forEach(m => areasLayer.removeLayer(m));
@@ -256,20 +269,36 @@
     const isFirst = areaState.points.length === 1;
 
     const circle = L.circleMarker(latlng, {
-      radius: isFirst ? 7 : 6,
+      radius: isFirst ? FIRST_VERTEX_RADIUS : 6,
       color: "rgba(255,255,255,0.95)",
-      weight: 3,
+      weight: isFirst ? 4 : 3,
       fillColor: "rgba(26,115,232,0.90)",
       fillOpacity: 1
     }).addTo(areasLayer);
 
     if (isFirst) {
       areaState.tempFirstMarker = circle;
-      circle.on("click", (e) => {
+
+      const closeFirst = (e) => {
         L.DomEvent.stopPropagation(e);
         if (!areaState.isDrawing || areaState.drawingMode !== "points") return;
+        if (areaState.points.length < 3) return;
         finishDrawingPoints();
-      });
+      };
+
+      // Larger invisible hit area so the first point is easy to tap (esp. on mobile).
+      const halo = L.circleMarker(latlng, {
+        radius: FIRST_VERTEX_HIT_RADIUS,
+        stroke: false,
+        fillColor: "#000",
+        fillOpacity: 0,
+        interactive: true,
+        bubblingMouseEvents: false
+      }).addTo(areasLayer);
+      halo.on("click", closeFirst);
+      circle.on("click", closeFirst);
+
+      areaState.tempFirstHalo = halo;
     } else {
       areaState.tempVertexMarkers.push(circle);
     }
@@ -279,8 +308,12 @@
     if (!areaState.tempFirstMarker) return false;
     const first = areaState.points[0];
     if (!first) return false;
-    const d = map.distance(first, latlng);
-    return d <= 12;
+    // Pixel-based tolerance so the close zone matches the (enlarged) first dot
+    // at any zoom level, and is generous enough to tap on mobile.
+    const a = map.latLngToContainerPoint(first);
+    const b = map.latLngToContainerPoint(latlng);
+    const dPx = Math.hypot(a.x - b.x, a.y - b.y);
+    return dPx <= FIRST_VERTEX_HIT_RADIUS;
   }
 
   function simplifyRDP(points, epsilonPx){

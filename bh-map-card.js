@@ -107,7 +107,7 @@
     const type = p.property_type ? String(p.property_type) : "—";
 
     cardFactsEl.innerHTML = `
-      <div class="fact">${iconArea()}<span>${m2} m² útiles</span></div>
+      <div class="fact">${iconArea()}<span>${m2} útiles</span></div>
       <div class="fact">${iconType()}<span>${type}</span></div>
     `;
 

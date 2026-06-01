@@ -308,15 +308,21 @@ function numericRangeControl({ type, initialMin, initialMax, placeholderMin, pla
   return { el: wrap, minInput, maxInput };
 }
 
-function selectOneControl({ options, initial, onChange }) {
+function selectOneControl({ options, initial, onChange, collapseAfter }) {
   const body = el("div", { class: "fBody" });
   const col = el("div", { class: "fOptCol" });
   const name = `f_${Math.random().toString(36).slice(2, 9)}`;
 
-  options.forEach(([value, label]) => {
+  const extraRows = [];
+  let selectedIndex = -1;
+
+  options.forEach(([value, label], idx) => {
     const id = `${name}_${String(value || "empty").replace(/[^a-z0-9_-]/gi, "_")}`;
     const input = el("input", { type: "radio", name, id, value: value ?? "" });
-    if ((initial ?? "") === (value ?? "")) input.checked = true;
+    if ((initial ?? "") === (value ?? "")) {
+      input.checked = true;
+      selectedIndex = idx;
+    }
     input.addEventListener("change", () => {
       if (input.checked) onChange?.(value || null);
     });
@@ -327,9 +333,33 @@ function selectOneControl({ options, initial, onChange }) {
     ]);
 
     col.appendChild(row);
+
+    if (collapseAfter != null && idx >= collapseAfter) extraRows.push(row);
   });
 
   body.appendChild(col);
+
+  // "Ver más / Ver menos" toggle when the list is long
+  let toggle = null;
+  if (collapseAfter != null && extraRows.length > 0) {
+    let expanded = false;
+    toggle = el("button", { type: "button", class: "fMoreToggle" });
+
+    const setState = (open) => {
+      expanded = open;
+      extraRows.forEach(r => { r.classList.toggle("fOptHidden", !open); });
+      toggle.textContent = open
+        ? "Ver menos"
+        : `Ver ${extraRows.length} más`;
+    };
+
+    toggle.addEventListener("click", () => setState(!expanded));
+
+    // Auto-expand if the active selection is hidden inside the extra rows
+    setState(selectedIndex >= collapseAfter);
+    body.appendChild(toggle);
+  }
+
   return { el: body, clear: () => {
     col.querySelectorAll("input[type=radio]").forEach(r => { r.checked = false; });
     onChange?.(null);
@@ -807,6 +837,7 @@ export function initFiltersBar({ mountId }) {
         ["G", "G"]
       ],
       initial: p.energyChoice,
+      collapseAfter: 5,
       onChange: (val) => {
         setURLParam("energy", val);
         touch();

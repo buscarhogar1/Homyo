@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Homyo · Conceptos de logo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; }
+
+  /* ===== Tarjeta de concepto ===== */
+  .logoCard {
+    box-sizing: border-box;
+    height: 100%;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #FBF8F4;
+  }
+  .logoHead {
+    align-self: stretch;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .logoNum {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800; font-size: 12px;
+    color: #E2B84C; letter-spacing: .12em;
+  }
+  .logoName {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700; font-size: 15px;
+    color: #3a2b2e;
+  }
+
+  /* Tile grande (estilo acristalado actual) */
+  .bigTile {
+    width: 96px; height: 96px;
+    border-radius: 28px;
+    border: 1px solid rgba(138,31,45,.12);
+    background: rgba(255,255,255,.82);
+    box-shadow: 0 14px 30px rgba(138,31,45,.08), inset 0 1px 0 rgba(255,255,255,.9);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bigTile svg {
+    width: 48px; height: 48px;
+    stroke: #8A1F2D; stroke-width: 1.5; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* Wordmark HOMYO */
+  .wm {
+    margin-top: 20px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700; font-size: 21px;
+    letter-spacing: .24em;
+    color: #8A1F2D;
+    padding-left: .24em;
+  }
+  .wm .o { color: #E2B84C; }
+
+  /* Fila de tamaños pequeños */
+  .smallRow {
+    margin-top: auto;
+    display: flex; align-items: center; gap: 14px;
+    padding-top: 22px;
+  }
+  .sTile {
+    border: 1px solid rgba(138,31,45,.14);
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sTile.s44 { width: 44px; height: 44px; border-radius: 14px; }
+  .sTile.s30 { width: 30px; height: 30px; border-radius: 10px; }
+  .sTile svg {
+    stroke: #8A1F2D; stroke-width: 1.6; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .sTile.s44 svg { width: 22px; height: 22px; }
+  .sTile.s30 svg { width: 15px; height: 15px; }
+  .sHint {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; color: #b3a79f; letter-spacing: .04em;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+
+<script type="text/babel">
+const { DesignCanvas, DCSection, DCArtboard } = window;
+
+// ===== 10 conceptos de isotipo Homyo (línea fina granate) =====
+const LOGOS = [
+  { n: '01', name: 'Casa', desc: 'Hogar esencial · contorno limpio',
+    svg: '<path d="M4 11l8-6 8 6"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/>' },
+
+  { n: '02', name: 'Casa + marcador', desc: 'Vivienda situada en el mapa',
+    svg: '<path d="M12 21.5c4-4.2 6-7.4 6-10.5a6 6 0 1 0-12 0c0 3.1 2 6.3 6 10.5z"/><path d="M9 11.2l3-2.3 3 2.3"/><path d="M9.8 10.6V13.6h4.4v-3"/>' },
+
+  { n: '03', name: 'Tejado H', desc: 'La H de Homyo bajo el tejado',
+    svg: '<path d="M5 19V9.5l7-5.5 7 5.5V19"/><path d="M9.5 19v-7M14.5 19v-7M9.5 14.5h5"/>' },
+
+  { n: '04', name: 'Casa + sol', desc: 'Guiño al modo Sol del mapa',
+    svg: '<circle cx="12" cy="4.6" r="2.1"/><path d="M12 1v.7M8.7 2.3l.5.6M15.3 2.3l-.5.6"/><path d="M4 14l8-5.4 8 5.4"/><path d="M6.6 13v6h10.8v-6"/>' },
+
+  { n: '05', name: 'Ventana O', desc: 'La O de la marca como ventana',
+    svg: '<path d="M4 11l8-6 8 6"/><path d="M6 10v9h12v-9"/><circle cx="12" cy="13.4" r="2.6"/>' },
+
+  { n: '06', name: 'Llave', desc: 'Acceso a tu hogar',
+    svg: '<circle cx="8.5" cy="8.5" r="3.6"/><path d="M11 11l8 8"/><path d="M16 16l2.2-2.2M18.2 18.2l1.6-1.6"/>' },
+
+  { n: '07', name: 'Puerta', desc: 'Umbral · entrada arqueada',
+    svg: '<path d="M5.5 20V11a6.5 6.5 0 0 1 13 0v9"/><path d="M4.5 20h15"/><circle cx="14.8" cy="13" r=".9"/>' },
+
+  { n: '08', name: 'Monograma H', desc: 'Marca tipográfica pura',
+    svg: '<path d="M7 4.5v15M17 4.5v15M7 12h10"/>' },
+
+  { n: '09', name: 'Vecindario', desc: 'Comunidad · tejados contiguos',
+    svg: '<path d="M2.6 12.5l5-4 5 4"/><path d="M11.4 12.5l5-4 5 4"/><path d="M4.6 11v8h6v-8"/><path d="M13.4 11v8h6v-8"/>' },
+
+  { n: '10', name: 'Hogar corazón', desc: 'Casa donde te sientes en casa',
+    svg: '<path d="M4 11l8-6 8 6"/><path d="M6 10v9h12v-9"/><path d="M12 16.8c-1.8-1.3-2.9-2.2-2.9-3.3 0-.85.66-1.45 1.45-1.45.55 0 1.05.32 1.45.86.4-.54.9-.86 1.45-.86.79 0 1.45.6 1.45 1.45 0 1.1-1.1 2-2.9 3.3z"/>' },
+];
+
+function Wordmark() {
+  return (
+    <div className="wm">H<span className="o">O</span>MY<span className="o">O</span></div>
+  );
+}
+
+function LogoCard({ l }) {
+  return (
+    <div className="logoCard">
+      <div className="logoHead">
+        <span className="logoNum">{l.n}</span>
+        <span className="logoName">{l.name}</span>
+      </div>
+
+      <div className="bigTile">
+        <svg viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: l.svg }} />
+      </div>
+
+      <Wordmark />
+
+      <div className="smallRow">
+        <div className="sTile s44">
+          <svg viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: l.svg }} />
+        </div>
+        <div className="sTile s30">
+          <svg viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: l.svg }} />
+        </div>
+        <span className="sHint">{l.desc}</span>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <DesignCanvas>
+      <DCSection id="logos" title="Conceptos de logo · Homyo" subtitle="10 isotipos en línea fina granate — mostrados grandes, con el wordmark y a tamaño pequeño para ver cómo escalan">
+        {LOGOS.map((l) => (
+          <DCArtboard key={l.n} id={l.n} label={l.n + ' · ' + l.name} width={340} height={340}>
+            <LogoCard l={l} />
+          </DCArtboard>
+        ))}
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

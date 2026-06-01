@@ -193,7 +193,7 @@ export function initMap(){
     const type = p.property_type ? String(p.property_type) : "—";
 
     cardFactsEl.innerHTML = `
-      <div class="fact">${iconArea()}<span>${m2} m² útiles</span></div>
+      <div class="fact">${iconArea()}<span>${m2} útiles</span></div>
       <div class="fact">${iconType()}<span>${type}</span></div>
     `;
 
@@ -1038,6 +1038,7 @@ export function initMap(){
       agency.textContent = p.agency_name || "—";
 
       const right = document.createElement("div");
+      right.className = "listBody";
       right.appendChild(title);
       right.appendChild(sub);
       right.appendChild(price);
@@ -1101,7 +1102,16 @@ export function initMap(){
     setStatus(`Anuncios: ${filtered.length} | zoom ${z} | modo=${f.mode}`);
   }
 
+  function isMapHidden() {
+    const g = document.querySelector(".grid3");
+    return !!(g && g.classList.contains("hideMap"));
+  }
+
   function scheduleReload() {
+    // Si el mapa está oculto (listado extendido) su contenedor mide 0×0 y
+    // getBounds() devuelve un área degenerada: refetch -> 0 resultados ->
+    // se vaciaría el listado. Mantenemos los resultados actuales.
+    if (isMapHidden()) return;
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
       try {
@@ -1706,6 +1716,9 @@ export function initMap(){
 
   // Cuando cambia layout (ocultar/mostrar columnas) Leaflet necesita invalidateSize
   function safeInvalidate(){
+    // No invalidamos un mapa oculto: su contenedor mide 0×0 y disparar
+    // invalidateSize provoca un moveend que recargaría el listado en vacío.
+    if (isMapHidden()) return;
     try { map.invalidateSize({ pan: false, animate: false }); } catch {}
     if (sunEnabled) {
       try { updateSunOverlay(); } catch {}
