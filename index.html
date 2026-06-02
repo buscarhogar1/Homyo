@@ -93,9 +93,19 @@
 
     @media (min-width:721px){
       .searchInner{
-        zoom:1.265;
+        zoom:calc(1.265 * var(--uiScaleCore, 1));
         margin-left:auto;
         margin-right:auto;
+      }
+
+      /* El logo escala con el factor completo; el resto, más suave */
+      .heroLogo{
+        zoom:var(--uiScale, 1);
+      }
+
+      .quickActions{
+        width:auto;
+        zoom:var(--uiScaleCore, 1);
       }
 
       .searchBlock{
@@ -996,10 +1006,30 @@
         const quickZone = document.querySelector(".bottomPhraseZone");
         if (!block || !core || !inner || !quickZone || !logoZone) return;
 
+        // ---- Escala proporcional (solo web) ----------------------------
+        // En pantallas grandes todo crece de forma proporcional para
+        // conservar las proporciones que funcionan en un portátil, en
+        // lugar de quedar pequeño con huecos enormes. En móvil = 1.
+        let uiScale = 1;
+        if (!mq.matches) {
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          const REF_W = 1500, REF_H = 820, MAX = 1.9;
+          uiScale = Math.min(vw / REF_W, vh / REF_H);
+          uiScale = Math.max(1, Math.min(uiScale, MAX));
+        }
+        // El núcleo (botones/buscador/frases) e iconos crecen más despacio
+        // que el logo, para no quedar demasiado grandes en pantallas amplias.
+        const CORE_DAMP = 0.25;
+        const uiScaleCore = 1 + (uiScale - 1) * CORE_DAMP;
+        block.style.setProperty("--uiScale", uiScale.toFixed(4));
+        block.style.setProperty("--uiScaleCore", uiScaleCore.toFixed(4));
+
         // Medimos el grupo con el ancla en la parte superior del bloque.
         core.style.top = "0px";
 
         const H        = block.getBoundingClientRect().height;
+        const blockTop = block.getBoundingClientRect().top;   // alto del header (de la cima de pantalla a .searchBlock)
         const coreRect = core.getBoundingClientRect();
         const Gh       = coreRect.height;
         const coreTop0 = coreRect.top;
@@ -1015,9 +1045,17 @@
             anchorY = coreTop0 + Gh / 2;
           }
         } else {
-          const sb = inner.querySelector(".searchBox");
-          const r  = sb ? sb.getBoundingClientRect() : coreRect;
-          anchorY  = r.top + r.height / 2;              // centro del buscador
+          const pills = inner.querySelectorAll(".pill");
+          const sb    = inner.querySelector(".searchBox");
+          if (pills.length && sb) {
+            // centro del hueco entre la fila de botones y el buscador
+            let pillsBottom = 0;
+            pills.forEach(p => { pillsBottom = Math.max(pillsBottom, p.getBoundingClientRect().bottom); });
+            anchorY = (pillsBottom + sb.getBoundingClientRect().top) / 2;
+          } else {
+            const r = sb ? sb.getBoundingClientRect() : coreRect;
+            anchorY = r.top + r.height / 2;
+          }
         }
 
         const anchorRel    = anchorY - coreTop0;        // ancla dentro del grupo
@@ -1026,8 +1064,10 @@
         const comprarRel   = firstPill ? (firstPill.getBoundingClientRect().top - coreTop0) : 0;
         const subBottomRel = sub ? (sub.getBoundingClientRect().bottom - coreTop0) : Gh;
 
-        // Colocamos el grupo para que el ancla caiga en H/2.
-        let coreTopPx = H / 2 - anchorRel;
+        // Colocamos el grupo para que el ancla caiga en el centro de la
+        // pantalla COMPLETA (medido desde el borde superior del header).
+        // Centro absoluto = (blockTop + H)/2 → en coords de .searchBlock = (H - blockTop)/2.
+        let coreTopPx = (H - blockTop) / 2 - anchorRel;
         const minTop  = 4;
         const maxTop  = Math.max(minTop, H - Gh - 4);
         coreTopPx     = Math.max(minTop, Math.min(coreTopPx, maxTop));

@@ -1869,9 +1869,11 @@ body{
 /* ===== Selector de operación (Comprar / Obra nueva / Alquilar / Habitación) =====
    Bloque destacado en la cabecera de los filtros para cambiar el tipo de
    búsqueda sin volver a la página de inicio. */
-.modeBlock{
-  border-color: rgba(140,31,45,0.22) !important;
+.fBlock.modeBlock,
+.fBlock.modeBlock.active{
+  border-color: var(--bh-border) !important;
   background: #fff !important;
+  box-shadow: none !important;
 }
 .modeSwitch{
   display: grid !important;
@@ -1879,7 +1881,7 @@ body{
   gap: 8px !important;
 }
 .modeSwitchBtn{
-  height: 42px !important;
+  height: 34px !important;
   border: 1px solid var(--bh-border) !important;
   border-radius: 3.5px !important;
   background: #fff !important;
@@ -2337,7 +2339,9 @@ body{
 #toggleMapBtn,
 #saveSearchDesktopBtn,
 #orderBtn,
-#toggleListBtn{
+#toggleListBtn,
+.placeLabel,
+#placeLabel{
   height: 36px !important;
   padding: 0 16px !important;
   border-radius: 3.5px !important;
@@ -2353,6 +2357,10 @@ body{
   box-shadow: 0 1px 6px rgba(0,0,0,0.03) !important;
   transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease !important;
 }
+
+/* No es un botón: cursor normal */
+.placeLabel,
+#placeLabel{ cursor: default !important; }
 
 .topToggleBtn:hover,
 #toggleFiltersBtn:hover,

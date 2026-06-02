@@ -705,11 +705,11 @@ export function initFiltersBar({ mountId }) {
   function buildBathrooms() {
     const c = selectOneControl({
       options: [
-        ["1", "1"],
-        ["2", "2"],
-        ["3", "3"],
-        ["4", "4"],
-        ["5", "5"]
+        ["1", "1+"],
+        ["2", "2+"],
+        ["3", "3+"],
+        ["4", "4+"],
+        ["5", "5+"]
       ],
       initial: p.bathroomsMin == null ? null : String(p.bathroomsMin),
       onChange: (val) => {

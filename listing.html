@@ -394,7 +394,101 @@
       }
       .mapHeaderTitle{font-size:14px; color:#111;}
       .mapHeaderSmall{font-size:13px; color:var(--muted);}
-      .leaflet-control-zoom a{width:32px; height:32px; line-height:32px;}
+      /* Botones +/- del zoom — branding Homyo (mismo estilo que map.html) */
+      .leaflet-control-zoom{
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border-radius: 14px !important;
+        overflow: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+      }
+      .leaflet-control-zoom a,
+      .leaflet-control-zoom a:hover,
+      .leaflet-control-zoom a:focus{
+        width: 36px !important;
+        height: 36px !important;
+        line-height: 1 !important;
+        border-radius: 11px !important;
+        border: 1px solid rgba(140,31,45,0.14) !important;
+        background: rgba(255,253,250,0.94) !important;
+        color: var(--bh-granate, #8C1F2D) !important;
+        font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+        font-size: 18px !important;
+        font-weight: 400 !important;
+        display: grid !important;
+        place-items: center !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        box-shadow:
+          0 10px 24px rgba(138,31,45,0.06),
+          0 1px 0 rgba(255,255,255,0.9) inset,
+          inset 0 0 0 1px rgba(196,150,42,0.06) !important;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        transition:
+          background 0.16s ease,
+          border-color 0.16s ease,
+          box-shadow 0.16s ease,
+          transform 0.16s ease,
+          color 0.16s ease;
+      }
+      .leaflet-control-zoom a:hover{
+        background: #fff !important;
+        border-color: rgba(140,31,45,0.38) !important;
+        color: #6e1622 !important;
+        box-shadow:
+          0 12px 28px rgba(138,31,45,0.12),
+          inset 0 0 0 1px rgba(196,150,42,0.10) !important;
+        transform: translateY(-1px);
+      }
+      .leaflet-control-zoom a:active{
+        transform: translateY(0);
+        background: rgba(140,31,45,0.06) !important;
+        box-shadow:
+          0 4px 10px rgba(138,31,45,0.10),
+          inset 0 1px 2px rgba(140,31,45,0.10) !important;
+      }
+      .leaflet-control-zoom a:focus-visible{
+        outline: 2px solid rgba(196,150,42,0.55) !important;
+        outline-offset: 2px;
+      }
+      .leaflet-bar a,
+      .leaflet-bar a:hover,
+      .leaflet-bar a + a{
+        border-bottom: none !important;
+        border-top: none !important;
+      }
+      .leaflet-control-zoom a.leaflet-disabled,
+      .leaflet-control-zoom a.leaflet-disabled:hover{
+        opacity: 0.45 !important;
+        background: rgba(255,253,250,0.7) !important;
+        border-color: rgba(140,31,45,0.10) !important;
+        color: rgba(140,31,45,0.55) !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow:
+          0 4px 10px rgba(138,31,45,0.04),
+          inset 0 0 0 1px rgba(196,150,42,0.04) !important;
+      }
+      .leaflet-top.leaflet-left{ padding: 6px 0 0 6px; }
+
+      /* Mini-mapa: zoom arriba a la derecha y un 10% más pequeño */
+      #miniMap .leaflet-top.leaflet-left{
+        left: auto !important;
+        right: 0 !important;
+        padding: 6px 6px 0 0 !important;
+      }
+      #miniMap .leaflet-control-zoom a,
+      #miniMap .leaflet-control-zoom a:hover,
+      #miniMap .leaflet-control-zoom a:focus{
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 16px !important;
+        border-radius: 10px !important;
+      }
 
       #mainMap{
         height: 340px;
