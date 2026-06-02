@@ -318,6 +318,31 @@ export function initMap(){
     return el;
   }
 
+  // Extrae hasta `max` fotos adicionales (distintas de la principal) del punto,
+  // tolerando varios nombres de campo posibles del backend.
+  function getExtraPhotoUrls(p, max){
+    const out = [];
+    const main = p && p.main_photo_url;
+    const push = (u) => {
+      if (out.length >= max) return;
+      if (typeof u === "string"){
+        const v = u.trim();
+        if (v && v !== main && !out.includes(v)) out.push(v);
+      }
+    };
+    const arrays = [p.photo_urls, p.photos, p.gallery, p.gallery_urls, p.extra_photos, p.images, p.image_urls];
+    for (const arr of arrays){
+      if (Array.isArray(arr)){
+        for (const item of arr){
+          if (typeof item === "string") push(item);
+          else if (item && typeof item === "object") push(item.url || item.src || item.photo_url);
+        }
+      }
+    }
+    [p.photo_2_url, p.photo_3_url, p.second_photo_url, p.third_photo_url].forEach(push);
+    return out.slice(0, max);
+  }
+
   function createListMediaWrap(p, img, ph){
     const mediaWrap = document.createElement("div");
     mediaWrap.className = "listMediaWrap";
@@ -327,6 +352,34 @@ export function initMap(){
 
     const badge = createListBadge(p);
     if (badge) mediaWrap.appendChild(badge);
+
+    // Fila de dos miniaturas bajo la foto principal (rellena el hueco del lateral).
+    const extras = getExtraPhotoUrls(p, 2);
+    const thumbs = document.createElement("div");
+    thumbs.className = "listThumbs";
+    for (let i = 0; i < 2; i++){
+      const url = extras[i];
+      if (url){
+        const t = document.createElement("img");
+        t.className = "listThumb";
+        t.src = url;
+        t.alt = "";
+        t.loading = "lazy";
+        t.onerror = () => {
+          const tph = document.createElement("div");
+          tph.className = "listThumbPh";
+          tph.textContent = "Foto";
+          t.replaceWith(tph);
+        };
+        thumbs.appendChild(t);
+      } else {
+        const tph = document.createElement("div");
+        tph.className = "listThumbPh";
+        tph.textContent = "Foto";
+        thumbs.appendChild(tph);
+      }
+    }
+    mediaWrap.appendChild(thumbs);
 
     return mediaWrap;
   }

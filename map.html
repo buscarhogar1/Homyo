@@ -15,7 +15,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css?v=20260602_placelabel_pin" />
+    <link rel="stylesheet" href="./bh-map.css?v=20260602_savesearch_bottomleft2" />
 
     <style>
       @media (max-width: 720px){
@@ -235,13 +235,6 @@
           <div class="topCell topCellCenter">
             <!-- Etiqueta dinámica “Comunidad / Ciudad / Zona” -->
             <div id="placeLabel" class="placeLabel">—</div>
-            <button id="saveSearchDesktopBtn" class="topToggleBtn saveSearchDesktopBtn" type="button" aria-label="Guardar búsqueda">
-              <svg class="saveSearchDesktopIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M18 16v-5a6 6 0 1 0-12 0v5l-1.6 2.2A.6.6 0 0 0 4.9 19h14.2a.6.6 0 0 0 .5-.8z"></path>
-                <path d="M10 21a2 2 0 0 0 4 0"></path>
-              </svg>
-              <span class="saveSearchDesktopLabel">Guardar</span>
-            </button>
             <button id="toggleMapBtn" class="topToggleBtn" type="button">Ocultar mapa</button>
           </div>
 
@@ -281,6 +274,17 @@
           <main class="col colMap" id="mapCol">
             <div id="mapWrap" class="mapWrap">
               <div id="map"></div>
+
+            <!-- Botón discreto "Guardar búsqueda" anclado a la esquina superior
+                 izquierda del mapa, con el mismo lenguaje visual que los iconos
+                 del mapa (.qBtn) y la campanita en dorado del proyecto. -->
+            <button id="saveSearchMapBtn" class="saveSearchMapBtn saveSearchDesktopBtn" type="button" aria-label="Guardar búsqueda">
+              <svg class="saveSearchDesktopIcon saveSearchMapIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 16v-5a6 6 0 1 0-12 0v5l-1.6 2.2A.6.6 0 0 0 4.9 19h14.2a.6.6 0 0 0 .5-.8z"></path>
+                <path d="M10 21a2 2 0 0 0 4 0"></path>
+              </svg>
+              <span class="saveSearchDesktopLabel saveSearchMapLabel">Guardar búsqueda</span>
+            </button>
 
               <!-- Overlay / UI existente -->
               <div id="sunOverlay" class="sunOverlay" aria-hidden="true">
@@ -421,7 +425,7 @@
       const btnMap = document.getElementById("toggleMapBtn");
       const btnClearFilters = document.getElementById("clearFiltersBtn");
       const mobileClearFiltersBtn = document.getElementById("mobileClearFiltersBtn");
-      const saveSearchDesktopBtn = document.getElementById("saveSearchDesktopBtn");
+      const saveSearchDesktopBtn = document.getElementById("saveSearchMapBtn");
       const mobileFiltersBtn = document.getElementById("mobileFiltersBtn");
       const mobileListBtn = document.getElementById("mobileListBtn");
       const mobileFiltersCloseBtn = document.getElementById("mobileFiltersCloseBtn");
@@ -472,6 +476,7 @@
       }
 
       window.addEventListener("resize", syncMobilePanelTop);
+      window.addEventListener("resize", alignMapToggleToMapRight);
 
       const orderBtn = document.getElementById("orderBtn");
       const orderMenu = document.getElementById("orderMenu");
@@ -491,6 +496,7 @@
         syncClearFiltersVisibility();
         if (orderBtn) orderBtn.hidden = listHidden;
         if (listHidden && orderMenu) closeOrderMenu();
+        alignMapToggleToMapRight();
       }
 
       // ¿Hay al menos un filtro seleccionado? (lee los parámetros de la URL)
@@ -583,12 +589,13 @@
         button.classList.toggle("is-saved", state === "saved" || state === "existing");
         button.setAttribute("aria-pressed", (state === "saved" || state === "existing") ? "true" : "false");
 
+        const isDesktop = button.classList.contains("saveSearchDesktopBtn");
         const text =
           state === "saving" ? "Guardando…" :
           state === "saved" ? "Guardada" :
           state === "existing" ? "Ya guardada" :
           state === "error" ? "Error" :
-          "Guardar";
+          (isDesktop ? "Guardar búsqueda" : "Guardar");
 
         if (label) label.textContent = text;
       }
@@ -625,6 +632,42 @@
       function notifyLayoutResize() {
         // Leaflet necesita invalidateSize; bh-map-core.js escucha este evento
         window.dispatchEvent(new CustomEvent("bh:layout-resize"));
+      }
+
+      // Alinea el lado DERECHO del botón "Ocultar/Mostrar mapa" con la vertical
+      // del lado DERECHO del mapa, sea cual sea el estado de las columnas.
+      // Mide en vivo la posición del mapa respecto a la fila superior y fija el
+      // desfase en --mapRightInset (el botón está posicionado en absoluto en CSS,
+      // sólo en escritorio).
+      function alignMapToggleToMapRight() {
+        const topRow = document.querySelector(".topRow");
+        if (!topRow) return;
+
+        // Sólo en escritorio (layout de 3 columnas). En tablet/móvil el botón
+        // vuelve al flujo normal.
+        if (window.matchMedia("(max-width: 980px)").matches) {
+          topRow.style.removeProperty("--mapRightInset");
+          return;
+        }
+
+        const mapWrap = document.getElementById("mapWrap");
+        const mapCol = document.getElementById("mapCol");
+        const mapHidden =
+          grid.classList.contains("hideMap") ||
+          !mapCol ||
+          getComputedStyle(mapCol).display === "none";
+
+        // Si el mapa está oculto no hay borde con el que alinear: el botón
+        // ("Mostrar mapa") se queda pegado a la derecha de la fila.
+        if (mapHidden || !mapWrap) {
+          topRow.style.setProperty("--mapRightInset", "0px");
+          return;
+        }
+
+        const trRect = topRow.getBoundingClientRect();
+        const mRect = mapWrap.getBoundingClientRect();
+        const inset = Math.max(0, Math.round(trRect.right - mRect.right));
+        topRow.style.setProperty("--mapRightInset", inset + "px");
       }
 
       btnFilters.addEventListener("click", () => {
@@ -753,6 +796,17 @@
 
       // Inicializar mapa
       initMap();
+
+      // Alineación inicial del botón "Ocultar mapa" con el borde derecho del
+      // mapa (tras el primer layout y de nuevo cuando todo se ha asentado).
+      requestAnimationFrame(alignMapToggleToMapRight);
+      window.addEventListener("load", () => {
+        alignMapToggleToMapRight();
+        setTimeout(alignMapToggleToMapRight, 200);
+      });
+      window.addEventListener("bh:layout-resize", () => {
+        requestAnimationFrame(alignMapToggleToMapRight);
+      });
 
       // ====== Mobile search header: sync place label + actions ======
       const mobilePlaceLabel = document.getElementById("mobilePlaceLabel");
