@@ -54,14 +54,28 @@
     }
 
     .searchBlock{
+      position:relative;
+      display:block;
+      width:100%;
+      height:100%;
+      min-height:0;
+      padding:0 20px;
+      margin-top:0;
+      flex:1 1 auto;
+      overflow:hidden;
+    }
+
+    /* Banda superior (logo) — su alto lo fija el JS de anclaje */
+    /* Grupo fijo (botones + buscador + frases) — su posición la fija el JS */
+    .coreAnchor{
+      position:absolute;
+      left:0;
+      right:0;
+      top:0;
+      padding:0 20px;
       display:flex;
       flex-direction:column;
       align-items:center;
-      width:100%;
-      min-height:100%;
-      padding:clamp(14px,3vh,28px) 20px 0;
-      margin-top:0;
-      flex:1 1 auto;
     }
 
     .searchInner{
@@ -97,13 +111,17 @@
     }
 
     .tagline{
-      margin-top:33px;
-      transform:translateY(15px);
+      position:absolute;
+      left:0;
+      right:0;
+      top:0;
+      margin:0;
+      transform:none;
       display:flex;
       align-items:center;
       justify-content:center;
-      width:100%;
-      margin-bottom:52px;
+      width:auto;
+      overflow:hidden;
     }
 
     .heroMapImage{
@@ -311,9 +329,10 @@
     }
 
     .bottomPhraseZone{
-      flex:1 1 auto;
-      min-height:0;
-      width:100%;
+      position:absolute;
+      left:0;
+      right:0;
+      width:auto;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -421,19 +440,21 @@
       .main{ padding-bottom:0; }
 
       .searchBlock{
-        padding:clamp(10px,2.2vh,22px) 18px 0;
-        min-height:100%;
+        padding:0 18px;
+      }
+
+      .coreAnchor{
+        padding:0 18px;
       }
 
       .tagline{
-        margin-top:34px;
-        margin-bottom:38px;
-        max-width:100%;
+        margin:0;
+        max-width:none;
         display:flex;
         justify-content:center;
         text-align:center;
         white-space:nowrap;
-        transform:translateY(10px);
+        transform:none;
         text-transform:none;
         font-size:22px;
         letter-spacing:.55px;
@@ -593,6 +614,176 @@
         letter-spacing:.17em;
       }
     }
+
+    /* ============================================================
+       Autocompletado del buscador (web + móvil)
+       Panel fijo anclado a la caja de búsqueda. Se monta en <body>
+       para no recortarse por el overflow:hidden ni escalarse con el
+       zoom del bloque de búsqueda.
+       ============================================================ */
+    .acPanel{
+      position:fixed;
+      z-index:1200;
+      background:#fff;
+      border:1px solid rgba(196,150,42,.20);
+      border-radius:16px;
+      box-shadow:
+        0 24px 60px rgba(140,31,45,.13),
+        0 4px 14px rgba(0,0,0,.05);
+      padding:7px;
+      display:none;
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      -webkit-overflow-scrolling:touch;
+    }
+
+    .acPanel.open{
+      display:block;
+      animation:acIn .14s ease;
+    }
+
+    @keyframes acIn{
+      from{ opacity:0; transform:translateY(-5px); }
+      to{ opacity:1; transform:none; }
+    }
+
+    .acGroup{
+      font-family:'Raleway','Montserrat',system-ui,sans-serif;
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:#bcab8d;
+      padding:11px 13px 6px;
+    }
+
+    .acRow{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:9px 12px;
+      border-radius:11px;
+      cursor:pointer;
+      transition:background .12s ease;
+      user-select:none;
+    }
+
+    .acRow:hover,
+    .acRow.active{
+      background:rgba(196,150,42,.09);
+    }
+
+    .acRow.active{
+      box-shadow:inset 0 0 0 1px rgba(196,150,42,.24);
+    }
+
+    .acIcon{
+      width:34px;
+      height:34px;
+      min-width:34px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(140,31,45,.07);
+      color:var(--granate);
+    }
+
+    .acIcon svg{
+      width:17px;
+      height:17px;
+      display:block;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    .acRow.acLocate .acIcon{
+      background:rgba(196,150,42,.12);
+      color:var(--dorado);
+    }
+
+    .acText{
+      min-width:0;
+      flex:1 1 auto;
+    }
+
+    .acName{
+      font-size:15px;
+      color:#221c19;
+      line-height:1.25;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .acName b{
+      color:var(--granate);
+      font-weight:700;
+    }
+
+    .acContext{
+      font-size:12px;
+      color:#9c9289;
+      margin-top:1px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .acType{
+      flex:0 0 auto;
+      font-family:'Raleway','Montserrat',system-ui,sans-serif;
+      font-size:9px;
+      font-weight:700;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:var(--dorado);
+      white-space:nowrap;
+      margin-left:8px;
+      padding:3px 8px;
+      border:1px solid rgba(196,150,42,.30);
+      border-radius:999px;
+    }
+
+    .acState{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      padding:13px 14px;
+      color:#9c9289;
+      font-size:13.5px;
+    }
+
+    .acSpinner{
+      width:16px;
+      height:16px;
+      min-width:16px;
+      border:2px solid rgba(140,31,45,.16);
+      border-top-color:var(--granate);
+      border-radius:50%;
+      animation:acSpin .7s linear infinite;
+    }
+
+    @keyframes acSpin{ to{ transform:rotate(360deg); } }
+
+    .acDivider{
+      height:1px;
+      background:rgba(196,150,42,.13);
+      margin:6px 11px;
+    }
+
+    @media (max-width:720px){
+      .acPanel{
+        border-radius:13px;
+        padding:6px;
+      }
+
+      .acName{ font-size:15px; }
+      .acRow{ padding:10px 12px; }
+    }
   </style>
 </head>
 
@@ -608,6 +799,7 @@
           <div class="heroBrand"><div class="heroLogo" aria-hidden="true"></div></div>
         </div>
 
+        <div class="coreAnchor">
         <div class="searchInner">
           <div class="modeRow" aria-label="Tipo de búsqueda">
             <label class="pill"><input type="radio" name="mode" value="buy" checked /><span>Comprar</span></label>
@@ -646,6 +838,7 @@
             <span class="rotatingPhraseContent" id="rotatingPhraseText">Solo anuncios de profesionales</span>
             <span class="midDot">·</span>
           </div>
+        </div>
         </div>
 
         <div class="bottomPhraseZone">
@@ -726,6 +919,8 @@
     });
   </script>
 
+  <script src="./bh-geo-suggest.js?v=20260602"></script>
+
   <script>
     const phrases = [
       "Solo anuncios de profesionales",
@@ -779,6 +974,102 @@
     }
 
     window.BH_goToMap = go;
+
+    /* ============================================================
+       REGLA DE COMPOSICIÓN DEL INDEX (anclaje al centro de pantalla)
+       - El grupo fijo (botones + buscador + frases) conserva su
+         espaciado interno; lo que cambia entre móviles es DÓNDE
+         queda, para que un punto concreto caiga en el centro:
+           · Móvil → centro del hueco entre "Alquilar" y "Habitación".
+           · Web   → centro de la barra del buscador.
+       - El logo se centra en el espacio libre superior (header → Comprar).
+       - Los 5 iconos se centran en el espacio libre inferior (frases → base).
+       ============================================================ */
+    (function setupAnchorLayout(){
+      const mq = window.matchMedia("(max-width:720px)");
+
+      function apply(){
+        const block     = document.querySelector(".searchBlock");
+        const logoZone  = document.querySelector(".tagline");
+        const core      = document.querySelector(".coreAnchor");
+        const inner     = document.querySelector(".searchInner");
+        const quickZone = document.querySelector(".bottomPhraseZone");
+        if (!block || !core || !inner || !quickZone || !logoZone) return;
+
+        // Medimos el grupo con el ancla en la parte superior del bloque.
+        core.style.top = "0px";
+
+        const H        = block.getBoundingClientRect().height;
+        const coreRect = core.getBoundingClientRect();
+        const Gh       = coreRect.height;
+        const coreTop0 = coreRect.top;
+        if (H <= 0 || Gh <= 0) return;
+
+        // Punto de anclaje (coordenada vertical en viewport).
+        let anchorY;
+        if (mq.matches) {
+          const pills = inner.querySelectorAll(".pill");
+          if (pills.length >= 3) {
+            const a = pills[1].getBoundingClientRect(); // Alquilar
+            const b = pills[2].getBoundingClientRect(); // Habitación
+            anchorY = (a.bottom + b.top) / 2;           // centro del hueco
+          } else {
+            anchorY = coreTop0 + Gh / 2;
+          }
+        } else {
+          const sb = inner.querySelector(".searchBox");
+          const r  = sb ? sb.getBoundingClientRect() : coreRect;
+          anchorY  = r.top + r.height / 2;              // centro del buscador
+        }
+
+        const anchorRel    = anchorY - coreTop0;        // ancla dentro del grupo
+        const firstPill    = inner.querySelector(".pill");
+        const sub          = inner.querySelector(".subTagline");
+        const comprarRel   = firstPill ? (firstPill.getBoundingClientRect().top - coreTop0) : 0;
+        const subBottomRel = sub ? (sub.getBoundingClientRect().bottom - coreTop0) : Gh;
+
+        // Colocamos el grupo para que el ancla caiga en H/2.
+        let coreTopPx = H / 2 - anchorRel;
+        const minTop  = 4;
+        const maxTop  = Math.max(minTop, H - Gh - 4);
+        coreTopPx     = Math.max(minTop, Math.min(coreTopPx, maxTop));
+        core.style.top = coreTopPx + "px";
+
+        // Banda del logo: del header (0) al borde superior de "Comprar".
+        const comprarTopAbs = coreTopPx + comprarRel;
+        logoZone.style.top    = "0px";
+        logoZone.style.height = Math.max(0, comprarTopAbs) + "px";
+
+        // Banda de los iconos: del final de las frases a la base.
+        const subBottomAbs = coreTopPx + subBottomRel;
+        quickZone.style.top    = subBottomAbs + "px";
+        quickZone.style.height = Math.max(0, H - subBottomAbs) + "px";
+      }
+
+      let raf = null;
+      function schedule(){
+        // Síncrono primero (funciona aunque la pestaña esté en segundo plano,
+        // donde requestAnimationFrame no dispara) y un repaso en el frame.
+        apply();
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(apply);
+      }
+
+      window.BH_applyAnchorLayout = apply;
+
+      schedule();
+      window.addEventListener("DOMContentLoaded", () => { schedule(); setTimeout(schedule, 120); setTimeout(schedule, 400); });
+      window.addEventListener("load", schedule);
+      window.addEventListener("orientationchange", () => setTimeout(schedule, 80));
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) schedule(); });
+      window.addEventListener("resize", () => {
+        // No recolocamos mientras se escribe (evita saltos al abrir el teclado).
+        const a = document.activeElement;
+        if (a && a.id === "q") return;
+        schedule();
+      });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+    })();
 
     const form = document.getElementById("form");
     const q = document.getElementById("q");
@@ -891,6 +1182,412 @@
         }
       });
     });
+
+    /* ============================================================
+       AUTOCOMPLETADO DEL BUSCADOR (estilo idealista / fotocasa / pisos.com)
+       - Sugerencias tipadas mientras se escribe (debounce + cancelación).
+       - Navegación por teclado (↑ ↓ Enter Esc), ratón y táctil.
+       - Búsquedas recientes + "usar mi ubicación".
+       - Fuente de datos: Nominatim (igual que el mapa), filtrado a España.
+       ============================================================ */
+    (function setupAutocomplete(){
+      const input = document.getElementById("q");
+      const box = document.querySelector(".searchBox");
+      if (!input || !box) return;
+
+      const RECENTS_KEY = "homyo_recent_searches";
+      const MIN_CHARS = 2;
+      const DEBOUNCE_MS = 230;
+      const MAX_RESULTS = 7;
+
+      // Panel montado en <body> para evitar recorte por overflow:hidden y el zoom del bloque.
+      const panel = document.createElement("div");
+      panel.className = "acPanel";
+      panel.id = "acPanel";
+      panel.setAttribute("role", "listbox");
+      document.body.appendChild(panel);
+
+      input.setAttribute("role", "combobox");
+      input.setAttribute("aria-autocomplete", "list");
+      input.setAttribute("aria-expanded", "false");
+      input.setAttribute("aria-controls", "acPanel");
+
+      let items = [];        // filas seleccionables actuales [{kind,label,context,type,lat,lon,zoom}]
+      let activeIndex = -1;
+      let lastQuery = "";
+      let debounceTimer = null;
+      let aborter = null;
+      const cache = new Map();
+
+      /* ---------- utilidades ---------- */
+      function normChar(ch){
+        const n = ch.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        return n.length ? n[0] : ch.toLowerCase();
+      }
+      function buildNorm(str){
+        let out = "";
+        for (const ch of String(str)) out += normChar(ch);
+        return out;
+      }
+      function escapeHtml(s){
+        return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
+      }
+      function highlight(name, query){
+        const nName = buildNorm(name);
+        const nQ = buildNorm(query.trim());
+        if (!nQ) return escapeHtml(name);
+        const i = nName.indexOf(nQ);
+        if (i < 0 || nName.length !== name.length) return escapeHtml(name);
+        return escapeHtml(name.slice(0, i)) +
+               "<b>" + escapeHtml(name.slice(i, i + nQ.length)) + "</b>" +
+               escapeHtml(name.slice(i + nQ.length));
+      }
+
+      const TYPE_LABELS = {
+        state:"Comunidad", region:"Comunidad",
+        province:"Provincia", county:"Provincia",
+        city:"Ciudad", town:"Municipio", municipality:"Municipio",
+        village:"Pueblo", hamlet:"Aldea",
+        city_district:"Distrito", district:"Distrito", borough:"Distrito", suburb:"Distrito",
+        neighbourhood:"Barrio", quarter:"Barrio", residential:"Zona", allotments:"Zona",
+        postcode:"Código postal"
+      };
+      function typeLabel(it){
+        const t = String(it.addresstype || it.type || "").toLowerCase();
+        return TYPE_LABELS[t] || "Zona";
+      }
+      function zoomForType(label){
+        if (label === "Comunidad" || label === "Provincia") return 10;
+        if (label === "Barrio" || label === "Distrito") return 15;
+        if (label === "Código postal") return 14;
+        return 13; // municipio / ciudad / pueblo
+      }
+      function primaryName(it){
+        if (it.name && it.name.trim()) return it.name.trim();
+        const first = String(it.display_name || "").split(",")[0];
+        return (first || "").trim();
+      }
+      function contextLine(it, name){
+        const parts = String(it.display_name || "")
+          .split(",")
+          .map(s => s.trim())
+          .filter(Boolean);
+        const out = [];
+        for (const p of parts) {
+          if (p === name) continue;
+          if (/^espa(ñ|n)a$/i.test(p) || /^spain$/i.test(p)) continue;
+          if (out.includes(p)) continue;
+          out.push(p);
+          if (out.length >= 3) break;
+        }
+        return out.join(" · ");
+      }
+
+      const pinSvg =
+        '<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>';
+      const targetSvg =
+        '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg>';
+      const clockSvg =
+        '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>';
+
+      /* ---------- recientes ---------- */
+      function getRecents(){
+        try { return JSON.parse(localStorage.getItem(RECENTS_KEY) || "[]"); }
+        catch { return []; }
+      }
+      function pushRecent(place){
+        try {
+          const list = getRecents().filter(r => r.label !== place.label);
+          list.unshift({ label: place.label, context: place.context || "", type: place.type || "", lat: place.lat, lon: place.lon, zoom: place.zoom });
+          localStorage.setItem(RECENTS_KEY, JSON.stringify(list.slice(0, 5)));
+        } catch {}
+      }
+
+      /* ---------- posicionamiento ---------- */
+      function position(){
+        const r = box.getBoundingClientRect();
+        panel.style.left = r.left + "px";
+        panel.style.width = r.width + "px";
+        panel.style.top = (r.bottom + 8) + "px";
+        const avail = window.innerHeight - r.bottom - 18;
+        panel.style.maxHeight = Math.max(160, avail) + "px";
+      }
+
+      /* ---------- render ---------- */
+      function render(state){
+        // state: {mode:'recents'|'loading'|'results'|'empty'|'hint', query, results}
+        items = [];
+        activeIndex = -1;
+        let html = "";
+
+        if (state.mode === "recents") {
+          const recents = state.results;
+          if (recents.length) {
+            html += `<div class="acGroup">Búsquedas recientes</div>`;
+            recents.forEach(r => {
+              const idx = items.length;
+              items.push({ kind:"place", ...r });
+              html += rowHtml({ kind:"place", idx, icon:clockSvg, name:escapeHtml(r.label), context:r.context, type:r.type });
+            });
+          } else {
+            html += `<div class="acState">Escribe una ciudad, zona, barrio o código postal para empezar.</div>`;
+          }
+        } else if (state.mode === "hint") {
+          html += `<div class="acState">Sigue escribiendo para ver sugerencias…</div>`;
+        } else if (state.mode === "loading") {
+          html += `<div class="acState"><span class="acSpinner"></span>Buscando ubicaciones…</div>`;
+        } else if (state.mode === "empty") {
+          html += `<div class="acState">Sin resultados para “${escapeHtml(state.query)}”. Prueba con otra ciudad o zona.</div>`;
+        } else if (state.mode === "results") {
+          html += `<div class="acGroup">Sugerencias</div>`;
+          state.results.forEach(r => {
+            const idx = items.length;
+            items.push({ kind:"place", ...r });
+            html += rowHtml({
+              kind:"place", idx, icon:pinSvg,
+              name: highlight(r.label, state.query),
+              context:r.context, type:r.type
+            });
+          });
+        }
+
+        panel.innerHTML = html;
+        bindRows();
+        open();
+      }
+
+      function rowHtml({ kind, idx, icon, name, context, type, locate }){
+        return `<div class="acRow${locate ? " acLocate" : ""}" role="option" id="acRow-${idx}" data-idx="${idx}">
+            <span class="acIcon">${icon}</span>
+            <span class="acText">
+              <span class="acName">${name}</span>
+              ${context ? `<span class="acContext">${escapeHtml(context)}</span>` : ""}
+            </span>
+            ${type ? `<span class="acType">${escapeHtml(type)}</span>` : ""}
+          </div>`;
+      }
+
+      function bindRows(){
+        panel.querySelectorAll(".acRow").forEach(el => {
+          const idx = parseInt(el.dataset.idx, 10);
+          el.addEventListener("mousedown", (e) => {
+            e.preventDefault(); // no perder el foco del input antes del click
+            choose(idx);
+          });
+          el.addEventListener("mouseenter", () => setActive(idx));
+        });
+      }
+
+      /* ---------- abrir / cerrar / activar ---------- */
+      function open(){
+        position();
+        panel.classList.add("open");
+        input.setAttribute("aria-expanded", "true");
+      }
+      function close(){
+        panel.classList.remove("open");
+        input.setAttribute("aria-expanded", "false");
+        input.removeAttribute("aria-activedescendant");
+        activeIndex = -1;
+      }
+      function isOpen(){ return panel.classList.contains("open"); }
+
+      function setActive(idx){
+        activeIndex = idx;
+        panel.querySelectorAll(".acRow").forEach(el => {
+          const i = parseInt(el.dataset.idx, 10);
+          el.classList.toggle("active", i === idx);
+        });
+        if (idx >= 0) {
+          input.setAttribute("aria-activedescendant", "acRow-" + idx);
+          const el = panel.querySelector("#acRow-" + idx);
+          if (el) el.scrollIntoView({ block:"nearest" });
+        } else {
+          input.removeAttribute("aria-activedescendant");
+        }
+      }
+
+      /* ---------- selección ---------- */
+      function choose(idx){
+        const it = items[idx];
+        if (!it) return;
+        if (it.kind === "locate") { useMyLocation(); return; }
+        // place
+        input.value = it.label;
+        pushRecent(it);
+        close();
+        const params = new URLSearchParams();
+        params.set("city", it.label);
+        params.set("mode", getSelectedMode());
+        if (it.lat != null && it.lon != null) {
+          params.set("lat", it.lat);
+          params.set("lng", it.lon);
+          params.set("zoom", it.zoom || 13);
+        }
+        window.location.href = "./map.html?" + params.toString();
+      }
+
+      function useMyLocation(){
+        if (!navigator.geolocation) { close(); return; }
+        // feedback visual
+        items = [];
+        panel.innerHTML = `<div class="acState"><span class="acSpinner"></span>Localizándote…</div>`;
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude, lon = pos.coords.longitude;
+            const params = new URLSearchParams();
+            params.set("mode", getSelectedMode());
+            params.set("quick", "location");
+            params.set("lat", lat);
+            params.set("lng", lon);
+            params.set("zoom", 15);
+            window.location.href = "./map.html?" + params.toString();
+          },
+          () => { close(); },
+          { enableHighAccuracy:true, timeout:10000, maximumAge:300000 }
+        );
+      }
+
+      /* ---------- fetch sugerencias (Nominatim, long-tail + CP) ---------- */
+      async function fetchRemote(query){
+        const key = buildNorm(query);
+        if (cache.has(key)) return cache.get(key);
+
+        if (aborter) aborter.abort();
+        aborter = new AbortController();
+
+        const url = "https://nominatim.openstreetmap.org/search?format=jsonv2"
+          + "&q=" + encodeURIComponent(query)
+          + "&countrycodes=es&addressdetails=1&dedupe=1&accept-language=es&limit=12";
+
+        const res = await fetch(url, { headers:{ "Accept":"application/json" }, signal: aborter.signal });
+        if (!res.ok) throw new Error("nominatim " + res.status);
+        const data = await res.json();
+
+        const seen = new Set();
+        const out = [];
+        for (const it of (data || [])) {
+          // Solo ubicaciones (ciudades, municipios, distritos, barrios, provincias, CP):
+          // descartamos calles, edificios, comercios y otros POIs como hacen los portales.
+          const cat = String(it.category || it.class || "").toLowerCase();
+          const isPlace = cat === "place" || cat === "boundary"
+            || String(it.addresstype || "").toLowerCase() === "postcode";
+          if (!isPlace) continue;
+
+          const name = primaryName(it);
+          if (!name) continue;
+          const type = typeLabel(it);
+          const context = contextLine(it, name);
+          const dedupeKey = (buildNorm(name) + "|" + buildNorm(context));
+          if (seen.has(dedupeKey)) continue;
+          seen.add(dedupeKey);
+          out.push({
+            label: name,
+            context,
+            type,
+            lat: parseFloat(it.lat),
+            lon: parseFloat(it.lon),
+            zoom: zoomForType(type)
+          });
+          if (out.length >= MAX_RESULTS) break;
+        }
+        cache.set(key, out);
+        return out;
+      }
+
+      // Resultados locales instantáneos (gazetteer España).
+      function localResults(query){
+        return (window.BH_GEO ? window.BH_GEO.search(query, 6) : []);
+      }
+
+      // Fusiona local (prioritario) + remoto, sin duplicados.
+      function mergeResults(local, remote){
+        const out = [];
+        const seen = new Set();
+        const add = (r) => {
+          const k = buildNorm(r.label) + "|" + buildNorm(r.context || "");
+          const k2 = buildNorm(r.label);
+          if (seen.has(k) || seen.has(k2)) return;
+          seen.add(k); seen.add(k2);
+          out.push(r);
+        };
+        local.forEach(add);
+        remote.forEach((r) => { if (out.length < MAX_RESULTS) add(r); });
+        return out.slice(0, MAX_RESULTS);
+      }
+
+      function onQuery(value){
+        const query = value.trim();
+        lastQuery = query;
+
+        if (query.length === 0) {
+          close();
+          return;
+        }
+        if (query.length < MIN_CHARS) {
+          close();
+          return;
+        }
+
+        // 1) Coincidencias locales al instante (sensación de portal).
+        const local = localResults(query);
+        if (local.length) render({ mode:"results", query, results: local });
+        else render({ mode:"loading" });
+
+        // 2) Enriquecemos con Nominatim (long-tail + códigos postales).
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async () => {
+          try {
+            const remote = await fetchRemote(query);
+            if (query !== lastQuery) return; // resultado obsoleto
+            const merged = mergeResults(local, remote);
+            if (!merged.length) render({ mode:"empty", query });
+            else render({ mode:"results", query, results: merged });
+          } catch (err) {
+            if (err && err.name === "AbortError") return;
+            if (query !== lastQuery) return;
+            if (local.length) return; // ya mostramos locales
+            render({ mode:"empty", query });
+          }
+        }, DEBOUNCE_MS);
+      }
+
+      /* ---------- eventos ---------- */
+      input.addEventListener("input", () => onQuery(input.value));
+
+      input.addEventListener("focus", () => {
+        if (input.value.trim().length >= MIN_CHARS) onQuery(input.value);
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (!isOpen()) {
+          if (e.key === "ArrowDown") { onQuery(input.value); e.preventDefault(); }
+          return;
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setActive(activeIndex < items.length - 1 ? activeIndex + 1 : 0);
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setActive(activeIndex > 0 ? activeIndex - 1 : items.length - 1);
+        } else if (e.key === "Enter") {
+          if (activeIndex >= 0) { e.preventDefault(); choose(activeIndex); }
+          // si no hay fila activa, deja que el form haga su submit normal
+        } else if (e.key === "Escape") {
+          close();
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!panel.contains(e.target) && e.target !== input) close();
+      });
+
+      window.addEventListener("resize", () => { if (isOpen()) position(); });
+      window.addEventListener("scroll", () => { if (isOpen()) position(); }, true);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", () => { if (isOpen()) position(); });
+      }
+    })();
   </script>
 </body>
 </html>

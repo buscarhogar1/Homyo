@@ -1940,17 +1940,27 @@ export function initMap(){
 
       let initialCityCenter = null;
 
-      if (initialParams.city) {
+      // Coordenadas exactas si llegan desde una sugerencia del autocompletado del index.
+      const _u = new URL(window.location.href);
+      const _lat = parseFloat(_u.searchParams.get("lat"));
+      const _lng = parseFloat(_u.searchParams.get("lng"));
+      const _zoom = parseInt(_u.searchParams.get("zoom"), 10);
+      let initialZoom = Number.isFinite(_zoom) ? Math.min(Math.max(_zoom, 6), 17) : 13;
+
+      if (Number.isFinite(_lat) && Number.isFinite(_lng)) {
+        initialCityCenter = [_lat, _lng];
+        map.setView(initialCityCenter, initialZoom, { animate: false });
+      } else if (initialParams.city) {
         initialCityCenter = await geocodeCity(initialParams.city);
         if (initialCityCenter) {
-          map.setView(initialCityCenter, 13, { animate: false });
+          map.setView(initialCityCenter, initialZoom, { animate: false });
         }
       }
 
       safeInvalidate();
 
       if (initialCityCenter) {
-        map.setView(initialCityCenter, 13, { animate: false });
+        map.setView(initialCityCenter, initialZoom, { animate: false });
       }
 
       await loadPointsForCurrentView();
@@ -1961,12 +1971,12 @@ export function initMap(){
       // Segunda pasada por si el layout termina de ajustar, sin permitir desplazamientos automáticos
       setTimeout(() => {
         safeInvalidate();
-        if (initialCityCenter) map.setView(initialCityCenter, 13, { animate: false });
+        if (initialCityCenter) map.setView(initialCityCenter, initialZoom, { animate: false });
       }, 250);
 
       setTimeout(() => {
         safeInvalidate();
-        if (initialCityCenter) map.setView(initialCityCenter, 13, { animate: false });
+        if (initialCityCenter) map.setView(initialCityCenter, initialZoom, { animate: false });
       }, 600);
     } catch (e) {
       const msg = (e && e.message) ? e.message : String(e);
