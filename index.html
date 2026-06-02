@@ -143,7 +143,7 @@
     .heroLogo{
       width:560px;
       height:86px;
-      background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20376%2058'%3E%3Cpolyline%20points='8,50%20164,50%20164,28%20188,8%20212,28%20212,50%20368,50'%20fill='none'%20stroke='%238C1F2D'%20stroke-width='5.5'%20stroke-linejoin='miter'%20stroke-linecap='butt'/%3E%3C/svg%3E") no-repeat center center;
+      background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20376%2058'%3E%3Cpolyline%20points='8,50%20164,50%20164,28%20188,8%20212,28%20212,50%20368,50'%20fill='none'%20stroke='%238C1F2D'%20stroke-width='3.4'%20stroke-linejoin='miter'%20stroke-linecap='butt'/%3E%3C/svg%3E") no-repeat center center;
       background-size:contain;
     }
 
@@ -471,7 +471,7 @@
       .heroLogo{
         width:240px;
         height:70px;
-        background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20220%2058'%3E%3Cpolyline%20points='8,50%2086,50%2086,28%20110,8%20134,28%20134,50%20212,50'%20fill='none'%20stroke='%238C1F2D'%20stroke-width='5.5'%20stroke-linejoin='miter'%20stroke-linecap='butt'/%3E%3C/svg%3E") no-repeat center center;
+        background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20220%2058'%3E%3Cpolyline%20points='8,50%2086,50%2086,28%20110,8%20134,28%20134,50%20212,50'%20fill='none'%20stroke='%238C1F2D'%20stroke-width='3.4'%20stroke-linejoin='miter'%20stroke-linecap='butt'/%3E%3C/svg%3E") no-repeat center center;
         background-size:contain;
       }
 
@@ -901,7 +901,7 @@
                   <path d="M14.1 11l6.8-2.4"></path>
                 </svg>
               </div>
-              <div class="quickActionLabel">Vehículo</div>
+              <div class="quickActionLabel">Distancia</div>
             </button>
           </div>
         </div>
@@ -1010,9 +1010,7 @@
         if (mq.matches) {
           const pills = inner.querySelectorAll(".pill");
           if (pills.length >= 3) {
-            const a = pills[1].getBoundingClientRect(); // Alquilar
-            const b = pills[2].getBoundingClientRect(); // Habitación
-            anchorY = (a.bottom + b.top) / 2;           // centro del hueco
+            anchorY = pills[2].getBoundingClientRect().bottom; // borde inferior de "Habitación"
           } else {
             anchorY = coreTop0 + Gh / 2;
           }

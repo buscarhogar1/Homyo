@@ -526,13 +526,7 @@ export function initFiltersBar({ mountId }) {
       }
     });
 
-    const blk = el("div", { class: "fBlock modeBlock active" }, [
-      el("div", { class: "fHead" }, [
-        el("div", { class: "fTitle" }, [
-          el("div", { class: "fDot" }),
-          el("div", { class: "fTitleText", text: "Operación" })
-        ])
-      ]),
+    const blk = el("div", { class: "fBlock modeBlock active noTitle" }, [
       c.el
     ]);
 
@@ -601,7 +595,7 @@ export function initFiltersBar({ mountId }) {
       }
     });
     return add(filterBlock({
-      title: mode === "room" ? "m² de la habitación" : "m² útiles interiores",
+      title: mode === "room" ? "m² útiles habitación" : "m² útiles interiores",
       isActiveFn: () => {
         const x = getParamsFromURL();
         return x.usefulMin != null || x.usefulMax != null;
@@ -962,8 +956,7 @@ export function initFiltersBar({ mountId }) {
         ["larga", "Larga estancia"],
         ["temporal", "Temporal / por meses"],
         ["estudiantes", "Para estudiantes"],
-        ["opcion_compra", "Con opción a compra"],
-        ["con_inquilino", "Vivienda con inquilino"]
+        ["opcion_compra", "Con opción a compra"]
       ],
       initialValues: p.rentTypes,
       onChange: (vals) => {
@@ -1338,7 +1331,6 @@ export function initFiltersBar({ mountId }) {
     buildRoomAmenities();
     buildUseful();
     buildBathrooms();
-    buildAdvertiser();
     buildSince();
   } else {
     // Comprar / Obra nueva / Todas: filtros de venta (sin cambios)

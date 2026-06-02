@@ -432,7 +432,7 @@ body{
 .cardGrid {
   display: grid;
   grid-template-columns: 35% 65%;
-  min-height: 143px;
+  height: 150px;
 }
 
 .mediaSide {
@@ -496,6 +496,7 @@ body{
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .topActions {
