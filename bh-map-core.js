@@ -1723,7 +1723,15 @@ export function initMap(){
     // No invalidamos un mapa oculto: su contenedor mide 0×0 y disparar
     // invalidateSize provoca un moveend que recargaría el listado en vacío.
     if (isMapHidden()) return;
+    // Guardamos el centro antes de redimensionar: invalidateSize ancla la
+    // esquina superior-izquierda, así que al ensanchar/estrechar el mapa
+    // (ocultar/mostrar filtros o listado) el centro visible se desplazaría.
+    let prevCenter = null;
+    try { prevCenter = map.getCenter(); } catch {}
     try { map.invalidateSize({ pan: false, animate: false }); } catch {}
+    if (prevCenter) {
+      try { map.setView(prevCenter, map.getZoom(), { animate: false }); } catch {}
+    }
     if (sunEnabled) {
       try { updateSunOverlay(); } catch {}
     }
@@ -1891,8 +1899,7 @@ export function initMap(){
   function formatPlace(address){
     const comunidad = address.state || address.region || address.county || "—";
     const ciudad = address.city || address.town || address.village || address.municipality || "—";
-    const zona = address.suburb || address.neighbourhood || address.quarter || address.city_district || "—";
-    return `${comunidad} / ${ciudad} / ${zona}`;
+    return `${comunidad} / ${ciudad}`;
   }
 
   async function reverseGeocode(lat, lng){

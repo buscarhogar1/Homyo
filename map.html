@@ -15,7 +15,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css?v=20260531_agencyfont" />
+    <link rel="stylesheet" href="./bh-map.css?v=20260602_modeswitch2" />
 
     <style>
       @media (max-width: 720px){
@@ -235,7 +235,13 @@
           <div class="topCell topCellCenter">
             <!-- Etiqueta dinámica “Comunidad / Ciudad / Zona” -->
             <div id="placeLabel" class="placeLabel">—</div>
-            <button id="saveSearchDesktopBtn" class="topToggleBtn saveSearchDesktopBtn" type="button">Guardar búsqueda</button>
+            <button id="saveSearchDesktopBtn" class="topToggleBtn saveSearchDesktopBtn" type="button" aria-label="Guardar búsqueda">
+              <svg class="saveSearchDesktopIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 16v-5a6 6 0 1 0-12 0v5l-1.6 2.2A.6.6 0 0 0 4.9 19h14.2a.6.6 0 0 0 .5-.8z"></path>
+                <path d="M10 21a2 2 0 0 0 4 0"></path>
+              </svg>
+              <span class="saveSearchDesktopLabel">Guardar</span>
+            </button>
             <button id="toggleMapBtn" class="topToggleBtn" type="button">Ocultar mapa</button>
           </div>
 
@@ -263,7 +269,10 @@
           <aside class="col colFilters" id="filtersCol">
             <div class="mobilePanelHead">
               <div class="mobilePanelTitle">Filtros</div>
-              <button id="mobileFiltersCloseBtn" class="mobilePanelClose" type="button" aria-label="Cerrar filtros">×</button>
+              <div class="mobilePanelHeadActions">
+                <button id="mobileClearFiltersBtn" class="mobilePanelActionBtn mobileClearFiltersBtn" type="button" hidden>Eliminar filtros</button>
+                <button id="mobileFiltersCloseBtn" class="mobilePanelClose" type="button" aria-label="Cerrar filtros">×</button>
+              </div>
             </div>
             <div id="filtersBarMount"></div>
           </aside>
@@ -394,7 +403,7 @@
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
-      import { initFiltersBar, clearAllFilters } from "./bh-map-filters.js?v=20260601_construccion_periodos";
+      import { initFiltersBar, clearAllFilters } from "./bh-map-filters.js?v=20260602_modefilters";
       import { initMap } from "./bh-map-core.js?v=20260531_hidemap_keeplist";
       import { getSession, saveCurrentSearch } from "./bh-user-data.js?v=20260512_saved_searches_real_v3";
 
@@ -411,6 +420,7 @@
       const btnList = document.getElementById("toggleListBtn");
       const btnMap = document.getElementById("toggleMapBtn");
       const btnClearFilters = document.getElementById("clearFiltersBtn");
+      const mobileClearFiltersBtn = document.getElementById("mobileClearFiltersBtn");
       const saveSearchDesktopBtn = document.getElementById("saveSearchDesktopBtn");
       const mobileFiltersBtn = document.getElementById("mobileFiltersBtn");
       const mobileListBtn = document.getElementById("mobileListBtn");
@@ -476,11 +486,49 @@
         // Reglas: no se puede ocultar mapa y listado a la vez
         if (btnList) btnList.disabled = mapHidden;
         if (btnMap) btnMap.disabled = listHidden;
-        // Botón "Eliminar filtros" sólo visible cuando la columna de filtros está visible
-        if (btnClearFilters) btnClearFilters.hidden = filtersHidden;
+        // Botón "Eliminar filtros" sólo visible cuando hay filtros aplicados
+        // (y, en escritorio, cuando la columna de filtros está visible)
+        syncClearFiltersVisibility();
         if (orderBtn) orderBtn.hidden = listHidden;
         if (listHidden && orderMenu) closeOrderMenu();
       }
+
+      // ¿Hay al menos un filtro seleccionado? (lee los parámetros de la URL)
+      function anyFilterActive() {
+        const u = new URL(window.location.href);
+        const keys = [
+          "price_min", "price_max",
+          "useful_min", "useful_max",
+          "built_min", "built_max",
+          "build_periods",
+          "since_days",
+          "bedrooms_min",
+          "bathrooms_min",
+          "outdoor_type",
+          "orientations",
+          "accessibility",
+          "parking",
+          "storage",
+          "energy",
+          "availability"
+        ];
+        return keys.some((k) => {
+          const v = u.searchParams.get(k);
+          return v != null && v !== "";
+        });
+      }
+
+      // Muestra "Eliminar filtros" (escritorio + móvil) sólo cuando hay
+      // al menos un filtro seleccionado.
+      function syncClearFiltersVisibility() {
+        const active = anyFilterActive();
+        const filtersHidden = grid.classList.contains("hideFilters");
+        if (btnClearFilters) btnClearFilters.hidden = filtersHidden || !active;
+        if (mobileClearFiltersBtn) mobileClearFiltersBtn.hidden = !active;
+      }
+
+      // Reacciona a cualquier cambio de filtros para actualizar la visibilidad
+      window.addEventListener("bh:filters-changed", syncClearFiltersVisibility);
 
 
       async function userIsLoggedIn() {
@@ -529,8 +577,7 @@
 
       function setSaveSearchButtonState(button, state) {
         if (!button) return;
-        const isMobile = button.id === "mobileSaveSearchBtn";
-        const label = isMobile ? button.querySelector(".mobileSaveSearchLabel") : null;
+        const label = button.querySelector(".mobileSaveSearchLabel, .saveSearchDesktopLabel");
 
         button.disabled = state === "saving";
         button.classList.toggle("is-saved", state === "saved" || state === "existing");
@@ -543,15 +590,7 @@
           state === "error" ? "Error" :
           "Guardar";
 
-        if (isMobile && label) label.textContent = text;
-        if (!isMobile) {
-          button.textContent =
-            state === "saving" ? "Guardando…" :
-            state === "saved" ? "Búsqueda guardada" :
-            state === "existing" ? "Ya guardada" :
-            state === "error" ? "Error" :
-            "Guardar búsqueda";
-        }
+        if (label) label.textContent = text;
       }
 
       async function saveSearchFromMap(button) {
@@ -595,6 +634,10 @@
       });
 
       btnClearFilters?.addEventListener("click", () => {
+        clearAllFilters({ mountId: "filtersBarMount" });
+      });
+
+      mobileClearFiltersBtn?.addEventListener("click", () => {
         clearAllFilters({ mountId: "filtersBarMount" });
       });
 

@@ -65,6 +65,22 @@ function getParamsFromURL() {
     storageTypes: fromCSV(u.searchParams.get("storage")),
     energyChoice: (u.searchParams.get("energy") || "").trim() || null,
     availability: (u.searchParams.get("availability") || "").trim() || null,
+
+    /* ---- Alquiler de vivienda completa ---- */
+    rentTypes: fromCSV(u.searchParams.get("rent_type")),
+    equipment: fromCSV(u.searchParams.get("equipment")),
+    rentConditions: fromCSV(u.searchParams.get("rent_conditions")),
+    pets: (u.searchParams.get("pets") || "").trim() || null,
+
+    /* ---- Alquiler de habitación ---- */
+    roomIncludes: fromCSV(u.searchParams.get("room_includes")),
+    roomTypes: fromCSV(u.searchParams.get("room_type")),
+    roomStay: (u.searchParams.get("room_stay") || "").trim() || null,
+    household: fromCSV(u.searchParams.get("household")),
+    flatmates: fromCSV(u.searchParams.get("flatmates")),
+    coexistence: fromCSV(u.searchParams.get("coexistence")),
+    roomAmenities: fromCSV(u.searchParams.get("room_amenities")),
+    advertiser: fromCSV(u.searchParams.get("advertiser")),
   };
 }
 
@@ -436,6 +452,47 @@ function multiSelectControl({ options, initialValues, onChange, collapseAfter })
   };
 }
 
+/* Selector de operación (modo): Comprar / Obra nueva / Alquilar / Habitación.
+   Permite cambiar el tipo de búsqueda sin volver a la página de inicio. */
+function modeSwitchControl({ initial, onChange }) {
+  const body = el("div", { class: "fBody modeSwitchBody" });
+  const grid = el("div", { class: "modeSwitch" });
+
+  const options = [
+    ["buy", "Comprar"],
+    ["rent", "Alquilar"],
+    ["room", "Habitación"]
+  ];
+
+  const btns = [];
+  options.forEach(([value, label]) => {
+    const btn = el("button", {
+      class: "modeSwitchBtn",
+      type: "button",
+      "data-mode": value,
+      text: label
+    });
+    if ((initial || "buy") === value) {
+      btn.classList.add("active");
+      btn.setAttribute("aria-pressed", "true");
+    }
+    btn.addEventListener("click", () => {
+      if (btn.classList.contains("active")) return;
+      btns.forEach(b => {
+        const on = b === btn;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      onChange?.(value);
+    });
+    btns.push(btn);
+    grid.appendChild(btn);
+  });
+
+  body.appendChild(grid);
+  return { el: body };
+}
+
 export function initFiltersBar({ mountId }) {
   const mount = document.getElementById(mountId);
   if (!mount) return;
@@ -455,23 +512,65 @@ export function initFiltersBar({ mountId }) {
     refreshAll();
   }
 
-  /* 1. Precio mínimo / máximo */
+  /* 0. Operación: Comprar / Obra nueva / Alquilar / Habitación.
+     Va siempre la primera, para cambiar el tipo de búsqueda sin volver al inicio. */
   {
+    const c = modeSwitchControl({
+      initial: mode,
+      onChange: (newMode) => {
+        setURLParam("mode", newMode);
+        // Reconstruimos la barra: el modo afecta a sugerencias de precio y a
+        // qué filtros se muestran (p. ej. m² construidos no aplica a habitación).
+        initFiltersBar({ mountId });
+        fireFiltersChanged();
+      }
+    });
+
+    const blk = el("div", { class: "fBlock modeBlock active" }, [
+      el("div", { class: "fHead" }, [
+        el("div", { class: "fTitle" }, [
+          el("div", { class: "fDot" }),
+          el("div", { class: "fTitleText", text: "Operación" })
+        ])
+      ]),
+      c.el
+    ]);
+
+    root.appendChild(blk);
+  }
+
+  /* Helper: registra y monta un bloque en orden. */
+  function add(blk) {
+    blocks.push(blk);
+    root.appendChild(blk.el);
+    return blk;
+  }
+
+  const isRental = (mode === "rent" || mode === "room");
+
+  /* ============================================================
+     BUILDERS — cada uno crea un bloque de filtro y lo devuelve.
+     La barra se ENSAMBLA por modo más abajo, de forma que
+     comprar / obra nueva, alquilar y habitación muestren
+     conjuntos de filtros distintos.
+     ============================================================ */
+
+  // --- Precio (al mes en alquiler/habitación) ---
+  function buildPrice() {
     const c = numericRangeControl({
       type: "price",
       initialMin: p.priceMin,
       initialMax: p.priceMax,
-      placeholderMin: "Precio mínimo",
-      placeholderMax: "Precio máximo",
+      placeholderMin: isRental ? "Mínimo al mes" : "Precio mínimo",
+      placeholderMax: isRental ? "Máximo al mes" : "Precio máximo",
       onChange: (min, max) => {
         setURLParam("price_min", min);
         setURLParam("price_max", max);
         touch();
       }
     });
-
-    const blk = filterBlock({
-      title: "Precio",
+    return add(filterBlock({
+      title: isRental ? "Precio al mes" : "Precio",
       isActiveFn: () => {
         const x = getParamsFromURL();
         return x.priceMin != null || x.priceMax != null;
@@ -484,29 +583,25 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 2. Metros cuadrados útiles interiores */
-  {
+  // --- m² útiles interiores ---
+  function buildUseful() {
     const c = numericRangeControl({
       type: "area",
       initialMin: p.usefulMin,
       initialMax: p.usefulMax,
-      placeholderMin: "Útiles mínimos (m²)",
-      placeholderMax: "Útiles máximos (m²)",
+      placeholderMin: mode === "room" ? "Habitación mín. (m²)" : "Útiles mínimos (m²)",
+      placeholderMax: mode === "room" ? "Habitación máx. (m²)" : "Útiles máximos (m²)",
       onChange: (min, max) => {
         setURLParam("useful_min", min);
         setURLParam("useful_max", max);
         touch();
       }
     });
-
-    const blk = filterBlock({
-      title: "m² útiles interiores",
+    return add(filterBlock({
+      title: mode === "room" ? "m² de la habitación" : "m² útiles interiores",
       isActiveFn: () => {
         const x = getParamsFromURL();
         return x.usefulMin != null || x.usefulMax != null;
@@ -519,16 +614,14 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 3. Periodo de construcción */
-  {
+  // --- Periodo de construcción ---
+  function buildBuildPeriods() {
     const c = multiSelectControl({
       options: [
+        ["new_build", "Obra nueva"],
         ["2020_plus", "2020+"],
         ["2010_2020", "2010–2020"],
         ["2000_2010", "2000–2010"],
@@ -547,8 +640,7 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
+    return add(filterBlock({
       title: "Construcción",
       isActiveFn: () => getParamsFromURL().buildPeriods.length > 0,
       onClear: () => {
@@ -557,14 +649,11 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 4. Ofertado desde */
-  {
+  // --- Publicación / ofertado desde ---
+  function buildSince() {
     const c = selectOneControl({
       options: [
         ["1", "Últimas 24 horas"],
@@ -579,8 +668,7 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
+    return add(filterBlock({
       title: "Publicación",
       isActiveFn: () => getParamsFromURL().sinceDays != null,
       onClear: () => {
@@ -589,14 +677,11 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 5. Número mínimo de dormitorios */
-  {
+  // --- Dormitorios ---
+  function buildBedrooms() {
     const c = selectOneControl({
       options: [
         ["1", "1+"],
@@ -610,8 +695,7 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
+    return add(filterBlock({
       title: "Dormitorios",
       isActiveFn: () => getParamsFromURL().bedroomsMin != null,
       onClear: () => {
@@ -620,14 +704,11 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 6. Número de baños */
-  {
+  // --- Baños (del inmueble / del piso compartido) ---
+  function buildBathrooms() {
     const c = selectOneControl({
       options: [
         ["1", "1"],
@@ -642,9 +723,8 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
-      title: "Baños",
+    return add(filterBlock({
+      title: mode === "room" ? "Baños del piso" : "Baños",
       isActiveFn: () => getParamsFromURL().bathroomsMin != null,
       onClear: () => {
         c.clear();
@@ -652,14 +732,11 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 7. Metros cuadrados construidos totales */
-  if (mode !== "room") {
+  // --- m² construidos totales ---
+  function buildBuilt() {
     const c = numericRangeControl({
       type: "area",
       initialMin: p.builtMin,
@@ -672,8 +749,7 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
+    return add(filterBlock({
       title: "m² construidos totales",
       isActiveFn: () => {
         const x = getParamsFromURL();
@@ -687,16 +763,12 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 8. Espacio exterior */
-  let outdoorControl = null;
-  {
-    outdoorControl = multiSelectControl({
+  // --- Espacio exterior (+ orientación dependiente) ---
+  function buildOutdoor() {
+    const outdoorControl = multiSelectControl({
       options: [
         ["balcon", "Balcón"],
         ["terraza", "Terraza"],
@@ -710,8 +782,7 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
+    add(filterBlock({
       title: "Espacio exterior",
       isActiveFn: () => getParamsFromURL().outdoorTypes.length > 0,
       onClear: () => {
@@ -721,46 +792,31 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: outdoorControl.el
-    });
+    }));
 
-    blocks.push(blk);
-    root.appendChild(blk.el);
-  }
-
-  /* 9. Orientación del balcón */
-  {
-    const c = multiSelectControl({
-      options: [
-        ["N", "N"],
-        ["S", "S"],
-        ["E", "E"],
-        ["O", "O"]
-      ],
+    const orient = multiSelectControl({
+      options: [["N", "N"], ["S", "S"], ["E", "E"], ["O", "O"]],
       initialValues: p.orientations,
       onChange: (vals) => {
         setURLParam("orientations", toCSV(vals));
         touch();
       }
     });
-
-    const blk = filterBlock({
+    add(filterBlock({
       title: "Orientación del balcón",
       isActiveFn: () => getParamsFromURL().orientations.length > 0,
       onClear: () => {
-        c.setValues([]);
+        orient.setValues([]);
         setURLParam("orientations", null);
         touch();
       },
       isVisibleFn: () => getParamsFromURL().outdoorTypes.length > 0,
-      contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+      contentEl: orient.el
+    }));
   }
 
-  /* 10. Accesibilidad */
-  {
+  // --- Accesibilidad ---
+  function buildAccessibility() {
     const c = multiSelectControl({
       options: [
         ["ascensor", "Ascensor"],
@@ -772,8 +828,7 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
+    return add(filterBlock({
       title: "Accesibilidad",
       isActiveFn: () => getParamsFromURL().accessibility.length > 0,
       onClear: () => {
@@ -782,14 +837,11 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 11. Parking */
-  {
+  // --- Parking ---
+  function buildParking() {
     const c = multiSelectControl({
       options: [
         ["incluido", "Incluido"],
@@ -802,8 +854,7 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
+    return add(filterBlock({
       title: "Parking",
       isActiveFn: () => getParamsFromURL().parkingTypes.length > 0,
       onClear: () => {
@@ -812,14 +863,11 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 12. Trastero */
-  {
+  // --- Trastero ---
+  function buildStorage() {
     const c = multiSelectControl({
       options: [
         ["incluido", "Incluido"],
@@ -831,8 +879,7 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
+    return add(filterBlock({
       title: "Trastero",
       isActiveFn: () => getParamsFromURL().storageTypes.length > 0,
       onClear: () => {
@@ -841,14 +888,11 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 13. Mínimo certificado energético */
-  {
+  // --- Certificado energético ---
+  function buildEnergy() {
     const c = selectOneControl({
       options: [
         ["pending", "Pendiente"],
@@ -869,8 +913,7 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
+    return add(filterBlock({
       title: "Certificado energético",
       isActiveFn: () => !!getParamsFromURL().energyChoice,
       onClear: () => {
@@ -879,19 +922,16 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
-
-    blocks.push(blk);
-    root.appendChild(blk.el);
+    }));
   }
 
-  /* 14. Disponibilidad */
-  {
+  // --- Disponibilidad (compra / alquiler de vivienda) ---
+  function buildAvailability() {
     const c = selectOneControl({
       options: [
         ["available", "Disponible"],
         ["negotiation", "Ofertado / en negociación"],
-        ["sold", "Alquilado / vendido"]
+        ["sold", isRental ? "Alquilado" : "Vendido"]
       ],
       initial: p.availability,
       onChange: (val) => {
@@ -899,8 +939,7 @@ export function initFiltersBar({ mountId }) {
         touch();
       }
     });
-
-    const blk = filterBlock({
+    return add(filterBlock({
       title: "Disponibilidad",
       isActiveFn: () => !!getParamsFromURL().availability,
       onClear: () => {
@@ -909,10 +948,413 @@ export function initFiltersBar({ mountId }) {
         touch();
       },
       contentEl: c.el
-    });
+    }));
+  }
 
-    blocks.push(blk);
-    root.appendChild(blk.el);
+  /* ============================================================
+     ALQUILER DE VIVIENDA COMPLETA — filtros propios
+     ============================================================ */
+
+  // --- Tipo de alquiler ---
+  function buildRentType() {
+    const c = multiSelectControl({
+      options: [
+        ["larga", "Larga estancia"],
+        ["temporal", "Temporal / por meses"],
+        ["estudiantes", "Para estudiantes"],
+        ["opcion_compra", "Con opción a compra"],
+        ["con_inquilino", "Vivienda con inquilino"]
+      ],
+      initialValues: p.rentTypes,
+      onChange: (vals) => {
+        setURLParam("rent_type", toCSV(vals));
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Tipo de alquiler",
+      isActiveFn: () => getParamsFromURL().rentTypes.length > 0,
+      onClear: () => {
+        c.setValues([]);
+        setURLParam("rent_type", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- Equipamiento ---
+  function buildEquipment() {
+    const c = multiSelectControl({
+      options: [
+        ["amueblado", "Amueblado"],
+        ["sin_amueblar", "Sin amueblar"],
+        ["cocina_equipada", "Cocina equipada"],
+        ["electrodomesticos", "Electrodomésticos"],
+        ["calefaccion", "Calefacción"],
+        ["aire", "Aire acondicionado"],
+        ["armarios", "Armarios empotrados"]
+      ],
+      initialValues: p.equipment,
+      collapseAfter: 5,
+      onChange: (vals) => {
+        setURLParam("equipment", toCSV(vals));
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Equipamiento",
+      isActiveFn: () => getParamsFromURL().equipment.length > 0,
+      onClear: () => {
+        c.setValues([]);
+        setURLParam("equipment", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- Condiciones económicas ---
+  function buildRentConditions() {
+    const c = multiSelectControl({
+      options: [
+        ["gastos_incluidos", "Gastos incluidos"],
+        ["comunidad_incluida", "Comunidad incluida"],
+        ["sin_aval", "Sin aval"],
+        ["fianza_reducida", "Fianza reducida"],
+        ["sin_honorarios", "Sin honorarios de agencia"]
+      ],
+      initialValues: p.rentConditions,
+      onChange: (vals) => {
+        setURLParam("rent_conditions", toCSV(vals));
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Condiciones económicas",
+      isActiveFn: () => getParamsFromURL().rentConditions.length > 0,
+      onClear: () => {
+        c.setValues([]);
+        setURLParam("rent_conditions", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- Mascotas ---
+  function buildPets() {
+    const c = selectOneControl({
+      options: [
+        ["yes", "Admite mascotas"],
+        ["no", "No admite mascotas"]
+      ],
+      initial: p.pets,
+      onChange: (val) => {
+        setURLParam("pets", val);
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Mascotas",
+      isActiveFn: () => !!getParamsFromURL().pets,
+      onClear: () => {
+        c.clear();
+        setURLParam("pets", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  /* ============================================================
+     ALQUILER DE HABITACIÓN — inmueble + convivencia + perfil
+     ============================================================ */
+
+  // --- El precio incluye ---
+  function buildRoomIncludes() {
+    const c = multiSelectControl({
+      options: [
+        ["gastos", "Gastos incluidos"],
+        ["suministros", "Suministros (luz, agua, gas)"],
+        ["internet", "Internet incluido"],
+        ["limpieza", "Limpieza incluida"]
+      ],
+      initialValues: p.roomIncludes,
+      onChange: (vals) => {
+        setURLParam("room_includes", toCSV(vals));
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "El precio incluye",
+      isActiveFn: () => getParamsFromURL().roomIncludes.length > 0,
+      onClear: () => {
+        c.setValues([]);
+        setURLParam("room_includes", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- Tipo de habitación ---
+  function buildRoomType() {
+    const c = multiSelectControl({
+      options: [
+        ["individual", "Individual"],
+        ["doble", "Doble"],
+        ["dos_camas", "Con dos camas"],
+        ["sin_cama", "Sin cama"],
+        ["amueblada", "Amueblada"],
+        ["exterior", "Exterior / ventana a la calle"],
+        ["bano_privado", "Baño privado"],
+        ["balcon", "Con balcón"],
+        ["escritorio", "Con escritorio"],
+        ["armario", "Con armario"]
+      ],
+      initialValues: p.roomTypes,
+      collapseAfter: 5,
+      onChange: (vals) => {
+        setURLParam("room_type", toCSV(vals));
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Tipo de habitación",
+      isActiveFn: () => getParamsFromURL().roomTypes.length > 0,
+      onClear: () => {
+        c.setValues([]);
+        setURLParam("room_type", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- Estancia / disponibilidad ---
+  function buildRoomStay() {
+    const c = selectOneControl({
+      options: [
+        ["now", "Disponible ahora"],
+        ["larga", "Larga estancia"],
+        ["temporal", "Temporal / por meses"],
+        ["reserva_online", "Con reserva online"]
+      ],
+      initial: p.roomStay,
+      onChange: (val) => {
+        setURLParam("room_stay", val);
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Estancia",
+      isActiveFn: () => !!getParamsFromURL().roomStay,
+      onClear: () => {
+        c.clear();
+        setURLParam("room_stay", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- Vivienda compartida ---
+  function buildHousehold() {
+    const c = multiSelectControl({
+      options: [
+        ["mixto", "Piso mixto"],
+        ["solo_chicas", "Solo chicas"],
+        ["solo_chicos", "Solo chicos"],
+        ["propietario_dentro", "Propietario vive en el piso"],
+        ["propietario_fuera", "Propietario no vive en el piso"]
+      ],
+      initialValues: p.household,
+      onChange: (vals) => {
+        setURLParam("household", toCSV(vals));
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Vivienda compartida",
+      isActiveFn: () => getParamsFromURL().household.length > 0,
+      onClear: () => {
+        c.setValues([]);
+        setURLParam("household", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- Perfil de los compañeros ---
+  function buildFlatmates() {
+    const c = multiSelectControl({
+      options: [
+        ["estudiantes", "Estudiantes"],
+        ["trabajadores", "Trabajadores"],
+        ["jovenes", "Ambiente joven (18–30)"],
+        ["profesional", "Ambiente profesional"],
+        ["tranquilo", "Ambiente tranquilo"]
+      ],
+      initialValues: p.flatmates,
+      onChange: (vals) => {
+        setURLParam("flatmates", toCSV(vals));
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Perfil de compañeros",
+      isActiveFn: () => getParamsFromURL().flatmates.length > 0,
+      onClear: () => {
+        c.setValues([]);
+        setURLParam("flatmates", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- Convivencia ---
+  function buildCoexistence() {
+    const c = multiSelectControl({
+      options: [
+        ["fumar", "Se puede fumar"],
+        ["no_fumar", "No fumadores"],
+        ["mascotas", "Se aceptan mascotas"],
+        ["parejas", "Se aceptan parejas"],
+        ["menores", "Se aceptan menores"],
+        ["lgtb", "LGTB friendly"],
+        ["limpieza", "Limpieza / turnos incluidos"]
+      ],
+      initialValues: p.coexistence,
+      collapseAfter: 5,
+      onChange: (vals) => {
+        setURLParam("coexistence", toCSV(vals));
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Convivencia",
+      isActiveFn: () => getParamsFromURL().coexistence.length > 0,
+      onClear: () => {
+        c.setValues([]);
+        setURLParam("coexistence", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- Características del piso ---
+  function buildRoomAmenities() {
+    const c = multiSelectControl({
+      options: [
+        ["ascensor", "Ascensor"],
+        ["aire", "Aire acondicionado"],
+        ["calefaccion", "Calefacción"],
+        ["terraza", "Terraza / zonas comunes"],
+        ["cocina", "Cocina equipada"],
+        ["lavadora", "Lavadora"],
+        ["lavavajillas", "Lavavajillas"],
+        ["internet", "Internet / wifi"],
+        ["salon", "Salón compartido"]
+      ],
+      initialValues: p.roomAmenities,
+      collapseAfter: 5,
+      onChange: (vals) => {
+        setURLParam("room_amenities", toCSV(vals));
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Características del piso",
+      isActiveFn: () => getParamsFromURL().roomAmenities.length > 0,
+      onClear: () => {
+        c.setValues([]);
+        setURLParam("room_amenities", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- Anunciante ---
+  function buildAdvertiser() {
+    const c = multiSelectControl({
+      options: [
+        ["particular", "Particular"],
+        ["companero", "Compañero de piso"],
+        ["propietario", "Propietario"],
+        ["agencia", "Agencia"]
+      ],
+      initialValues: p.advertiser,
+      onChange: (vals) => {
+        setURLParam("advertiser", toCSV(vals));
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "Anunciante",
+      isActiveFn: () => getParamsFromURL().advertiser.length > 0,
+      onClear: () => {
+        c.setValues([]);
+        setURLParam("advertiser", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  /* ============================================================
+     ENSAMBLAJE POR MODO
+     ============================================================ */
+  if (mode === "rent") {
+    // Alquiler de vivienda completa: inmobiliario + condiciones de alquiler
+    buildPrice();
+    buildRentType();
+    buildUseful();
+    buildBedrooms();
+    buildBathrooms();
+    buildEquipment();
+    buildRentConditions();
+    buildPets();
+    buildOutdoor();
+    buildAccessibility();
+    buildParking();
+    buildStorage();
+    buildEnergy();
+    buildSince();
+    buildAvailability();
+  } else if (mode === "room") {
+    // Alquiler de habitación: habitación + convivencia + perfil compatible
+    buildPrice();
+    buildRoomIncludes();
+    buildRoomType();
+    buildRoomStay();
+    buildHousehold();
+    buildFlatmates();
+    buildCoexistence();
+    buildRoomAmenities();
+    buildUseful();
+    buildBathrooms();
+    buildAdvertiser();
+    buildSince();
+  } else {
+    // Comprar / Obra nueva / Todas: filtros de venta (sin cambios)
+    buildPrice();
+    buildUseful();
+    buildBuildPeriods();
+    buildSince();
+    buildBedrooms();
+    buildBathrooms();
+    buildBuilt();
+    buildOutdoor();
+    buildAccessibility();
+    buildParking();
+    buildStorage();
+    buildEnergy();
+    buildAvailability();
   }
 
   mount.innerHTML = "";
@@ -937,7 +1379,19 @@ export function clearAllFilters({ mountId } = {}) {
     "parking",
     "storage",
     "energy",
-    "availability"
+    "availability",
+    "rent_type",
+    "equipment",
+    "rent_conditions",
+    "pets",
+    "room_includes",
+    "room_type",
+    "room_stay",
+    "household",
+    "flatmates",
+    "coexistence",
+    "room_amenities",
+    "advertiser"
   ].forEach((k) => u.searchParams.delete(k));
 
   history.replaceState(null, "", u.toString());
