@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Barra contacto móvil — 6 estilos · Homyo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#FFFDFA;
+    --text:#171311;
+    --muted:#6b7280;
+    --granate:#8C1F2D;
+    --granateDark:#711824;
+    --dorado:#C4962A;
+    --border:#e6e7eb;
+  }
+  html,body{margin:0;height:100%;background:var(--bg);font-family:'Raleway',system-ui,sans-serif;color:var(--text);}
+
+  /* ============ phone frame ============ */
+  .phone{
+    width:390px;
+    height:auto;
+    background:#fff;
+    border-radius:30px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 18px 44px rgba(23,19,17,0.16);
+    border:1px solid rgba(23,19,17,0.06);
+  }
+  /* faux page content above the bar (dimmed, just for context) */
+  .pageCtx{
+    padding:14px 16px 0;
+  }
+  .ctxStatus{
+    height:18px;display:flex;align-items:center;justify-content:space-between;
+    font-size:12px;font-weight:600;color:#171311;margin-bottom:10px;
+  }
+  .ctxStatus .dots{display:flex;gap:4px;align-items:center;}
+  .ctxStatus .dots span{width:5px;height:5px;border-radius:50%;background:#171311;opacity:.55;}
+  .ctxImg{
+    height:150px;border-radius:14px;
+    background:
+      linear-gradient(120deg,rgba(140,31,45,0.07),rgba(196,150,42,0.07)),
+      repeating-linear-gradient(45deg,#f4f1ec 0 11px,#efeae2 11px 22px);
+    display:flex;align-items:flex-end;padding:10px;box-sizing:border-box;
+  }
+  .ctxImg span{font:600 11px/1 'Raleway';letter-spacing:.04em;color:var(--muted);background:rgba(255,255,255,.8);padding:4px 7px;border-radius:6px;}
+  .ctxLine{height:11px;border-radius:6px;background:#efeae2;margin-top:12px;}
+  .ctxLine.addr{width:62%;height:15px;background:rgba(140,31,45,0.14);}
+  .ctxLine.price{width:38%;height:18px;margin-top:8px;background:rgba(196,150,42,0.22);}
+  .ctxLine.s1{width:90%;margin-top:14px;}
+  .ctxLine.s2{width:80%;}
+  .ctxLine.s3{width:55%;}
+  .ctxSpacer{height:14px;}
+
+  /* the bar mounts at the bottom of the phone */
+  .barSlot{position:relative;}
+
+  /* ============ shared button icon sizing ============ */
+  .b svg{display:block;}
+
+  /* ============ 01 · Refinado (actual, con aire) ============ */
+  .v1 .bar{
+    display:flex;gap:11px;align-items:center;
+    padding:12px 16px calc(12px + 6px);
+    background:#FFFDFA;
+    border-top:1px solid rgba(140,31,45,0.16);
+    box-shadow:0 -6px 16px rgba(140,31,45,0.06);
+  }
+  .v1 .primary{
+    flex:1 1 auto;height:48px;border-radius:12px;border:1px solid var(--granate);
+    background:var(--granate);color:#fff;font:700 15px/1 'Raleway';letter-spacing:.01em;
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;
+  }
+  .v1 .icon{
+    width:48px;height:48px;flex:0 0 auto;border-radius:12px;border:1px solid rgba(140,31,45,0.32);
+    background:#fff;color:var(--granate);display:grid;place-items:center;cursor:pointer;
+  }
+  .v1 .primary svg{width:19px;height:19px;}
+  .v1 .icon svg{width:20px;height:20px;}
+
+  /* ============ 02 · Píldoras ============ */
+  .v2 .bar{
+    display:flex;gap:10px;align-items:center;
+    padding:13px 18px calc(13px + 6px);
+    background:#FFFDFA;
+    border-top:1px solid rgba(140,31,45,0.14);
+    box-shadow:0 -6px 16px rgba(23,19,17,0.06);
+  }
+  .v2 .primary{
+    flex:1 1 auto;height:46px;border-radius:999px;border:1px solid var(--granate);
+    background:var(--granate);color:#fff;font:700 15px/1 'Raleway';
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;
+  }
+  .v2 .icon{
+    width:46px;height:46px;flex:0 0 auto;border-radius:50%;border:1px solid rgba(140,31,45,0.32);
+    background:#fff;color:var(--granate);display:grid;place-items:center;cursor:pointer;
+  }
+  .v2 .primary svg{width:19px;height:19px;}
+  .v2 .icon svg{width:19px;height:19px;}
+
+  /* ============ 03 · Tarjeta flotante ============ */
+  .v3 .bar{
+    margin:0 14px;
+    display:flex;gap:9px;align-items:center;
+    padding:9px 10px;
+    background:#fff;
+    border:1px solid rgba(140,31,45,0.10);
+    border-radius:18px;
+    box-shadow:0 16px 34px rgba(23,19,17,0.16);
+  }
+  .v3wrap{padding-bottom:calc(12px + 6px);background:transparent;}
+  .v3 .primary{
+    flex:1 1 auto;height:46px;border-radius:13px;border:0;
+    background:var(--granate);color:#fff;font:700 15px/1 'Raleway';
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;
+  }
+  .v3 .icon{
+    width:46px;height:46px;flex:0 0 auto;border-radius:13px;border:0;
+    background:rgba(140,31,45,0.07);color:var(--granate);display:grid;place-items:center;cursor:pointer;
+  }
+  .v3 .icon.save{background:rgba(196,150,42,0.14);color:var(--dorado);}
+  .v3 .primary svg{width:19px;height:19px;}
+  .v3 .icon svg{width:20px;height:20px;}
+
+  /* ============ 04 · Acciones con etiqueta ============ */
+  .v4 .bar{
+    display:flex;gap:10px;align-items:stretch;
+    padding:11px 16px calc(11px + 6px);
+    background:#FFFDFA;
+    border-top:1px solid rgba(140,31,45,0.16);
+    box-shadow:0 -6px 16px rgba(140,31,45,0.06);
+  }
+  .v4 .primary{
+    flex:1 1 auto;border-radius:12px;border:1px solid var(--granate);
+    background:var(--granate);color:#fff;font:700 15px/1 'Raleway';
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;min-height:52px;
+  }
+  .v4 .icon{
+    width:60px;flex:0 0 auto;border-radius:12px;border:1px solid rgba(140,31,45,0.30);
+    background:#fff;color:var(--granate);cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    font:600 10.5px/1 'Raleway';letter-spacing:.01em;
+  }
+  .v4 .primary svg{width:19px;height:19px;}
+  .v4 .icon svg{width:19px;height:19px;}
+
+  /* ============ 05 · Banda granate ============ */
+  .v5 .bar{
+    display:flex;gap:10px;align-items:center;
+    padding:13px 16px calc(13px + 6px);
+    background:var(--granate);
+    box-shadow:0 -8px 20px rgba(140,31,45,0.22);
+  }
+  .v5 .primary{
+    flex:1 1 auto;height:46px;border-radius:12px;border:0;
+    background:#fff;color:var(--granate);font:700 15px/1 'Raleway';
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;
+  }
+  .v5 .icon{
+    width:46px;height:46px;flex:0 0 auto;border-radius:12px;border:1px solid rgba(255,255,255,0.45);
+    background:transparent;color:#fff;display:grid;place-items:center;cursor:pointer;
+  }
+  .v5 .primary svg{width:19px;height:19px;}
+  .v5 .icon svg{width:20px;height:20px;}
+
+  /* ============ 06 · Segmentado ============ */
+  .v6 .bar{
+    padding:13px 18px calc(13px + 6px);
+    background:#FFFDFA;
+    border-top:1px solid rgba(140,31,45,0.14);
+    box-shadow:0 -6px 16px rgba(23,19,17,0.06);
+  }
+  .v6 .seg{
+    display:flex;align-items:stretch;height:48px;
+    border:1px solid rgba(140,31,45,0.28);border-radius:13px;overflow:hidden;background:#fff;
+  }
+  .v6 .segItem{
+    border:0;background:transparent;color:var(--granate);cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 13px/1 'Raleway';
+  }
+  .v6 .segItem.icon{width:58px;flex:0 0 auto;}
+  .v6 .segItem.primary{flex:1 1 auto;background:var(--granate);color:#fff;font-weight:700;font-size:15px;}
+  .v6 .segItem + .segItem{border-left:1px solid rgba(140,31,45,0.2);}
+  .v6 .segItem svg{width:19px;height:19px;}
+
+  /* canvas chrome */
+  .frameNote{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.5;}
+  .frameNote b{color:var(--granate);font-weight:700;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="frames/design-canvas.jsx"></script>
+
+<script type="text/babel">
+const { useState } = React;
+
+const IcHeart = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+  </svg>
+);
+const IcPhone = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L9.91 9.91a16 16 0 0 0 6 6l1.46-1.41a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
+  </svg>
+);
+const IcMail = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>
+  </svg>
+);
+
+/* faux phone page context above the bar */
+const PageCtx = () => (
+  <div className="pageCtx">
+    <div className="ctxStatus">
+      <span>9:41</span>
+      <span className="dots"><span></span><span></span><span></span></span>
+    </div>
+    <div className="ctxImg"><span>Foto de la vivienda</span></div>
+    <div className="ctxLine addr"></div>
+    <div className="ctxLine price"></div>
+    <div className="ctxLine s1"></div>
+    <div className="ctxLine s2"></div>
+    <div className="ctxLine s3"></div>
+    <div className="ctxSpacer"></div>
+  </div>
+);
+
+const Phone = ({ cls, children }) => (
+  <div className={"phone " + cls}>
+    <PageCtx/>
+    <div className="barSlot">{children}</div>
+  </div>
+);
+
+/* ---------- 01 Refinado ---------- */
+const V1 = () => (
+  <Phone cls="v1">
+    <div className="bar">
+      <button className="primary b"><IcMail/>Contacto</button>
+      <button className="icon b" aria-label="Llamar"><IcPhone/></button>
+      <button className="icon b" aria-label="Guardar"><IcHeart/></button>
+    </div>
+  </Phone>
+);
+
+/* ---------- 02 Píldoras ---------- */
+const V2 = () => (
+  <Phone cls="v2">
+    <div className="bar">
+      <button className="primary b"><IcMail/>Contacto</button>
+      <button className="icon b" aria-label="Llamar"><IcPhone/></button>
+      <button className="icon b" aria-label="Guardar"><IcHeart/></button>
+    </div>
+  </Phone>
+);
+
+/* ---------- 03 Tarjeta flotante ---------- */
+const V3 = () => (
+  <Phone cls="v3">
+    <div className="v3wrap">
+      <div className="bar">
+        <button className="primary b"><IcMail/>Contacto</button>
+        <button className="icon b" aria-label="Llamar"><IcPhone/></button>
+        <button className="icon save b" aria-label="Guardar"><IcHeart/></button>
+      </div>
+    </div>
+  </Phone>
+);
+
+/* ---------- 04 Acciones con etiqueta ---------- */
+const V4 = () => (
+  <Phone cls="v4">
+    <div className="bar">
+      <button className="primary b"><IcMail/>Contacto</button>
+      <button className="icon b"><IcPhone/>Llamar</button>
+      <button className="icon b"><IcHeart/>Guardar</button>
+    </div>
+  </Phone>
+);
+
+/* ---------- 05 Banda granate ---------- */
+const V5 = () => (
+  <Phone cls="v5">
+    <div className="bar">
+      <button className="primary b"><IcMail/>Contacto</button>
+      <button className="icon b" aria-label="Llamar"><IcPhone/></button>
+      <button className="icon b" aria-label="Guardar"><IcHeart/></button>
+    </div>
+  </Phone>
+);
+
+/* ---------- 06 Segmentado ---------- */
+const V6 = () => (
+  <Phone cls="v6">
+    <div className="bar">
+      <div className="seg">
+        <button className="segItem primary b"><IcMail/>Contacto</button>
+        <button className="segItem icon b" aria-label="Llamar"><IcPhone/></button>
+        <button className="segItem icon b" aria-label="Guardar"><IcHeart/></button>
+      </div>
+    </div>
+  </Phone>
+);
+
+const W = 390;
+const H = 470;
+
+function App(){
+  return (
+    <DesignCanvas>
+      <DCSection id="bars" title="Barra de contacto · móvil (ficha)" subtitle="6 estilos sobre el branding Homyo — granate #8C1F2D · dorado #C4962A · Raleway. Botones algo más pequeños y con margen lateral para que no toquen los bordes.">
+        <DCArtboard id="v1" label="01 · Refinado" width={W} height={H}>
+          <p className="frameNote">El estilo actual <b>depurado</b>: más margen lateral (16 px) y separación entre botones, altura 48. Cambio mínimo, máxima continuidad.</p>
+          <V1/>
+        </DCArtboard>
+        <DCArtboard id="v2" label="02 · Píldoras" width={W} height={H}>
+          <p className="frameNote">Botón Contacto en <b>píldora</b> y acciones en <b>círculos</b>. Más ligero y moderno, con buen aire respecto al borde.</p>
+          <V2/>
+        </DCArtboard>
+        <DCArtboard id="v3" label="03 · Tarjeta flotante" width={W} height={H}>
+          <p className="frameNote">Barra como <b>tarjeta flotante</b> redondeada y despegada de los bordes. Iconos en relleno suave (dorado para guardar). Toque premium.</p>
+          <V3/>
+        </DCArtboard>
+        <DCArtboard id="v4" label="04 · Acciones con etiqueta" width={W} height={H}>
+          <p className="frameNote">Las acciones secundarias muestran <b>icono + etiqueta</b> (Llamar / Guardar). Más claras para quien no reconoce los iconos.</p>
+          <V4/>
+        </DCArtboard>
+        <DCArtboard id="v5" label="05 · Banda granate" width={W} height={H}>
+          <p className="frameNote">Banda <b>granate sólida</b> con Contacto invertido en blanco e iconos con contorno claro. Presencia y marca al máximo.</p>
+          <V5/>
+        </DCArtboard>
+        <DCArtboard id="v6" label="06 · Segmentado" width={W} height={H}>
+          <p className="frameNote">Las tres acciones unidas en un <b>control segmentado</b> con un solo contorno. Compacto, ordenado y con margen lateral.</p>
+          <V6/>
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

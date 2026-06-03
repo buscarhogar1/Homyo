@@ -21,7 +21,10 @@
         --text:#111;
         --muted:#6b7280;
         --border:#e6e7eb;
-        --link:#2563eb;
+        --link:#8C1F2D;
+        --granate:#8C1F2D;
+        --granateDark:#711824;
+        --dorado:#C4962A;
 
         --gap:4px;
 
@@ -87,7 +90,7 @@
       }
       .crumbLink:hover{text-decoration:underline;}
       .crumbCurrent{color:var(--muted);}
-      .sep{color:#c4c7cf;}
+      .sep{color:#C4962A;}
 
       .mediaOuter{
         margin-left: calc(-1 * var(--bleed));
@@ -156,13 +159,15 @@
         height:36px;
         padding:0 11px;
         border-radius:999px;
-        border:1px solid rgba(0,0,0,0.08);
+        border:1px solid rgba(140,31,45,0.18);
         background:#fff;
+        color:#8C1F2D;
         cursor:pointer;
         font-size:14px;
         gap:8px;
         box-shadow: var(--shadow);
       }
+      .actionBtn:hover{ background:#fbf2f3; border-color:rgba(140,31,45,0.30); }
       .actionBtn:active{transform:translateY(1px);}
       .actionIcon{width:36px; padding:0;}
       .icon{width:18px; height:18px; display:inline-block;}
@@ -181,7 +186,7 @@
         display:inline-flex;
         align-items:center;
         gap:8px;
-        color:#111;
+        color:#8C1F2D;
         font-size:14px;
         padding:6px 6px;
         border-radius:10px;
@@ -189,8 +194,8 @@
         background:transparent;
         cursor:pointer;
       }
-      .tabBtn:hover{background:#f6f7f9;}
-      .tabCount{color:var(--muted);}
+      .tabBtn:hover{background:#fbf2f3;}
+      .tabCount{color:#C4962A;}
       .tabsRight .tabBtn{
         border:1px solid var(--border);
         background:#fff;
@@ -231,7 +236,7 @@
         margin:0;
       }
       .priceNoteBtn{
-        color:var(--link);
+        color:var(--dorado);
         font-size:14px;
         border:0;
         background:transparent;
@@ -258,6 +263,7 @@
         border:0;
         background:transparent;
       }
+      .fact .icon{ color:var(--dorado); }
       .factMuted{color:var(--muted);}
 
       .subnav{
@@ -294,9 +300,22 @@
         line-height:1.05;
       }
       .h2.small{
-        font-size:20px;
-        letter-spacing:-0.1px;
-        line-height:1.2;
+        font-size:30px;
+        font-weight:600 !important;
+        letter-spacing:-0.3px;
+        line-height:1.1;
+        padding-top:16px;
+        position:relative;
+      }
+      .h2.small::before{
+        content:"";
+        position:absolute;
+        top:0;
+        left:0;
+        width:44px;
+        height:3px;
+        border-radius:2px;
+        background:var(--dorado);
       }
 
       .p{
@@ -308,13 +327,39 @@
       }
       .mutedP{color:var(--muted);}
       .readMoreBtn{
-        margin-top:10px;
-        border:1px solid var(--border);
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        margin-top:14px;
+        border:1px solid rgba(140,31,45,0.35);
         background:#fff;
-        padding:8px 10px;
-        border-radius:12px;
+        padding:9px 16px;
+        border-radius:10px;
         cursor:pointer;
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
         font-size:14px;
+        font-weight:600;
+        letter-spacing:0.02em;
+        color:var(--granate);
+        width:fit-content;
+        transition:background 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+      }
+      .readMoreBtn::after{
+        content:"";
+        width:7px;
+        height:7px;
+        border-right:1.6px solid var(--dorado);
+        border-bottom:1.6px solid var(--dorado);
+        transform:rotate(45deg) translateY(-1px);
+        transition:transform 160ms ease;
+      }
+      .readMoreBtn[aria-expanded="true"]::after{
+        transform:rotate(-135deg) translateY(-1px);
+      }
+      .readMoreBtn:hover{
+        background:rgba(140,31,45,0.06);
+        border-color:var(--granate);
+        box-shadow:0 4px 12px rgba(140,31,45,0.12);
       }
 
       .descClamp{
@@ -325,28 +370,27 @@
       .clamp5{ -webkit-line-clamp:5; }
       .clamp999{ -webkit-line-clamp:999; }
 
+      /* ===== Cuadros de características · Editorial Variante B (sin caja) ===== */
       .featuresGrid{
         display:grid;
         grid-template-columns: 1fr;
-        gap:16px;
-        margin-top:12px;
+        gap:26px;
+        margin-top:14px;
       }
 
       .featBlock{
-        border:1px solid var(--border);
-        border-radius:8px;
-        background:#fff;
-        overflow:hidden;
+        background:transparent;
       }
 
       .featHead{
-        display:flex;
-        align-items:center;
-        gap:10px;
-        padding:14px 16px;
-        font-size:16px;
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
+        font-size:21px;
         font-weight:600;
-        border-bottom:1px solid var(--border);
+        color:var(--granate);
+        letter-spacing:.005em;
+        padding:0 0 10px;
+        border-bottom:1px solid rgba(196,150,42,0.55);
+        margin-bottom:2px;
       }
 
       .featList{ padding:0; }
@@ -354,13 +398,15 @@
       .featLine{
         display:grid;
         grid-template-columns: 260px 1fr;
-        padding:10px 16px;
-        border-bottom:1px solid var(--border);
+        column-gap:36px;
+        align-items:center;
+        padding:12px 0;
+        border-bottom:1px solid #f0ece4;
       }
       .featLine:last-child{ border-bottom:none; }
 
-      .featK{ font-size:14px; color:var(--muted); }
-      .featV{ font-size:14px; color:#111; }
+      .featK{ font-size:14px; color:#8a8276; }
+      .featV{ font-size:14px; color:#111; font-weight:500; }
 
       .sideSticky{position:sticky; top:14px; display:grid; gap:12px;}
       .sideCard{
@@ -392,8 +438,8 @@
         padding:12px 14px;
         border-bottom:1px solid var(--border);
       }
-      .mapHeaderTitle{font-size:14px; color:#111;}
-      .mapHeaderSmall{font-size:13px; color:var(--muted);}
+      .mapHeaderTitle{font-size:14px; color:#8C1F2D; font-weight:600;}
+      .mapHeaderSmall{font-size:13px; color:#C4962A;}
       /* Botones +/- del zoom — branding Homyo (mismo estilo que map.html) */
       .leaflet-control-zoom{
         border: none !important;
@@ -503,20 +549,25 @@
         padding:0;
       }
       .agencyTop{
-        padding:18px 18px 16px;
+        padding:20px 18px 16px;
         background:#f4f4f5;
         border-bottom:1px solid var(--border);
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        text-align:center;
+        gap:10px;
       }
       .agencyLogoWrap{
-        min-height:112px;
+        min-height:72px;
         display:flex;
         align-items:center;
         justify-content:center;
       }
       .agencyLogoFrame{
-        width:110px;
-        height:110px;
-        border-radius:10px;
+        width:72px;
+        height:72px;
+        border-radius:50%;
         border:1px solid #d7d9de;
         background:#fff;
         display:flex;
@@ -538,11 +589,11 @@
         display:flex;
         align-items:center;
         justify-content:center;
-        padding:12px;
+        padding:8px;
         text-align:center;
         color:#6b7280;
         font-weight:800;
-        font-size:24px;
+        font-size:20px;
         letter-spacing:1px;
         background:#fff;
       }
@@ -550,11 +601,24 @@
         padding:18px;
       }
       .agencyName{
-        margin:0 0 16px;
+        margin:0;
         font-size:16px;
         line-height:1.35;
         font-weight:700;
-        color:#0b69c7;
+        color:#8C1F2D;
+      }
+      .agencyVerified{
+        display:inline-flex;
+        align-items:center;
+        gap:5px;
+        font-size:12px;
+        font-weight:600;
+        letter-spacing:.01em;
+        color:var(--dorado);
+      }
+      .agencyVerified svg{
+        width:13px;
+        height:13px;
       }
       .contactBtns{
         display:grid;
@@ -572,12 +636,12 @@
         border:1px solid #d7d9de;
         background:#fff;
         font-size:15px;
-        color:#0b69c7;
+        color:#8C1F2D;
       }
       .ctaPrimary{
-        background:#f79a1f;
+        background:#8C1F2D;
         color:#fff;
-        border-color:#f79a1f;
+        border-color:#8C1F2D;
         font-weight:700;
       }
       .ctaSecondary{
@@ -639,7 +703,8 @@
         right:0;
         z-index:1000;
         background:#fff;
-        border-bottom:1px solid var(--border);
+        border-bottom:1px solid rgba(140,31,45,0.12);
+        box-shadow:0 6px 18px rgba(23,19,17,0.05);
         transform: translateY(-110%);
         opacity: 0;
         transition: transform 300ms ease, opacity 300ms ease;
@@ -651,13 +716,33 @@
       .stickyInner{
         max-width: var(--contentMax);
         margin: 0 auto;
-        padding:10px 16px;
+        padding:13px 28px;
         display:flex;
         align-items:center;
         justify-content:space-between;
-        gap:14px;
+        gap:18px;
       }
       .stickyLeft{
+        min-width:0;
+        display:flex;
+        align-items:center;
+        gap:14px;
+      }
+      .stickyBadge{
+        width:42px;
+        height:42px;
+        flex:0 0 auto;
+        border-radius:12px;
+        display:grid;
+        place-items:center;
+        background:rgba(196,150,42,0.14);
+        color:var(--dorado);
+      }
+      .stickyBadge svg{
+        width:21px;
+        height:21px;
+      }
+      .stickyText{
         min-width:0;
       }
       .stickyAddr{
@@ -680,22 +765,38 @@
         align-items:center;
       }
       .sbtn{
-        height:34px;
-        padding:0 12px;
+        height:38px;
+        padding:0 16px;
         border-radius:999px;
-        border:1px solid var(--border);
+        border:1px solid rgba(140,31,45,0.24);
         background:#fff;
+        color:#8C1F2D;
         cursor:pointer;
-        font-size:13px;
+        font-family:'Raleway','Montserrat',system-ui,sans-serif;
+        font-size:14px;
+        font-weight:600;
         display:inline-flex;
         align-items:center;
-        gap:8px;
+        gap:9px;
         white-space:nowrap;
+        transition:background .16s ease, border-color .16s ease, color .16s ease;
       }
+      .sbtn svg{ width:17px; height:17px; }
+      .sbtn:hover{ background:rgba(140,31,45,0.05); }
+      .sbtnSave{
+        border-color:rgba(196,150,42,0.45);
+        color:var(--dorado);
+      }
+      .sbtnSave:hover{ background:rgba(196,150,42,0.08); }
       .sbtnPrimary{
-        background:#111;
+        background:#8C1F2D;
         color:#fff;
-        border-color:#111;
+        border-color:#8C1F2D;
+        font-weight:700;
+      }
+      .sbtnPrimary:hover{
+        background:#711824;
+        border-color:#711824;
       }
       .sbtn[disabled]{
         opacity:0.55;
@@ -764,7 +865,7 @@
           margin:0;
           cursor:pointer;
           text-align:center;
-          color:#0b69c7;
+          color:#8C1F2D;
         }
         .mobileMediaThumb{
           height:92px;
@@ -793,7 +894,7 @@
           width:54px;
           height:54px;
           border-radius:999px;
-          background:rgba(20,20,20,0.58);
+          background:#8C1F2D;
           color:#fff;
           display:flex;
           align-items:center;
@@ -829,7 +930,7 @@
         .mobileGalleryIconBtn,.mobileGalleryCloseBtn{
           border:0;
           background:transparent;
-          color:#0b69c7;
+          color:#8C1F2D;
           padding:8px;
           border-radius:10px;
           cursor:pointer;
@@ -883,22 +984,22 @@
           bottom:0;
           z-index:6;
           background:#fff;
-          border-top:1px solid #0b69c7;
+          border-top:1px solid rgba(140,31,45,0.25);
           display:grid;
           grid-template-columns:repeat(4,1fr);
         }
         .mobileGalleryNavBtn{
           min-height:58px;
           border:0;
-          border-right:1px solid #0b69c7;
+          border-right:1px solid rgba(140,31,45,0.25);
           background:#fff;
-          color:#0b69c7;
+          color:#8C1F2D;
           font-size:14px;
           cursor:pointer;
         }
         .mobileGalleryNavBtn:last-child{ border-right:0; }
         .mobileGalleryNavBtn.isActive{
-          background:#0b69c7;
+          background:#8C1F2D;
           color:#fff;
         }
         .mobileViewer360{
@@ -962,7 +1063,7 @@
           padding:0;
           text-align:left;
         }
-        .mobileViewer360Thumb.isActive{ border-color:#49d2ff; }
+        .mobileViewer360Thumb.isActive{ border-color:#C4962A; }
         .mobileViewer360ThumbImage{
           height:76px;
           background:linear-gradient(135deg,#f0f1f3,#ffffff);
@@ -995,7 +1096,9 @@
         .mediaSmall{min-height:150px;}
         .contentGrid{grid-template-columns:1fr;}
         .sideSticky{position:static;}
-        .featLine{grid-template-columns: 1fr; gap:4px;}
+        .featLine{grid-template-columns: 1fr; gap:3px; padding:11px 0;}
+        .featHead{ font-size:19px; }
+        .h2.small{ font-size:25px; padding-top:14px; }
         #stickySentinel{ top: 0; }
       }
       @media (max-width: 560px){
@@ -1086,7 +1189,7 @@
 
   #saveBtn.isFav svg,
   #saveBtn[aria-pressed="true"] svg {
-    fill: #dc2626 !important;
+    fill: #8C1F2D !important;
     stroke: #dc2626 !important;
   }
 
@@ -1162,7 +1265,7 @@
     border-radius:10px;
     border:1px solid #d7d9de;
     background:#fff;
-    color:#0b69c7;
+    color:#8C1F2D;
     display:inline-flex;
     align-items:center;
     justify-content:center;
@@ -1175,9 +1278,9 @@
   .mobileBottomCtaBtnPrimary{
     flex:1 1 auto;
     min-width:0;
-    background:#f79a1f;
+    background:#8C1F2D;
     color:#fff;
-    border-color:#f79a1f;
+    border-color:#8C1F2D;
     font-weight:700;
   }
 
@@ -1280,19 +1383,19 @@
 .agencyTop{
   background:#FFFDFA !important;
   border-bottom:1px solid rgba(140,31,45,0.12) !important;
-  padding:20px 18px 18px !important;
+  padding:22px 18px 18px !important;
   position:relative !important;
 }
 .agencyLogoFrame{
   border:1px solid rgba(140,31,45,0.18) !important;
-  border-radius:12px !important;
+  border-radius:50% !important;
   background:#fff !important;
   box-shadow:0 1px 2px rgba(140,31,45,0.06) !important;
 }
 .agencyLogoFallback{
   color:#8C1F2D !important;
   font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
-  letter-spacing:2px !important;
+  letter-spacing:1px !important;
 }
 .agencyName{
   color:#8C1F2D !important;
@@ -1300,10 +1403,7 @@
   font-weight:600 !important;
   letter-spacing:0.04em !important;
   font-size:17px !important;
-  padding-bottom:12px !important;
-  border-bottom:1px solid rgba(140,31,45,0.10) !important;
-  position:relative !important;
-  margin-bottom:0 !important;
+  margin:0 !important;
 }
 .agencyBody .cta{
   border:1px solid rgba(140,31,45,0.35) !important;
@@ -1331,13 +1431,13 @@
   box-shadow:0 4px 12px rgba(140,31,45,0.18) !important;
 }
 .agencyBody .cta.ctaPrimary .ctaIcon svg{
-  stroke:#fff !important;
+  stroke:var(--dorado) !important;
 }
 .agencyBody .cta.ctaGhost{
   border-color:rgba(140,31,45,0.35) !important;
 }
 .agencyBody .cta .ctaIcon svg{
-  stroke:currentColor !important;
+  stroke:var(--dorado) !important;
 }
 .agencyBody .cta[disabled]{
   opacity:0.55 !important;
@@ -1351,18 +1451,18 @@
   }
 
   .mobileBottomCta{
-    padding:6px 10px calc(6px + env(safe-area-inset-bottom)) !important;
+    padding:11px 16px calc(11px + env(safe-area-inset-bottom)) !important;
     background:#FFFDFA !important;
-    border-top:1px solid rgba(140,31,45,0.18) !important;
-    box-shadow:0 -4px 14px rgba(140,31,45,0.08) !important;
-    gap:6px !important;
+    border-top:1px solid rgba(140,31,45,0.14) !important;
+    box-shadow:0 -6px 16px rgba(23,19,17,0.06) !important;
+    gap:9px !important;
   }
 
   .mobileBottomCtaBtn{
-    height:44px !important;
-    border-radius:10px !important;
-    border:1px solid rgba(140,31,45,0.35) !important;
-    background:#fff !important;
+    height:46px !important;
+    border-radius:13px !important;
+    border:0 !important;
+    background:rgba(140,31,45,0.07) !important;
     color:#8C1F2D !important;
     font-size:14px !important;
     font-weight:600 !important;
@@ -1370,14 +1470,14 @@
   }
 
   .mobileBottomCtaBtn svg{
-    width:18px !important;
-    height:18px !important;
+    width:19px !important;
+    height:19px !important;
   }
 
   .mobileBottomCtaBtnPrimary{
     background:#8C1F2D !important;
     color:#fff !important;
-    border-color:#8C1F2D !important;
+    border:0 !important;
     font-weight:700 !important;
     letter-spacing:0.02em !important;
     box-shadow:none !important;
@@ -1387,10 +1487,117 @@
     stroke:#fff !important;
   }
 
+  /* Guardar → relleno dorado suave */
+  #mobileBottomFavBtn{
+    background:rgba(196,150,42,0.14) !important;
+    color:#C4962A !important;
+  }
+
+  #mobileBottomFavBtn svg{
+    stroke:#C4962A !important;
+  }
+
   .mobileBottomCtaBtnSquare{
     width:54px !important;
     min-width:54px !important;
   }
+}
+
+
+/* === HOMYO BRAND TYPOGRAPHY — ficha (web + móvil) ===
+   Las cabeceras, precio, pestañas y navegación de la ficha usaban
+   system-ui en negro. Se alinean al branding: Raleway + granate (#8C1F2D),
+   dorado (#C4962A) como acento. Mismas clases en escritorio y móvil. */
+
+/* Título de la dirección (H1) */
+.title{
+  font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-weight:600 !important;
+  color:var(--granate) !important;
+  letter-spacing:-0.4px !important;
+}
+.subTitle{
+  font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
+  color:var(--muted) !important;
+  letter-spacing:0.01em;
+}
+
+/* Precio */
+.price{
+  font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-weight:665 !important;
+  color:var(--text) !important;
+  letter-spacing:-0.6px !important;
+}
+.priceNoteBtn{
+  font-family:'Raleway',sans-serif !important;
+  color:var(--dorado) !important;
+}
+
+/* Fila de características (m², habitaciones, baños, año, certificado) */
+.factsRow{
+  font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
+  color:var(--text) !important;
+}
+.fact{ font-weight:500 !important; color:#111 !important; }
+.fact .factMuted{ color:#111 !important; }
+.fact .icon{ color:var(--dorado) !important; }
+
+/* Iconos un 10% más finos (stroke 2 -> 1.8) */
+.tabBtn .icon svg, .factsRow .fact .icon svg{ stroke-width:1.8 !important; }
+
+/* Pestañas de medios (Fotos / Plano / 360° / Vídeo) */
+.tabBtn{
+  font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-weight:500 !important;
+  color:#111 !important;
+  letter-spacing:0.01em;
+}
+.tabCount{ color:var(--dorado) !important; font-weight:600 !important; }
+
+/* Sub-navegación de secciones (oculta) */
+.subnav{ display:none !important; }
+.subnav a{
+  font-family:'Raleway',sans-serif !important;
+  font-weight:500 !important;
+  color:var(--granate) !important;
+  letter-spacing:0.02em;
+}
+.subnav a:hover{ background:rgba(140,31,45,0.06) !important; }
+.subnav .pill{
+  font-family:'Raleway',sans-serif !important;
+  color:var(--muted) !important;
+  font-weight:500 !important;
+}
+
+/* Encabezados de sección (Descripción / Características / Ubicación) */
+.h2{
+  font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-weight:500 !important;
+  color:var(--granate) !important;
+}
+
+/* Migas de pan */
+.crumbs{ font-family:'Raleway',sans-serif !important; }
+.crumbLink{ color:var(--granate) !important; font-weight:500 !important; }
+
+/* Barra fija superior al hacer scroll */
+.stickyAddr{
+  font-family:'Raleway',sans-serif !important;
+  font-weight:600 !important;
+  color:var(--granate) !important;
+}
+.stickyPrice{
+  font-family:'Raleway',sans-serif !important;
+  font-weight:700 !important;
+  color:var(--text) !important;
+}
+
+/* Accesos a medios en móvil */
+.mobileMediaTileLabel{
+  font-family:'Raleway',sans-serif !important;
+  font-weight:500 !important;
+  color:var(--granate) !important;
 }
 
 </style>
@@ -1402,11 +1609,18 @@
     <div class="stickyBar" id="stickyBar" aria-hidden="true">
       <div class="stickyInner">
         <div class="stickyLeft">
-          <p class="stickyAddr" id="stickyAddr">—</p>
-          <p class="stickyPrice" id="stickyPrice">—</p>
+          <span class="stickyBadge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>
+            </svg>
+          </span>
+          <div class="stickyText">
+            <p class="stickyAddr" id="stickyAddr">—</p>
+            <p class="stickyPrice" id="stickyPrice">—</p>
+          </div>
         </div>
         <div class="stickyActions">
-          <button class="sbtn" id="stickySaveBtn" type="button" title="Guardar en favoritos">
+          <button class="sbtn sbtnSave" id="stickySaveBtn" type="button" title="Guardar en favoritos">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
             </svg>
@@ -1550,7 +1764,7 @@
           <div class="section" id="descripcion">
             <h2 class="h2 small">Descripción</h2>
             <div id="descWrap" class="p descClamp clamp5"></div>
-            <button id="descToggle" class="readMoreBtn" type="button" style="display:none;">Leer más</button>
+            <button id="descToggle" class="readMoreBtn" type="button" aria-expanded="false" style="display:none;">Leer más</button>
           </div>
 
           <div class="section" id="caracteristicas">
@@ -1578,10 +1792,16 @@
                     <div class="agencyLogoFallback" id="agencyLogoFallback">AG</div>
                   </div>
                 </div>
+                <p class="agencyName" id="agency">—</p>
+                <span class="agencyVerified">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <path d="m9 11 3 3L22 4"/>
+                  </svg>
+                  Profesional verificado
+                </span>
               </div>
               <div class="agencyBody">
-                <p class="agencyName" id="agency">—</p>
-
                 <div class="contactBtns">
                   <button class="cta ctaGhost" id="callBtn" type="button" disabled>
                     <span class="ctaIcon">
@@ -1635,7 +1855,7 @@
           <div id="mainMap"></div>
 
           <a id="gmapsBtn" class="gmapsBtn" target="_blank" rel="noopener" style="display:none;">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c9a227" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
               <circle cx="12" cy="10" r="3"/>
             </svg>
@@ -1735,8 +1955,6 @@
         <span class="mobileBottomCtaText">Guardar</span>
       </button>
     </div>
-
-    <div id="bhFooter"></div>
 
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
@@ -2316,6 +2534,7 @@ function renderFeatures(row) {
         const needsToggle = descWrapEl.textContent.length > 240;
         descToggleEl.style.display = needsToggle ? "inline-flex" : "none";
         descToggleEl.textContent = "Leer más";
+        descToggleEl.setAttribute("aria-expanded", "false");
       }
 
 
@@ -2412,6 +2631,7 @@ function renderFeatures(row) {
           descWrapEl.classList.toggle("clamp5", !open);
           descWrapEl.classList.toggle("clamp999", open);
           descToggleEl.textContent = open ? "Leer menos" : "Leer más";
+          descToggleEl.setAttribute("aria-expanded", open ? "true" : "false");
         });
       }
 

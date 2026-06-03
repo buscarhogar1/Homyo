@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jerarquía de títulos · Sección vs bloque</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFDFA; --text:#111; --muted:#6b7280;
+    --granate:#8C1F2D; --dorado:#C4962A;
+    --row-line:#f0ece4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+  .page{max-width:1280px;margin:0 auto;padding:40px 28px 80px;}
+  .kicker{font-family:'Raleway',sans-serif;font-size:12px;font-weight:700;
+    letter-spacing:.24em;text-transform:uppercase;color:var(--dorado);margin:0 0 10px;}
+  .pageTitle{font-family:'Raleway',sans-serif;font-size:30px;font-weight:600;color:var(--granate);margin:0 0 6px;}
+  .pageSub{font-size:15px;color:var(--muted);margin:0 0 30px;max-width:720px;line-height:1.55;}
+
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:34px 30px;}
+  @media (max-width:980px){.grid{grid-template-columns:1fr;}}
+  .panelHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    padding-bottom:10px;margin-bottom:16px;border-bottom:1px dashed #d9d2c6;}
+  .optName{font-family:'Raleway',sans-serif;font-size:15px;font-weight:700;color:var(--granate);margin:0;}
+  .optDesc{font-size:12.5px;color:var(--muted);margin:3px 0 0;line-height:1.5;}
+  .optNum{font-family:'Raleway',sans-serif;font-size:12px;font-weight:700;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--dorado);white-space:nowrap;}
+  .demo{padding:8px 4px;}
+
+  /* ===== block title = Variante B (fijo) ===== */
+  .featuresGrid{display:grid;grid-template-columns:1fr;gap:26px;margin-top:14px;}
+  .featBlock{background:transparent;}
+  .featHead{font-family:'Raleway',sans-serif;font-size:21px;font-weight:600;color:var(--granate);
+    letter-spacing:.005em;padding:0 0 10px;border-bottom:1px solid rgba(196,150,42,.55);margin-bottom:2px;}
+  .featList{padding:0;}
+  .featLine{display:grid;grid-template-columns:230px 1fr;column-gap:36px;align-items:center;
+    padding:12px 0;border-bottom:1px solid var(--row-line);}
+  .featLine:last-child{border-bottom:none;}
+  .featK{font-size:14px;color:#8a8276;}
+  .featV{font-size:14px;color:#111;font-weight:500;display:flex;align-items:center;gap:14px;}
+  .featV.dash{color:var(--muted);font-weight:400;}
+  .featV .monthly{margin-left:auto;color:var(--dorado);font-size:13.5px;text-decoration:none;white-space:nowrap;}
+
+  /* base section title */
+  .secTitle{font-family:'Raleway',sans-serif;color:var(--granate);margin:0 0 16px;}
+
+  /* ===== Opción 1 · Solo tamaño (jerarquía por escala) ===== */
+  .s1 .secTitle{font-size:32px;font-weight:600;letter-spacing:-.4px;line-height:1.05;}
+
+  /* ===== Opción 2 · Categoría en versalitas + línea ===== */
+  .s2 .secTitle{display:flex;align-items:center;gap:16px;font-size:14px;font-weight:700;
+    letter-spacing:.22em;text-transform:uppercase;margin-bottom:22px;}
+  .s2 .secTitle::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--dorado),transparent);}
+
+  /* ===== Opción 3 · Grande + overline dorado ===== */
+  .s3 .secTitle{font-size:30px;font-weight:600;letter-spacing:-.3px;padding-top:14px;position:relative;}
+  .s3 .secTitle::before{content:"";position:absolute;top:0;left:0;width:44px;height:3px;
+    border-radius:2px;background:var(--dorado);}
+
+  /* ===== Opción 4 · Grande con marcador diamante ===== */
+  .s4 .secTitle{font-size:29px;font-weight:600;letter-spacing:-.3px;display:flex;align-items:center;gap:14px;}
+  .s4 .secTitle::before{content:"";width:11px;height:11px;flex:0 0 auto;background:var(--dorado);
+    transform:rotate(45deg);border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="kicker">Homyo · Ficha de inmueble</p>
+  <h1 class="pageTitle">Jerarquía: título de sección vs título de bloque</h1>
+  <p class="pageSub">El título de bloque (Descripción / Estado) se mantiene en <b>Variante B</b>. Aquí ves 4 maneras de hacer que el título de sección (Características) lea claramente <b>un nivel por encima</b>. Cada demo usa «Características» como sección y «Descripción / Estado» como bloques.</p>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+  const data = [
+    ["Descripción", [
+      ["Precio de venta","146.900 €",{monthly:true}],
+      ["Impuestos compra","—"],
+      ["Precio por m² útiles interiores","1530 €"],
+      ["Disponible desde","28/5/2026"]
+    ]],
+    ["Estado", [
+      ["Disponible","Disponible"],
+      ["Cuota de la asociación de propietarios","—"]
+    ]]
+  ];
+  const opts = [
+    ["s1","Solo tamaño","01","Sección a 32px; el bloque queda a 21px. Jerarquía limpia por escala, sin adornos."],
+    ["s2","Categoría + línea","02","Sección en versalitas con filo dorado degradado. Lee como categoría, distinta del bloque."],
+    ["s3","Overline dorado","03","Sección grande con una barrita dorada encima. Acento de marca claro."],
+    ["s4","Marcador diamante","04","Sección grande precedida de un rombo dorado. Marcador discreto y elegante."]
+  ];
+
+  function buildBlock([title,lines]){
+    const block=document.createElement("div");block.className="featBlock";
+    const head=document.createElement("div");head.className="featHead";head.textContent=title;
+    const list=document.createElement("div");list.className="featList";
+    lines.forEach(([k,v,o])=>{
+      const line=document.createElement("div");line.className="featLine";
+      const kk=document.createElement("div");kk.className="featK";kk.textContent=k;
+      const vv=document.createElement("div");vv.className="featV"+(v==="—"?" dash":"");
+      const sp=document.createElement("span");sp.textContent=v;vv.appendChild(sp);
+      if(o&&o.monthly){const a=document.createElement("a");a.className="monthly";a.href="javascript:void(0)";a.textContent="¿Cuánto pagaré al mes?";vv.appendChild(a);}
+      line.appendChild(kk);line.appendChild(vv);list.appendChild(line);
+    });
+    block.appendChild(head);block.appendChild(list);return block;
+  }
+
+  const grid=document.getElementById("grid");
+  opts.forEach(([cls,name,num,desc])=>{
+    const panel=document.createElement("div");
+    panel.innerHTML=`<div class="panelHead"><div><p class="optName">${name}</p><p class="optDesc">${desc}</p></div><span class="optNum">Opción ${num}</span></div>`;
+    const demo=document.createElement("div");demo.className="demo "+cls;
+    const st=document.createElement("h2");st.className="secTitle";st.textContent="Características";
+    const fg=document.createElement("div");fg.className="featuresGrid";
+    data.forEach(b=>fg.appendChild(buildBlock(b)));
+    demo.appendChild(st);demo.appendChild(fg);
+    panel.appendChild(demo);grid.appendChild(panel);
+  });
+</script>
+</body>
+</html>

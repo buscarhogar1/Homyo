@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Opciones · Tarjeta de contacto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  :root{
+    --bg:#FFFDFA;
+    --text:#111;
+    --muted:#6b7280;
+    --granate:#8C1F2D;
+    --granateDark:#711824;
+    --dorado:#C4962A;
+    --border:rgba(140,31,45,0.18);
+    --borderSoft:rgba(140,31,45,0.10);
+    --ral:'Raleway','Montserrat',system-ui,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:var(--ral); color:var(--text); }
+
+  /* ===== shared card primitives ===== */
+  .oc{
+    width:330px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:0 1px 0 rgba(140,31,45,0.04);
+    overflow:hidden;
+  }
+  .oc-logo{
+    width:96px; height:96px; border-radius:12px;
+    border:1px solid var(--border); background:#fff;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--granate); font-weight:700; font-size:26px; letter-spacing:2px;
+    box-shadow:0 1px 2px rgba(140,31,45,0.06);
+    flex-shrink:0;
+  }
+  .oc-logo.sm{ width:56px; height:56px; font-size:17px; border-radius:10px; letter-spacing:1px; }
+  .oc-name{
+    color:var(--granate); font-weight:600; letter-spacing:0.04em;
+    font-size:17px; margin:0;
+  }
+  .oc-sub{ color:var(--muted); font-size:12.5px; font-weight:500; margin:2px 0 0; letter-spacing:.01em; }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; min-height:46px; border-radius:10px; cursor:pointer;
+    font-family:var(--ral); font-size:15px; font-weight:600; letter-spacing:.01em;
+    border:1px solid var(--border); background:#fff; color:var(--granate);
+    transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,color .16s ease;
+  }
+  .btn:hover{ background:rgba(140,31,45,0.06); border-color:var(--granate); }
+  .btn .ic{ width:18px; height:18px; display:inline-flex; }
+  .btn .ic svg{ width:100%; height:100%; stroke:var(--dorado); fill:none; stroke-width:2; }
+
+  .btn.primary{ background:var(--granate); border-color:var(--granate); color:#fff; font-weight:700; }
+  .btn.primary:hover{ background:var(--granateDark); border-color:var(--granateDark); box-shadow:0 4px 12px rgba(140,31,45,0.18); }
+  .btn.primary .ic svg{ stroke:var(--dorado); }
+  .btn.start{ justify-content:flex-start; padding:0 14px; }
+  .btn.sm{ min-height:40px; font-size:13.5px; }
+
+  /* text/ghost link */
+  .linkRow{
+    display:inline-flex; align-items:center; gap:8px;
+    background:none; border:0; cursor:pointer; padding:0;
+    color:var(--granate); font-family:var(--ral); font-weight:600; font-size:13.5px;
+  }
+  .linkRow .ic{ width:15px; height:15px; }
+  .linkRow .ic svg{ width:100%; height:100%; stroke:var(--dorado); fill:none; stroke-width:2; }
+  .linkRow:hover{ color:var(--granateDark); }
+
+  .stack{ display:grid; gap:10px; }
+  .divider{ height:1px; background:var(--borderSoft); border:0; margin:0; }
+
+  /* tag / trust chip */
+  .chip{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11.5px; font-weight:600; letter-spacing:.02em;
+    color:var(--granate); background:rgba(140,31,45,0.06);
+    border-radius:999px; padding:4px 10px;
+  }
+  .chip .dot{ width:6px; height:6px; border-radius:50%; background:var(--dorado); }
+
+  .note{ font-size:11px; color:var(--muted); margin:0; letter-spacing:.01em; }
+  .verified{ display:inline-flex; align-items:center; gap:5px; font-size:11.5px; color:var(--dorado); font-weight:600; }
+  .verified svg{ width:13px; height:13px; stroke:var(--dorado); fill:none; stroke-width:2.2; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="frames/design-canvas.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+/* ---------- inline icons ---------- */
+const Icon = ({d, paths}) => (
+  <span className="ic"><svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+    {paths ? paths.map((p,i)=><path key={i} d={p} />) : <path d={d} />}
+  </svg></span>
+);
+const IcPhone = () => <Icon d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8.03 9.97a16 16 0 0 0 6 6l1.52-1.26a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z" />;
+const IcMail  = () => <Icon paths={["M4 4h16v16H4z","m4 7 8 6 8-6"]} />;
+const IcCal   = () => <Icon paths={["M8 2v4","M16 2v4","M3 10h18","M5 4h14v16H5z"]} />;
+const IcChat  = () => <Icon d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z" />;
+const IcCheck = () => <svg viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>;
+
+/* =========================================================
+   OPTION 1 — Refinada (jerarquía limpia)
+   CTA principal arriba, ver datos como enlaces discretos
+========================================================= */
+function Opt1(){
+  return (
+    <div className="oc">
+      <div style={{background:'#FFFDFA',borderBottom:'1px solid var(--borderSoft)',padding:'20px 18px',display:'flex',gap:14,alignItems:'center'}}>
+        <div className="oc-logo sm">AP</div>
+        <div>
+          <p className="oc-name" style={{fontSize:16}}>Agencia Prueba</p>
+          <span className="verified" style={{marginTop:4}}><IcCheck/>Profesional verificado</span>
+        </div>
+      </div>
+      <div style={{padding:18}}>
+        <div className="stack">
+          <button className="btn primary"><IcChat/><span>Ponerse en contacto</span></button>
+          <button className="btn"><IcCal/><span>Solicitar una visita</span></button>
+        </div>
+        <hr className="divider" style={{margin:'16px 0 14px'}} />
+        <div style={{display:'flex',justifyContent:'space-between'}}>
+          <button className="linkRow"><IcPhone/>Ver teléfono</button>
+          <button className="linkRow"><IcMail/>Ver correo</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   OPTION 2 — Acción única + revelado
+   Un solo CTA grande; teléfono/correo se revelan in-line
+========================================================= */
+function Opt2(){
+  const [openP,setOpenP]=useState(false);
+  const [openM,setOpenM]=useState(false);
+  return (
+    <div className="oc">
+      <div style={{padding:'18px 18px 14px',display:'flex',gap:13,alignItems:'center',borderBottom:'1px solid var(--borderSoft)'}}>
+        <div className="oc-logo sm">AP</div>
+        <div>
+          <p className="oc-name" style={{fontSize:15.5}}>Agencia Prueba</p>
+          <p className="oc-sub">Responde en ~2 h</p>
+        </div>
+      </div>
+      <div style={{padding:18}}>
+        <button className="btn primary" style={{minHeight:50,fontSize:16}}><IcChat/><span>Ponerse en contacto</span></button>
+        <div className="stack" style={{marginTop:10,gap:8}}>
+          <button className="btn start sm" onClick={()=>setOpenP(true)}>
+            <IcPhone/><span>{openP ? '+34 612 345 678' : 'Ver teléfono'}</span>
+          </button>
+          <button className="btn start sm" onClick={()=>setOpenM(true)}>
+            <IcMail/><span style={{maxWidth:'100%',overflow:'hidden',textOverflow:'ellipsis'}}>{openM ? 'hola@agenciaprueba.es' : 'Ver correo'}</span>
+          </button>
+          <button className="btn start sm"><IcCal/><span>Solicitar una visita</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   OPTION 3 — Banda de contacto compacta (mini)
+   Logo + nombre en fila, fila de iconos + 1 CTA. Densa.
+========================================================= */
+function Opt3(){
+  return (
+    <div className="oc">
+      <div style={{padding:16}}>
+        <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:14}}>
+          <div className="oc-logo" style={{width:46,height:46,fontSize:15,borderRadius:9}}>AP</div>
+          <div style={{flex:1}}>
+            <p className="oc-name" style={{fontSize:15}}>Agencia Prueba</p>
+            <span className="chip" style={{marginTop:4}}><span className="dot"></span>Disponible ahora</span>
+          </div>
+        </div>
+        <button className="btn primary"><IcChat/><span>Ponerse en contacto</span></button>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginTop:10}}>
+          <button className="btn sm" style={{padding:0}} title="Ver teléfono"><IcPhone/></button>
+          <button className="btn sm" style={{padding:0}} title="Ver correo"><IcMail/></button>
+          <button className="btn sm" style={{padding:0}} title="Solicitar visita"><IcCal/></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   OPTION 4 — Asesor-forward (con foto + confianza)
+   Avatar persona, nombre asesor, señales de confianza
+========================================================= */
+function Opt4(){
+  return (
+    <div className="oc">
+      <div style={{padding:'20px 18px 16px',textAlign:'center',background:'#FFFDFA',borderBottom:'1px solid var(--borderSoft)'}}>
+        <div style={{width:72,height:72,borderRadius:'50%',margin:'0 auto 10px',border:'1px solid var(--border)',background:'repeating-linear-gradient(135deg,#f6efe8,#f6efe8 6px,#fbf6f0 6px,#fbf6f0 12px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--granate)',fontWeight:700,fontSize:20}}>AP</div>
+        <p className="oc-name" style={{fontSize:16}}>Agencia Prueba</p>
+        <p className="oc-sub">Tu asesor inmobiliario</p>
+        <div style={{display:'flex',justifyContent:'center',gap:14,marginTop:10}}>
+          <span className="verified"><IcCheck/>Verificado</span>
+          <span className="oc-sub" style={{margin:0}}>★ 4,8 · 126 op.</span>
+        </div>
+      </div>
+      <div style={{padding:18}}>
+        <div className="stack">
+          <button className="btn primary"><IcChat/><span>Ponerse en contacto</span></button>
+          <button className="btn"><IcCal/><span>Solicitar una visita</span></button>
+        </div>
+        <div style={{display:'flex',justifyContent:'center',gap:18,marginTop:14}}>
+          <button className="linkRow"><IcPhone/>Teléfono</button>
+          <span style={{width:1,background:'var(--borderSoft)'}}></span>
+          <button className="linkRow"><IcMail/>Correo</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   OPTION 4B — Asesor-forward simplificada
+   Sin puntuación ni "tu asesor"; teléfono y correo arriba
+========================================================= */
+function Opt4b(){
+  return (
+    <div className="oc">
+      <div style={{padding:'20px 18px 16px',textAlign:'center',background:'#FFFDFA',borderBottom:'1px solid var(--borderSoft)'}}>
+        <div style={{width:72,height:72,borderRadius:'50%',margin:'0 auto 10px',border:'1px solid var(--border)',background:'repeating-linear-gradient(135deg,#f6efe8,#f6efe8 6px,#fbf6f0 6px,#fbf6f0 12px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--granate)',fontWeight:700,fontSize:20}}>AP</div>
+        <p className="oc-name" style={{fontSize:16}}>Agencia Prueba</p>
+        <span className="verified" style={{marginTop:8}}><IcCheck/>Profesional verificado</span>
+      </div>
+      <div style={{padding:18}}>
+        <div className="stack">
+          <button className="btn start"><IcPhone/><span>Ver teléfono</span></button>
+          <button className="btn start"><IcMail/><span>Ver correo</span></button>
+          <button className="btn primary"><IcChat/><span>Ponerse en contacto</span></button>
+          <button className="btn"><IcCal/><span>Solicitar una visita</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   OPTION 4C — Teléfono y correo en dos columnas
+========================================================= */
+function Opt4c(){
+  return (
+    <div className="oc">
+      <div style={{padding:'20px 18px 16px',textAlign:'center',background:'#FFFDFA',borderBottom:'1px solid var(--borderSoft)'}}>
+        <div style={{width:72,height:72,borderRadius:'50%',margin:'0 auto 10px',border:'1px solid var(--border)',background:'repeating-linear-gradient(135deg,#f6efe8,#f6efe8 6px,#fbf6f0 6px,#fbf6f0 12px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--granate)',fontWeight:700,fontSize:20}}>AP</div>
+        <p className="oc-name" style={{fontSize:16}}>Agencia Prueba</p>
+        <span className="verified" style={{marginTop:8}}><IcCheck/>Profesional verificado</span>
+      </div>
+      <div style={{padding:18}}>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+          <button className="btn sm"><IcPhone/><span>Teléfono</span></button>
+          <button className="btn sm"><IcMail/><span>Correo</span></button>
+        </div>
+        <div className="stack">
+          <button className="btn primary"><IcChat/><span>Ponerse en contacto</span></button>
+          <button className="btn"><IcCal/><span>Solicitar una visita</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   OPTION 4D — Teléfono y correo como bloque con relleno suave
+========================================================= */
+function Opt4d(){
+  return (
+    <div className="oc">
+      <div style={{padding:'20px 18px 16px',textAlign:'center',background:'#FFFDFA',borderBottom:'1px solid var(--borderSoft)'}}>
+        <div style={{width:72,height:72,borderRadius:'50%',margin:'0 auto 10px',border:'1px solid var(--border)',background:'repeating-linear-gradient(135deg,#f6efe8,#f6efe8 6px,#fbf6f0 6px,#fbf6f0 12px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--granate)',fontWeight:700,fontSize:20}}>AP</div>
+        <p className="oc-name" style={{fontSize:16}}>Agencia Prueba</p>
+        <span className="verified" style={{marginTop:8}}><IcCheck/>Profesional verificado</span>
+      </div>
+      <div style={{padding:18}}>
+        <div style={{border:'1px solid var(--border)',borderRadius:10,overflow:'hidden',marginBottom:12}}>
+          <button className="btn start sm" style={{border:0,borderRadius:0,background:'rgba(140,31,45,0.04)',minHeight:44}}><IcPhone/><span>Ver teléfono</span></button>
+          <hr className="divider" />
+          <button className="btn start sm" style={{border:0,borderRadius:0,background:'rgba(140,31,45,0.04)',minHeight:44}}><IcMail/><span>Ver correo</span></button>
+        </div>
+        <div className="stack">
+          <button className="btn primary"><IcChat/><span>Ponerse en contacto</span></button>
+          <button className="btn"><IcCal/><span>Solicitar una visita</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   OPTION 4E — Tel/correo con insignia dorada
+========================================================= */
+function Opt4e(){
+  const badge = (icon) => (
+    <span style={{width:30,height:30,borderRadius:8,background:'rgba(196,150,42,0.14)',display:'inline-flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{icon}</span>
+  );
+  const Row = ({icon,label}) => (
+    <button className="btn start" style={{gap:12,paddingLeft:10}}>
+      {badge(icon)}<span>{label}</span>
+    </button>
+  );
+  return (
+    <div className="oc">
+      <div style={{padding:'20px 18px 16px',textAlign:'center',background:'#FFFDFA',borderBottom:'1px solid var(--borderSoft)'}}>
+        <div style={{width:72,height:72,borderRadius:'50%',margin:'0 auto 10px',border:'1px solid var(--border)',background:'repeating-linear-gradient(135deg,#f6efe8,#f6efe8 6px,#fbf6f0 6px,#fbf6f0 12px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--granate)',fontWeight:700,fontSize:20}}>AP</div>
+        <p className="oc-name" style={{fontSize:16}}>Agencia Prueba</p>
+        <span className="verified" style={{marginTop:8}}><IcCheck/>Profesional verificado</span>
+      </div>
+      <div style={{padding:18}}>
+        <div className="stack">
+          <Row icon={<IcPhone/>} label="Ver teléfono" />
+          <Row icon={<IcMail/>} label="Ver correo" />
+          <button className="btn primary"><IcChat/><span>Ponerse en contacto</span></button>
+          <button className="btn"><IcCal/><span>Solicitar una visita</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   OPTION 4F — Tel/correo como enlaces de texto sobre filete
+========================================================= */
+function Opt4f(){
+  return (
+    <div className="oc">
+      <div style={{padding:'20px 18px 16px',textAlign:'center',background:'#FFFDFA',borderBottom:'1px solid var(--borderSoft)'}}>
+        <div style={{width:72,height:72,borderRadius:'50%',margin:'0 auto 10px',border:'1px solid var(--border)',background:'repeating-linear-gradient(135deg,#f6efe8,#f6efe8 6px,#fbf6f0 6px,#fbf6f0 12px)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--granate)',fontWeight:700,fontSize:20}}>AP</div>
+        <p className="oc-name" style={{fontSize:16}}>Agencia Prueba</p>
+        <span className="verified" style={{marginTop:8}}><IcCheck/>Profesional verificado</span>
+      </div>
+      <div style={{padding:18}}>
+        <div style={{display:'flex',justifyContent:'center',gap:0,marginBottom:14}}>
+          <button className="linkRow" style={{flex:1,justifyContent:'center',fontSize:14}}><IcPhone/>Ver teléfono</button>
+          <span style={{width:1,background:'var(--borderSoft)'}}></span>
+          <button className="linkRow" style={{flex:1,justifyContent:'center',fontSize:14}}><IcMail/>Ver correo</button>
+        </div>
+        <div className="stack">
+          <button className="btn primary"><IcChat/><span>Ponerse en contacto</span></button>
+          <button className="btn"><IcCal/><span>Solicitar una visita</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   OPTION 5 — Segmentada (Mensaje / Visita)
+   Control segmentado arriba; datos directos debajo
+========================================================= */
+function Opt5(){
+  const [tab,setTab]=useState('msg');
+  return (
+    <div className="oc">
+      <div style={{padding:'18px 18px 0',display:'flex',gap:12,alignItems:'center'}}>
+        <div className="oc-logo sm">AP</div>
+        <p className="oc-name" style={{fontSize:15.5}}>Agencia Prueba</p>
+      </div>
+      <div style={{padding:18}}>
+        <div style={{display:'flex',background:'rgba(140,31,45,0.06)',borderRadius:10,padding:4,gap:4,marginBottom:14}}>
+          {[['msg','Mensaje'],['visit','Visita']].map(([k,l])=>(
+            <button key={k} onClick={()=>setTab(k)} style={{flex:1,border:0,cursor:'pointer',borderRadius:7,padding:'9px 0',fontFamily:'var(--ral)',fontWeight:600,fontSize:14,
+              background: tab===k ? '#fff':'transparent', color: tab===k ? 'var(--granate)':'var(--muted)',
+              boxShadow: tab===k ? '0 1px 3px rgba(140,31,45,0.12)':'none'}}>{l}</button>
+          ))}
+        </div>
+        {tab==='msg'
+          ? <button className="btn primary"><IcChat/><span>Ponerse en contacto</span></button>
+          : <button className="btn primary"><IcCal/><span>Solicitar una visita</span></button>}
+        <hr className="divider" style={{margin:'16px 0 12px'}} />
+        <p className="note" style={{marginBottom:10}}>O contacta directamente</p>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+          <button className="btn start sm"><IcPhone/><span>Teléfono</span></button>
+          <button className="btn start sm"><IcMail/><span>Correo</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   OPTION 6 — Granate de cabecera (header sólido)
+   Cabecera de marca en granate, acciones sobre blanco
+========================================================= */
+function Opt6(){
+  return (
+    <div className="oc" style={{border:'1px solid var(--granate)'}}>
+      <div style={{background:'var(--granate)',padding:'18px',display:'flex',gap:13,alignItems:'center'}}>
+        <div style={{width:50,height:50,borderRadius:10,background:'#fff',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--granate)',fontWeight:700,fontSize:17,letterSpacing:1}}>AP</div>
+        <div>
+          <p style={{margin:0,color:'#fff',fontWeight:600,fontSize:16,letterSpacing:'.04em'}}>Agencia Prueba</p>
+          <p style={{margin:'3px 0 0',color:'rgba(255,255,255,0.75)',fontSize:12,fontWeight:500}}>Inmobiliaria · Madrid</p>
+        </div>
+      </div>
+      <div style={{padding:18}}>
+        <div className="stack">
+          <button className="btn primary"><IcChat/><span>Ponerse en contacto</span></button>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+            <button className="btn start sm"><IcPhone/><span>Teléfono</span></button>
+            <button className="btn start sm"><IcMail/><span>Correo</span></button>
+          </div>
+          <button className="btn"><IcCal/><span>Solicitar una visita</span></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- canvas ---------- */
+function Frame({children}){
+  return <div style={{display:'flex',justifyContent:'center',padding:'18px 14px'}}>{children}</div>;
+}
+
+function App(){
+  return (
+    <DesignCanvas>
+      <DCSection id="contacto" title="Tarjeta de contacto · Homyo" subtitle="6 maneras de mostrar el módulo de la agencia en la ficha">
+        <DCArtboard id="o1" label="1 · Jerarquía limpia" width={362} height={300}><Frame><Opt1/></Frame></DCArtboard>
+        <DCArtboard id="o2" label="2 · Acción única + revelado" width={362} height={330}><Frame><Opt2/></Frame></DCArtboard>
+        <DCArtboard id="o3" label="3 · Banda compacta" width={362} height={250}><Frame><Opt3/></Frame></DCArtboard>
+        <DCArtboard id="o4" label="4 · Asesor-forward" width={362} height={400}><Frame><Opt4/></Frame></DCArtboard>
+        <DCArtboard id="o4b" label="4B · Asesor simplificada" width={362} height={400}><Frame><Opt4b/></Frame></DCArtboard>
+        <DCArtboard id="o4c" label="4C · Tel/correo en columnas" width={362} height={400}><Frame><Opt4c/></Frame></DCArtboard>
+        <DCArtboard id="o4d" label="4D · Tel/correo en bloque" width={362} height={410}><Frame><Opt4d/></Frame></DCArtboard>
+        <DCArtboard id="o4e" label="4E · Tel/correo con insignia" width={362} height={400}><Frame><Opt4e/></Frame></DCArtboard>
+        <DCArtboard id="o4f" label="4F · Tel/correo como enlaces" width={362} height={380}><Frame><Opt4f/></Frame></DCArtboard>
+        <DCArtboard id="o5" label="5 · Segmentada" width={362} height={350}><Frame><Opt5/></Frame></DCArtboard>
+        <DCArtboard id="o6" label="6 · Cabecera granate" width={362} height={320}><Frame><Opt6/></Frame></DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

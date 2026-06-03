@@ -72,6 +72,12 @@
   function iconType() {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>';
   }
+  function iconBed() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v11"/><path d="M3 13h18v5"/><path d="M21 18v-4a3 3 0 0 0-3-3H8v2"/></svg>';
+  }
+  function iconBath() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12V6a2 2 0 0 1 2-2 2 2 0 0 1 2 2"/><path d="M3 12h18v2a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/><path d="M6 20l-1 1"/><path d="M18 20l1 1"/></svg>';
+  }
 
   function joinNonEmpty(parts, sep) {
     return parts.map(v => (v == null ? "" : String(v).trim()))
@@ -104,11 +110,13 @@
     badgeNewEl.style.display = isRecent(p.listed_at, 14) ? "inline-flex" : "none";
 
     const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
-    const type = p.property_type ? String(p.property_type) : "—";
+    const beds = (p.bedrooms != null) ? `${p.bedrooms}` : "—";
+    const baths = (p.bathrooms != null) ? `${p.bathrooms}` : "—";
 
     cardFactsEl.innerHTML = `
       <div class="fact">${iconArea()}<span>${m2} útiles</span></div>
-      <div class="fact">${iconType()}<span>${type}</span></div>
+      <div class="fact">${iconBed()}<span>${beds}</span></div>
+      <div class="fact">${iconBath()}<span>${baths}</span></div>
     `;
 
     cardAgencyEl.textContent = p.agency_name || "—";

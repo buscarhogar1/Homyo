@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Barra superior — 6 estilos · Homyo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#FFFDFA;
+    --text:#171311;
+    --muted:#6b7280;
+    --granate:#8C1F2D;
+    --granateDark:#711824;
+    --dorado:#C4962A;
+    --border:#e6e7eb;
+  }
+  html,body{margin:0;height:100%;background:var(--bg);font-family:'Raleway',system-ui,sans-serif;color:var(--text);}
+
+  /* ============ shared bar primitives ============ */
+  .bar{
+    width:100%;
+    box-sizing:border-box;
+    background:#fff;
+  }
+  .barInner{
+    max-width:1140px;
+    margin:0 auto;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+  }
+  .addr{
+    font-weight:600;
+    color:var(--granate);
+    letter-spacing:-0.2px;
+    white-space:nowrap;
+  }
+  .price{
+    font-weight:700;
+    color:var(--text);
+  }
+  .actions{display:flex;align-items:center;gap:10px;}
+  .pill{
+    height:38px;
+    padding:0 16px;
+    border-radius:999px;
+    border:1px solid rgba(140,31,45,0.24);
+    background:#fff;
+    color:var(--granate);
+    cursor:pointer;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    white-space:nowrap;
+    transition:background .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease;
+  }
+  .pill:hover{background:rgba(140,31,45,0.05);}
+  .pill svg{width:17px;height:17px;}
+  .pill.primary{
+    background:var(--granate);
+    border-color:var(--granate);
+    color:#fff;
+    font-weight:700;
+  }
+  .pill.primary:hover{background:var(--granateDark);border-color:var(--granateDark);}
+
+  /* ============ 01 · Refinado ============ */
+  .v1 .bar{
+    height:72px;
+    padding:0 28px;
+    border-bottom:1px solid rgba(140,31,45,0.12);
+    box-shadow:0 6px 18px rgba(23,19,17,0.05);
+  }
+  .v1 .left{display:flex;flex-direction:column;gap:2px;}
+  .v1 .addr{font-size:16px;}
+  .v1 .price{font-size:16px;}
+
+  /* ============ 02 · Banda granate ============ */
+  .v2 .bar{
+    height:72px;
+    padding:0 28px;
+    background:var(--granate);
+    box-shadow:0 8px 20px rgba(140,31,45,0.22);
+  }
+  .v2 .left{display:flex;flex-direction:column;gap:2px;}
+  .v2 .addr{color:#fff;font-size:16px;}
+  .v2 .price{color:#F3DCA0;font-size:16px;font-weight:700;}
+  .v2 .pill{
+    background:transparent;
+    border-color:rgba(255,255,255,0.45);
+    color:#fff;
+  }
+  .v2 .pill:hover{background:rgba(255,255,255,0.12);}
+  .v2 .pill.primary{
+    background:#fff;
+    border-color:#fff;
+    color:var(--granate);
+  }
+  .v2 .pill.primary:hover{background:#F6ECDA;border-color:#F6ECDA;}
+
+  /* ============ 03 · Editorial dorado ============ */
+  .v3 .bar{
+    height:74px;
+    padding:0 28px;
+    border-top:2px solid var(--dorado);
+    border-bottom:1px solid var(--border);
+  }
+  .v3 .left{display:flex;align-items:center;gap:16px;}
+  .v3 .addr{font-size:16px;font-weight:600;}
+  .v3 .dot{width:5px;height:5px;border-radius:50%;background:var(--dorado);}
+  .v3 .price{font-size:16px;color:var(--granate);font-weight:700;}
+  .v3 .actions{gap:6px;}
+  .v3 .link{
+    appearance:none;border:0;background:transparent;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:600;color:var(--granate);
+    padding:8px 12px;border-radius:8px;display:inline-flex;align-items:center;gap:8px;
+  }
+  .v3 .link:hover{background:rgba(140,31,45,0.05);}
+  .v3 .link svg{width:16px;height:16px;}
+  .v3 .sep{width:1px;height:20px;background:var(--border);margin:0 4px;}
+
+  /* ============ 04 · Precio protagonista ============ */
+  .v4 .bar{
+    height:80px;
+    padding:0 28px;
+    border-bottom:1px solid var(--border);
+    box-shadow:0 6px 16px rgba(23,19,17,0.04);
+  }
+  .v4 .left{display:flex;flex-direction:column;gap:1px;}
+  .v4 .kicker{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  }
+  .v4 .price{font-size:24px;font-weight:800;color:var(--granate);letter-spacing:-0.5px;}
+  .v4 .iconBtn{
+    width:42px;height:42px;border-radius:50%;border:1px solid rgba(140,31,45,0.24);
+    background:#fff;color:var(--granate);cursor:pointer;display:grid;place-items:center;
+    transition:background .16s ease;
+  }
+  .v4 .iconBtn:hover{background:rgba(140,31,45,0.05);}
+  .v4 .iconBtn svg{width:19px;height:19px;}
+
+  /* ============ 05 · Segmentado ============ */
+  .v5 .bar{
+    height:74px;
+    padding:0 28px;
+    border-bottom:1px solid var(--border);
+  }
+  .v5 .left{display:flex;flex-direction:column;gap:2px;}
+  .v5 .addr{font-size:16px;}
+  .v5 .price{font-size:16px;}
+  .v5 .seg{
+    display:flex;align-items:stretch;
+    border:1px solid rgba(140,31,45,0.24);
+    border-radius:999px;
+    overflow:hidden;
+    background:#fff;
+  }
+  .v5 .segBtn{
+    appearance:none;border:0;background:transparent;cursor:pointer;
+    font-family:inherit;font-size:14px;font-weight:600;color:var(--granate);
+    height:40px;padding:0 18px;display:inline-flex;align-items:center;gap:9px;
+    transition:background .16s ease;
+  }
+  .v5 .segBtn svg{width:17px;height:17px;}
+  .v5 .segBtn:hover{background:rgba(140,31,45,0.05);}
+  .v5 .segBtn + .segBtn{border-left:1px solid rgba(140,31,45,0.18);}
+  .v5 .segBtn.primary{background:var(--granate);color:#fff;font-weight:700;}
+  .v5 .segBtn.primary:hover{background:var(--granateDark);}
+
+  /* ============ 06 · Flotante ============ */
+  .v6{padding:14px 0;}
+  .v6 .bar{
+    height:72px;
+    padding:0 22px;
+    background:#fff;
+    width:calc(100% - 40px);
+    margin:0 auto;
+    border-radius:18px;
+    border:1px solid rgba(140,31,45,0.10);
+    box-shadow:0 16px 36px rgba(23,19,17,0.12);
+  }
+  .v6 .left{display:flex;align-items:center;gap:14px;}
+  .v6 .badge{
+    width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex:0 0 auto;
+    background:rgba(196,150,42,0.14);color:var(--dorado);
+  }
+  .v6 .badge svg{width:20px;height:20px;}
+  .v6 .stack{display:flex;flex-direction:column;gap:1px;}
+  .v6 .addr{font-size:15px;}
+  .v6 .price{font-size:15px;}
+  .v6 .pill.save{border-color:rgba(196,150,42,0.45);color:var(--dorado);}
+  .v6 .pill.save:hover{background:rgba(196,150,42,0.08);}
+
+  /* ============ 07 · Sello anclado ============ */
+  .v7 .bar{
+    height:74px;
+    padding:0 28px;
+    border-bottom:1px solid rgba(140,31,45,0.12);
+    box-shadow:0 6px 18px rgba(23,19,17,0.05);
+  }
+  .v7 .left{display:flex;align-items:center;gap:14px;}
+  .v7 .badge{
+    width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto;
+    background:rgba(196,150,42,0.14);color:var(--dorado);
+  }
+  .v7 .badge svg{width:21px;height:21px;}
+  .v7 .stack{display:flex;flex-direction:column;gap:1px;}
+  .v7 .addr{font-size:16px;}
+  .v7 .price{font-size:16px;}
+  .v7 .pill.save{border-color:rgba(196,150,42,0.45);color:var(--dorado);}
+  .v7 .pill.save:hover{background:rgba(196,150,42,0.08);}
+
+  /* ============ 08 · Sello granate ============ */
+  .v8 .bar{
+    height:74px;
+    padding:0 28px;
+    border-bottom:1px solid var(--border);
+  }
+  .v8 .left{display:flex;align-items:center;gap:14px;}
+  .v8 .badge{
+    width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto;
+    background:var(--granate);color:#fff;
+    box-shadow:0 6px 14px rgba(140,31,45,0.22);
+  }
+  .v8 .badge svg{width:21px;height:21px;}
+  .v8 .stack{display:flex;flex-direction:column;gap:1px;}
+  .v8 .addr{font-size:16px;}
+  .v8 .price{font-size:16px;}
+
+  /* ============ 09 · Sello circular editorial ============ */
+  .v9 .bar{
+    height:78px;
+    padding:0 28px;
+    border-top:2px solid var(--dorado);
+    border-bottom:1px solid var(--border);
+  }
+  .v9 .left{display:flex;align-items:center;gap:15px;}
+  .v9 .badge{
+    width:44px;height:44px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;
+    background:#fff;border:1.5px solid var(--dorado);color:var(--dorado);
+  }
+  .v9 .badge svg{width:21px;height:21px;}
+  .v9 .stack{display:flex;flex-direction:column;gap:2px;}
+  .v9 .addr{font-size:16px;}
+  .v9 .price{font-size:16px;color:var(--granate);font-weight:700;}
+
+  /* canvas chrome */
+  .frameNote{
+    font-size:13px;color:var(--muted);margin:0 0 10px;line-height:1.5;
+  }
+  .frameNote b{color:var(--granate);font-weight:700;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="frames/design-canvas.jsx"></script>
+
+<script type="text/babel">
+const { useState } = React;
+
+const IcHeart = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+  </svg>
+);
+const IcPhone = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L9.91 9.91a16 16 0 0 0 6 6l1.46-1.41a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
+  </svg>
+);
+const IcHome = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>
+  </svg>
+);
+
+const ADDR = "Juan de Borbón 22, 2º C";
+const PRICE = "146.900 €";
+
+/* ---------- 01 Refinado ---------- */
+const V1 = () => (
+  <div className="v1">
+    <div className="bar">
+      <div className="barInner">
+        <div className="left">
+          <span className="addr">{ADDR}</span>
+          <span className="price">{PRICE}</span>
+        </div>
+        <div className="actions">
+          <button className="pill"><IcHeart/>Guardar</button>
+          <button className="pill">Ver teléfono</button>
+          <button className="pill primary">Contacto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ---------- 02 Banda granate ---------- */
+const V2 = () => (
+  <div className="v2">
+    <div className="bar">
+      <div className="barInner">
+        <div className="left">
+          <span className="addr">{ADDR}</span>
+          <span className="price">{PRICE}</span>
+        </div>
+        <div className="actions">
+          <button className="pill"><IcHeart/>Guardar</button>
+          <button className="pill">Ver teléfono</button>
+          <button className="pill primary">Contacto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ---------- 03 Editorial dorado ---------- */
+const V3 = () => (
+  <div className="v3">
+    <div className="bar">
+      <div className="barInner">
+        <div className="left">
+          <span className="addr">{ADDR}</span>
+          <span className="dot"></span>
+          <span className="price">{PRICE}</span>
+        </div>
+        <div className="actions">
+          <button className="link"><IcHeart/>Guardar</button>
+          <button className="link"><IcPhone/>Ver teléfono</button>
+          <span className="sep"></span>
+          <button className="pill primary">Contacto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ---------- 04 Precio protagonista ---------- */
+const V4 = () => (
+  <div className="v4">
+    <div className="bar">
+      <div className="barInner">
+        <div className="left">
+          <span className="kicker">{ADDR}</span>
+          <span className="price">{PRICE}</span>
+        </div>
+        <div className="actions">
+          <button className="iconBtn" title="Guardar"><IcHeart/></button>
+          <button className="pill"><IcPhone/>Ver teléfono</button>
+          <button className="pill primary">Contacto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ---------- 05 Segmentado ---------- */
+const V5 = () => (
+  <div className="v5">
+    <div className="bar">
+      <div className="barInner">
+        <div className="left">
+          <span className="addr">{ADDR}</span>
+          <span className="price">{PRICE}</span>
+        </div>
+        <div className="seg">
+          <button className="segBtn"><IcHeart/>Guardar</button>
+          <button className="segBtn">Ver teléfono</button>
+          <button className="segBtn primary">Contacto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ---------- 06 Flotante ---------- */
+const V6 = () => (
+  <div className="v6">
+    <div className="bar">
+      <div className="barInner">
+        <div className="left">
+          <span className="badge"><IcHome/></span>
+          <div className="stack">
+            <span className="addr">{ADDR}</span>
+            <span className="price">{PRICE}</span>
+          </div>
+        </div>
+        <div className="actions">
+          <button className="pill save"><IcHeart/>Guardar</button>
+          <button className="pill">Ver teléfono</button>
+          <button className="pill primary">Contacto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ---------- 07 Sello anclado ---------- */
+const V7 = () => (
+  <div className="v7">
+    <div className="bar">
+      <div className="barInner">
+        <div className="left">
+          <span className="badge"><IcHome/></span>
+          <div className="stack">
+            <span className="addr">{ADDR}</span>
+            <span className="price">{PRICE}</span>
+          </div>
+        </div>
+        <div className="actions">
+          <button className="pill save"><IcHeart/>Guardar</button>
+          <button className="pill">Ver teléfono</button>
+          <button className="pill primary">Contacto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ---------- 08 Sello granate ---------- */
+const V8 = () => (
+  <div className="v8">
+    <div className="bar">
+      <div className="barInner">
+        <div className="left">
+          <span className="badge"><IcHome/></span>
+          <div className="stack">
+            <span className="addr">{ADDR}</span>
+            <span className="price">{PRICE}</span>
+          </div>
+        </div>
+        <div className="actions">
+          <button className="pill"><IcHeart/>Guardar</button>
+          <button className="pill">Ver teléfono</button>
+          <button className="pill primary">Contacto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ---------- 09 Sello circular editorial ---------- */
+const V9 = () => (
+  <div className="v9">
+    <div className="bar">
+      <div className="barInner">
+        <div className="left">
+          <span className="badge"><IcHome/></span>
+          <div className="stack">
+            <span className="addr">{ADDR}</span>
+            <span className="price">{PRICE}</span>
+          </div>
+        </div>
+        <div className="actions">
+          <button className="pill"><IcHeart/>Guardar</button>
+          <button className="pill">Ver teléfono</button>
+          <button className="pill primary">Contacto</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const W = 1140;
+
+function App(){
+  return (
+    <DesignCanvas>
+      <DCSection id="bars" title="Barra superior fija · ficha" subtitle="6 estilos sobre el branding Homyo — granate #8C1F2D · dorado #C4962A · Raleway">
+        <DCArtboard id="v1" label="01 · Refinado" width={W} height={120}>
+          <p className="frameNote">El estilo actual, depurado: <b>hairline granate</b> + sombra suave. Cambio mínimo, máxima continuidad.</p>
+          <V1/>
+        </DCArtboard>
+        <DCArtboard id="v2" label="02 · Banda granate" width={W} height={120}>
+          <p className="frameNote">Banda <b>granate sólida</b> con precio en dorado y botón Contacto invertido en crema. Presencia y jerarquía fuertes.</p>
+          <V2/>
+        </DCArtboard>
+        <DCArtboard id="v3" label="03 · Editorial dorado" width={W} height={122}>
+          <p className="frameNote">Filete <b>dorado superior</b>, dirección y precio en línea, acciones como enlaces de texto + única píldora Contacto. Aire editorial.</p>
+          <V3/>
+        </DCArtboard>
+        <DCArtboard id="v4" label="04 · Precio protagonista" width={W} height={128}>
+          <p className="frameNote">La dirección pasa a <b>antetítulo</b> y el precio gana tamaño en granate. Guardar como icono circular para ganar espacio.</p>
+          <V4/>
+        </DCArtboard>
+        <DCArtboard id="v5" label="05 · Segmentado" width={W} height={122}>
+          <p className="frameNote">Las tres acciones unidas en un <b>control segmentado</b> con un solo contorno. Compacto y muy ordenado.</p>
+          <V5/>
+        </DCArtboard>
+        <DCArtboard id="v6" label="06 · Flotante" width={W} height={130}>
+          <p className="frameNote">Tarjeta <b>flotante redondeada</b> con sombra y sello dorado de la vivienda. Toque premium, despegada del borde.</p>
+          <V6/>
+        </DCArtboard>
+        <DCArtboard id="v7" label="07 · Sello anclado" width={W} height={124}>
+          <p className="frameNote">El sello de la opción 6 pero la barra <b>anclada a todo el ancho</b>: sello dorado suave + hairline granate. Premium sin despegarse.</p>
+          <V7/>
+        </DCArtboard>
+        <DCArtboard id="v8" label="08 · Sello granate" width={W} height={124}>
+          <p className="frameNote">Mismo bloque con el <b>sello en granate sólido</b> e icono blanco. Más contundente y ligado al color principal de marca.</p>
+          <V8/>
+        </DCArtboard>
+        <DCArtboard id="v9" label="09 · Sello circular editorial" width={W} height={128}>
+          <p className="frameNote">Sello <b>circular con contorno dorado</b>, filete dorado superior y precio en granate. Tono más editorial y sobrio.</p>
+          <V9/>
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

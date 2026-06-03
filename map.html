@@ -15,7 +15,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css?v=20260602_savesearch_bottomleft2" />
+    <link rel="stylesheet" href="./bh-map.css?v=20260603_bottomband_fix" />
 
     <style>
       @media (max-width: 720px){
@@ -240,7 +240,13 @@
 
           <div class="topCell topCellRight">
             <div class="topRightTools">
-              <button id="orderBtn" class="topToggleBtn" type="button">Ordenar por</button>
+              <button id="orderBtn" class="topToggleBtn topToggleBtnIcon" type="button" aria-label="Ordenar por" title="Ordenar por">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                  <line x1="2.5" y1="4" x2="13.5" y2="4"></line>
+                  <line x1="2.5" y1="8" x2="10" y2="8"></line>
+                  <line x1="2.5" y1="12" x2="6.5" y2="12"></line>
+                </svg>
+              </button>
               <button id="toggleListBtn" class="topToggleBtn" type="button">Ocultar listado</button>
 
               <!-- Menú desplegable de orden -->
@@ -361,7 +367,14 @@
             <div class="mobilePanelHead">
               <div class="mobilePanelTitle">Listado</div>
               <div class="mobilePanelHeadActions">
-                <button id="mobileOrderBtn" class="mobilePanelActionBtn" type="button" aria-label="Ordenar listado">Ordenar por</button>
+                <button id="mobileOrderBtn" class="mobilePanelActionBtn mobilePanelActionBtnIcon" type="button" aria-label="Ordenar listado" title="Ordenar por">
+                  <span>Ordenar por</span>
+                  <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                    <line x1="2.5" y1="4" x2="13.5" y2="4"></line>
+                    <line x1="2.5" y1="8" x2="10" y2="8"></line>
+                    <line x1="2.5" y1="12" x2="6.5" y2="12"></line>
+                  </svg>
+                </button>
                 <button id="mobileListCloseBtn" class="mobilePanelClose" type="button" aria-label="Cerrar listado">×</button>
               </div>
               <div id="mobileOrderMenu" class="mobileOrderMenu" aria-hidden="true">
@@ -491,6 +504,9 @@
         // Reglas: no se puede ocultar mapa y listado a la vez
         if (btnList) btnList.disabled = mapHidden;
         if (btnMap) btnMap.disabled = listHidden;
+        // Si filtros y listado están ocultos a la vez, sólo queda el mapa:
+        // no tiene sentido el botón "Ocultar mapa", así que lo ocultamos.
+        if (btnMap) btnMap.hidden = filtersHidden && listHidden;
         // Botón "Eliminar filtros" sólo visible cuando hay filtros aplicados
         // (y, en escritorio, cuando la columna de filtros está visible)
         syncClearFiltersVisibility();
@@ -646,6 +662,7 @@
         // Sólo en escritorio (layout de 3 columnas). En tablet/móvil el botón
         // vuelve al flujo normal.
         if (window.matchMedia("(max-width: 980px)").matches) {
+          topRow.classList.remove("mapHidden");
           topRow.style.removeProperty("--mapRightInset");
           return;
         }
@@ -658,12 +675,15 @@
           getComputedStyle(mapCol).display === "none";
 
         // Si el mapa está oculto no hay borde con el que alinear: el botón
-        // ("Mostrar mapa") se queda pegado a la derecha de la fila.
+        // ("Mostrar mapa") vuelve al flujo normal y se coloca justo a la
+        // derecha del cartel de ubicación (placeLabel) — ver CSS .topRow.mapHidden.
         if (mapHidden || !mapWrap) {
+          topRow.classList.add("mapHidden");
           topRow.style.setProperty("--mapRightInset", "0px");
           return;
         }
 
+        topRow.classList.remove("mapHidden");
         const trRect = topRow.getBoundingClientRect();
         const mRect = mapWrap.getBoundingClientRect();
         const inset = Math.max(0, Math.round(trRect.right - mRect.right));
@@ -734,11 +754,21 @@
       applyToggleTexts();
 
       // Orden: escritorio + móvil
+      function markActiveOrder(menu) {
+        if (!menu) return;
+        const current = window.__bhListOrder || "date_desc";
+        menu.querySelectorAll(".orderItem").forEach((b) => {
+          const active = b.getAttribute("data-order") === current;
+          b.classList.toggle("isActive", active);
+          b.setAttribute("aria-checked", active ? "true" : "false");
+        });
+      }
       function closeOrderMenu() {
         orderMenu.style.display = "none";
         orderMenu.setAttribute("aria-hidden", "true");
       }
       function openOrderMenu() {
+        markActiveOrder(orderMenu);
         orderMenu.style.display = "block";
         orderMenu.setAttribute("aria-hidden", "false");
       }
@@ -750,6 +780,7 @@
       }
       function openMobileOrderMenu() {
         if (!mobileOrderMenu) return;
+        markActiveOrder(mobileOrderMenu);
         mobileOrderMenu.style.display = "block";
         mobileOrderMenu.setAttribute("aria-hidden", "false");
       }

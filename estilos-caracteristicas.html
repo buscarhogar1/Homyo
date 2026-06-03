@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estilos · Cuadros de características</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFDFA;
+    --text:#111;
+    --muted:#6b7280;
+    --granate:#8C1F2D;
+    --granate-soft:#a83a47;
+    --dorado:#C4962A;
+    --border:#e7e3da;
+    --cream:#FBF4E6;
+    --cream-line:#efe7d8;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+
+  .page{max-width:1320px;margin:0 auto;padding:40px 28px 80px;}
+
+  .pageHead{margin-bottom:8px;}
+  .kicker{font-family:'Raleway',sans-serif;font-size:12px;font-weight:700;
+    letter-spacing:.24em;text-transform:uppercase;color:var(--dorado);margin:0 0 10px;}
+  .pageTitle{font-family:'Raleway',sans-serif;font-size:30px;font-weight:600;
+    color:var(--granate);margin:0 0 6px;letter-spacing:.01em;}
+  .pageSub{font-size:15px;color:var(--muted);margin:0;max-width:680px;line-height:1.5;}
+  .howto{margin:18px 0 34px;font-size:13px;color:#5c544a;background:var(--cream);
+    border:1px solid var(--cream-line);border-radius:12px;padding:12px 16px;max-width:680px;line-height:1.55;}
+  .howto b{color:var(--granate);}
+
+  /* gallery */
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px;}
+  @media (max-width:980px){.grid{grid-template-columns:1fr;}}
+
+  .panel{display:flex;flex-direction:column;}
+  .panelHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    padding-bottom:12px;margin-bottom:18px;border-bottom:1px dashed #d9d2c6;}
+  .optName{font-family:'Raleway',sans-serif;font-size:16px;font-weight:700;color:var(--granate);
+    letter-spacing:.02em;margin:0;}
+  .optNum{font-family:'Raleway',sans-serif;font-size:12px;font-weight:700;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--dorado);}
+  .optDesc{font-size:12.5px;color:var(--muted);margin:4px 0 0;line-height:1.5;}
+
+  .demo{background:var(--bg);border-radius:14px;padding:22px;border:1px solid #efe9df;}
+
+  /* ===== shared base feature markup ===== */
+  .featuresGrid{display:grid;grid-template-columns:1fr;gap:16px;}
+  .featBlock{background:#fff;}
+  .featList{padding:0;}
+  .featLine{display:grid;grid-template-columns:230px 1fr;align-items:center;}
+  .featK{font-size:14px;color:var(--muted);}
+  .featV{font-size:14px;color:#111;display:flex;align-items:center;gap:14px;}
+  .featV .monthly{margin-left:auto;color:var(--dorado);font-size:13.5px;
+    text-decoration:none;white-space:nowrap;cursor:pointer;}
+  .featV .monthly:hover{text-decoration:underline;}
+  .secTitle{font-family:'Raleway',sans-serif;color:var(--granate);font-weight:600;
+    font-size:22px;margin:0 0 12px;}
+
+  /* ============ V1 · Línea dorada (refinado del actual) ============ */
+  .v1 .featBlock{border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .v1 .featHead{padding:14px 18px;font-size:16px;font-weight:600;color:#111;
+    border-bottom:2px solid var(--dorado);}
+  .v1 .featLine{padding:13px 18px;border-bottom:1px solid #f0eee9;}
+  .v1 .featLine:last-child{border-bottom:none;}
+
+  /* ============ V2 · Cabecera granate ============ */
+  .v2 .featBlock{border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    box-shadow:0 8px 22px rgba(140,31,45,.06);}
+  .v2 .featHead{padding:14px 18px;font-size:15px;font-weight:600;color:#fff;
+    background:var(--granate);letter-spacing:.02em;}
+  .v2 .featLine{padding:13px 18px;border-bottom:1px solid #f1efe9;}
+  .v2 .featLine:last-child{border-bottom:none;}
+  .v2 .featV{font-weight:500;}
+
+  /* ============ V3 · Editorial sin caja ============ */
+  .v3 .featuresGrid{gap:30px;}
+  .v3 .featBlock{background:transparent;}
+  .v3 .featHead{font-family:'Raleway',sans-serif;font-size:13px;font-weight:700;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--granate);
+    padding:0 0 10px;border-bottom:1px solid var(--dorado);margin-bottom:6px;}
+  .v3 .featLine{padding:11px 2px;}
+  .v3 .featK{color:#8a8276;}
+  .v3 .featV{font-weight:500;}
+
+  /* ============ V4 · Tarjeta crema ============ */
+  .v4 .featBlock{border:1px solid var(--cream-line);border-radius:14px;overflow:hidden;}
+  .v4 .featHead{padding:15px 18px;font-size:16px;font-weight:600;color:var(--granate);
+    background:var(--cream);border-bottom:1px solid var(--cream-line);}
+  .v4 .featLine{padding:13px 18px;border-bottom:1px solid #f3f1ec;}
+  .v4 .featLine:last-child{border-bottom:none;}
+  .v4 .featK{position:relative;padding-left:14px;}
+  .v4 .featK::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
+    width:5px;height:5px;border-radius:50%;background:var(--dorado);}
+
+  /* ============ V5 · Tabla rayada (zebra) ============ */
+  .v5 .featBlock{border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .v5 .featHead{padding:12px 16px;font-family:'Raleway',sans-serif;font-size:12px;font-weight:700;
+    letter-spacing:.18em;text-transform:uppercase;color:#fff;background:var(--granate);}
+  .v5 .featLine{padding:11px 16px;}
+  .v5 .featLine:nth-child(odd){background:#faf6ee;}
+  .v5 .featK{color:#7a7266;}
+  .v5 .featV{font-weight:600;}
+
+  /* ============ V6 · Acento lateral ============ */
+  .v6 .featBlock{border:1px solid var(--border);border-left:3px solid var(--granate);
+    border-radius:0 12px 12px 0;overflow:hidden;}
+  .v6 .featHead{padding:14px 18px;font-size:16px;font-weight:700;color:var(--granate);
+    border-bottom:1px solid #f0eee9;}
+  .v6 .featLine{padding:13px 18px;border-bottom:1px solid #f4f2ed;}
+  .v6 .featLine:last-child{border-bottom:none;}
+  .v6 .featV{color:var(--granate);font-weight:600;}
+  .v6 .featV.dash{color:var(--muted);font-weight:400;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="pageHead">
+    <p class="kicker">Homyo · Ficha de inmueble</p>
+    <h1 class="pageTitle">Estilos para los cuadros de características</h1>
+    <p class="pageSub">Seis tratamientos visuales para los bloques de datos de la ficha, todos dentro del branding (granate, dorado y crema). Cada opción muestra tus dos ejemplos reales: <b>Descripción</b> y <b>Estado</b>.</p>
+  </div>
+  <p class="howto">Cómo se aplica: el HTML de cada cuadro es <b>idéntico</b> en todas las opciones (<code>.featBlock · .featHead · .featLine · .featK · .featV</code>). Cambiar de estilo es solo cambiar el CSS — dime el número que prefieras y lo dejo aplicado en <b>listing.html</b>.</p>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+  // Tus dos ejemplos reales de la ficha
+  const data = [
+    ["Descripción", [
+      ["Precio de venta", "146.900 €", {monthly:true}],
+      ["Impuestos compra", "—"],
+      ["Precio por m² útiles interiores", "1530 €"],
+      ["Precio por m² construidos totales", "1072 €"],
+      ["Disponible desde", "28/5/2026"]
+    ]],
+    ["Estado", [
+      ["Disponible", "Disponible"],
+      ["Cuota de la asociación de propietarios", "—"]
+    ]]
+  ];
+
+  const variants = [
+    ["v1","Línea dorada","01","Refinamiento del actual: tarjeta blanca y subrayado dorado en la cabecera. Sobrio y limpio."],
+    ["v2","Cabecera granate","02","Barra de cabecera en granate sólido con texto blanco. Marca presente y con jerarquía clara."],
+    ["v3","Editorial sin caja","03","Sin bordes: títulos en versalitas Raleway sobre filo dorado. Aire premium, muy legible."],
+    ["v4","Tarjeta crema","04","Cabecera en crema cálida y punto dorado en cada etiqueta. Suave y acogedor."],
+    ["v5","Tabla rayada","05","Filas alternas en crema y valores en negrita. Denso y fácil de escanear para muchos datos."],
+    ["v6","Acento lateral","06","Filo granate a la izquierda y valores destacados en granate. Moderno y dinámico."]
+  ];
+
+  function buildBlock([title, lines]){
+    const block = document.createElement("div");
+    block.className = "featBlock";
+    const head = document.createElement("div");
+    head.className = "featHead";
+    head.textContent = title;
+    const list = document.createElement("div");
+    list.className = "featList";
+    lines.forEach(([k,v,opts])=>{
+      const line = document.createElement("div");
+      line.className = "featLine";
+      const kk = document.createElement("div");
+      kk.className = "featK";
+      kk.textContent = k;
+      const vv = document.createElement("div");
+      vv.className = "featV" + (v === "—" ? " dash" : "");
+      const span = document.createElement("span");
+      span.textContent = v;
+      vv.appendChild(span);
+      if(opts && opts.monthly){
+        const a = document.createElement("a");
+        a.className = "monthly";
+        a.textContent = "¿Cuánto pagaré al mes?";
+        a.href = "javascript:void(0)";
+        vv.appendChild(a);
+      }
+      line.appendChild(kk);
+      line.appendChild(vv);
+      list.appendChild(line);
+    });
+    block.appendChild(head);
+    block.appendChild(list);
+    return block;
+  }
+
+  const grid = document.getElementById("grid");
+  variants.forEach(([cls,name,num,desc])=>{
+    const panel = document.createElement("div");
+    panel.className = "panel";
+    panel.innerHTML = `
+      <div class="panelHead">
+        <div>
+          <p class="optName">${name}</p>
+          <p class="optDesc">${desc}</p>
+        </div>
+        <span class="optNum">Opción ${num}</span>
+      </div>`;
+    const demo = document.createElement("div");
+    demo.className = "demo " + cls;
+    const secTitle = document.createElement("h2");
+    secTitle.className = "secTitle";
+    secTitle.textContent = "Características";
+    const fg = document.createElement("div");
+    fg.className = "featuresGrid";
+    data.forEach(b => fg.appendChild(buildBlock(b)));
+    demo.appendChild(secTitle);
+    demo.appendChild(fg);
+    panel.appendChild(demo);
+    grid.appendChild(panel);
+  });
+</script>
+</body>
+</html>

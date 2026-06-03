@@ -99,7 +99,78 @@ function formatInt(v) {
   return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-function filterBlock({ title, isActiveFn, onClear, contentEl, isVisibleFn }) {
+/* Icono de información (i) con explicación sencilla en un globo emergente.
+   Funciona con hover en escritorio y con toque/clic en móvil. */
+function infoTip({ title, body } = {}) {
+  const btn = el("button", {
+    class: "fInfoBtn",
+    type: "button",
+    "aria-label": "Más información",
+    text: "i"
+  });
+
+  const bubble = el("div", { class: "fInfoBubble", role: "tooltip" }, [
+    title ? el("div", { class: "fInfoBubbleTitle", text: title }) : null,
+    el("div", { class: "fInfoBubbleText", text: body || "" })
+  ]);
+
+  const wrap = el("div", { class: "fInfoWrap" }, [btn, bubble]);
+
+  // Coloca el globo bajo el icono usando posición FIJA (respecto a la ventana),
+  // de modo que NO lo recorta el scroll de la columna de filtros y queda por
+  // delante del mapa. Centrado bajo el icono y ajustado para no salirse.
+  function place() {
+    const btnRect = btn.getBoundingClientRect();
+    const bw = bubble.offsetWidth || 240;
+    const margin = 8;
+    const iconCenter = btnRect.left + btnRect.width / 2;
+    let left = iconCenter - bw / 2;
+    left = Math.max(margin, Math.min(left, window.innerWidth - bw - margin));
+    bubble.style.setProperty("left", left + "px", "important");
+    bubble.style.setProperty("top", (btnRect.bottom + 9) + "px", "important");
+    let arrowX = Math.max(12, Math.min(iconCenter - left, bw - 12));
+    bubble.style.setProperty("--tipArrowX", arrowX + "px");
+  }
+
+  function open() {
+    // Cerramos cualquier otro globo abierto antes de abrir este.
+    document.querySelectorAll(".fInfoWrap.open").forEach(w => {
+      if (w !== wrap) w.classList.remove("open");
+    });
+    place();
+    wrap.classList.add("open");
+  }
+  function close() {
+    wrap.classList.remove("open");
+  }
+
+  // En escritorio se abre con hover; recalculamos la posición al entrar.
+  wrap.addEventListener("mouseenter", place);
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    wrap.classList.contains("open") ? close() : open();
+  });
+
+  // Al tocar/clicar fuera del globo, se cierra.
+  document.addEventListener("click", (e) => {
+    if (!wrap.contains(e.target)) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
+  // Si se hace scroll o se redimensiona con el globo visible, lo recolocamos.
+  function reposIfShown() {
+    if (wrap.classList.contains("open") || wrap.matches(":hover")) place();
+  }
+  window.addEventListener("resize", reposIfShown);
+  window.addEventListener("scroll", reposIfShown, true);
+
+  return wrap;
+}
+
+function filterBlock({ title, isActiveFn, onClear, contentEl, isVisibleFn, info }) {
   const dot = el("div", { class: "fDot" });
   const titleEl = el("div", { class: "fTitleText", text: title });
   const clearBtn = el("button", { class: "fClearBtn", type: "button", "aria-label": "Limpiar filtro", text: "×" });
@@ -110,8 +181,15 @@ function filterBlock({ title, isActiveFn, onClear, contentEl, isVisibleFn }) {
     onClear?.();
   });
 
+  // Título del filtro, con posibilidad de añadir un icono de información (i)
+  // que despliega una explicación muy sencilla de qué significa el filtro.
+  const titleChildren = [dot, titleEl];
+  if (info) {
+    titleChildren.push(infoTip(info));
+  }
+
   const head = el("div", { class: "fHead" }, [
-    el("div", { class: "fTitle" }, [dot, titleEl]),
+    el("div", { class: "fTitle" }, titleChildren),
     clearBtn
   ]);
 
@@ -596,6 +674,12 @@ export function initFiltersBar({ mountId }) {
     });
     return add(filterBlock({
       title: mode === "room" ? "m² útiles habitación" : "m² útiles interiores",
+      info: {
+        title: mode === "room" ? "m² útiles de la habitación" : "m² útiles interiores",
+        body: mode === "room"
+          ? "Son los metros que puedes pisar dentro de la habitación, sin contar el grosor de las paredes. Es el espacio real del que dispondrás."
+          : "Son los metros que puedes pisar dentro de la vivienda, sin contar el grosor de las paredes. Es el espacio real que vas a usar para vivir."
+      },
       isActiveFn: () => {
         const x = getParamsFromURL();
         return x.usefulMin != null || x.usefulMax != null;
@@ -745,6 +829,10 @@ export function initFiltersBar({ mountId }) {
     });
     return add(filterBlock({
       title: "m² construidos totales",
+      info: {
+        title: "m² construidos totales",
+        body: "Incluyen el espacio que pisas más el grosor de las paredes y la parte proporcional de zonas comunes (escaleras, portal…). Siempre son más que los útiles y son los que suelen aparecer en el anuncio."
+      },
       isActiveFn: () => {
         const x = getParamsFromURL();
         return x.builtMin != null || x.builtMax != null;

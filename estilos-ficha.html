@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Homyo · Ficha — 6 estilos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300..700&display=swap" rel="stylesheet" />
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  :root{
+    --bg:#FFFDFA;
+    --text:#211c18;
+    --muted:#8a8276;
+    --granate:#8C1F2D;
+    --granateDark:#711824;
+    --dorado:#C4962A;
+    --line:#ece6dc;
+    --lineSoft:#f0ece4;
+  }
+
+  /* ============================================================
+     FICHA — base. Each variant scope (.v1 … .v6) overrides this.
+     All variants share the Homyo palette + Raleway.
+     ============================================================ */
+  .fd{
+    font-family:'Raleway','Montserrat',system-ui,sans-serif;
+    color:var(--text);
+    background:var(--bg);
+    height:100%;
+    box-sizing:border-box;
+    padding:30px 34px 34px;
+    overflow:hidden;
+  }
+  .fd *{box-sizing:border-box;}
+  .fd .icon{width:18px;height:18px;display:inline-block;flex:0 0 auto;}
+
+  /* media tabs */
+  .fd .tabs{
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+    border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:22px;
+  }
+  .fd .tabsLeft{display:flex;gap:18px;flex-wrap:wrap;align-items:center;}
+  .fd .tab{
+    display:inline-flex;align-items:center;gap:8px;cursor:default;
+    color:var(--granate);font-size:14px;font-weight:500;letter-spacing:.01em;
+    border:0;background:transparent;padding:4px 2px;
+  }
+  .fd .tab .icon{width:17px;height:17px;}
+  .fd .tabCount{color:var(--dorado);font-weight:600;}
+  .fd .tabAll{
+    border:1px solid var(--line);background:#fff;border-radius:12px;
+    padding:8px 13px;font-size:14px;font-weight:500;color:var(--granate);
+  }
+
+  /* layout */
+  .fd .grid{display:grid;grid-template-columns:1.85fr 1fr;gap:34px;align-items:start;}
+
+  .fd .title{font-size:33px;font-weight:600;color:var(--granate);letter-spacing:-.4px;line-height:1.1;margin:0 0 6px;}
+  .fd .sub{font-size:15px;color:var(--muted);margin:0 0 18px;letter-spacing:.01em;}
+
+  .fd .priceRow{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin:0 0 18px;}
+  .fd .price{font-size:34px;font-weight:700;letter-spacing:-.6px;color:var(--text);margin:0;}
+  .fd .monthly{color:var(--dorado);font-size:14px;text-decoration:none;cursor:default;}
+
+  .fd .facts{display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:15px;margin:0 0 20px;}
+  .fd .fact{display:inline-flex;align-items:center;gap:8px;font-weight:500;white-space:nowrap;}
+  .fd .fact .icon{color:var(--dorado);}
+
+  .fd .subnav{display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding-top:16px;border-top:1px solid var(--line);}
+  .fd .subnav a{color:var(--granate);text-decoration:none;font-size:14px;font-weight:500;letter-spacing:.02em;padding:4px 0;}
+  .fd .subnav .pill{color:var(--muted);font-size:13px;margin-left:auto;}
+
+  .fd .desc{margin-top:26px;}
+  .fd .h2{font-size:27px;font-weight:600;color:var(--granate);margin:0 0 12px;letter-spacing:-.3px;position:relative;}
+  .fd .body{font-size:15px;line-height:1.65;color:var(--text);white-space:pre-wrap;margin:0;
+    display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;}
+  .fd .readMore{margin-top:14px;border:1px solid var(--line);background:#fff;padding:8px 12px;border-radius:11px;font-size:14px;color:var(--text);cursor:default;font-family:inherit;}
+
+  /* map card */
+  .fd .mapCard{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;}
+  .fd .mapHead{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--line);}
+  .fd .mapTitle{font-size:14px;font-weight:600;color:var(--granate);}
+  .fd .mapLink{font-size:13px;color:var(--dorado);}
+  .fd .map{height:210px;position:relative;
+    background:
+      radial-gradient(120% 90% at 70% 20%, #eef3ec 0%, rgba(238,243,236,0) 55%),
+      radial-gradient(90% 80% at 12% 85%, #e9eef5 0%, rgba(233,238,245,0) 50%),
+      #f3f0ea;
+  }
+  .fd .map::before{
+    content:"";position:absolute;inset:0;opacity:.5;
+    background:
+      repeating-linear-gradient(58deg, rgba(160,150,135,.18) 0 1.5px, transparent 1.5px 64px),
+      repeating-linear-gradient(-32deg, rgba(160,150,135,.14) 0 1.5px, transparent 1.5px 92px),
+      repeating-linear-gradient(58deg, rgba(160,150,135,.10) 0 6px, transparent 6px 220px);
+  }
+  .fd .pin{position:absolute;left:50%;top:48%;width:26px;height:26px;transform:translate(-50%,-100%) rotate(-45deg);
+    background:var(--granate);border-radius:50% 50% 50% 0;box-shadow:0 6px 14px rgba(140,31,45,.34);}
+  .fd .pin::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:9px;background:#fff;border-radius:50%;transform:translate(-50%,-50%);}
+  .fd .mapZoom{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:6px;}
+  .fd .mapZoom span{width:30px;height:30px;border-radius:9px;border:1px solid rgba(140,31,45,.16);background:rgba(255,253,250,.94);
+    display:grid;place-items:center;color:var(--granate);font-size:17px;box-shadow:0 6px 16px rgba(138,31,45,.08);}
+
+  /* ============================================================
+     V1 · EDITORIAL REFINADO  (línea base pulida)
+     ============================================================ */
+  .v1 .h2{padding-top:15px;}
+  .v1 .h2::before{content:"";position:absolute;top:0;left:0;width:44px;height:3px;border-radius:2px;background:var(--dorado);}
+
+  /* ============================================================
+     V2 · DATOS EN TARJETAS  (estructurado, tipo panel)
+     ============================================================ */
+  .v2 .tabsLeft{gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;}
+  .v2 .tab{padding:9px 15px;border-right:1px solid var(--line);border-radius:0;}
+  .v2 .tab:last-child{border-right:0;}
+  .v2 .tab.is-active{background:var(--granate);color:#fff;}
+  .v2 .tab.is-active .tabCount{color:#e9c877;}
+  .v2 .tabs{border-bottom:0;padding-bottom:0;margin-bottom:24px;}
+  .v2 .priceWrap{border:1px solid var(--line);border-radius:13px;padding:15px 17px;display:inline-flex;flex-direction:column;gap:6px;background:#fff;margin-bottom:22px;}
+  .v2 .priceLabel{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dorado);}
+  .v2 .priceRow{margin:0;}
+  .v2 .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .v2 .fact{flex-direction:column;align-items:flex-start;gap:8px;border:1px solid var(--line);border-radius:13px;padding:14px 15px;background:#fff;}
+  .v2 .fact .icon{width:20px;height:20px;}
+  .v2 .factVal{font-size:18px;font-weight:600;color:var(--text);}
+  .v2 .factKey{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+  .v2 .h2{font-weight:600;}
+  .v2 .mapCard{border-radius:13px;}
+
+  /* ============================================================
+     V3 · BANDA GRANATE  (bloque de marca protagonista)
+     ============================================================ */
+  .v3 .hero{background:var(--granate);border-radius:16px;padding:26px 28px 24px;position:relative;overflow:hidden;margin-bottom:22px;}
+  .v3 .hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--dorado);}
+  .v3 .title{color:#fff;margin:0 0 6px;}
+  .v3 .sub{color:rgba(255,253,250,.78);margin:0 0 18px;}
+  .v3 .priceRow{margin:0;align-items:baseline;}
+  .v3 .price{color:#fff;}
+  .v3 .price-underline{display:inline-block;}
+  .v3 .price-underline::after{content:"";display:block;width:64px;height:3px;background:var(--dorado);border-radius:2px;margin-top:8px;}
+  .v3 .monthly{color:#e9c877;}
+  .v3 .facts{padding:0;border:0;}
+  .v3 .fact{padding-right:20px;border-right:1px solid var(--line);}
+  .v3 .fact:last-child{border-right:0;}
+  .v3 .mapHead{background:var(--granate);border-bottom:0;}
+  .v3 .mapTitle{color:#fff;}
+  .v3 .mapLink{color:#e9c877;}
+
+  /* ============================================================
+     V4 · MINIMAL AIREADO  (mucho aire, sin cajas)
+     ============================================================ */
+  .v4 .tabs{border-bottom:1px solid var(--lineSoft);padding-bottom:18px;margin-bottom:34px;}
+  .v4 .tabsLeft{gap:30px;}
+  .v4 .tab{font-weight:400;color:var(--text);}
+  .v4 .tab .icon{color:var(--muted);}
+  .v4 .tabCount{font-weight:500;}
+  .v4 .tabAll{border:0;background:transparent;color:var(--muted);padding:4px 0;}
+  .v4 .title{font-weight:300;font-size:38px;letter-spacing:-.5px;color:var(--text);}
+  .v4 .sub{margin-bottom:28px;}
+  .v4 .price{font-weight:300;font-size:40px;color:var(--text);}
+  .v4 .priceRow{margin-bottom:26px;}
+  .v4 .monthly{text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(196,150,42,.5);}
+  .v4 .facts{gap:0;font-size:15px;color:var(--muted);}
+  .v4 .fact .icon{display:none;}
+  .v4 .fact{font-weight:400;}
+  .v4 .fact:not(:last-child)::after{content:"·";margin:0 14px;color:var(--dorado);}
+  .v4 .subnav{border-top:1px solid var(--lineSoft);}
+  .v4 .h2{font-weight:300;font-size:30px;}
+  .v4 .body{line-height:1.8;}
+  .v4 .desc{margin-top:34px;}
+  .v4 .mapCard{border:0;border-top:1px solid var(--lineSoft);border-radius:0;}
+  .v4 .mapHead{padding:0 0 13px;border-bottom:0;}
+  .v4 .map{border-radius:12px;}
+
+  /* ============================================================
+     V5 · REVISTA  (escala editorial, cintillos)
+     ============================================================ */
+  .v5 .kicker{font-size:12px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--dorado);margin:0 0 12px;}
+  .v5 .title{font-size:44px;font-weight:600;letter-spacing:-.8px;line-height:1.02;margin-bottom:8px;}
+  .v5 .sub{margin-bottom:22px;}
+  .v5 .price{font-size:54px;font-weight:700;letter-spacing:-1.4px;color:var(--granate);}
+  .v5 .priceRow{align-items:flex-end;margin-bottom:24px;}
+  .v5 .facts{gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0;}
+  .v5 .fact{flex-direction:column;align-items:flex-start;gap:3px;padding-right:26px;margin-right:26px;border-right:1px solid var(--line);}
+  .v5 .fact:last-child{border-right:0;}
+  .v5 .fact .icon{display:none;}
+  .v5 .factVal{font-size:20px;font-weight:600;color:var(--text);}
+  .v5 .factKey{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+  .v5 .h2{font-size:13px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--granate);display:flex;align-items:center;gap:16px;}
+  .v5 .h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--dorado),transparent);}
+  .v5 .body{font-size:16px;line-height:1.7;}
+  .v5 .body::first-letter{font-size:46px;font-weight:600;float:left;line-height:.84;padding:6px 12px 0 0;color:var(--granate);}
+  .v5 .mapCard{border-radius:0;border:0;border-top:2px solid var(--granate);}
+  .v5 .mapHead{padding:12px 0;border-bottom:0;}
+  .v5 .mapTitle{font-weight:700;letter-spacing:.18em;text-transform:uppercase;font-size:12px;}
+
+  /* ============================================================
+     V6 · COMPACTO  (tarjetas redondeadas + chips, tipo app)
+     ============================================================ */
+  .v6 .tabs{border-bottom:0;padding-bottom:0;margin-bottom:20px;}
+  .v6 .tabsLeft{gap:9px;}
+  .v6 .tab{border:1px solid rgba(140,31,45,.22);border-radius:999px;padding:8px 14px;}
+  .v6 .tab.is-active{background:var(--granate);color:#fff;border-color:var(--granate);}
+  .v6 .tab.is-active .tabCount{color:#e9c877;}
+  .v6 .tabAll{border-radius:999px;border-color:rgba(140,31,45,.22);}
+  .v6 .headCard{border:1px solid var(--line);border-radius:16px;padding:20px 22px;background:#fff;box-shadow:0 6px 22px rgba(140,31,45,.05);margin-bottom:16px;}
+  .v6 .title{font-size:27px;margin-bottom:4px;}
+  .v6 .sub{margin-bottom:14px;}
+  .v6 .priceRow{margin:0;}
+  .v6 .price{font-size:30px;}
+  .v6 .facts{gap:9px;}
+  .v6 .fact{border:1px solid rgba(140,31,45,.16);border-radius:999px;padding:8px 13px;background:#fff;font-size:14px;}
+  .v6 .fact .icon{width:16px;height:16px;}
+  .v6 .subnav{border-top:0;border:1px solid var(--line);border-radius:14px;padding:12px 16px;background:#fff;margin-top:18px;}
+  .v6 .desc{border:1px solid var(--line);border-radius:16px;padding:20px 22px;background:#fff;box-shadow:0 6px 22px rgba(140,31,45,.05);}
+  .v6 .h2{font-size:22px;}
+  .v6 .mapCard{border-radius:16px;box-shadow:0 6px 22px rgba(140,31,45,.05);}
+  .v6 .map{border-radius:0;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel">
+const { DesignCanvas, DCSection, DCArtboard, DCPostIt } = window;
+
+/* ---- Icons (lifted from listing.html, dorado-accented) ---- */
+const I = {
+  photos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-2h4l2 2h3a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+  floor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>',
+  pano:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12a10 10 0 0 0 20 0"/><path d="M2 12a10 10 0 0 1 20 0"/><path d="M8 12h8"/></svg>',
+  video:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 8.5l6-3v13l-6-3"/><path d="M3 6h11v12H3z"/></svg>',
+  area:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/><path d="M10 10v10"/></svg>',
+  bed:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18"/><path d="M5 12V9h5a2 2 0 0 1 2 2v1"/><path d="M12 12V9h5a2 2 0 0 1 2 2v1"/><path d="M4 12v5"/><path d="M20 12v5"/><path d="M3 17h18"/></svg>',
+  car:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13l2-5a2 2 0 0 1 1.9-1.3h10.2A2 2 0 0 1 19 8l2 5"/><path d="M5 13h14v5H5z"/><circle cx="7.5" cy="18" r="1.5"/><circle cx="16.5" cy="18" r="1.5"/></svg>',
+  bath:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 13h16"/><path d="M6 13V7a2 2 0 0 1 4 0v1"/><path d="M4 13v2a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4v-2"/><path d="M8 19v2"/><path d="M16 19v2"/></svg>',
+  year:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18"/><path d="M7 3v4"/><path d="M17 3v4"/><path d="M5 7h14v14H5z"/></svg>',
+  energy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>',
+};
+const Svg = ({d, cls='icon'}) => <span className={cls} dangerouslySetInnerHTML={{__html:d}} />;
+
+const DATA = {
+  title:'Juan de Borbón 22, 2º C',
+  sub:'30003 Murcia · Vistalegre',
+  price:'146.900 €',
+  facts:[
+    {icon:'area', val:'96 m²', key:'Útiles', plain:'96 m² útiles'},
+    {icon:'bed', val:'3', key:'Dormitorios', plain:'3 hab.'},
+    {icon:'car', val:'Sí', key:'Parking', plain:'Parking'},
+    {icon:'bath', val:'3', key:'Baños', plain:'3 baños'},
+    {icon:'year', val:'1965', key:'Año', plain:'1965'},
+    {icon:'energy', val:'C', key:'Energía', plain:'Energía C'},
+  ],
+  desc:'Descripción pendiente de publicación por la agencia. En cuanto esté disponible, aquí verás el texto completo con distribución, estado, equipamiento y detalles relevantes.\n\nDatos básicos:\n- Ubicación: Murcia en Vistalegre…',
+};
+
+/* ---- shared sub-blocks ---- */
+function Tabs({variant}){
+  const seg = variant === 'v2' || variant === 'v6';
+  return (
+    <div className="tabs">
+      <div className="tabsLeft">
+        <button className={'tab'+(seg?' is-active':'')}><Svg d={I.photos}/>Fotos <span className="tabCount">0</span></button>
+        <button className="tab"><Svg d={I.floor}/>Plano <span className="tabCount">0</span></button>
+        <button className="tab"><Svg d={I.pano}/>360° <span className="tabCount">0</span></button>
+        <button className="tab"><Svg d={I.video}/>Vídeo</button>
+      </div>
+      <button className="tabAll">Todo el contenido</button>
+    </div>
+  );
+}
+
+function Facts({variant}){
+  const stacked = variant === 'v2' || variant === 'v5';
+  return (
+    <div className="facts">
+      {DATA.facts.map((f,i)=>(
+        <div className="fact" key={i}>
+          {variant === 'v4' || variant === 'v5'
+            ? null
+            : <Svg d={I[f.icon]} />}
+          {stacked
+            ? <><span className="factVal">{f.val}</span><span className="factKey">{f.key}</span></>
+            : (variant === 'v4'
+                ? <span>{f.plain}</span>
+                : <span>{f.plain}</span>)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SubNav(){
+  return (
+    <div className="subnav">
+      <a href="#">Descripción</a>
+      <a href="#">Características</a>
+      <a href="#">Ubicación</a>
+      <span className="pill">Actualizado: 28/5/2026</span>
+    </div>
+  );
+}
+
+function MapCard(){
+  return (
+    <div className="mapCard">
+      <div className="mapHead">
+        <span className="mapTitle">Mapa</span>
+        <span className="mapLink">Ver ubicación</span>
+      </div>
+      <div className="map">
+        <div className="mapZoom"><span>+</span><span>−</span></div>
+        <div className="pin"></div>
+      </div>
+    </div>
+  );
+}
+
+function Desc(){
+  return (
+    <div className="desc">
+      <h2 className="h2">Descripción</h2>
+      <p className="body">{DATA.desc}</p>
+      <button className="readMore">Leer más</button>
+    </div>
+  );
+}
+
+/* ---- the parametrized ficha ---- */
+function Ficha({variant}){
+  const isHero = variant === 'v3';
+  const isMag = variant === 'v5';
+  const isCompact = variant === 'v6';
+
+  const Head = (
+    <>
+      <h1 className="title">{DATA.title}</h1>
+      <p className="sub">{DATA.sub}</p>
+      <div className="priceRow">
+        <p className="price">{DATA.price}</p>
+        <a className="monthly" href="#">¿Cuánto pagaré al mes?</a>
+      </div>
+    </>
+  );
+
+  return (
+    <div className={'fd '+variant}>
+      <Tabs variant={variant} />
+      <div className="grid">
+        <div>
+          {isHero ? (
+            <div className="hero">
+              <h1 className="title">{DATA.title}</h1>
+              <p className="sub">{DATA.sub}</p>
+              <div className="priceRow">
+                <span className="price-underline"><span className="price">{DATA.price}</span></span>
+                <a className="monthly" href="#">¿Cuánto pagaré al mes?</a>
+              </div>
+            </div>
+          ) : isMag ? (
+            <>
+              <p className="kicker">En venta · Vistalegre, Murcia</p>
+              <h1 className="title">{DATA.title}</h1>
+              <p className="sub">{DATA.sub}</p>
+              <div className="priceRow">
+                <p className="price">{DATA.price}</p>
+                <a className="monthly" href="#">¿Cuánto pagaré al mes?</a>
+              </div>
+            </>
+          ) : variant === 'v2' ? (
+            <>
+              <h1 className="title">{DATA.title}</h1>
+              <p className="sub">{DATA.sub}</p>
+              <div className="priceWrap">
+                <span className="priceLabel">Precio de venta</span>
+                <div className="priceRow">
+                  <p className="price">{DATA.price}</p>
+                  <a className="monthly" href="#">¿Cuánto pagaré al mes?</a>
+                </div>
+              </div>
+            </>
+          ) : isCompact ? (
+            <div className="headCard">{Head}</div>
+          ) : Head}
+
+          <Facts variant={variant} />
+          <SubNav />
+          <Desc />
+        </div>
+        <div>
+          <MapCard />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const VARIANTS = [
+  ['v1','01 · Editorial refinado','Línea base pulida: Raleway, granate y filo dorado. Acentos sobrios, mucho aire.'],
+  ['v2','02 · Datos en tarjetas','Pestañas en control segmentado, precio enmarcado y características en mosaico de fichas.'],
+  ['v3','03 · Banda granate','La dirección y el precio viven sobre un bloque de marca con barra dorada. Color protagonista.'],
+  ['v4','04 · Minimal aireado','Pesos ligeros, sin cajas, datos en línea separados por puntos dorados. Lujo silencioso.'],
+  ['v5','05 · Revista','Escala editorial: cintillo, precio enorme en granate, capitular y filetes finos.'],
+  ['v6','06 · Compacto','Tarjetas redondeadas, chips de pestaña y características. Denso y cercano, tipo app.'],
+];
+
+function App(){
+  return (
+    <DesignCanvas>
+      <DCSection id="ficha" title="Ficha de inmueble · 6 estilos" subtitle="Mismo contenido (sin el cartel de la agencia), seis tratamientos visuales — todos con la marca Homyo. Clic en una tarjeta para verla a pantalla completa.">
+        {VARIANTS.map(([v,label,note])=>(
+          <DCArtboard key={v} id={v} label={label} width={1080} height={720}>
+            <Ficha variant={v} />
+          </DCArtboard>
+        ))}
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

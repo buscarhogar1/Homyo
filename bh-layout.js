@@ -264,6 +264,16 @@ export function initLayout(opts = {}) {
 
   headerMount.innerHTML = renderHeader({ showMiniSearch, root });
 
+  // El menú lateral y su fondo oscuro se renderizan dentro de .topbar, que crea
+  // su propio contexto de apilamiento (position:relative; z-index:20). Eso los
+  // dejaba "atrapados" por debajo de los paneles del mapa de Leaflet (z-index
+  // 200–1000 en el contexto raíz). Los movemos al <body> para que su z-index
+  // (9997/9998) se evalúe en el contexto raíz y cubran el mapa como el resto.
+  ["bhSideOverlay", "bhSideMenu"].forEach((id) => {
+    const el = headerMount.querySelector("#" + id);
+    if (el) document.body.appendChild(el);
+  });
+
   // El footer es opcional. En index.html se ha eliminado por decisión de diseño.
   if (footerMount) {
     footerMount.innerHTML = renderFooter({ root });

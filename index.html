@@ -267,7 +267,7 @@
       appearance:none;
       border:none;
       background:transparent;
-      color:var(--granate);
+      color:var(--dorado);
       width:42px;
       min-width:42px;
       height:42px;
@@ -479,8 +479,8 @@
       }
 
       .heroLogo{
-        width:240px;
-        height:70px;
+        width:192px;
+        height:56px;
         background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20220%2058'%3E%3Cpolyline%20points='8,50%2086,50%2086,28%20110,8%20134,28%20134,50%20212,50'%20fill='none'%20stroke='%238C1F2D'%20stroke-width='3.4'%20stroke-linejoin='miter'%20stroke-linecap='butt'/%3E%3C/svg%3E") no-repeat center center;
         background-size:contain;
       }
@@ -1035,11 +1035,21 @@
         const coreTop0 = coreRect.top;
         if (H <= 0 || Gh <= 0) return;
 
+        // ¿Está el usuario escribiendo en el buscador en móvil? (teclado visible)
+        const kbMode = mq.matches && document.activeElement && document.activeElement.id === "q";
+
         // Punto de anclaje (coordenada vertical en viewport).
         let anchorY;
         if (mq.matches) {
           const pills = inner.querySelectorAll(".pill");
-          if (pills.length >= 3) {
+          const sbM   = inner.querySelector(".searchBox");
+          if (kbMode && pills.length && sbM) {
+            // Con el teclado abierto: centro del hueco entre la fila de
+            // botones y el buscador (lo llevaremos pegado arriba).
+            let pillsBottom = 0;
+            pills.forEach(p => { pillsBottom = Math.max(pillsBottom, p.getBoundingClientRect().bottom); });
+            anchorY = (pillsBottom + sbM.getBoundingClientRect().top) / 2;
+          } else if (pills.length >= 3) {
             anchorY = pills[2].getBoundingClientRect().bottom; // borde inferior de "Habitación"
           } else {
             anchorY = coreTop0 + Gh / 2;
@@ -1067,10 +1077,21 @@
         // Colocamos el grupo para que el ancla caiga en el centro de la
         // pantalla COMPLETA (medido desde el borde superior del header).
         // Centro absoluto = (blockTop + H)/2 → en coords de .searchBlock = (H - blockTop)/2.
-        let coreTopPx = (H - blockTop) / 2 - anchorRel;
         const minTop  = 4;
         const maxTop  = Math.max(minTop, H - Gh - 4);
-        coreTopPx     = Math.max(minTop, Math.min(coreTopPx, maxTop));
+        let coreTopPx;
+        if (kbMode) {
+          // Teclado abierto: llevamos el centro del hueco botones↔buscador
+          // pegado a la parte superior. Así el buscador queda arriba del
+          // todo y abajo queda libre para las sugerencias (que de otro modo
+          // se quedan tras el teclado). Permitimos que los botones suban
+          // fuera de vista (sin tope mínimo).
+          const TOP_MARGIN = 8;
+          coreTopPx = Math.min(TOP_MARGIN - anchorRel, maxTop);
+        } else {
+          coreTopPx = (H - blockTop) / 2 - anchorRel;
+          coreTopPx = Math.max(minTop, Math.min(coreTopPx, maxTop));
+        }
         core.style.top = coreTopPx + "px";
 
         // Banda del logo: del header (0) al borde superior de "Comprar".
@@ -1082,6 +1103,10 @@
         const subBottomAbs = coreTopPx + subBottomRel;
         quickZone.style.top    = subBottomAbs + "px";
         quickZone.style.height = Math.max(0, H - subBottomAbs) + "px";
+
+        // Si el panel de sugerencias está montado, lo recolocamos para que
+        // siga al buscador tras mover el grupo (más alto = más sitio abajo).
+        if (window.BH_positionAutocomplete) window.BH_positionAutocomplete();
       }
 
       let raf = null;
@@ -1101,11 +1126,20 @@
       window.addEventListener("orientationchange", () => setTimeout(schedule, 80));
       document.addEventListener("visibilitychange", () => { if (!document.hidden) schedule(); });
       window.addEventListener("resize", () => {
-        // No recolocamos mientras se escribe (evita saltos al abrir el teclado).
-        const a = document.activeElement;
-        if (a && a.id === "q") return;
+        // Antes evitábamos recolocar mientras se escribía; ahora SÍ queremos
+        // recolocar al abrir el teclado para subir el buscador.
         schedule();
       });
+      // Al enfocar/desenfocar el buscador en móvil, recolocamos (modo teclado).
+      const qInput = document.getElementById("q");
+      if (qInput) {
+        qInput.addEventListener("focus", () => { schedule(); setTimeout(schedule, 60); setTimeout(schedule, 250); });
+        qInput.addEventListener("blur",  () => { schedule(); setTimeout(schedule, 60); });
+      }
+      // El teclado virtual cambia el visualViewport: recolocamos en móvil.
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", () => { if (mq.matches) schedule(); });
+      }
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
     })();
 
@@ -1347,9 +1381,12 @@
         panel.style.left = r.left + "px";
         panel.style.width = r.width + "px";
         panel.style.top = (r.bottom + 8) + "px";
-        const avail = window.innerHeight - r.bottom - 18;
+        const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+        const avail = vh - r.bottom - 18;
         panel.style.maxHeight = Math.max(160, avail) + "px";
       }
+      // Exponemos el reposicionado para que el layout lo llame al mover el grupo.
+      window.BH_positionAutocomplete = function(){ if (isOpen()) position(); };
 
       /* ---------- render ---------- */
       function render(state){

@@ -92,6 +92,23 @@ body{
   box-shadow: 0 2px 8px rgba(140,31,45,0.08);
 }
 
+/* Botón de solo icono (Ordenar por) */
+.topToggleBtnIcon{
+  width: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.topToggleBtnIcon svg{ display: block; }
+.mobilePanelActionBtnIcon{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.mobilePanelActionBtnIcon svg{ display: block; }
+
 .topToggleBtn[disabled]{
   opacity: 0.4;
   cursor: not-allowed;
@@ -172,7 +189,7 @@ body{
   position: absolute;
   right: 0;
   top: 42px;
-  width: 230px;
+  width: max-content;
   background: #fff;
   border: 1px solid rgba(0,0,0,0.12);
   border-radius: 12px;
@@ -191,6 +208,7 @@ body{
   cursor: pointer;
   font-size: 13px;
   color: rgba(0,0,0,0.86);
+  white-space: nowrap;
 }
 .orderItem:hover{
   background: rgba(0,0,0,0.05);
@@ -259,7 +277,7 @@ body{
 /* Scroll interno de columnas */
 #filtersCol{
   border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 14px;
+  border-radius: 6px;
   background: rgba(255,255,255,0.98);
   overflow: hidden;
 }
@@ -270,7 +288,7 @@ body{
 
 #listCol{
   border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 14px;
+  border-radius: 6px;
   background: rgba(255,255,255,0.98);
   overflow: hidden;
 }
@@ -290,7 +308,7 @@ body{
 /* Mapa */
 .mapWrap{
   height: 100%;
-  border-radius: 14px;
+  border-radius: 6px;
   overflow: hidden;
   border: 1px solid #f0f1f3;
   position: relative; /* importante: tarjeta posicionada respecto al mapa */
@@ -1377,7 +1395,10 @@ body{
   }
 
   .page{
-    height: calc(100dvh - 60px - 52px - 64px);
+    /* header (60px) + fila de acciones (52px). La antigua barra inferior
+       .mobileBottomNav ya no se muestra, así que NO reservamos sus 64px:
+       hacerlo dejaba una franja blanca vacía bajo el mapa. */
+    height: calc(100dvh - 60px - 52px);
     padding: 0;
     overflow: hidden;
   }
@@ -1874,8 +1895,13 @@ body{
    búsqueda sin volver a la página de inicio. */
 .fBlock.modeBlock,
 .fBlock.modeBlock.active{
-  border-color: var(--bh-border) !important;
-  background: #fff !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.fBlock.modeBlock:hover{
+  border: 0 !important;
   box-shadow: none !important;
 }
 .modeSwitch{
@@ -1929,7 +1955,94 @@ body{
   color: var(--bh-granate) !important;
 }
 
-/* Punto indicador de estado */
+/* ===== Icono de información (i) en el título del filtro =====
+   Explica de forma sencilla qué significan filtros como los m² útiles
+   o los m² construidos. Hover en escritorio, toque en móvil. */
+.fInfoWrap{
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+.fInfoBtn{
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 999px !important;
+  border: 1.3px solid rgba(140,31,45,0.45) !important;
+  background: #fff !important;
+  color: var(--bh-granate) !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  font-style: italic !important;
+  line-height: 1 !important;
+  display: grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  flex: 0 0 auto !important;
+  transition: background .15s ease, border-color .15s ease, color .15s ease !important;
+}
+.fInfoBtn:hover{
+  background: var(--bh-granate) !important;
+  border-color: var(--bh-granate) !important;
+  color: #fff !important;
+}
+
+.fInfoBubble{
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+  transform: translateY(-4px) !important;
+  width: 240px !important;
+  max-width: min(240px, calc(100vw - 16px)) !important;
+  background: #fff !important;
+  border: 1px solid var(--bh-border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 26px rgba(60,30,20,0.16) !important;
+  padding: 11px 13px !important;
+  z-index: 10000 !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity .14s ease, transform .14s ease, visibility .14s ease !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+/* Flechita superior del globo, alineada con el icono */
+.fInfoBubble::before{
+  content: "" !important;
+  position: absolute !important;
+  bottom: 100% !important;
+  left: var(--tipArrowX, 50%) !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  border: 7px solid transparent !important;
+  border-bottom-color: #fff !important;
+  filter: drop-shadow(0 -1px 0 var(--bh-border)) !important;
+}
+.fInfoWrap:hover .fInfoBubble,
+.fInfoWrap.open .fInfoBubble{
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translateY(0) !important;
+}
+.fInfoBubbleTitle{
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: var(--bh-granate) !important;
+  margin-bottom: 4px !important;
+}
+.fInfoBubbleText{
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+  color: rgba(0,0,0,0.72) !important;
+}
+
 .fDot{
   width: 8px !important;
   height: 8px !important;
@@ -2322,9 +2435,7 @@ body{
   overflow-wrap: anywhere !important;
 }
 .listTitle:hover{
-  text-decoration: underline !important;
-  text-decoration-color: rgba(140,31,45,0.35) !important;
-  text-underline-offset: 3px !important;
+  text-decoration: none !important;
 }
 
 .listSub{
@@ -2358,6 +2469,13 @@ body{
   border-radius: 3.5px;
   background: rgba(196,150,42,0.08);
   color: rgba(0,0,0,0.62) !important;
+}
+.listFact{ gap: 4px; }
+.listFact svg{
+  width: 13px !important;
+  height: 13px !important;
+  flex: none;
+  stroke: var(--bh-dorado);
 }
 
 .listAgency{
@@ -2446,15 +2564,9 @@ body{
 }
 
 #orderBtn{
-  padding-right: 30px !important;
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--bh-granate) 50%),
-    linear-gradient(135deg, var(--bh-granate) 50%, transparent 50%) !important;
-  background-position:
-    calc(100% - 14px) 51%,
-    calc(100% - 9px) 51% !important;
-  background-size: 5px 5px, 5px 5px !important;
-  background-repeat: no-repeat !important;
+  padding: 0 !important;
+  width: 34px !important;
+  background-image: none !important;
 }
 
 .orderMenu{
@@ -2474,6 +2586,24 @@ body{
 .orderItem:hover{
   background: rgba(196,150,42,0.10) !important;
   color: var(--bh-granate) !important;
+}
+.orderItem.isActive{
+  background: rgba(140,31,45,0.08) !important;
+  color: var(--bh-granate) !important;
+  font-weight: 600 !important;
+  position: relative !important;
+  padding-right: 26px !important;
+}
+.orderItem.isActive::after{
+  content: "" !important;
+  position: absolute !important;
+  right: 9px !important;
+  top: 50% !important;
+  width: 5px !important;
+  height: 9px !important;
+  border: solid var(--bh-granate) !important;
+  border-width: 0 1.6px 1.6px 0 !important;
+  transform: translateY(-60%) rotate(45deg) !important;
 }
 
 /* ----- Móvil ----- */
@@ -3485,6 +3615,17 @@ body.saveSearchAuthOpen{
     top: 50%;
     transform: translateY(-50%);
     margin: 0;
+  }
+
+  /* Mapa oculto: el botón "Mostrar mapa" deja de anclarse al borde derecho
+     de la fila y vuelve al flujo normal, colocándose justo a la derecha del
+     cartel de ubicación (placeLabel). */
+  .topRow.mapHidden .topCellCenter{
+    justify-content: flex-start;
+  }
+  .topRow.mapHidden #toggleMapBtn{
+    position: static;
+    transform: none;
   }
 
   /* Tarjeta anclada al borde izquierdo del mapa (deja de estar centrada). */
