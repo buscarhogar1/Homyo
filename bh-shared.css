@@ -905,3 +905,173 @@ body.bh-authenticated .bhSideAnonOnly{
     font-size:11px;
   }
 }
+
+
+/* ============================================================
+   HOMYO SIDE MENU · v2 (tarjetas de audiencia + nav útil)
+   ============================================================ */
+
+.bhSideNav{
+  padding:16px 14px 8px;
+  gap:0;
+  flex:1 1 auto;
+  min-height:0;
+}
+
+/* Cap del panel a la altura del viewport para que el nav scrollee
+   en pantallas cortas (el footer queda fijo abajo). */
+.bhSideMenu{
+  max-height:100vh;
+  max-height:100dvh;
+}
+
+/* Botón cerrar circular */
+.bhSideClose{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid #efe7d8;
+  background:#fff;
+  color:#8C1F2D;
+  font-size:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all .18s ease;
+}
+.bhSideClose:hover{ background:#f8f0df; border-color:rgba(140,31,45,.18); }
+.bhSideClose svg{ width:17px; height:17px; stroke:currentColor; stroke-width:2.2; fill:none; stroke-linecap:round; }
+
+/* Encabezado fino de sección */
+.bhSideMicro{
+  font-family:'Raleway','Montserrat',system-ui,sans-serif;
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:#8f8578;
+  padding:6px 10px 10px;
+  user-select:none;
+}
+
+.bhSideDivider{ height:1px; background:#efe7d8; margin:14px 10px; }
+
+/* ---- Tarjetas de audiencia ---- */
+.bhAccounts{ display:flex; flex-direction:column; gap:12px; padding:0 4px; }
+
+.bhAccCard{
+  border:1px solid #efe7d8;
+  border-radius:18px;
+  background:#FBF8F4;
+  padding:16px 16px 14px;
+  position:relative;
+  overflow:hidden;
+}
+.bhAccCard.pro{
+  background:linear-gradient(180deg, rgba(226,184,76,.10), rgba(226,184,76,0) 70%), #FBF8F4;
+  border-color:rgba(226,184,76,.45);
+}
+
+.bhAccHead{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.bhAccIcon{
+  flex:0 0 auto;
+  width:40px; height:40px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  background:#8C1F2D;
+}
+.bhAccCard.pro .bhAccIcon{ background:#E2B84C; }
+.bhAccIcon svg{ width:21px; height:21px; stroke:#FBEDE2; stroke-width:1.7; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+.bhAccCard.pro .bhAccIcon svg{ stroke:#7A1A26; }
+
+.bhAccTitleWrap{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+.bhAccTitle{
+  font-family:'Raleway',sans-serif; font-weight:700;
+  font-size:15px; color:#241f1b; letter-spacing:.01em;
+}
+.bhAccDesc{ font-family:'Montserrat',sans-serif; font-size:11.5px; color:#8f8578; font-weight:500; line-height:1.35; }
+.bhAccTag{
+  margin-left:auto; flex:0 0 auto; align-self:flex-start;
+  font-family:'Raleway',sans-serif; font-size:9px; font-weight:800;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:#7A1A26; background:rgba(226,184,76,.28);
+  padding:4px 8px; border-radius:999px;
+}
+
+.bhAccActions{ display:flex; gap:8px; }
+.bhBtn{
+  flex:1 1 0;
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  font-family:'Raleway',sans-serif; font-weight:700;
+  font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+  padding:11px 12px; border-radius:11px;
+  cursor:pointer; text-decoration:none;
+  transition:all .16s ease; border:1px solid transparent; white-space:nowrap;
+}
+.bhBtnPrimary{ background:#8C1F2D; color:#fff; }
+.bhBtnPrimary:hover{ background:#7A1A26; }
+.bhBtnGhost{ background:#fff; color:#8C1F2D; border-color:rgba(140,31,45,.12); }
+.bhBtnGhost:hover{ background:#f8f0df; }
+
+.bhAccFoot{
+  display:flex; align-items:center; gap:6px;
+  margin-top:11px; padding-top:11px;
+  border-top:1px dashed #efe7d8;
+}
+.bhAccFoot a{
+  font-family:'Raleway',sans-serif; font-size:11px; font-weight:600;
+  letter-spacing:.06em; text-transform:uppercase;
+  color:#8f8578; text-decoration:none;
+  display:inline-flex; align-items:center; gap:6px;
+  transition:color .16s ease;
+}
+.bhAccFoot a:hover{ color:#8C1F2D; }
+.bhAccFoot svg{ width:14px; height:14px; stroke:currentColor; stroke-width:1.8; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+
+/* ---- Nav rápido (explorar) ---- */
+.bhQuick{ display:flex; flex-direction:column; gap:2px; }
+.bhQItem{
+  display:flex; align-items:center; gap:14px;
+  padding:12px; border-radius:14px;
+  text-decoration:none; color:#241f1b;
+  transition:background .16s ease;
+}
+.bhQItem:hover{ background:#f8f0df; }
+.bhQItem:hover .bhQIcon{ background:#8C1F2D; border-color:#8C1F2D; }
+.bhQItem:hover .bhQIcon svg{ stroke:#FBEDE2; }
+.bhQIcon{
+  flex:0 0 auto;
+  width:42px; height:42px; border-radius:13px;
+  background:rgba(140,31,45,.07);
+  border:1px solid rgba(140,31,45,.12);
+  display:flex; align-items:center; justify-content:center;
+  transition:all .16s ease;
+}
+.bhQIcon svg{ width:21px; height:21px; stroke:#8C1F2D; stroke-width:1.7; fill:none; stroke-linecap:round; stroke-linejoin:round; transition:stroke .16s ease; }
+.bhQText{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+.bhQTitle{
+  font-family:'Raleway',sans-serif; font-weight:700;
+  font-size:14px; letter-spacing:.02em; color:#241f1b; line-height:1.25;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.bhQSub{
+  font-family:'Montserrat',sans-serif; font-size:11.5px; color:#8f8578; font-weight:500;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.bhQArrow{ margin-left:auto; color:#8f8578; flex:0 0 auto; }
+.bhQArrow svg{ width:16px; height:16px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+
+/* ---- Footer: legal + copy ---- */
+.bhSideFooter{
+  text-transform:none;
+  letter-spacing:normal;
+}
+.bhLegal{ display:flex; flex-wrap:wrap; gap:4px 14px; margin-bottom:10px; }
+.bhLegal a{
+  font-family:'Montserrat',sans-serif; font-size:11px; font-weight:500;
+  color:#8f8578; text-decoration:none; transition:color .16s ease;
+}
+.bhLegal a:hover{ color:#8C1F2D; text-decoration:underline; text-underline-offset:3px; }
+.bhCopy{
+  font-family:'Raleway',sans-serif; font-size:10px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase; color:#b6ab9d;
+}

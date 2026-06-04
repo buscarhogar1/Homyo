@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Panel · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Panel admin">
+
+          <!-- HERO -->
+          <section class="adminHero">
+            <div class="adminHeroLogo">DH</div>
+            <div class="adminHeroBody">
+              <h1>Buenos días, <strong>dirección</strong></h1>
+              <div class="adminHeroPills">
+                <span class="pill ok"><span class="dot"></span>Plataforma operativa</span>
+                <span class="pill gold">128 inmobiliarias verificadas</span>
+                <span class="pill neutral">17 pendientes de tu acción</span>
+              </div>
+            </div>
+            <div class="adminHeroDate">
+              <span class="big">Miércoles, 3 de junio</span>
+              Última conexión: ayer, 21:40
+            </div>
+          </section>
+
+          <!-- KPIs GLOBALES -->
+          <section class="grid c4" style="margin-top:16px;">
+            <div class="kpi">
+              <p class="kpiLabel">Inmobiliarias activas</p>
+              <p class="kpiValue">128</p>
+              <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+6 este mes</span>
+            </div>
+            <div class="kpi">
+              <p class="kpiLabel">Anuncios publicados</p>
+              <p class="kpiValue">3.964</p>
+              <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+214 esta semana</span>
+            </div>
+            <div class="kpi biz">
+              <p class="kpiLabel">Ingresos recurrentes (MRR)</p>
+              <p class="kpiValue">27.718<span class="u">€</span></p>
+              <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+9,9 % vs. mayo</span>
+            </div>
+            <div class="kpi">
+              <p class="kpiLabel">Usuarios registrados</p>
+              <p class="kpiValue">18,4<span class="u">K</span></p>
+              <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+318 esta semana</span>
+            </div>
+          </section>
+
+          <!-- REQUIERE TU ACCIÓN -->
+          <div class="sectionHead"><h2>Requiere tu acción</h2><a class="btnLink" href="admin-alertas.html">Ver todo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></div>
+          <div class="stack-sm">
+            <div class="callout infoc">
+              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+              <div><h4>4 solicitudes de alta esperando aprobación</h4><p>Nidos del Sur (Sevilla), Inmobiliaria Vega (Valencia) y 2 más han enviado su documentación.</p></div>
+              <a class="btn ghost sm cAct" href="admin-solicitudes.html">Revisar</a>
+            </div>
+            <div class="callout warnc">
+              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+              <div><h4>9 anuncios en cola de moderación</h4><p>2 superan las 12 h de espera. Mantén la cola por debajo de 24 h para cumplir el estándar.</p></div>
+              <a class="btn ghost sm cAct" href="admin-anuncios.html">Moderar</a>
+            </div>
+            <div class="callout dangerc">
+              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg></span>
+              <div><h4>7 cobros han fallado en la última pasarela</h4><p>Suman 48,93 € de impago. Reintentar el cobro o contactar con las inmobiliarias afectadas.</p></div>
+              <a class="btn ghost sm cAct" href="admin-facturacion.html">Ver impagos</a>
+            </div>
+          </div>
+
+          <!-- ESTADO DE LA PLATAFORMA -->
+          <div class="sectionHead"><h2>Estado de la plataforma</h2></div>
+          <div class="statRow">
+            <a class="statMini" href="admin-profesionales.html"><div class="n">128</div><div class="l">Inmobiliarias</div></a>
+            <a class="statMini" href="admin-profesionales.html"><div class="n">412</div><div class="l">Profesionales</div></a>
+            <a class="statMini" href="admin-anuncios.html"><div class="n">3.964</div><div class="l">Anuncios activos</div></a>
+            <a class="statMini alert" href="admin-solicitudes.html"><div class="n">4</div><div class="l">Altas pendientes</div></a>
+            <a class="statMini alert" href="admin-anuncios.html"><div class="n">9</div><div class="l">En moderación</div></a>
+            <a class="statMini alert" href="admin-incidencias.html"><div class="n">3</div><div class="l">Incidencias abiertas</div></a>
+          </div>
+
+          <!-- ACCESOS RÁPIDOS (tus prioridades) -->
+          <div class="sectionHead"><h2>Accesos rápidos</h2></div>
+          <div class="quickGrid">
+            <a class="quick" href="admin-profesionales.html">
+              <span class="quickIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21V13h4v8"/></svg></span>
+              <h3>Gestionar profesionales</h3>
+              <p>Inmobiliarias y agentes verificados, su plan, sus anuncios y su rendimiento. Suspender o verificar cuentas.</p>
+              <span class="go">Abrir directorio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            </a>
+            <a class="quick" href="admin-facturacion.html">
+              <span class="quickIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg></span>
+              <h3>Cobros e ingresos</h3>
+              <p>MRR, suscripciones por vivienda (6,99 €), facturas emitidas, impagos y previsión de ingresos.</p>
+              <span class="go">Ver facturación <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            </a>
+            <a class="quick" href="admin-estadisticas.html">
+              <span class="quickIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></span>
+              <h3>Estadísticas globales</h3>
+              <p>Crecimiento de cuentas, anuncios, visitas, contactos y conversión de toda la plataforma.</p>
+              <span class="go">Ver métricas <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            </a>
+          </div>
+
+          <!-- ACTIVIDAD + RESUMEN DE NEGOCIO -->
+          <div class="twoCol" style="margin-top:42px;">
+            <div class="card">
+              <div class="spread" style="margin-bottom:8px;">
+                <p class="cardLabel mt0">Actividad reciente en la plataforma</p>
+                <a class="btnLink" href="admin-alertas.html">Centro de alertas <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+              </div>
+              <ul class="actList">
+                <li>
+                  <span class="actIc" style="background:var(--infoSoft);color:var(--info)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+                  <div class="actBody"><h5>Nueva solicitud de alta</h5><p><b>Nidos del Sur Gestión</b> · Sevilla · documentación completa adjunta</p></div>
+                  <span class="actWhen">Hace 12 min</span>
+                </li>
+                <li>
+                  <span class="actIc" style="background:var(--goodSoft);color:var(--good)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 6 9 17l-5-5"/></svg></span>
+                  <div class="actBody"><h5>Cobro mensual ejecutado</h5><p>412 suscripciones cobradas · <b>27.718 €</b> · 7 pagos fallidos pendientes</p></div>
+                  <span class="actWhen">Hoy, 06:00</span>
+                </li>
+                <li>
+                  <span class="actIc" style="background:var(--dangerSoft);color:var(--danger)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/></svg></span>
+                  <div class="actBody"><h5>Incidencia: posible anuncio duplicado</h5><p>Reportado por un usuario · piso en <b>Calle Goya 41</b> · misma referencia en 2 agencias</p></div>
+                  <span class="actWhen">Hace 2 h</span>
+                </li>
+                <li>
+                  <span class="actIc" style="background:var(--goodSoft);color:var(--good)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+                  <div class="actBody"><h5>Anuncio aprobado en moderación</h5><p>Piso reformado en Calle Velázquez 80 · <b>Áurea Inmobiliaria</b></p></div>
+                  <span class="actWhen">Hace 5 h</span>
+                </li>
+                <li>
+                  <span class="actIc" style="background:var(--cardWarm);color:var(--granate)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="8" r="3.2"/><path d="M2.6 20c1.1-3.4 11.7-3.4 12.8 0"/></svg></span>
+                  <div class="actBody"><h5>Pico de registros de usuarios</h5><p>+318 usuarios nuevos esta semana · <b>+22 %</b> sobre la media</p></div>
+                  <span class="actWhen">Hace 2 días</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="stack-sm">
+              <div class="card">
+                <p class="cardLabel">Salud del negocio</p>
+                <div class="perfBar" style="display:flex;flex-direction:column;gap:14px;">
+                  <div>
+                    <div class="pl" style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--ink2)">Inmobiliarias que pagan</span><span style="font-family:'Raleway';font-weight:600;color:var(--ink)">121 / 128</span></div>
+                    <div class="track good"><span style="width:95%"></span></div>
+                  </div>
+                  <div>
+                    <div class="pl" style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--ink2)">Anuncios que cumplen estándar</span><span style="font-family:'Raleway';font-weight:600;color:var(--ink)">92 %</span></div>
+                    <div class="track gold"><span style="width:92%"></span></div>
+                  </div>
+                  <div>
+                    <div class="pl" style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--ink2)">Cola de moderación &lt; 24 h</span><span style="font-family:'Raleway';font-weight:600;color:var(--ink)">78 %</span></div>
+                    <div class="track"><span style="width:78%"></span></div>
+                  </div>
+                  <div>
+                    <div class="pl" style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--ink2)">Retención de agencias (90 d)</span><span style="font-family:'Raleway';font-weight:600;color:var(--ink)">96 %</span></div>
+                    <div class="track good"><span style="width:96%"></span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="card warm">
+                <div style="display:flex;gap:13px;align-items:flex-start;font-size:13px;color:var(--ink2);line-height:1.55;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" style="width:20px;height:20px;color:var(--good);flex:0 0 auto;margin-top:1px;"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+                  <span>Modelo transparente: 6,99 €/vivienda al mes, sin destacados ni venta de leads. Los ingresos crecen solo con más inmobiliarias y más viviendas reales.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "panel", title: "Panel", crumb: "Vista general de Homyo" };
+    </script>
+    <script src="admin-shell.js"></script>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Ajustes · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <style>
+      .setRow{ display:flex; align-items:center; gap:16px; padding:18px 0; border-top:1px solid var(--lineSoft); }
+      .setRow:first-child{ border-top:none; }
+      .setRow .sx{ flex:1 1 auto; min-width:0; }
+      .setRow h4{ margin:0 0 3px; font-family:'Raleway'; font-size:14.5px; font-weight:600; color:var(--ink); }
+      .setRow p{ margin:0; font-size:13px; color:var(--muted); line-height:1.5; }
+      /* toggle */
+      .switch{ position:relative; width:46px; height:26px; flex:0 0 auto; }
+      .switch input{ opacity:0; width:0; height:0; }
+      .switch .sl{ position:absolute; inset:0; background:var(--line); border-radius:999px; transition:.2s; cursor:pointer; }
+      .switch .sl::before{ content:""; position:absolute; height:20px; width:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+      .switch input:checked + .sl{ background:var(--granate); }
+      .switch input:checked + .sl::before{ transform:translateX(20px); }
+    </style>
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Ajustes">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Plataforma · Configuración</p>
+              <h1 class="pageTitle">Ajustes de la <strong>plataforma</strong></h1>
+              <p class="pageLede">Reglas del estándar de calidad, precios, seguridad del acceso interno y configuración general de Homyo.</p>
+            </div>
+          </div>
+
+          <div class="twoColWide">
+            <div class="stack-sm" style="gap:22px;">
+              <!-- Estándar de calidad -->
+              <div class="card">
+                <p class="cardLabel">Estándar de calidad obligatorio</p>
+                <div class="setRow"><div class="sx"><h4>Plano en planta obligatorio</h4><p>Sin plano, el anuncio no puede publicarse.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+                <div class="setRow"><div class="sx"><h4>Certificado energético obligatorio</h4><p>Permitir "en trámite" durante 30 días.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+                <div class="setRow"><div class="sx"><h4>Mínimo de fotografías</h4><p>Número mínimo para superar la moderación.</p></div><div style="width:90px;"><input class="input" value="6" style="text-align:center;" /></div></div>
+                <div class="setRow"><div class="sx"><h4>Bloquear anuncios duplicados</h4><p>Detecta la misma referencia en varias agencias.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+                <div class="setRow"><div class="sx"><h4>Aviso de disponibilidad</h4><p>Pedir confirmación tras X días sin actualizar.</p></div><div style="width:90px;"><input class="input" value="60" style="text-align:center;" /></div></div>
+              </div>
+
+              <!-- Precios -->
+              <div class="card">
+                <p class="cardLabel">Modelo de precios</p>
+                <div class="formGrid" style="margin-top:6px;">
+                  <div class="field"><label class="fieldLabel">Precio por vivienda / mes</label><div class="inputCombo"><span class="prefix">€</span><input class="input" value="6,99" /></div></div>
+                  <div class="field"><label class="fieldLabel">Periodo fundadora (meses)</label><input class="input" value="3" /></div>
+                  <div class="field full"><label class="checkRow"><input type="checkbox" checked /> Mantener el modelo sin destacados, pujas ni venta de leads</label></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stack-sm" style="gap:22px;">
+              <!-- Seguridad del acceso -->
+              <div class="card">
+                <p class="cardLabel" style="color:var(--granate)">Seguridad del acceso interno</p>
+                <div class="setRow"><div class="sx"><h4>Atajo de teclado de acceso</h4><p>Teclear <b>homyo</b> o Ctrl/Cmd+Shift+H en la web pública.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+                <div class="field" style="margin-top:6px;">
+                  <label class="fieldLabel">Contraseña de dirección</label>
+                  <input class="input" type="password" value="homyo2026" />
+                  <span class="fieldHint">Es la contraseña del gate de acceso. Cámbiala periódicamente.</span>
+                </div>
+                <div class="setRow"><div class="sx"><h4>Caducar sesión al cerrar el navegador</h4><p>Recomendado para equipos compartidos.</p></div><label class="switch"><input type="checkbox" checked /><span class="sl"></span></label></div>
+                <button class="btn primary block" style="margin-top:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Guardar seguridad</button>
+              </div>
+
+              <!-- Datos y backups -->
+              <div class="card">
+                <p class="cardLabel">Datos</p>
+                <div class="setRow" style="padding-top:6px;"><div class="sx"><h4>Copia de seguridad diaria</h4><p>Último backup: hoy 03:12 · correcto</p></div><span class="pill ok"><span class="dot"></span>Activa</span></div>
+                <div class="setRow"><div class="sx"><h4>Exportar todos los datos</h4><p>Inmobiliarias, anuncios, usuarios y facturas.</p></div><button class="btn ghost sm">Exportar</button></div>
+              </div>
+
+              <div class="callout dangerc">
+                <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></span>
+                <div><h4>Zona peligrosa</h4><p>Modo mantenimiento y otras acciones críticas de la plataforma.</p></div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "ajustes", title: "Ajustes", crumb: "Plataforma · Configuración general" };
+    </script>
+    <script src="admin-shell.js"></script>
+  </body>
+</html>

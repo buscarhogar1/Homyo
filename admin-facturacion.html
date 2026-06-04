@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Facturación e ingresos · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Facturación">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Negocio · Cobros</p>
+              <h1 class="pageTitle">Facturación e <strong>ingresos</strong></h1>
+              <p class="pageLede">Todo el dinero de Homyo: ingresos recurrentes, suscripciones por vivienda a 6,99 €/mes, facturas emitidas e impagos a reintentar. Sin destacados ni venta de leads.</p>
+            </div>
+            <div class="pageHeadActions">
+              <div class="seg" id="periodSeg">
+                <button class="isOn" data-p="mes">Este mes</button>
+                <button data-p="tri">Trimestre</button>
+                <button data-p="ano">Año</button>
+              </div>
+              <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Exportar</button>
+            </div>
+          </div>
+
+          <!-- KPIs DE INGRESOS -->
+          <section class="grid c4" style="margin-bottom:8px;">
+            <div class="kpi biz"><p class="kpiLabel">Ingresos recurrentes (MRR)</p><p class="kpiValue">27.718<span class="u">€</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+9,9 % vs. mayo</span></div>
+            <div class="kpi biz"><p class="kpiLabel">Facturado este mes</p><p class="kpiValue">26.184<span class="u">€</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>412 facturas emitidas</span></div>
+            <div class="kpi"><p class="kpiLabel">Viviendas facturables</p><p class="kpiValue">3.964</p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>× 6,99 € / mes</span></div>
+            <div class="kpi"><p class="kpiLabel">Impagos a reintentar</p><p class="kpiValue" style="color:var(--danger)">48,93<span class="u">€</span></p><span class="kpiFoot down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>7 cobros fallidos</span></div>
+          </section>
+
+          <!-- GRÁFICO MRR + DESGLOSE -->
+          <div class="twoColWide" style="margin-top:24px;">
+            <div class="card">
+              <div class="spread" style="margin-bottom:18px;"><p class="cardLabel mt0">Evolución de ingresos recurrentes</p><span class="pill gold">Últimos 8 meses</span></div>
+              <div class="barChart" id="mrrChart">
+                <div class="col"><span class="cv">14,1K</span><div class="bar" style="height:48%"></div><span class="cl">Oct</span></div>
+                <div class="col"><span class="cv">16,3K</span><div class="bar" style="height:56%"></div><span class="cl">Nov</span></div>
+                <div class="col"><span class="cv">18,0K</span><div class="bar" style="height:62%"></div><span class="cl">Dic</span></div>
+                <div class="col"><span class="cv">19,7K</span><div class="bar" style="height:68%"></div><span class="cl">Ene</span></div>
+                <div class="col"><span class="cv">21,9K</span><div class="bar" style="height:75%"></div><span class="cl">Feb</span></div>
+                <div class="col"><span class="cv">23,8K</span><div class="bar" style="height:82%"></div><span class="cl">Mar</span></div>
+                <div class="col"><span class="cv">25,2K</span><div class="bar" style="height:88%"></div><span class="cl">Abr</span></div>
+                <div class="col"><span class="cv">27,7K</span><div class="bar alt" style="height:97%"></div><span class="cl">May</span></div>
+              </div>
+            </div>
+            <div class="stack-sm" style="gap:16px;">
+              <div class="card">
+                <p class="cardLabel">Desglose del mes</p>
+                <dl class="kv" style="margin-top:4px;">
+                  <dt>Suscripciones de vivienda</dt><dd>25.910 €</dd>
+                  <dt>Altas nuevas (prorrateo)</dt><dd>1.612 €</dd>
+                  <dt>Bonificación fundadoras</dt><dd class="amount neg">−1.338 €</dd>
+                  <dt style="border-top:1px solid var(--line);padding-top:10px;">Total neto</dt><dd style="border-top:1px solid var(--line);padding-top:10px;" class="amount">26.184 €</dd>
+                </dl>
+              </div>
+              <div class="card warm">
+                <div style="display:flex;gap:13px;align-items:flex-start;font-size:13px;color:var(--ink2);line-height:1.55;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" style="width:20px;height:20px;color:var(--good);flex:0 0 auto;margin-top:1px;"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+                  <span>Un único precio: <b>6,99 €/vivienda/mes</b>. Sin destacados, sin pujas, sin venta de datos. El ingreso es 100 % predecible.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- IMPAGOS -->
+          <div class="sectionHead"><h2>Cobros fallidos · requieren acción</h2><span class="pill dangerp">7 impagos · 48,93 €</span></div>
+          <div class="tableWrap">
+            <table class="proTable stack">
+              <thead><tr><th>Inmobiliaria</th><th>Motivo</th><th class="right">Importe</th><th>Intentos</th><th></th></tr></thead>
+              <tbody>
+                <tr><td data-th="Inmobiliaria"><div class="tName"><span class="avatar sm" style="background:var(--dangerSoft);border-color:rgba(176,50,71,.25);color:var(--danger)">PM</span><span class="tn1">Pisos Marina</span></div></td><td data-th="Motivo">Tarjeta caducada</td><td data-th="Importe" class="right amount neg">62,91 €</td><td data-th="Intentos"><span class="pill dangerp">3 intentos</span></td><td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Reintentar</button></div></td></tr>
+                <tr><td data-th="Inmobiliaria"><div class="tName"><span class="avatar sm">LF</span><span class="tn1">Llaves del Faro</span></div></td><td data-th="Motivo">Fondos insuficientes</td><td data-th="Importe" class="right amount neg">20,97 €</td><td data-th="Intentos"><span class="pill warnp">1 intento</span></td><td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Reintentar</button></div></td></tr>
+                <tr><td data-th="Inmobiliaria"><div class="tName"><span class="avatar sm">CB</span><span class="tn1">Costa Brava Homes</span></div></td><td data-th="Motivo">Tarjeta rechazada</td><td data-th="Importe" class="right amount neg">13,98 €</td><td data-th="Intentos"><span class="pill warnp">2 intentos</span></td><td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Reintentar</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- FACTURAS EMITIDAS -->
+          <div class="sectionHead"><h2>Facturas recientes</h2><a class="btnLink" href="#">Ver todas <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></div>
+          <div class="tableWrap">
+            <table class="proTable stack">
+              <thead><tr><th>Factura</th><th>Inmobiliaria</th><th>Fecha</th><th class="right">Viviendas</th><th class="right">Importe</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0412</td><td data-th="Inmobiliaria">Domus Capital</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">41</td><td data-th="Importe" class="right amount">286,59 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0411</td><td data-th="Inmobiliaria">Ribera Homes</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">34</td><td data-th="Importe" class="right amount">237,66 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0410</td><td data-th="Inmobiliaria">Hogar y Terrazas</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">27</td><td data-th="Importe" class="right amount">188,73 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0409</td><td data-th="Inmobiliaria">Casa Norte Gestión</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">21</td><td data-th="Importe" class="right amount">146,79 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0408</td><td data-th="Inmobiliaria">Áurea Inmobiliaria</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">18</td><td data-th="Importe" class="right amount">125,82 €</td><td data-th="Estado"><span class="pill gold">Bonificada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0407</td><td data-th="Inmobiliaria">Pisos Marina</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">9</td><td data-th="Importe" class="right amount neg">62,91 €</td><td data-th="Estado"><span class="pill dangerp">Impagada</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "facturacion", title: "Facturación e ingresos", crumb: "Negocio · Cobros y facturas" };
+    </script>
+    <script src="admin-shell.js"></script>
+    <script>
+      // Segmento de periodo (solo cambia el rótulo del gráfico, demo)
+      (function () {
+        var seg = document.getElementById("periodSeg");
+        seg.querySelectorAll("button").forEach(function (b) {
+          b.addEventListener("click", function () {
+            seg.querySelectorAll("button").forEach(function (x) { x.classList.remove("isOn"); });
+            b.classList.add("isOn");
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

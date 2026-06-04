@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Incidencias · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Incidencias">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/></svg>Operación · Reportes</p>
+              <h1 class="pageTitle">Incidencias y <strong>reportes</strong></h1>
+              <p class="pageLede">Anuncios reportados, posibles duplicados, contenido sospechoso y problemas técnicos. Mantener la plataforma limpia es parte del estándar de Homyo.</p>
+            </div>
+          </div>
+
+          <section class="grid c4" style="margin-bottom:24px;">
+            <div class="kpi"><p class="kpiLabel">Abiertas</p><p class="kpiValue" style="color:var(--danger)">3</p><span class="kpiFoot down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>requieren acción</span></div>
+            <div class="kpi"><p class="kpiLabel">En curso</p><p class="kpiValue">2</p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>asignadas a equipo</span></div>
+            <div class="kpi"><p class="kpiLabel">Resueltas (mes)</p><p class="kpiValue">41</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>tiempo medio 7 h</span></div>
+            <div class="kpi"><p class="kpiLabel">Anuncios retirados</p><p class="kpiValue">12</p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>por incumplimiento</span></div>
+          </section>
+
+          <div class="tableWrap">
+            <table class="proTable stack">
+              <thead><tr><th>Incidencia</th><th>Tipo</th><th>Origen</th><th>Prioridad</th><th>Estado</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td data-th="Incidencia"><span class="strong">Posible anuncio duplicado</span><br><span class="muted" style="font-size:12px;">Piso en Calle Goya 41 · misma referencia en 2 agencias</span></td>
+                  <td data-th="Tipo"><span class="pill neutral">Duplicado</span></td>
+                  <td data-th="Origen">Reporte de usuario</td>
+                  <td data-th="Prioridad"><span class="pill dangerp">Alta</span></td>
+                  <td data-th="Estado"><span class="pill warnp"><span class="dot"></span>Abierta</span></td>
+                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Investigar</button></div></td>
+                </tr>
+                <tr>
+                  <td data-th="Incidencia"><span class="strong">Fotos no corresponden a la vivienda</span><br><span class="muted" style="font-size:12px;">Loft junto al puerto · Ribera Homes</span></td>
+                  <td data-th="Tipo"><span class="pill neutral">Contenido</span></td>
+                  <td data-th="Origen">Reporte de usuario</td>
+                  <td data-th="Prioridad"><span class="pill warnp">Media</span></td>
+                  <td data-th="Estado"><span class="pill warnp"><span class="dot"></span>Abierta</span></td>
+                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Investigar</button></div></td>
+                </tr>
+                <tr>
+                  <td data-th="Incidencia"><span class="strong">Precio sospechosamente bajo</span><br><span class="muted" style="font-size:12px;">Ático Centro · 60 % bajo el precio de zona</span></td>
+                  <td data-th="Tipo"><span class="pill neutral">Fraude</span></td>
+                  <td data-th="Origen">Detección automática</td>
+                  <td data-th="Prioridad"><span class="pill dangerp">Alta</span></td>
+                  <td data-th="Estado"><span class="pill warnp"><span class="dot"></span>Abierta</span></td>
+                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Investigar</button></div></td>
+                </tr>
+                <tr>
+                  <td data-th="Incidencia"><span class="strong">Error al subir plano (formato)</span><br><span class="muted" style="font-size:12px;">Reportado por Hogar y Terrazas</span></td>
+                  <td data-th="Tipo"><span class="pill neutral">Técnico</span></td>
+                  <td data-th="Origen">Soporte</td>
+                  <td data-th="Prioridad"><span class="pill warnp">Media</span></td>
+                  <td data-th="Estado"><span class="pill infop"><span class="dot"></span>En curso</span></td>
+                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Ver</button></div></td>
+                </tr>
+                <tr>
+                  <td data-th="Incidencia"><span class="strong">Datos de contacto en la descripción</span><br><span class="muted" style="font-size:12px;">Chalet en Pozuelo · Domus Capital</span></td>
+                  <td data-th="Tipo"><span class="pill neutral">Norma</span></td>
+                  <td data-th="Origen">Detección automática</td>
+                  <td data-th="Prioridad"><span class="pill neutral">Baja</span></td>
+                  <td data-th="Estado"><span class="pill infop"><span class="dot"></span>En curso</span></td>
+                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Ver</button></div></td>
+                </tr>
+                <tr>
+                  <td data-th="Incidencia"><span class="strong">Anuncio ya vendido sigue activo</span><br><span class="muted" style="font-size:12px;">Piso en Calle Alcalá · resuelto</span></td>
+                  <td data-th="Tipo"><span class="pill neutral">Disponibilidad</span></td>
+                  <td data-th="Origen">Reporte de usuario</td>
+                  <td data-th="Prioridad"><span class="pill neutral">Baja</span></td>
+                  <td data-th="Estado"><span class="pill ok"><span class="dot"></span>Resuelta</span></td>
+                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Ver</button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "incidencias", title: "Incidencias", crumb: "Operación · Reportes y moderación" };
+    </script>
+    <script src="admin-shell.js"></script>
+  </body>
+</html>

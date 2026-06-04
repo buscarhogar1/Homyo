@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Acceso restringido · Homyo</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <style>
+      .gateAside{ background:linear-gradient(165deg, #1d1814 0%, #2a2018 60%, var(--granateDark) 130%); }
+      .gateAside::after{ background:radial-gradient(circle, rgba(226,184,76,.3) 0%, transparent 68%); }
+      .gateLock{
+        width:64px; height:64px; border-radius:16px;
+        background:rgba(226,184,76,.12); border:1px solid rgba(226,184,76,.32);
+        display:grid; place-items:center; color:var(--doradoSoft); margin-bottom:26px;
+      }
+      .gateLock svg{ width:28px; height:28px; }
+      .authAsideBody h2 strong{ color:var(--doradoSoft); }
+      .gateField{ position:relative; }
+      .gateField .toggle{
+        position:absolute; right:8px; top:50%; transform:translateY(-50%);
+        appearance:none; border:none; background:transparent; cursor:pointer;
+        width:36px; height:36px; display:grid; place-items:center; color:var(--muted);
+      }
+      .gateField .toggle:hover{ color:var(--granate); }
+      .gateField .toggle svg{ width:18px; height:18px; }
+      .gateMsg{
+        display:none; align-items:center; gap:9px;
+        font-size:13px; color:var(--danger); background:var(--dangerSoft);
+        border:1px solid rgba(176,50,71,.22); border-radius:var(--rad);
+        padding:11px 14px; margin-top:4px;
+      }
+      .gateMsg.show{ display:flex; }
+      .gateMsg svg{ width:16px; height:16px; flex:0 0 auto; }
+      .gateHint{
+        margin-top:26px; padding-top:22px; border-top:1px solid var(--line);
+        font-size:12.5px; color:var(--muted); line-height:1.6;
+      }
+      .gateHint b{ color:var(--ink2); }
+      .gateHint code{
+        background:var(--lineSoft); border:1px solid var(--line); border-radius:4px;
+        padding:1px 7px; font-size:12px; color:var(--granate); font-family:ui-monospace,Menlo,monospace;
+      }
+      .gateBack{ position:absolute; top:22px; left:24px; font-size:12.5px; color:var(--muted); text-decoration:none; display:inline-flex; align-items:center; gap:7px; }
+      .gateBack:hover{ color:var(--granate); }
+      .gateBack svg{ width:15px; height:15px; }
+    </style>
+  </head>
+  <body class="adminTheme">
+    <div class="authPage">
+      <aside class="authAside gateAside">
+        <div class="authAsideBrand">H<span class="brandO">O</span>MY<span class="brandO">O</span></div>
+        <div class="authAsideBody">
+          <div class="gateLock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </div>
+          <h2>Entorno de <strong>administración</strong></h2>
+          <p>Zona privada de la dirección de Homyo. El acceso queda registrado. Si has llegado aquí por error, vuelve a la web pública.</p>
+          <ul class="authAsidePoints">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>Acceso oculto: no enlazado en ninguna parte de la web.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Protegido con contraseña de dirección.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>La sesión caduca al cerrar el navegador.</li>
+          </ul>
+        </div>
+      </aside>
+
+      <main class="authMain">
+        <a class="gateBack" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>Volver a Homyo</a>
+        <div class="authCard">
+          <p class="authCardKicker">Acceso restringido</p>
+          <h1 class="authCardTitle">Homyo <strong>Admin</strong></h1>
+          <p class="authCardSub">Introduce la contraseña de dirección para entrar al entorno interno de gestión.</p>
+
+          <form class="authForm" id="gateForm" autocomplete="off">
+            <div class="field">
+              <label class="fieldLabel" for="gatePw">Contraseña de dirección</label>
+              <div class="gateField">
+                <input class="input" id="gatePw" type="password" placeholder="••••••••••" autocomplete="off" autofocus />
+                <button type="button" class="toggle" id="gateToggle" aria-label="Mostrar contraseña">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="gateMsg" id="gateMsg">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+              <span id="gateMsgText">Contraseña incorrecta. Inténtalo de nuevo.</span>
+            </div>
+
+            <button class="btn primary block" type="submit" id="gateBtn">Entrar al panel</button>
+          </form>
+
+          <div class="gateHint">
+            <b>Demo:</b> la contraseña es <code>homyo2026</code>. En producción se sustituye por la real de dirección.<br />
+            <b>Cómo se entra:</b> desde la web pública, teclea <code>homyo</code> (fuera del buscador) o pulsa <code>Ctrl/Cmd + Shift + H</code>.
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Esta página NO carga el shell; solo valida la contraseña.
+      var DEMO_PASSWORD = "homyo2026";
+      var SESSION_KEY = "homyo_admin_session";
+
+      // Si ya hay sesión, entra directo.
+      try {
+        if (sessionStorage.getItem(SESSION_KEY) === "ok") {
+          window.location.replace("admin-panel.html");
+        }
+      } catch (e) {}
+
+      var form = document.getElementById("gateForm");
+      var pw = document.getElementById("gatePw");
+      var msg = document.getElementById("gateMsg");
+      var msgText = document.getElementById("gateMsgText");
+      var toggle = document.getElementById("gateToggle");
+
+      toggle.addEventListener("click", function () {
+        pw.type = pw.type === "password" ? "text" : "password";
+        pw.focus();
+      });
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if ((pw.value || "") === DEMO_PASSWORD) {
+          try { sessionStorage.setItem(SESSION_KEY, "ok"); } catch (err) {}
+          window.location.href = "admin-panel.html";
+        } else {
+          msg.classList.add("show");
+          msgText.textContent = pw.value ? "Contraseña incorrecta. Inténtalo de nuevo." : "Escribe la contraseña de dirección.";
+          pw.focus();
+          pw.select();
+        }
+      });
+
+      pw.addEventListener("input", function () { msg.classList.remove("show"); });
+    </script>
+  </body>
+</html>

@@ -1711,6 +1711,198 @@ export function initMap(){
 
   map.addControl(new TransportControl());
 
+  // ====== TRANSPORTE — área alcanzable (isócrona simulada) ======
+  // Estima hasta dónde se llega en X minutos desde un punto, según el modo.
+  // Sin API de rutas: radio = velocidad media · tiempo · factor de desvío real,
+  // con un contorno orgánico (no un círculo perfecto) para que parezca creíble.
+  const transportLayer = L.layerGroup().addTo(map);
+  const transportBarEl = document.getElementById("transportBar");
+  const tpRangeEl = document.getElementById("tpRange");
+  const tpMinsValEl = document.getElementById("tpMinsVal");
+  const tpHintEl = document.getElementById("tpHint");
+  const tpModeBtns = transportBarEl
+    ? Array.from(transportBarEl.querySelectorAll(".tpMode"))
+    : [];
+
+  const TP_MINUTES = [5, 10, 15, 30, 45];
+  // Velocidades urbanas medias (km/h) puerta a puerta.
+  const TP_MODES = {
+    walk:    { label: "andando",   speed: 4.8 },
+    transit: { label: "en público", speed: 18 },
+    car:     { label: "en coche",  speed: 30 },
+    bike:    { label: "en bici",   speed: 15 },
+  };
+  // Factor de desvío: las calles no van en línea recta, así que el alcance
+  // real es menor que el radio teórico. El transporte público suma espera.
+  const TP_DETOUR = { walk: 0.80, transit: 0.62, car: 0.74, bike: 0.78 };
+
+  let transportEnabled = false;
+  let transportMode = "walk";
+  let transportMinsIdx = 2; // 15 min
+  let transportOrigin = null;
+  let transportPin = null;
+
+  function tpHash(str){
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++){
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0) / 4294967295; // 0..1
+  }
+
+  function tpReachMeters(mode, mins){
+    const v = TP_MODES[mode].speed;          // km/h
+    const km = v * (mins / 60);               // distancia teórica
+    return km * 1000 * (TP_DETOUR[mode] || 0.75);
+  }
+
+  // Contorno orgánico determinista: misma forma para un modo dado, solo escala
+  // con los minutos. Así no "salta" al mover el slider.
+  function tpIsoRing(origin, radiusM, mode){
+    const N = 80;
+    const latRad = origin.lat * Math.PI / 180;
+    const mPerDegLat = 111320;
+    const mPerDegLng = 111320 * Math.cos(latRad);
+    const s = tpHash(mode) * 6.283;
+    const pts = [];
+    for (let i = 0; i < N; i++){
+      const a = (i / N) * Math.PI * 2;
+      const n = 0.90
+        + 0.10 * Math.sin(a * 3 + s)
+        + 0.06 * Math.sin(a * 5 + s * 1.7)
+        + 0.05 * Math.sin(a * 2 + s * 0.6);
+      const r = radiusM * n;
+      const dLat = (r * Math.cos(a)) / mPerDegLat;
+      const dLng = (r * Math.sin(a)) / mPerDegLng;
+      pts.push([origin.lat + dLat, origin.lng + dLng]);
+    }
+    return pts;
+  }
+
+  function tpDrawIso(){
+    transportLayer.clearLayers();
+    if (!transportEnabled || !transportOrigin) return;
+    const mins = TP_MINUTES[transportMinsIdx];
+    const radiusM = tpReachMeters(transportMode, mins);
+    const ring = tpIsoRing(transportOrigin, radiusM, transportMode);
+
+    // Halo exterior suave + relleno + borde nítido.
+    L.polygon(ring, {
+      className: "tpIso",
+      color: "#8C1F2D",
+      weight: 2,
+      opacity: 0.85,
+      fillColor: "#8C1F2D",
+      fillOpacity: 0.12,
+      smoothFactor: 1.2,
+      interactive: false,
+    }).addTo(transportLayer);
+  }
+
+  function tpEnsurePin(){
+    if (transportPin) return;
+    const icon = L.divIcon({
+      className: "tpPin",
+      html: "<span></span>",
+      iconSize: [18, 18],
+      iconAnchor: [9, 9],
+    });
+    transportPin = L.marker(transportOrigin, {
+      icon,
+      draggable: true,
+      zIndexOffset: 1200,
+      keyboard: false,
+    });
+    const onMove = () => {
+      transportOrigin = transportPin.getLatLng();
+      tpDrawIso();
+    };
+    transportPin.on("drag", onMove);
+    transportPin.on("dragend", onMove);
+    transportPin.addTo(map);
+  }
+
+  function tpRemovePin(){
+    if (transportPin){
+      map.removeLayer(transportPin);
+      transportPin = null;
+    }
+  }
+
+  function tpUpdateBar(){
+    if (tpMinsValEl) tpMinsValEl.textContent = String(TP_MINUTES[transportMinsIdx]);
+    tpModeBtns.forEach((b) => {
+      const on = b.dataset.mode === transportMode;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    if (tpHintEl){
+      tpHintEl.textContent = `Área alcanzable ${TP_MODES[transportMode].label} · arrastra el punto o toca el mapa`;
+    }
+  }
+
+  function setTransportEnabled(next){
+    transportEnabled = !!next;
+    if (transportBarEl){
+      transportBarEl.style.display = transportEnabled ? "block" : "none";
+      transportBarEl.setAttribute("aria-hidden", transportEnabled ? "false" : "true");
+    }
+    const cont = map.getContainer();
+    if (transportEnabled){
+      // Exclusión mutua con el Sol (comparten zona inferior).
+      if (areaState && typeof areaState.sunBtnForceOff === "function") areaState.sunBtnForceOff();
+      if (!transportOrigin) transportOrigin = map.getCenter();
+      tpEnsurePin();
+      tpUpdateBar();
+      tpDrawIso();
+      cont.classList.add("tpPicking");
+    } else {
+      tpRemovePin();
+      transportLayer.clearLayers();
+      cont.classList.remove("tpPicking");
+    }
+  }
+
+  // Permite que el Sol apague el transporte al activarse.
+  areaState.transportForceOff = function(){
+    if (!transportEnabled) return;
+    const b = document.getElementById("transportBtn");
+    if (b) b.classList.remove("active");
+    setTransportEnabled(false);
+  };
+
+  if (transportBarEl){
+    preventMapDragOn(transportBarEl);
+    tpModeBtns.forEach((b) => {
+      b.addEventListener("click", () => {
+        transportMode = b.dataset.mode || "walk";
+        tpUpdateBar();
+        tpDrawIso();
+      });
+    });
+    if (tpRangeEl){
+      tpRangeEl.addEventListener("input", () => {
+        transportMinsIdx = Math.max(0, Math.min(TP_MINUTES.length - 1, parseInt(tpRangeEl.value, 10) || 0));
+        tpUpdateBar();
+        tpDrawIso();
+      });
+    }
+  }
+
+  // Clic en el mapa => fija el punto de salida (si no estamos dibujando un área).
+  map.on("click", (e) => {
+    if (!transportEnabled) return;
+    if (areaState && (areaState.isDrawing || areaState.pointsActive || areaState.freehandActive)) return;
+    transportOrigin = e.latlng;
+    if (transportPin) transportPin.setLatLng(transportOrigin);
+    tpDrawIso();
+  });
+
+  window.addEventListener("bh:transport-toggle", (e) => {
+    setTransportEnabled(!!(e.detail && e.detail.active));
+  });
+
   const SunControl = L.Control.extend({
     options: { position: "topright" },
     onAdd: function() {
@@ -1758,6 +1950,7 @@ export function initMap(){
         if (areaState.isDrawing) cancelCurrentDrawing();
 
         const next = !sunEnabled;
+        if (next && typeof areaState.transportForceOff === "function") areaState.transportForceOff();
         btn.classList.toggle("active", next);
         setSunEnabled(next);
       });

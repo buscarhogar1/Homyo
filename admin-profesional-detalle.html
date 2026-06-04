@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Áurea Inmobiliaria · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Ficha profesional">
+
+          <a class="btnLink" href="admin-profesionales.html" style="margin-bottom:18px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:scaleX(-1)"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>Volver al directorio</a>
+
+          <!-- Cabecera de la ficha -->
+          <div class="card" style="padding:0;overflow:hidden;margin-bottom:22px;">
+            <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:26px 28px;">
+              <span class="avatar lg" style="font-size:22px;">ÁI</span>
+              <div style="min-width:0;flex:1 1 auto;">
+                <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;">
+                  <h1 style="margin:0;font-family:'Raleway';font-weight:300;font-size:28px;color:var(--granate);letter-spacing:-.4px;">Áurea Inmobiliaria</h1>
+                  <span class="pill ok"><span class="dot"></span>Verificada</span>
+                  <span class="pill gold">Agencia fundadora</span>
+                </div>
+                <p style="margin:6px 0 0;font-size:13.5px;color:var(--muted);">Áurea Gestión Inmobiliaria, S.L. · CIF B-87654321 · Madrid · Alta el 14 feb 2026</p>
+              </div>
+              <div class="pageHeadActions">
+                <button class="btn ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Mensaje</button>
+                <button class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M4.9 4.9l14.2 14.2"/></svg>Suspender</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPIs de la agencia -->
+          <section class="grid c4" style="margin-bottom:22px;">
+            <div class="kpi"><p class="kpiLabel">Anuncios activos</p><p class="kpiValue">18</p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>16 cumplen estándar</span></div>
+            <div class="kpi"><p class="kpiLabel">Contactos este mes</p><p class="kpiValue">47</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+12 %</span></div>
+            <div class="kpi"><p class="kpiLabel">Visualizaciones (30 d)</p><p class="kpiValue">9,2<span class="u">K</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+8 %</span></div>
+            <div class="kpi biz"><p class="kpiLabel">Facturación / mes</p><p class="kpiValue">125,82<span class="u">€</span></p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>18 × 6,99 €</span></div>
+          </section>
+
+          <div class="twoColWide">
+            <!-- Columna principal -->
+            <div class="stack-sm" style="gap:22px;">
+              <div class="card">
+                <p class="cardLabel">Anuncios de la agencia</p>
+                <div class="tableWrap" style="margin-top:6px;">
+                  <table class="proTable">
+                    <thead><tr><th>Vivienda</th><th>Estado</th><th class="right">Visitas</th><th class="right">Contactos</th></tr></thead>
+                    <tbody>
+                      <tr><td><span class="strong">Ático en Calle Ferraz 12</span><br><span class="muted" style="font-size:12px;">Madrid · 145 m² · 685.000 €</span></td><td><span class="pill ok">Publicado</span></td><td class="right num">1.204</td><td class="right num">14</td></tr>
+                      <tr><td><span class="strong">Piso reformado, Velázquez 80</span><br><span class="muted" style="font-size:12px;">Madrid · 98 m² · 540.000 €</span></td><td><span class="pill ok">Publicado</span></td><td class="right num">980</td><td class="right num">9</td></tr>
+                      <tr><td><span class="strong">Dúplex en Calle Goya 41</span><br><span class="muted" style="font-size:12px;">Madrid · 120 m² · 612.000 €</span></td><td><span class="pill dangerp">Rechazado</span></td><td class="right num">—</td><td class="right num">—</td></tr>
+                      <tr><td><span class="strong">Piso, Hortaleza 88</span><br><span class="muted" style="font-size:12px;">Madrid · 76 m² · 398.000 €</span></td><td><span class="pill warnp">Borrador</span></td><td class="right num">—</td><td class="right num">—</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="card">
+                <p class="cardLabel">Historial de la cuenta</p>
+                <ul class="timeline" style="margin-top:8px;">
+                  <li class="now"><span class="tdot"></span><h5>Anuncio rechazado en moderación</h5><p>Dúplex en Calle Goya 41 · falta plano en planta · hace 3 h</p></li>
+                  <li class="done"><span class="tdot"></span><h5>Pago mensual cobrado correctamente</h5><p>125,82 € · 18 viviendas · 1 jun 2026</p></li>
+                  <li class="done"><span class="tdot"></span><h5>Anuncio aprobado y publicado</h5><p>Piso reformado en Calle Velázquez 80 · hace 5 h</p></li>
+                  <li class="done"><span class="tdot"></span><h5>Cuenta verificada</h5><p>Documentación y CIF validados por dirección · 15 feb 2026</p></li>
+                  <li class="done"><span class="tdot"></span><h5>Solicitud de alta recibida</h5><p>14 feb 2026</p></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Columna lateral -->
+            <div class="stack-sm" style="gap:22px;">
+              <div class="card">
+                <p class="cardLabel">Datos de la cuenta</p>
+                <dl class="kv">
+                  <dt>Razón social</dt><dd>Áurea Gestión, S.L.</dd>
+                  <dt>CIF</dt><dd>B-87654321</dd>
+                  <dt>Plan</dt><dd>Fundadora</dd>
+                  <dt>Agentes</dt><dd>5 activos</dd>
+                  <dt>Ciudad</dt><dd>Madrid</dd>
+                  <dt>Zonas</dt><dd>Chamberí · Salamanca</dd>
+                  <dt>Contacto</dt><dd>hola@aurea.es</dd>
+                </dl>
+              </div>
+              <div class="card">
+                <p class="cardLabel">Rendimiento vs. estándar</p>
+                <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px;">
+                  <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--ink2)">Cumplen estándar</span><span style="font-family:'Raleway';font-weight:600;">16 / 18</span></div><div class="track good"><span style="width:89%"></span></div></div>
+                  <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--ink2)">Respuesta a contactos</span><span style="font-family:'Raleway';font-weight:600;">94 %</span></div><div class="track gold"><span style="width:94%"></span></div></div>
+                  <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--ink2)">Actualizados &lt; 60 días</span><span style="font-family:'Raleway';font-weight:600;">83 %</span></div><div class="track"><span style="width:83%"></span></div></div>
+                </div>
+              </div>
+              <div class="callout okc">
+                <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 6 9 17l-5-5"/></svg></span>
+                <div><h4>Sin incidencias abiertas</h4><p>Cuenta al día. Último pago correcto el 1 de junio.</p></div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "profesionales", title: "Áurea Inmobiliaria", crumb: "Profesionales · Ficha de la agencia" };
+    </script>
+    <script src="admin-shell.js"></script>
+  </body>
+</html>

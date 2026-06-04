@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Usuarios · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Usuarios">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.6 20c1.1-3.4 11.7-3.4 12.8 0"/><circle cx="17" cy="9" r="2.6"/></svg>Cuentas · Particulares</p>
+              <h1 class="pageTitle">Usuarios <strong>particulares</strong></h1>
+              <p class="pageLede">Personas que buscan vivienda en Homyo. Búsquedas guardadas, favoritos y contactos enviados. No se vende ni se cede ningún dato.</p>
+            </div>
+            <div class="pageHeadActions">
+              <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Exportar CSV</button>
+            </div>
+          </div>
+
+          <section class="grid c4" style="margin-bottom:24px;">
+            <div class="kpi"><p class="kpiLabel">Usuarios registrados</p><p class="kpiValue">18.420</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+318 esta semana</span></div>
+            <div class="kpi"><p class="kpiLabel">Activos (30 días)</p><p class="kpiValue">7.910</p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>43 % del total</span></div>
+            <div class="kpi"><p class="kpiLabel">Con alertas activas</p><p class="kpiValue">4.602</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>búsquedas guardadas</span></div>
+            <div class="kpi"><p class="kpiLabel">Contactos enviados (mes)</p><p class="kpiValue">5.180</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+11 %</span></div>
+          </section>
+
+          <div class="tableTop">
+            <label class="searchMini">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="text" placeholder="Buscar por nombre o email…" id="userSearch" />
+            </label>
+            <span class="grow"></span>
+            <div class="filterChips" id="userFilters">
+              <button class="fchip isOn" data-f="all">Todos</button>
+              <button class="fchip" data-f="act">Activos</button>
+              <button class="fchip" data-f="new">Nuevos</button>
+            </div>
+          </div>
+          <div class="tableWrap">
+            <table class="proTable stack" id="userTable">
+              <thead><tr><th>Usuario</th><th>Alta</th><th class="right">Favoritos</th><th class="right">Búsquedas</th><th class="right">Contactos</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr data-state="act"><td data-th="Usuario"><div class="tName"><span class="avatar user round sm">LB</span><span><span class="tn1">Lucía Bravo</span><span class="tn2">lucia.bravo@email.com</span></span></div></td><td data-th="Alta">Feb 2026</td><td data-th="Favoritos" class="right num">12</td><td data-th="Búsquedas" class="right num">3</td><td data-th="Contactos" class="right num">5</td><td data-th="Estado"><span class="pill ok"><span class="dot"></span>Activo</span></td></tr>
+                <tr data-state="new"><td data-th="Usuario"><div class="tName"><span class="avatar user round sm">DR</span><span><span class="tn1">Daniel Ríos</span><span class="tn2">driosg@email.com</span></span></div></td><td data-th="Alta">Hace 2 días</td><td data-th="Favoritos" class="right num">4</td><td data-th="Búsquedas" class="right num">1</td><td data-th="Contactos" class="right num">0</td><td data-th="Estado"><span class="pill infop"><span class="dot"></span>Nuevo</span></td></tr>
+                <tr data-state="act"><td data-th="Usuario"><div class="tName"><span class="avatar user round sm">MC</span><span><span class="tn1">Marta Cano</span><span class="tn2">martac@email.com</span></span></div></td><td data-th="Alta">Ene 2026</td><td data-th="Favoritos" class="right num">28</td><td data-th="Búsquedas" class="right num">6</td><td data-th="Contactos" class="right num">9</td><td data-th="Estado"><span class="pill ok"><span class="dot"></span>Activo</span></td></tr>
+                <tr data-state="act"><td data-th="Usuario"><div class="tName"><span class="avatar user round sm">JS</span><span><span class="tn1">Javier Soler</span><span class="tn2">jsoler@email.com</span></span></div></td><td data-th="Alta">Dic 2025</td><td data-th="Favoritos" class="right num">7</td><td data-th="Búsquedas" class="right num">2</td><td data-th="Contactos" class="right num">3</td><td data-th="Estado"><span class="pill ok"><span class="dot"></span>Activo</span></td></tr>
+                <tr data-state="new"><td data-th="Usuario"><div class="tName"><span class="avatar user round sm">AP</span><span><span class="tn1">Ana Prieto</span><span class="tn2">anaprieto@email.com</span></span></div></td><td data-th="Alta">Hace 4 h</td><td data-th="Favoritos" class="right num">1</td><td data-th="Búsquedas" class="right num">1</td><td data-th="Contactos" class="right num">0</td><td data-th="Estado"><span class="pill infop"><span class="dot"></span>Nuevo</span></td></tr>
+                <tr data-state="act"><td data-th="Usuario"><div class="tName"><span class="avatar user round sm">RG</span><span><span class="tn1">Roberto Gil</span><span class="tn2">rgil@email.com</span></span></div></td><td data-th="Alta">Nov 2025</td><td data-th="Favoritos" class="right num">19</td><td data-th="Búsquedas" class="right num">4</td><td data-th="Contactos" class="right num">6</td><td data-th="Estado"><span class="pill neutral"><span class="dot"></span>Inactivo</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="muted" style="margin-top:14px;font-size:13px;">Mostrando 6 de 18.420 usuarios · <a href="#" style="color:var(--granate);font-weight:600;text-decoration:none;">cargar más</a></p>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "usuarios", title: "Usuarios", crumb: "Cuentas · Particulares" };
+    </script>
+    <script src="admin-shell.js"></script>
+    <script>
+      (function () {
+        var chips = document.querySelectorAll("#userFilters .fchip");
+        var rows = Array.from(document.querySelectorAll("#userTable tbody tr"));
+        var search = document.getElementById("userSearch");
+        var current = "all";
+        function apply() {
+          var q = (search.value || "").trim().toLowerCase();
+          rows.forEach(function (r) {
+            var okState = current === "all" || r.getAttribute("data-state") === current;
+            var okText = !q || r.textContent.toLowerCase().indexOf(q) !== -1;
+            r.style.display = (okState && okText) ? "" : "none";
+          });
+        }
+        chips.forEach(function (c) { c.addEventListener("click", function () { chips.forEach(function (x) { x.classList.remove("isOn"); }); c.classList.add("isOn"); current = c.getAttribute("data-f"); apply(); }); });
+        search.addEventListener("input", apply);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Profesionales · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Profesionales">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/></svg>Cuentas · Profesionales</p>
+              <h1 class="pageTitle">Inmobiliarias y <strong>profesionales</strong></h1>
+              <p class="pageLede">Todas las cuentas profesionales verificadas en Homyo. Revisa su plan, sus anuncios y su rendimiento; verifica, suspende o da de baja una cuenta.</p>
+            </div>
+            <div class="pageHeadActions">
+              <a class="btn ghost" href="admin-solicitudes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 5v14"/><path d="M5 12h14"/></svg>Solicitudes (4)</a>
+              <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Exportar CSV</button>
+            </div>
+          </div>
+
+          <!-- KPIs del directorio -->
+          <section class="grid c4" style="margin-bottom:24px;">
+            <div class="kpi"><p class="kpiLabel">Inmobiliarias</p><p class="kpiValue">128</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+6 este mes</span></div>
+            <div class="kpi"><p class="kpiLabel">Agentes (usuarios pro)</p><p class="kpiValue">412</p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>3,2 por agencia</span></div>
+            <div class="kpi"><p class="kpiLabel">Suspendidas</p><p class="kpiValue">3</p><span class="kpiFoot down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 10 6 6 6-6"/></svg>impagos o incidencias</span></div>
+            <div class="kpi biz"><p class="kpiLabel">Ingresos del segmento</p><p class="kpiValue">27.718<span class="u">€</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>MRR</span></div>
+          </section>
+
+          <!-- TABLA CON FILTROS -->
+          <div class="tableTop">
+            <label class="searchMini">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="text" placeholder="Buscar por nombre, CIF, ciudad…" id="profSearch" />
+            </label>
+            <span class="grow"></span>
+            <div class="filterChips" id="profFilters">
+              <button class="fchip isOn" data-f="all">Todas <span class="c">128</span></button>
+              <button class="fchip" data-f="verif">Verificadas <span class="c">122</span></button>
+              <button class="fchip" data-f="rev">En revisión <span class="c">3</span></button>
+              <button class="fchip" data-f="susp">Suspendidas <span class="c">3</span></button>
+            </div>
+          </div>
+          <div class="tableWrap">
+            <table class="proTable stack" id="profTable">
+              <thead>
+                <tr>
+                  <th>Inmobiliaria</th>
+                  <th>Ciudad</th>
+                  <th class="right">Anuncios</th>
+                  <th class="right">Contactos / mes</th>
+                  <th class="right">Cuota / mes</th>
+                  <th>Estado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-state="verif">
+                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar">ÁI</span><span><span class="tn1">Áurea Inmobiliaria</span><span class="tn2">B-87654321 · Agencia fundadora</span></span></div></td>
+                  <td data-th="Ciudad">Madrid</td>
+                  <td data-th="Anuncios" class="right num">18</td>
+                  <td data-th="Contactos/mes" class="right num">47</td>
+                  <td data-th="Cuota/mes" class="right amount">125,82 €</td>
+                  <td data-th="Estado"><span class="pill ok"><span class="dot"></span>Verificada</span></td>
+                  <td class="noLabel"><div class="rowActions"><a class="iconBtn" href="admin-profesional-detalle.html" aria-label="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a></div></td>
+                </tr>
+                <tr data-state="verif">
+                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar">RH</span><span><span class="tn1">Ribera Homes</span><span class="tn2">B-12398745 · Plan estándar</span></span></div></td>
+                  <td data-th="Ciudad">Valencia</td>
+                  <td data-th="Anuncios" class="right num">34</td>
+                  <td data-th="Contactos/mes" class="right num">88</td>
+                  <td data-th="Cuota/mes" class="right amount">237,66 €</td>
+                  <td data-th="Estado"><span class="pill ok"><span class="dot"></span>Verificada</span></td>
+                  <td class="noLabel"><div class="rowActions"><a class="iconBtn" href="admin-profesional-detalle.html" aria-label="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a></div></td>
+                </tr>
+                <tr data-state="verif">
+                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar">CN</span><span><span class="tn1">Casa Norte Gestión</span><span class="tn2">B-55512388 · Plan estándar</span></span></div></td>
+                  <td data-th="Ciudad">Bilbao</td>
+                  <td data-th="Anuncios" class="right num">21</td>
+                  <td data-th="Contactos/mes" class="right num">52</td>
+                  <td data-th="Cuota/mes" class="right amount">146,79 €</td>
+                  <td data-th="Estado"><span class="pill ok"><span class="dot"></span>Verificada</span></td>
+                  <td class="noLabel"><div class="rowActions"><a class="iconBtn" href="admin-profesional-detalle.html" aria-label="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a></div></td>
+                </tr>
+                <tr data-state="rev">
+                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar" style="background:var(--warnSoft);border-color:rgba(168,116,27,.3);color:var(--warn)">NS</span><span><span class="tn1">Nidos del Sur Gestión</span><span class="tn2">B-41200999 · Pendiente de verificar</span></span></div></td>
+                  <td data-th="Ciudad">Sevilla</td>
+                  <td data-th="Anuncios" class="right num">0</td>
+                  <td data-th="Contactos/mes" class="right num">—</td>
+                  <td data-th="Cuota/mes" class="right amount muted">—</td>
+                  <td data-th="Estado"><span class="pill warnp"><span class="dot"></span>En revisión</span></td>
+                  <td class="noLabel"><div class="rowActions"><a class="iconBtn" href="admin-solicitudes.html" aria-label="Revisar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></a></div></td>
+                </tr>
+                <tr data-state="verif">
+                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar">VG</span><span><span class="tn1">Inmobiliaria Vega</span><span class="tn2">B-77001234 · Plan estándar</span></span></div></td>
+                  <td data-th="Ciudad">Valencia</td>
+                  <td data-th="Anuncios" class="right num">12</td>
+                  <td data-th="Contactos/mes" class="right num">29</td>
+                  <td data-th="Cuota/mes" class="right amount">83,88 €</td>
+                  <td data-th="Estado"><span class="pill ok"><span class="dot"></span>Verificada</span></td>
+                  <td class="noLabel"><div class="rowActions"><a class="iconBtn" href="admin-profesional-detalle.html" aria-label="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a></div></td>
+                </tr>
+                <tr data-state="susp">
+                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar" style="background:var(--dangerSoft);border-color:rgba(176,50,71,.25);color:var(--danger)">PM</span><span><span class="tn1">Pisos Marina</span><span class="tn2">B-30099112 · 2 cobros fallidos</span></span></div></td>
+                  <td data-th="Ciudad">Alicante</td>
+                  <td data-th="Anuncios" class="right num">9</td>
+                  <td data-th="Contactos/mes" class="right num">0</td>
+                  <td data-th="Cuota/mes" class="right amount neg">62,91 €</td>
+                  <td data-th="Estado"><span class="pill dangerp"><span class="dot"></span>Suspendida</span></td>
+                  <td class="noLabel"><div class="rowActions"><a class="iconBtn" href="admin-profesional-detalle.html" aria-label="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a></div></td>
+                </tr>
+                <tr data-state="verif">
+                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar">HT</span><span><span class="tn1">Hogar y Terrazas</span><span class="tn2">B-66120087 · Plan estándar</span></span></div></td>
+                  <td data-th="Ciudad">Málaga</td>
+                  <td data-th="Anuncios" class="right num">27</td>
+                  <td data-th="Contactos/mes" class="right num">61</td>
+                  <td data-th="Cuota/mes" class="right amount">188,73 €</td>
+                  <td data-th="Estado"><span class="pill ok"><span class="dot"></span>Verificada</span></td>
+                  <td class="noLabel"><div class="rowActions"><a class="iconBtn" href="admin-profesional-detalle.html" aria-label="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a></div></td>
+                </tr>
+                <tr data-state="verif">
+                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar">DC</span><span><span class="tn1">Domus Capital</span><span class="tn2">B-90233001 · Plan estándar</span></span></div></td>
+                  <td data-th="Ciudad">Madrid</td>
+                  <td data-th="Anuncios" class="right num">41</td>
+                  <td data-th="Contactos/mes" class="right num">103</td>
+                  <td data-th="Cuota/mes" class="right amount">286,59 €</td>
+                  <td data-th="Estado"><span class="pill ok"><span class="dot"></span>Verificada</span></td>
+                  <td class="noLabel"><div class="rowActions"><a class="iconBtn" href="admin-profesional-detalle.html" aria-label="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="muted" style="margin-top:14px;font-size:13px;">Mostrando 8 de 128 inmobiliarias · <a href="#" style="color:var(--granate);font-weight:600;text-decoration:none;">cargar más</a></p>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "profesionales", title: "Profesionales", crumb: "Directorio de inmobiliarias" };
+    </script>
+    <script src="admin-shell.js"></script>
+    <script>
+      // Filtros + búsqueda de la tabla
+      (function () {
+        var chips = document.querySelectorAll("#profFilters .fchip");
+        var rows = Array.from(document.querySelectorAll("#profTable tbody tr"));
+        var search = document.getElementById("profSearch");
+        var current = "all";
+        function apply() {
+          var q = (search.value || "").trim().toLowerCase();
+          rows.forEach(function (r) {
+            var okState = current === "all" || r.getAttribute("data-state") === current;
+            var okText = !q || r.textContent.toLowerCase().indexOf(q) !== -1;
+            r.style.display = (okState && okText) ? "" : "none";
+          });
+        }
+        chips.forEach(function (c) {
+          c.addEventListener("click", function () {
+            chips.forEach(function (x) { x.classList.remove("isOn"); });
+            c.classList.add("isOn");
+            current = c.getAttribute("data-f");
+            apply();
+          });
+        });
+        search.addEventListener("input", apply);
+      })();
+    </script>
+  </body>
+</html>

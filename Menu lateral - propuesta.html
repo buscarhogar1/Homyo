@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Homyo · Menú lateral (propuesta)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;600;700;800&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --granate:#8C1F2D;
+    --granate-2:#7A1A26;
+    --oro:#E2B84C;
+    --bg:#FFFDFA;
+    --panel:#FBF8F4;
+    --cream:#F8F0DF;
+    --ink:#241F1B;
+    --muted:#8F8578;
+    --line:#EFE7D8;
+    --line-granate:rgba(140,31,45,.12);
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:'Montserrat',system-ui,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(226,184,76,.10), transparent 60%),
+      #efe6da;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 16px;
+    color:var(--ink);
+  }
+
+  /* ===== Marco de móvil ===== */
+  .stage{
+    display:flex;
+    gap:48px;
+    align-items:center;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .phone{
+    position:relative;
+    width:390px;
+    height:800px;
+    background:var(--bg);
+    border-radius:46px;
+    box-shadow:
+      0 2px 0 2px #2a2320 inset,
+      0 0 0 12px #15110f,
+      0 40px 80px -20px rgba(33,22,18,.55);
+    overflow:hidden;
+  }
+  .notch{
+    position:absolute;
+    top:0; left:50%; transform:translateX(-50%);
+    width:128px; height:30px;
+    background:#15110f;
+    border-radius:0 0 18px 18px;
+    z-index:60;
+  }
+
+  /* ===== Contenido de fondo (atenuado) ===== */
+  .bgApp{
+    position:absolute; inset:0;
+    padding:54px 20px 20px;
+    filter:saturate(.96);
+  }
+  .bgTop{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .bgBurger{ width:30px; display:flex; flex-direction:column; gap:6px; }
+  .bgBurger span{ height:2px; background:var(--granate); border-radius:2px; }
+  .bgBurger span:nth-child(2){ width:80%; }
+  .bgBrand{
+    font-family:'Raleway',sans-serif; font-weight:700;
+    letter-spacing:.28em; color:var(--granate); font-size:20px;
+  }
+  .bgHero{
+    height:140px; border-radius:20px;
+    background:linear-gradient(135deg, rgba(140,31,45,.12), rgba(226,184,76,.16));
+    margin-bottom:16px;
+  }
+  .bgCard{ height:86px; border-radius:16px; background:#f3ece0; margin-bottom:12px; }
+
+  /* ===== Overlay ===== */
+  .overlay{
+    position:absolute; inset:0;
+    background:rgba(20,15,12,.40);
+    backdrop-filter:blur(1.5px);
+    opacity:1;
+    transition:opacity .3s ease;
+    z-index:70;
+  }
+
+  /* ===== Drawer ===== */
+  .drawer{
+    position:absolute; top:0; left:0;
+    width:90%; height:100%;
+    background:var(--bg);
+    box-shadow:0 18px 50px rgba(0,0,0,.18);
+    transform:translateX(0);
+    transition:transform .32s cubic-bezier(.4,0,.2,1);
+    z-index:80;
+    display:flex; flex-direction:column;
+  }
+  .phone.closed .drawer{ transform:translateX(-100%); }
+  .phone.closed .overlay{ opacity:0; pointer-events:none; }
+
+  /* Top */
+  .dTop{
+    flex:0 0 auto;
+    height:64px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 18px 0 22px;
+    border-bottom:1px solid var(--line);
+  }
+  .dBrand{
+    font-family:'Raleway',sans-serif;
+    font-weight:700; font-size:21px;
+    letter-spacing:.26em; color:var(--granate);
+  }
+  .dBrand .o{ color:var(--granate); }
+  .dClose{
+    width:38px; height:38px; border-radius:50%;
+    border:1px solid var(--line);
+    background:#fff; color:var(--granate);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all .18s ease;
+  }
+  .dClose:hover{ background:var(--cream); border-color:var(--line-granate); }
+  .dClose svg{ width:17px; height:17px; stroke:currentColor; stroke-width:2.2; fill:none; stroke-linecap:round; }
+
+  /* Scroll body */
+  .dBody{
+    flex:1 1 auto; overflow:auto;
+    -webkit-overflow-scrolling:touch;
+    padding:16px 14px 8px;
+  }
+
+  .micro{
+    font-family:'Raleway',sans-serif;
+    font-size:10.5px; font-weight:700;
+    letter-spacing:.2em; text-transform:uppercase;
+    color:var(--muted);
+    padding:6px 10px 10px;
+  }
+
+  /* Nav rápido (explorar) */
+  .quick{ display:flex; flex-direction:column; gap:2px; margin-bottom:8px; }
+  .qItem{
+    display:flex; align-items:center; gap:14px;
+    padding:12px 12px; border-radius:14px;
+    text-decoration:none; color:var(--ink);
+    transition:background .16s ease, transform .16s ease;
+  }
+  .qItem:hover{ background:var(--cream); }
+  .qItem:hover .qIcon{ background:var(--granate); border-color:var(--granate); }
+  .qItem:hover .qIcon svg{ stroke:#FBEDE2; }
+  .qIcon{
+    flex:0 0 auto;
+    width:42px; height:42px; border-radius:13px;
+    background:rgba(140,31,45,.07);
+    border:1px solid var(--line-granate);
+    display:flex; align-items:center; justify-content:center;
+    transition:all .16s ease;
+  }
+  .qIcon svg{ width:21px; height:21px; stroke:var(--granate); stroke-width:1.7; fill:none; stroke-linecap:round; stroke-linejoin:round; transition:stroke .16s ease; }
+  .qText{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+  .qTitle{
+    font-family:'Raleway',sans-serif; font-weight:700;
+    font-size:14px; letter-spacing:.02em; color:var(--ink);
+    line-height:1.25;
+  }
+  .qSub, .qTitle{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .qSub{ font-size:11.5px; color:var(--muted); font-weight:500; }
+  .qArrow{ margin-left:auto; color:var(--muted); flex:0 0 auto; }
+  .qArrow svg{ width:16px; height:16px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+
+  .divider{ height:1px; background:var(--line); margin:10px 10px; }
+
+  /* Tarjetas de audiencia */
+  .accounts{ display:flex; flex-direction:column; gap:12px; padding:4px 4px 0; }
+  .accCard{
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:var(--panel);
+    padding:16px 16px 14px;
+    position:relative;
+    overflow:hidden;
+  }
+  .accCard.pro{
+    background:linear-gradient(180deg, rgba(226,184,76,.10), rgba(226,184,76,0) 70%), var(--panel);
+    border-color:rgba(226,184,76,.45);
+  }
+  .accHead{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .accIcon{
+    flex:0 0 auto;
+    width:40px; height:40px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--granate);
+  }
+  .accCard.pro .accIcon{ background:var(--oro); }
+  .accIcon svg{ width:21px; height:21px; stroke:#FBEDE2; stroke-width:1.7; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .accCard.pro .accIcon svg{ stroke:var(--granate-2); }
+  .accTitleWrap{ display:flex; flex-direction:column; gap:1px; }
+  .accTitle{
+    font-family:'Raleway',sans-serif; font-weight:700;
+    font-size:15px; color:var(--ink); letter-spacing:.01em;
+  }
+  .accDesc{ font-size:11.5px; color:var(--muted); font-weight:500; line-height:1.35; }
+  .accTag{
+    margin-left:auto; flex:0 0 auto;
+    font-family:'Raleway',sans-serif; font-size:9px; font-weight:800;
+    letter-spacing:.14em; text-transform:uppercase;
+    color:var(--granate-2);
+    background:rgba(226,184,76,.28);
+    padding:4px 8px; border-radius:999px;
+    align-self:flex-start;
+  }
+
+  .accActions{ display:flex; gap:8px; }
+  .btn{
+    flex:1 1 0;
+    display:inline-flex; align-items:center; justify-content:center;
+    gap:7px;
+    font-family:'Raleway',sans-serif; font-weight:700;
+    font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+    padding:11px 12px; border-radius:11px;
+    cursor:pointer; text-decoration:none;
+    transition:all .16s ease; border:1px solid transparent;
+    white-space:nowrap;
+  }
+  .btnPrimary{ background:var(--granate); color:#fff; }
+  .btnPrimary:hover{ background:var(--granate-2); }
+  .accCard.pro .btnPrimary{ background:var(--granate); }
+  .btnGhost{ background:#fff; color:var(--granate); border-color:var(--line-granate); }
+  .btnGhost:hover{ background:var(--cream); }
+
+  .accFoot{
+    display:flex; align-items:center; gap:6px;
+    margin-top:11px; padding-top:11px;
+    border-top:1px dashed var(--line);
+  }
+  .accFoot a{
+    font-family:'Raleway',sans-serif; font-size:11px; font-weight:600;
+    letter-spacing:.06em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none;
+    display:inline-flex; align-items:center; gap:6px;
+    transition:color .16s ease;
+  }
+  .accFoot a:hover{ color:var(--granate); }
+  .accFoot svg{ width:14px; height:14px; stroke:currentColor; stroke-width:1.8; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* Footer */
+  .dFoot{
+    flex:0 0 auto;
+    border-top:1px solid var(--line);
+    background:var(--bg);
+    padding:14px 22px calc(16px + env(safe-area-inset-bottom,0px));
+  }
+  .legal{ display:flex; flex-wrap:wrap; gap:4px 14px; margin-bottom:10px; }
+  .legal a{
+    font-family:'Montserrat',sans-serif; font-size:11px; font-weight:500;
+    color:var(--muted); text-decoration:none;
+    transition:color .16s ease;
+  }
+  .legal a:hover{ color:var(--granate); text-decoration:underline; text-underline-offset:3px; }
+  .copy{
+    font-family:'Raleway',sans-serif; font-size:10px; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase; color:#b6ab9d;
+  }
+
+  /* Reabrir */
+  .reopen{
+    position:absolute; bottom:18px; right:16px; z-index:90;
+    width:48px; height:48px; border-radius:50%;
+    background:var(--granate); border:none; cursor:pointer;
+    display:none; align-items:center; justify-content:center;
+    box-shadow:0 10px 24px rgba(140,31,45,.35);
+  }
+  .phone.closed .reopen{ display:flex; }
+  .reopen svg{ width:22px; height:22px; stroke:#fff; stroke-width:2; fill:none; stroke-linecap:round; }
+
+  /* Nota lateral */
+  .note{
+    max-width:300px;
+    font-family:'Montserrat',sans-serif;
+    color:#5b5249;
+  }
+  .note h1{
+    font-family:'Raleway',sans-serif; font-weight:800;
+    font-size:22px; color:var(--granate); margin:0 0 4px;
+    letter-spacing:.01em;
+  }
+  .note .sub{ font-size:12px; color:var(--muted); margin:0 0 22px; letter-spacing:.04em; }
+  .note h2{
+    font-family:'Raleway',sans-serif; font-weight:700;
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--granate); margin:22px 0 8px;
+  }
+  .note ul{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .note li{ font-size:13px; line-height:1.5; padding-left:18px; position:relative; }
+  .note li::before{
+    content:''; position:absolute; left:0; top:7px;
+    width:7px; height:7px; border-radius:2px; background:var(--oro);
+  }
+  .note li b{ color:var(--ink); font-weight:700; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone" id="phone">
+      <div class="notch"></div>
+
+      <!-- Fondo app atenuado -->
+      <div class="bgApp" aria-hidden="true">
+        <div class="bgTop">
+          <div class="bgBurger"><span></span><span></span><span></span></div>
+          <div class="bgBrand">HOMYO</div>
+          <div style="width:30px"></div>
+        </div>
+        <div class="bgHero"></div>
+        <div class="bgCard"></div>
+        <div class="bgCard"></div>
+        <div class="bgCard"></div>
+      </div>
+
+      <div class="overlay" id="overlay"></div>
+
+      <!-- Drawer -->
+      <aside class="drawer" aria-label="Menú">
+        <div class="dTop">
+          <div class="dBrand">H<span class="o">O</span>MY<span class="o">O</span></div>
+          <button class="dClose" id="closeBtn" aria-label="Cerrar menú">
+            <svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"></path></svg>
+          </button>
+        </div>
+
+        <div class="dBody">
+          <!-- Tu acceso -->
+          <div class="micro">Tu acceso</div>
+
+          <!-- Tarjetas de audiencia -->
+          <div class="accounts">
+            <!-- Particular -->
+            <div class="accCard">
+              <div class="accHead">
+                <span class="accIcon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 19.5c2.1-3.7 12.9-3.7 15 0"></path></svg></span>
+                <span class="accTitleWrap">
+                  <span class="accTitle">Soy particular</span>
+                  <span class="accDesc">Busca, guarda y contacta viviendas</span>
+                </span>
+              </div>
+              <div class="accActions">
+                <a class="btn btnPrimary" href="#" data-auth="login">Iniciar sesión</a>
+                <a class="btn btnGhost" href="#" data-auth="register">Crear cuenta</a>
+              </div>
+              <div class="accFoot">
+                <a href="./contacto.html?tipo=usuario">
+                  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  ¿Necesitas ayuda? Contacta
+                </a>
+              </div>
+            </div>
+
+            <!-- Profesional -->
+            <div class="accCard pro">
+              <div class="accHead">
+                <span class="accIcon"><svg viewBox="0 0 24 24"><path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M9 9h.01M15 9h.01M9 13h.01M15 13h.01M9 17h6"></path></svg></span>
+                <span class="accTitleWrap">
+                  <span class="accTitle">Soy profesional</span>
+                  <span class="accDesc">Publica y gestiona tus viviendas</span>
+                </span>
+                <span class="accTag">Inmobiliaria</span>
+              </div>
+              <div class="accActions">
+                <a class="btn btnPrimary" href="./cuenta-inmobiliaria.html">Acceder</a>
+                <a class="btn btnGhost" href="./registro-profesional.html">Registrar</a>
+              </div>
+              <div class="accFoot">
+                <a href="./contacto.html?tipo=inmobiliaria">
+                  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  Hablar con el equipo comercial
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Explorar -->
+          <div class="micro">Explorar</div>
+          <nav class="quick">
+            <a class="qItem" href="./map.html">
+              <span class="qIcon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
+              <span class="qText"><span class="qTitle">Explorar</span><span class="qSub">Mapa, zonas y filtros</span></span>
+              <span class="qArrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg></span>
+            </a>
+            <a class="qItem" href="./favoritos.html">
+              <span class="qIcon"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.5-9C1 9 2.5 5.5 6 5.5c2 0 3.2 1.2 4 2.3.8-1.1 2-2.3 4-2.3 3.5 0 5 3.5 3.5 6.5C19 16.4 12 21 12 21z"></path></svg></span>
+              <span class="qText"><span class="qTitle">Favoritos</span><span class="qSub">Viviendas que has guardado</span></span>
+              <span class="qArrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg></span>
+            </a>
+            <a class="qItem" href="./busquedas.html">
+              <span class="qIcon"><svg viewBox="0 0 24 24"><path d="M6 4h12a1 1 0 0 1 1 1v15l-7-4-7 4V5a1 1 0 0 1 1-1z"></path></svg></span>
+              <span class="qText"><span class="qTitle">Mis búsquedas</span><span class="qSub">Alertas y filtros guardados</span></span>
+              <span class="qArrow"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg></span>
+            </a>
+          </nav>
+        </div>
+
+        <div class="dFoot">
+          <div class="legal">
+            <a href="./terminos.html">Términos de uso</a>
+            <a href="./privacidad.html">Privacidad</a>
+            <a href="./cookies.html">Cookies</a>
+          </div>
+          <div class="copy">© 2026 Homyo</div>
+        </div>
+      </aside>
+
+      <button class="reopen" id="reopenBtn" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+      </button>
+    </div>
+
+    <div class="note">
+      <h1>Menú lateral · v2</h1>
+      <p class="sub">Propuesta de mejora — toca la ✕ para ver la animación</p>
+
+      <h2>Qué cambia</h2>
+      <ul>
+        <li><b>Dos audiencias diferenciadas.</b> Antes se repetía 3 veces el mismo trío de enlaces. Ahora particular y profesional son tarjetas con identidad, microcopy y CTA claro.</li>
+        <li><b>El profesional se distingue</b> con acento oro y etiqueta «Inmobiliaria», sin competir con el flujo del particular.</li>
+        <li><b>Tu acceso primero, explorar después.</b> Particular y profesional encabezan el menú; los accesos rápidos (Explorar, Favoritos, Búsquedas) quedan justo debajo.</li>
+        <li><b>Lo legal pasa a un pie discreto</b> en lugar de tres ítems grandes en mayúsculas.</li>
+        <li>Misma paleta granate + oro, Raleway / Montserrat y radios del sistema Homyo.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const phone = document.getElementById('phone');
+    document.getElementById('closeBtn').addEventListener('click', () => phone.classList.add('closed'));
+    document.getElementById('overlay').addEventListener('click', () => phone.classList.add('closed'));
+    document.getElementById('reopenBtn').addEventListener('click', () => phone.classList.remove('closed'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Solicitudes de alta · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <style>
+      .docRow{ display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--line); border-radius:var(--rad); background:#fff; }
+      .docRow + .docRow{ margin-top:8px; }
+      .docRow .di{ width:36px; height:36px; border-radius:8px; background:var(--cardWarm); border:1px solid rgba(196,150,42,.3); color:var(--granate); display:grid; place-items:center; flex:0 0 auto; }
+      .docRow .di svg{ width:17px; height:17px; }
+      .docRow .dn{ font-size:13.5px; font-weight:600; color:var(--ink); }
+      .docRow .dm{ font-size:12px; color:var(--muted); }
+      .docRow .da{ margin-left:auto; }
+    </style>
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Solicitudes">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Operación · Altas</p>
+              <h1 class="pageTitle">Solicitudes de <strong>alta</strong></h1>
+              <p class="pageLede">Inmobiliarias que piden acceso a Homyo. Revisa su documentación y CIF antes de aprobar: solo entran profesionales verificados.</p>
+            </div>
+          </div>
+
+          <div class="splitView">
+            <!-- LISTA -->
+            <div class="listPane">
+              <div class="lpHead"><h3>Pendientes · 4</h3><span class="pill warnp">Sin revisar</span></div>
+              <a class="lpItem isOn unread" data-sel="ns">
+                <span class="avatar sm">NS</span>
+                <span><span class="li1">Nidos del Sur Gestión</span><span class="li2">Sevilla · B-41200999 · documentación completa</span></span>
+                <span class="liWhen">12 min</span>
+              </a>
+              <a class="lpItem unread" data-sel="vg">
+                <span class="avatar sm">VG</span>
+                <span><span class="li1">Inmobiliaria Vega</span><span class="li2">Valencia · B-77001234 · falta nota del Registro</span></span>
+                <span class="liWhen">3 h</span>
+              </a>
+              <a class="lpItem" data-sel="tl">
+                <span class="avatar sm">TL</span>
+                <span><span class="li1">Terra & Llave</span><span class="li2">Zaragoza · B-50880221 · documentación completa</span></span>
+                <span class="liWhen">Ayer</span>
+              </a>
+              <a class="lpItem" data-sel="mm">
+                <span class="avatar sm">MM</span>
+                <span><span class="li1">Mediterráneo Inmuebles</span><span class="li2">Murcia · B-30551200 · documentación completa</span></span>
+                <span class="liWhen">2 días</span>
+              </a>
+            </div>
+
+            <!-- DETALLE -->
+            <div class="stack-sm" style="gap:18px;">
+              <div class="card">
+                <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px;">
+                  <span class="avatar lg">NS</span>
+                  <div style="flex:1 1 auto;min-width:0;">
+                    <h2 style="margin:0;font-family:'Raleway';font-weight:500;font-size:22px;color:var(--ink);" id="solName">Nidos del Sur Gestión Inmobiliaria, S.L.</h2>
+                    <p style="margin:4px 0 0;font-size:13px;color:var(--muted);" id="solMeta">Sevilla · CIF B-41200999 · Solicitud recibida hace 12 min</p>
+                  </div>
+                  <span class="pill warnp"><span class="dot"></span>Pendiente</span>
+                </div>
+
+                <dl class="kv" style="margin-bottom:6px;">
+                  <dt>Persona de contacto</dt><dd>Marina Ortega (gerente)</dd>
+                  <dt>Email</dt><dd>marina@nidosdelsur.es</dd>
+                  <dt>Teléfono</dt><dd>+34 954 11 22 33</dd>
+                  <dt>Colegiación / API</dt><dd>API Sevilla nº 4821</dd>
+                  <dt>Viviendas estimadas</dt><dd>≈ 30 a publicar</dd>
+                </dl>
+              </div>
+
+              <div class="card">
+                <p class="cardLabel">Documentación aportada</p>
+                <div class="docRow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span><span class="dn">Escritura de constitución</span><br><span class="dm">PDF · 1,2 MB</span></span><span class="da pill ok">Verificado</span></div>
+                <div class="docRow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span><span class="dn">Tarjeta del CIF</span><br><span class="dm">PDF · 320 KB</span></span><span class="da pill ok">Verificado</span></div>
+                <div class="docRow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span><span class="dn">Alta colegial / API</span><br><span class="dm">PDF · 540 KB</span></span><span class="da pill ok">Verificado</span></div>
+              </div>
+
+              <div class="callout infoc">
+                <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg></span>
+                <div><h4>Comprobación automática superada</h4><p>El CIF figura activo en el censo y no hay otra cuenta con el mismo NIF. Sin duplicados detectados.</p></div>
+              </div>
+
+              <div class="card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Aprobar y dar acceso</button>
+                <button class="btn ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Pedir más datos</button>
+                <button class="btn danger" style="margin-left:auto;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>Rechazar</button>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "solicitudes", title: "Solicitudes de alta", crumb: "Operación · Altas pendientes" };
+    </script>
+    <script src="admin-shell.js"></script>
+    <script>
+      // Selección de solicitud (rellena el detalle, demo)
+      (function () {
+        var DATA = {
+          ns: ["Nidos del Sur Gestión Inmobiliaria, S.L.", "Sevilla · CIF B-41200999 · Solicitud recibida hace 12 min"],
+          vg: ["Inmobiliaria Vega, S.L.", "Valencia · CIF B-77001234 · Solicitud recibida hace 3 h"],
+          tl: ["Terra & Llave Asociados, S.L.", "Zaragoza · CIF B-50880221 · Solicitud recibida ayer"],
+          mm: ["Mediterráneo Inmuebles, S.L.", "Murcia · CIF B-30551200 · Solicitud recibida hace 2 días"]
+        };
+        var items = document.querySelectorAll(".lpItem");
+        var name = document.getElementById("solName");
+        var meta = document.getElementById("solMeta");
+        items.forEach(function (it) {
+          it.addEventListener("click", function (e) {
+            e.preventDefault();
+            items.forEach(function (x) { x.classList.remove("isOn"); });
+            it.classList.add("isOn");
+            it.classList.remove("unread");
+            var d = DATA[it.getAttribute("data-sel")];
+            if (d) { name.textContent = d[0]; meta.textContent = d[1]; }
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

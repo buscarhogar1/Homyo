@@ -43,70 +43,75 @@ function renderHeader({ showMiniSearch, root }) {
             <div class="bhSideMenuBrand">H<span class="brandO">O</span>MY<span class="brandO">O</span></div>
 
             <button type="button" class="bhSideClose" id="bhSideClose" aria-label="Cerrar menú">
-              ×
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"></path></svg>
             </button>
           </div>
 
           <nav class="bhSideNav">
-            <div class="bhSideSection">
-              <div class="bhSideHeading" aria-hidden="true">Usuario</div>
+            <div class="bhAccounts">
+              <!-- Particular -->
+              <div class="bhAccCard">
+                <div class="bhAccHead">
+                  <span class="bhAccIcon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 19.5c2.1-3.7 12.9-3.7 15 0"></path></svg>
+                  </span>
+                  <span class="bhAccTitleWrap">
+                    <span class="bhAccTitle">Soy particular</span>
+                    <span class="bhAccDesc">Busca, guarda y contacta viviendas</span>
+                  </span>
+                </div>
+                <div class="bhAccActions bhSideAnonOnly">
+                  <a href="#" class="bhBtn bhBtnPrimary" data-bh-open-auth="login">Iniciar sesión</a>
+                  <a href="#" class="bhBtn bhBtnGhost" data-bh-open-auth="register">Crear cuenta</a>
+                </div>
+                <div class="bhAccActions bhSideAuthOnly">
+                  <a href="./account.html" class="bhBtn bhBtnPrimary">Mi cuenta</a>
+                </div>
+                <div class="bhAccFoot">
+                  <a href="./contacto.html?tipo=usuario">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    ¿Necesitas ayuda? Contacta
+                  </a>
+                </div>
+              </div>
 
-              <a href="#" class="bhSideLink bhSideAnonOnly" data-bh-open-auth="login">
-                Iniciar sesión
-              </a>
-
-              <a href="./account.html" class="bhSideLink bhSideAuthOnly">
-                Cuenta
-              </a>
-
-              <a href="#" class="bhSideLink bhSideAnonOnly" data-bh-open-auth="register">
-                Registrarse
-              </a>
-
-              <a href="./contacto.html?tipo=usuario" class="bhSideLink">
-                Contacto
-              </a>
+              <!-- Profesional -->
+              <div class="bhAccCard pro">
+                <div class="bhAccHead">
+                  <span class="bhAccIcon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M9 9h.01M15 9h.01M9 13h.01M15 13h.01M9 17h6"></path></svg>
+                  </span>
+                  <span class="bhAccTitleWrap">
+                    <span class="bhAccTitle">Soy profesional</span>
+                    <span class="bhAccDesc">Publica y gestiona tus viviendas</span>
+                  </span>
+                  <span class="bhAccTag">Inmobiliaria</span>
+                </div>
+                <div class="bhAccActions bhSideAnonOnly">
+                  <a href="./cuenta-inmobiliaria.html" class="bhBtn bhBtnPrimary">Acceder</a>
+                  <a href="./registro-profesional.html" class="bhBtn bhBtnGhost">Registrar</a>
+                </div>
+                <div class="bhAccActions bhSideAuthOnly">
+                  <a href="./cuenta-inmobiliaria.html" class="bhBtn bhBtnPrimary">Mi cuenta</a>
+                </div>
+                <div class="bhAccFoot">
+                  <a href="./contacto.html?tipo=inmobiliaria">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    Hablar con el equipo comercial
+                  </a>
+                </div>
+              </div>
             </div>
 
-            <div class="bhSideSection">
-              <div class="bhSideHeading" aria-hidden="true">Profesional inmobiliario</div>
-
-              <a href="./cuenta-inmobiliaria.html" class="bhSideLink bhSideAnonOnly">
-                Iniciar sesión
-              </a>
-
-              <a href="./cuenta-inmobiliaria.html" class="bhSideLink bhSideAuthOnly">
-                Cuenta
-              </a>
-
-              <a href="./registro-profesional.html" class="bhSideLink bhSideAnonOnly">
-                Registrarse
-              </a>
-
-              <a href="./contacto.html?tipo=inmobiliaria" class="bhSideLink">
-                Contacto
-              </a>
-            </div>
-
-            <div class="bhSideSection">
-              <div class="bhSideHeading" aria-hidden="true">Información legal</div>
-
-              <a href="./terminos.html" class="bhSideLink">
-                Términos de uso
-              </a>
-
-              <a href="./privacidad.html" class="bhSideLink">
-                Política de privacidad
-              </a>
-
-              <a href="./cookies.html" class="bhSideLink">
-                Política de cookies
-              </a>
-            </div>
           </nav>
 
           <div class="bhSideFooter">
-            © 2026 Homyo
+            <div class="bhLegal">
+              <a href="./terminos.html">Términos de uso</a>
+              <a href="./privacidad.html">Privacidad</a>
+              <a href="./cookies.html">Cookies</a>
+            </div>
+            <div class="bhCopy">© 2026 Homyo</div>
           </div>
         </aside>
 

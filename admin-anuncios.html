@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Moderación de anuncios · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <style>
+      .modGrid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+      @media (max-width:860px){ .modGrid{ grid-template-columns:1fr; } }
+      .modCard{ border:1px solid var(--line); border-radius:var(--rad); background:#fff; overflow:hidden; display:flex; flex-direction:column; }
+      .modThumb{ height:150px; background:linear-gradient(135deg,#efe7d8,#e4d8c2); position:relative; display:grid; place-items:center; color:var(--granate); }
+      .modThumb svg{ width:38px; height:38px; opacity:.4; }
+      .modThumb .tag{ position:absolute; top:12px; left:12px; }
+      .modBody{ padding:18px 20px; display:flex; flex-direction:column; gap:12px; flex:1 1 auto; }
+      .modBody h3{ margin:0; font-family:'Raleway'; font-size:17px; font-weight:600; color:var(--ink); }
+      .modBody .meta{ font-size:12.5px; color:var(--muted); }
+      .checkList{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px; }
+      .checkList li{ display:flex; align-items:center; gap:9px; font-size:13px; color:var(--ink2); }
+      .checkList li svg{ width:15px; height:15px; flex:0 0 auto; }
+      .checkList li.ok svg{ color:var(--good); }
+      .checkList li.bad{ color:var(--danger); }
+      .checkList li.bad svg{ color:var(--danger); }
+      .modActions{ display:flex; gap:8px; margin-top:auto; padding-top:4px; }
+      .modActions .btn{ flex:1 1 auto; }
+    </style>
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Moderación">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Operación · Calidad</p>
+              <h1 class="pageTitle">Moderación de <strong>anuncios</strong></h1>
+              <p class="pageLede">Cola de revisión de calidad. Cada vivienda debe cumplir el estándar de Homyo —plano, fotos, certificado y datos verificables— antes de publicarse.</p>
+            </div>
+            <div class="pageHeadActions">
+              <span class="pill warnp" style="align-self:center;"><span class="dot"></span>2 superan las 12 h</span>
+            </div>
+          </div>
+
+          <div class="tableTop" style="border-radius:var(--rad);border-bottom:1px solid var(--line);margin-bottom:20px;">
+            <div class="filterChips">
+              <button class="fchip isOn">En cola <span class="c">9</span></button>
+              <button class="fchip">Aprobados hoy <span class="c">14</span></button>
+              <button class="fchip">Rechazados <span class="c">3</span></button>
+            </div>
+            <span class="grow"></span>
+            <span class="muted" style="font-size:12.5px;">Orden: más antiguos primero</span>
+          </div>
+
+          <div class="modGrid">
+            <!-- Anuncio 1 -->
+            <div class="modCard">
+              <div class="modThumb"><span class="tag pill dangerp">14 h en cola</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
+              <div class="modBody">
+                <h3>Ático en Calle Ferraz 12</h3>
+                <p class="meta">Áurea Inmobiliaria · Madrid · 145 m² · 685.000 €</p>
+                <ul class="checkList">
+                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Plano en planta</li>
+                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>14 fotografías</li>
+                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Certificado energético</li>
+                </ul>
+                <div class="modActions"><button class="btn primary sm">Aprobar</button><button class="btn danger sm">Rechazar</button></div>
+              </div>
+            </div>
+
+            <!-- Anuncio 2 -->
+            <div class="modCard">
+              <div class="modThumb"><span class="tag pill dangerp">13 h en cola</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
+              <div class="modBody">
+                <h3>Dúplex en Calle Goya 41</h3>
+                <p class="meta">Áurea Inmobiliaria · Madrid · 120 m² · 612.000 €</p>
+                <ul class="checkList">
+                  <li class="bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>Falta plano en planta</li>
+                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>9 fotografías</li>
+                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Certificado energético</li>
+                </ul>
+                <div class="modActions"><button class="btn ghost sm" disabled>Aprobar</button><button class="btn danger sm">Rechazar (falta plano)</button></div>
+              </div>
+            </div>
+
+            <!-- Anuncio 3 -->
+            <div class="modCard">
+              <div class="modThumb"><span class="tag pill warnp">6 h en cola</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
+              <div class="modBody">
+                <h3>Chalet con jardín, Pozuelo</h3>
+                <p class="meta">Domus Capital · Madrid · 240 m² · 980.000 €</p>
+                <ul class="checkList">
+                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Plano en planta</li>
+                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>22 fotografías</li>
+                  <li class="bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>Certificado: pendiente</li>
+                </ul>
+                <div class="modActions"><button class="btn ghost sm">Aprobar con aviso</button><button class="btn danger sm">Rechazar</button></div>
+              </div>
+            </div>
+
+            <!-- Anuncio 4 -->
+            <div class="modCard">
+              <div class="modThumb"><span class="tag pill warnp">4 h en cola</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
+              <div class="modBody">
+                <h3>Loft junto al puerto</h3>
+                <p class="meta">Ribera Homes · Valencia · 88 m² · 365.000 €</p>
+                <ul class="checkList">
+                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Plano en planta</li>
+                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>11 fotografías</li>
+                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Certificado energético</li>
+                </ul>
+                <div class="modActions"><button class="btn primary sm">Aprobar</button><button class="btn danger sm">Rechazar</button></div>
+              </div>
+            </div>
+          </div>
+
+          <p class="muted" style="margin-top:16px;font-size:13px;">5 anuncios más en cola · <a href="#" style="color:var(--granate);font-weight:600;text-decoration:none;">cargar más</a></p>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "anuncios", title: "Moderación de anuncios", crumb: "Operación · Cola de calidad" };
+    </script>
+    <script src="admin-shell.js"></script>
+  </body>
+</html>

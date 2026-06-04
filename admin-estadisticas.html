@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Estadísticas · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Estadísticas">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>Negocio · Métricas</p>
+              <h1 class="pageTitle">Estadísticas de la <strong>plataforma</strong></h1>
+              <p class="pageLede">Crecimiento real de toda Homyo: cuentas, anuncios, tráfico y conversión a contacto. Sin posicionamiento de pago en ningún punto del embudo.</p>
+            </div>
+            <div class="pageHeadActions">
+              <div class="seg" id="rangeSeg">
+                <button data-r="30">30 días</button>
+                <button class="isOn" data-r="90">90 días</button>
+                <button data-r="ano">12 meses</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPIs -->
+          <section class="grid c4" style="margin-bottom:24px;">
+            <div class="kpi"><p class="kpiLabel">Visitas a la web (30 d)</p><p class="kpiValue">412<span class="u">K</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+14 %</span></div>
+            <div class="kpi"><p class="kpiLabel">Contactos generados</p><p class="kpiValue">5.180</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+11 %</span></div>
+            <div class="kpi"><p class="kpiLabel">Tasa de contacto media</p><p class="kpiValue">3,6<span class="u">%</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>sector: 3,1 %</span></div>
+            <div class="kpi"><p class="kpiLabel">Nuevos usuarios (30 d)</p><p class="kpiValue">1.284</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+22 %</span></div>
+          </section>
+
+          <!-- GRÁFICO PRINCIPAL: visitas vs contactos -->
+          <div class="card">
+            <div class="spread" style="margin-bottom:18px;">
+              <p class="cardLabel mt0">Tráfico y contactos por mes</p>
+              <div class="chartLegend"><span><i class="g"></i>Visitas (miles)</span><span><i class="d"></i>Contactos (×10)</span></div>
+            </div>
+            <div class="barChart" style="height:230px;">
+              <div class="col"><div style="display:flex;gap:4px;align-items:flex-end;width:100%;max-width:54px;height:100%;"><div class="bar" style="height:52%"></div><div class="bar alt" style="height:40%"></div></div><span class="cl">Dic</span></div>
+              <div class="col"><div style="display:flex;gap:4px;align-items:flex-end;width:100%;max-width:54px;height:100%;"><div class="bar" style="height:58%"></div><div class="bar alt" style="height:46%"></div></div><span class="cl">Ene</span></div>
+              <div class="col"><div style="display:flex;gap:4px;align-items:flex-end;width:100%;max-width:54px;height:100%;"><div class="bar" style="height:64%"></div><div class="bar alt" style="height:52%"></div></div><span class="cl">Feb</span></div>
+              <div class="col"><div style="display:flex;gap:4px;align-items:flex-end;width:100%;max-width:54px;height:100%;"><div class="bar" style="height:72%"></div><div class="bar alt" style="height:58%"></div></div><span class="cl">Mar</span></div>
+              <div class="col"><div style="display:flex;gap:4px;align-items:flex-end;width:100%;max-width:54px;height:100%;"><div class="bar" style="height:84%"></div><div class="bar alt" style="height:68%"></div></div><span class="cl">Abr</span></div>
+              <div class="col"><div style="display:flex;gap:4px;align-items:flex-end;width:100%;max-width:54px;height:100%;"><div class="bar" style="height:97%"></div><div class="bar alt" style="height:80%"></div></div><span class="cl">May</span></div>
+            </div>
+          </div>
+
+          <!-- DOS COLUMNAS: ciudades + embudo -->
+          <div class="twoColWide" style="margin-top:22px;">
+            <div class="card">
+              <p class="cardLabel">Actividad por ciudad</p>
+              <div style="display:flex;flex-direction:column;gap:15px;margin-top:8px;">
+                <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;"><span style="color:var(--ink2)">Madrid</span><span class="num" style="font-family:'Raleway';font-weight:600;">1.284 anuncios</span></div><div class="track"><span style="width:100%"></span></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;"><span style="color:var(--ink2)">Barcelona</span><span class="num" style="font-family:'Raleway';font-weight:600;">986 anuncios</span></div><div class="track"><span style="width:77%"></span></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;"><span style="color:var(--ink2)">Valencia</span><span class="num" style="font-family:'Raleway';font-weight:600;">642 anuncios</span></div><div class="track"><span style="width:50%"></span></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;"><span style="color:var(--ink2)">Sevilla</span><span class="num" style="font-family:'Raleway';font-weight:600;">438 anuncios</span></div><div class="track"><span style="width:34%"></span></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;"><span style="color:var(--ink2)">Málaga</span><span class="num" style="font-family:'Raleway';font-weight:600;">357 anuncios</span></div><div class="track"><span style="width:28%"></span></div></div>
+                <div><div style="display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;"><span style="color:var(--ink2)">Bilbao</span><span class="num" style="font-family:'Raleway';font-weight:600;">257 anuncios</span></div><div class="track"><span style="width:20%"></span></div></div>
+              </div>
+            </div>
+            <div class="card">
+              <p class="cardLabel">Embudo de conversión (30 días)</p>
+              <ul class="timeline" style="margin-top:10px;">
+                <li class="done"><span class="tdot"></span><h5>412.000 visitas a la web</h5><p>Tráfico total de homyo.es</p></li>
+                <li class="done"><span class="tdot"></span><h5>143.800 fichas de vivienda vistas</h5><p>35 % de las visitas abren un anuncio</p></li>
+                <li class="done"><span class="tdot"></span><h5>21.400 guardados en favoritos</h5><p>15 % de las fichas vistas</p></li>
+                <li class="now"><span class="tdot"></span><h5>5.180 contactos a inmobiliarias</h5><p>3,6 % de las fichas vistas · objetivo del negocio</p></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- TOP ANUNCIOS -->
+          <div class="sectionHead"><h2>Anuncios con mejor rendimiento</h2><a class="btnLink" href="admin-anuncios.html">Ver anuncios <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></div>
+          <div class="tableWrap">
+            <table class="proTable stack">
+              <thead><tr><th>Vivienda</th><th>Inmobiliaria</th><th class="right">Visitas</th><th class="right">Contactos</th><th class="right">Conversión</th></tr></thead>
+              <tbody>
+                <tr><td data-th="Vivienda" class="strong">Ático en Calle Ferraz 12</td><td data-th="Inmobiliaria">Áurea Inmobiliaria</td><td data-th="Visitas" class="right num">1.204</td><td data-th="Contactos" class="right num">14</td><td data-th="Conversión" class="right"><span class="pill ok">5,8 %</span></td></tr>
+                <tr><td data-th="Vivienda" class="strong">Chalet con jardín, Pozuelo</td><td data-th="Inmobiliaria">Domus Capital</td><td data-th="Visitas" class="right num">1.108</td><td data-th="Contactos" class="right num">12</td><td data-th="Conversión" class="right"><span class="pill ok">5,4 %</span></td></tr>
+                <tr><td data-th="Vivienda" class="strong">Piso reformado, Velázquez 80</td><td data-th="Inmobiliaria">Áurea Inmobiliaria</td><td data-th="Visitas" class="right num">980</td><td data-th="Contactos" class="right num">9</td><td data-th="Conversión" class="right"><span class="pill gold">4,6 %</span></td></tr>
+                <tr><td data-th="Vivienda" class="strong">Loft junto al puerto</td><td data-th="Inmobiliaria">Ribera Homes</td><td data-th="Visitas" class="right num">874</td><td data-th="Contactos" class="right num">7</td><td data-th="Conversión" class="right"><span class="pill gold">4,0 %</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "estadisticas", title: "Estadísticas", crumb: "Negocio · Métricas globales" };
+    </script>
+    <script src="admin-shell.js"></script>
+    <script>
+      (function () {
+        var seg = document.getElementById("rangeSeg");
+        seg.querySelectorAll("button").forEach(function (b) {
+          b.addEventListener("click", function () {
+            seg.querySelectorAll("button").forEach(function (x) { x.classList.remove("isOn"); });
+            b.classList.add("isOn");
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -995,6 +995,11 @@
        - El logo se centra en el espacio libre superior (header → Comprar).
        - Los 5 iconos se centran en el espacio libre inferior (frases → base).
        ============================================================ */
+    // Estado global de "búsqueda expandida" en móvil: el usuario ha escrito y
+    // ha ocultado el teclado manteniendo las sugerencias. En ese caso el
+    // buscador se queda arriba y NO mostramos los 5 accesos rápidos.
+    window.BH_searchExpanded = false;
+
     (function setupAnchorLayout(){
       const mq = window.matchMedia("(max-width:720px)");
 
@@ -1035,8 +1040,11 @@
         const coreTop0 = coreRect.top;
         if (H <= 0 || Gh <= 0) return;
 
-        // ¿Está el usuario escribiendo en el buscador en móvil? (teclado visible)
-        const kbMode = mq.matches && document.activeElement && document.activeElement.id === "q";
+        // Modo "buscador expandido" en móvil: con el buscador enfocado (teclado
+        // visible) o cuando el usuario escribió y ocultó el teclado manteniendo
+        // las sugerencias (BH_searchExpanded).
+        const focusedQ = document.activeElement && document.activeElement.id === "q";
+        const kbMode   = mq.matches && (focusedQ || window.BH_searchExpanded === true);
 
         // Punto de anclaje (coordenada vertical en viewport).
         let anchorY;
@@ -1104,6 +1112,17 @@
         quickZone.style.top    = subBottomAbs + "px";
         quickZone.style.height = Math.max(0, H - subBottomAbs) + "px";
 
+        // En móvil, durante la búsqueda expandida (teclado abierto, o el usuario
+        // ha escrito y oculta el teclado con sugerencias visibles), ocultamos
+        // los 5 accesos rápidos para que no aparezcan bajo las sugerencias.
+        if (mq.matches && kbMode) {
+          quickZone.style.visibility   = "hidden";
+          quickZone.style.pointerEvents = "none";
+        } else {
+          quickZone.style.visibility   = "";
+          quickZone.style.pointerEvents = "";
+        }
+
         // Si el panel de sugerencias está montado, lo recolocamos para que
         // siga al buscador tras mover el grupo (más alto = más sitio abajo).
         if (window.BH_positionAutocomplete) window.BH_positionAutocomplete();
@@ -1136,9 +1155,39 @@
         qInput.addEventListener("focus", () => { schedule(); setTimeout(schedule, 60); setTimeout(schedule, 250); });
         qInput.addEventListener("blur",  () => { schedule(); setTimeout(schedule, 60); });
       }
-      // El teclado virtual cambia el visualViewport: recolocamos en móvil.
+      // El teclado virtual cambia el visualViewport: recolocamos en móvil y, al
+      // detectar que el teclado se OCULTA, decidimos qué hacer según si el
+      // usuario ha escrito o no.
+      let kbWasOpen = false;
+      function keyboardOpen(){
+        if (!mq.matches || !window.visualViewport) return false;
+        return (window.innerHeight - window.visualViewport.height) > 120;
+      }
+      function onKeyboardHidden(){
+        const qEl = document.getElementById("q");
+        if (!qEl) return;
+        const typed = qEl.value.trim().length > 0;
+        const suggestionsOpen = !!(window.BH_isAutocompleteOpen && window.BH_isAutocompleteOpen());
+        if (typed && suggestionsOpen) {
+          // Escribió y mantiene las sugerencias → vista expandida sin los
+          // 5 accesos rápidos.
+          window.BH_searchExpanded = true;
+        } else {
+          // Ocultó el teclado sin escribir (o sin sugerencias) → index normal.
+          window.BH_searchExpanded = false;
+          if (window.BH_closeAutocomplete) window.BH_closeAutocomplete();
+          if (document.activeElement === qEl) qEl.blur();
+        }
+        schedule();
+      }
       if (window.visualViewport) {
-        window.visualViewport.addEventListener("resize", () => { if (mq.matches) schedule(); });
+        window.visualViewport.addEventListener("resize", () => {
+          if (!mq.matches) { schedule(); return; }
+          const open = keyboardOpen();
+          if (kbWasOpen && !open) onKeyboardHidden();
+          kbWasOpen = open;
+          schedule();
+        });
       }
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
     })();
@@ -1464,8 +1513,18 @@
         input.setAttribute("aria-expanded", "false");
         input.removeAttribute("aria-activedescendant");
         activeIndex = -1;
+        // Al cerrar las sugerencias salimos de la vista expandida y
+        // recolocamos (vuelven a mostrarse los 5 accesos rápidos en móvil).
+        if (window.BH_searchExpanded) {
+          window.BH_searchExpanded = false;
+          if (window.BH_applyAnchorLayout) window.BH_applyAnchorLayout();
+        }
       }
       function isOpen(){ return panel.classList.contains("open"); }
+
+      // Exponemos estado/cierre para el controlador del teclado virtual.
+      window.BH_isAutocompleteOpen = isOpen;
+      window.BH_closeAutocomplete = function(){ close(); };
 
       function setActive(idx){
         activeIndex = idx;
@@ -1664,5 +1723,8 @@
       }
     })();
   </script>
+
+  <!-- Acceso oculto al entorno de administración (sin elemento visible) -->
+  <script src="./homyo-secret.js"></script>
 </body>
 </html>

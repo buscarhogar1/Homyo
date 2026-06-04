@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Mensajes y soporte · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <style>
+      .composer{ display:flex; gap:10px; align-items:flex-end; border-top:1px solid var(--line); padding:16px; }
+      .composer textarea{ flex:1 1 auto; min-height:46px; max-height:120px; resize:none; }
+    </style>
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Mensajes">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Operación · Soporte</p>
+              <h1 class="pageTitle">Mensajes y <strong>soporte</strong></h1>
+              <p class="pageLede">Bandeja de comunicaciones con inmobiliarias y usuarios. Dudas sobre el estándar, facturación, incidencias y peticiones de cuenta.</p>
+            </div>
+          </div>
+
+          <div class="splitView">
+            <!-- LISTA -->
+            <div class="listPane">
+              <div class="lpHead"><h3>Bandeja · 6 sin leer</h3><span class="pill solid">Soporte</span></div>
+              <a class="lpItem isOn unread" data-sel="vega">
+                <span class="avatar sm">VG</span>
+                <span><span class="li1">Inmobiliaria Vega</span><span class="li2">¿El certificado energético es obligatorio para todos los anuncios?</span></span>
+                <span class="liWhen">1 h</span>
+              </a>
+              <a class="lpItem unread" data-sel="marina">
+                <span class="avatar sm" style="background:var(--dangerSoft);border-color:rgba(176,50,71,.25);color:var(--danger)">PM</span>
+                <span><span class="li1">Pisos Marina</span><span class="li2">Mi cuenta está suspendida, ¿cómo actualizo la tarjeta?</span></span>
+                <span class="liWhen">3 h</span>
+              </a>
+              <a class="lpItem unread" data-sel="lucia">
+                <span class="avatar user sm">LB</span>
+                <span><span class="li1">Lucía Bravo (usuaria)</span><span class="li2">No me llega la respuesta de una inmobiliaria a la que escribí.</span></span>
+                <span class="liWhen">5 h</span>
+              </a>
+              <a class="lpItem" data-sel="ribera">
+                <span class="avatar sm">RH</span>
+                <span><span class="li1">Ribera Homes</span><span class="li2">¿Puedo importar mis anuncios desde otro portal?</span></span>
+                <span class="liWhen">Ayer</span>
+              </a>
+              <a class="lpItem" data-sel="domus">
+                <span class="avatar sm">DC</span>
+                <span><span class="li1">Domus Capital</span><span class="li2">Solicitamos factura con datos fiscales actualizados.</span></span>
+                <span class="liWhen">2 días</span>
+              </a>
+            </div>
+
+            <!-- HILO -->
+            <div class="card" style="padding:0;display:flex;flex-direction:column;min-height:520px;">
+              <div style="display:flex;align-items:center;gap:13px;padding:16px 20px;border-bottom:1px solid var(--line);">
+                <span class="avatar sm">VG</span>
+                <div style="flex:1 1 auto;min-width:0;"><div style="font-family:'Raleway';font-weight:600;font-size:15px;color:var(--ink);" id="thName">Inmobiliaria Vega</div><div style="font-size:12px;color:var(--muted);">Valencia · Plan estándar · cuenta verificada</div></div>
+                <span class="pill warnp">Sin responder</span>
+              </div>
+
+              <div style="flex:1 1 auto;padding:22px 20px;overflow-y:auto;">
+                <div class="thread">
+                  <div class="msg them"><div class="mwho">Inmobiliaria Vega</div>Hola, estamos preparando nuevos anuncios. ¿El certificado energético es obligatorio para todos o solo para venta?<div class="mtime">Hoy, 10:14</div></div>
+                  <div class="msg them"><div class="mwho">Inmobiliaria Vega</div>Y si está en trámite, ¿podemos publicar mientras tanto?<div class="mtime">Hoy, 10:15</div></div>
+                  <div class="msg me"><div class="mwho">Dirección Homyo</div>¡Hola! El certificado es obligatorio tanto en venta como en alquiler. Si está en trámite, podéis publicar marcando "en trámite", pero tenéis 30 días para subirlo o el anuncio se despublica.<div class="mtime">Hoy, 10:22</div></div>
+                </div>
+              </div>
+
+              <div class="composer">
+                <textarea class="input" placeholder="Escribe una respuesta…"></textarea>
+                <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>Enviar</button>
+              </div>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "mensajes", title: "Mensajes y soporte", crumb: "Operación · Bandeja de entrada" };
+    </script>
+    <script src="admin-shell.js"></script>
+    <script>
+      (function () {
+        var NAMES = { vega:"Inmobiliaria Vega", marina:"Pisos Marina", lucia:"Lucía Bravo (usuaria)", ribera:"Ribera Homes", domus:"Domus Capital" };
+        var items = document.querySelectorAll(".lpItem");
+        var thName = document.getElementById("thName");
+        items.forEach(function (it) {
+          it.addEventListener("click", function (e) {
+            e.preventDefault();
+            items.forEach(function (x) { x.classList.remove("isOn"); });
+            it.classList.add("isOn"); it.classList.remove("unread");
+            thName.textContent = NAMES[it.getAttribute("data-sel")] || "";
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

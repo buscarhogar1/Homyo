@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Mapa del entorno · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+    <style>
+      body.adminTheme{ background:#161310; }
+      .ixTop{ background:#161310; border-bottom:1px solid #2c2720; padding:0 30px; height:var(--topbarH); display:flex; align-items:center; gap:12px; }
+      .ixTop .brand{ font-family:'Raleway',sans-serif; font-size:24px; font-weight:627; letter-spacing:.24em; color:var(--granate); text-decoration:none; }
+      .ixTop .tag{ font-family:'Raleway',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:#fff; background:var(--granate); padding:3px 6px; border-radius:3px; }
+      .ixTop .right{ margin-left:auto; }
+      .ixWrap{ width:min(1180px,100%); margin:0 auto; padding:42px 28px 90px; }
+      .ixHero .kicker{ color:var(--doradoSoft); }
+      .ixHero h1{ font-family:'Raleway',sans-serif; font-size:42px; font-weight:300; color:#fff; letter-spacing:-1px; margin:0 0 14px; max-width:760px; }
+      .ixHero h1 strong{ font-weight:600; color:var(--doradoSoft); }
+      .ixHero p{ font-size:15.5px; line-height:1.6; color:#a9a194; max-width:640px; margin:0; }
+      .flowTag{ display:inline-flex; align-items:center; gap:9px; font-family:'Raleway',sans-serif; font-size:11px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--doradoSoft); margin:38px 0 16px; }
+      .flowTag .ln{ height:1px; width:48px; background:var(--doradoSoft); opacity:.5; }
+      .ixGrid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+      @media (max-width:960px){ .ixGrid{ grid-template-columns:repeat(2,1fr); } }
+      @media (max-width:560px){ .ixGrid{ grid-template-columns:1fr; } }
+      .ixCard{ display:flex; flex-direction:column; gap:10px; padding:22px 22px 20px; border:1px solid #2c2720; border-radius:var(--rad); background:#211d18; text-decoration:none; color:inherit; position:relative; overflow:hidden; transition:all .2s ease; }
+      .ixCard::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--doradoSoft); transform:scaleY(0); transform-origin:top; transition:transform .24s ease; }
+      .ixCard:hover{ border-color:rgba(226,184,76,.4); transform:translateY(-2px); }
+      .ixCard:hover::before{ transform:scaleY(1); }
+      .ixIc{ width:42px; height:42px; border-radius:50%; background:rgba(226,184,76,.12); border:1px solid rgba(226,184,76,.3); color:var(--doradoSoft); display:grid; place-items:center; }
+      .ixIc svg{ width:20px; height:20px; }
+      .ixCard h3{ margin:0; font-family:'Raleway',sans-serif; font-size:16px; font-weight:600; color:#fff; }
+      .ixCard p{ margin:0; font-size:12.5px; color:#a9a194; line-height:1.45; }
+      .ixNum{ position:absolute; top:16px; right:18px; font-family:'Raleway',sans-serif; font-size:12px; font-weight:600; color:#3a342b; }
+      .ixCard:hover .ixNum{ color:var(--dorado); }
+    </style>
+  </head>
+  <body class="adminTheme">
+    <header class="ixTop">
+      <a class="brand" href="admin-panel.html">H<span class="brandO">O</span>MY<span class="brandO">O</span></a><span class="tag">Admin</span>
+      <div class="right"><a class="btn primary sm" href="admin-panel.html">Entrar al panel</a></div>
+    </header>
+
+    <main class="ixWrap">
+      <section class="ixHero">
+        <p class="kicker">Entorno interno · prototipo navegable</p>
+        <h1>El back-office de <strong>Homyo</strong></h1>
+        <p>Tu sala de control como dirección: gestionas profesionales, cobros y estadísticas; apruebas altas, moderas anuncios y recibes mensajes, alertas e incidencias. Oculto al resto de usuarios y protegido por contraseña.</p>
+      </section>
+
+      <div class="flowTag"><span class="ln"></span>Operación del día a día</div>
+      <div class="ixGrid">
+        <a class="ixCard" href="admin-panel.html"><span class="ixNum">01</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9.5h14V10"/></svg></span><h3>Panel</h3><p>Dashboard global con lo que requiere tu acción.</p></a>
+        <a class="ixCard" href="admin-solicitudes.html"><span class="ixNum">02</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 14l2 2 4-4"/></svg></span><h3>Solicitudes de alta</h3><p>Aprobar o rechazar inmobiliarias con su documentación.</p></a>
+        <a class="ixCard" href="admin-anuncios.html"><span class="ixNum">03</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><h3>Moderación de anuncios</h3><p>Cola de revisión del estándar de calidad.</p></a>
+        <a class="ixCard" href="admin-mensajes.html"><span class="ixNum">04</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><h3>Mensajes y soporte</h3><p>Bandeja de comunicaciones con hilo de respuesta.</p></a>
+        <a class="ixCard" href="admin-incidencias.html"><span class="ixNum">05</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/></svg></span><h3>Incidencias</h3><p>Reportes, duplicados, fraude y técnico.</p></a>
+      </div>
+
+      <div class="flowTag"><span class="ln"></span>Cuentas y negocio</div>
+      <div class="ixGrid">
+        <a class="ixCard" href="admin-profesionales.html"><span class="ixNum">06</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/></svg></span><h3>Profesionales</h3><p>Directorio de inmobiliarias y agentes. <b>Prioridad.</b></p></a>
+        <a class="ixCard" href="admin-profesional-detalle.html"><span class="ixNum">07</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21h18"/><path d="M6 21V9l6-4 6 4v12"/><path d="M10 21v-5h4v5"/></svg></span><h3>Ficha de agencia</h3><p>Detalle de una inmobiliaria con sus anuncios.</p></a>
+        <a class="ixCard" href="admin-usuarios.html"><span class="ixNum">08</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3.2"/><path d="M2.6 20c1.1-3.4 11.7-3.4 12.8 0"/><circle cx="17" cy="9" r="2.6"/></svg></span><h3>Usuarios</h3><p>Cuentas de particulares que buscan vivienda.</p></a>
+        <a class="ixCard" href="admin-facturacion.html"><span class="ixNum">09</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg></span><h3>Facturación e ingresos</h3><p>MRR, facturas e impagos. <b>Prioridad.</b></p></a>
+        <a class="ixCard" href="admin-estadisticas.html"><span class="ixNum">10</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></span><h3>Estadísticas</h3><p>Tráfico, conversión y crecimiento. <b>Prioridad.</b></p></a>
+      </div>
+
+      <div class="flowTag"><span class="ln"></span>Plataforma y acceso</div>
+      <div class="ixGrid">
+        <a class="ixCard" href="admin-alertas.html"><span class="ixNum">11</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><h3>Centro de alertas</h3><p>Todos los avisos del sistema en un sitio.</p></a>
+        <a class="ixCard" href="admin-equipo.html"><span class="ixNum">12</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3.2"/><path d="M2.6 20c1.1-3.4 11.7-3.4 12.8 0"/><circle cx="17" cy="9" r="2.6"/></svg></span><h3>Equipo Homyo</h3><p>Accesos internos, roles y permisos.</p></a>
+        <a class="ixCard" href="admin-ajustes.html"><span class="ixNum">13</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H1a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 4.6 7a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V1a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H23a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span><h3>Ajustes</h3><p>Estándar, precios y seguridad del acceso.</p></a>
+        <a class="ixCard" href="admin-gate.html"><span class="ixNum">14</span><span class="ixIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><h3>Acceso (gate)</h3><p>Pantalla de contraseña oculta de entrada.</p></a>
+      </div>
+    </main>
+
+    <script>
+      // Guard simple para el índice
+      try {
+        if (sessionStorage.getItem("homyo_admin_session") !== "ok") {
+          window.location.replace("admin-gate.html");
+        }
+      } catch (e) {}
+    </script>
+  </body>
+</html>

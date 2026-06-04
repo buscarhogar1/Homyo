@@ -15,7 +15,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css?v=20260603_bottomband_fix" />
+    <link rel="stylesheet" href="./bh-map.css?v=20260604_transport" />
 
     <style>
       @media (max-width: 720px){
@@ -314,6 +314,38 @@
                 </div>
               </div>
 
+              <!-- Transporte: área alcanzable por modo (andando / público / coche / bici) -->
+              <div id="transportBar" class="transportBar" aria-hidden="true">
+                <div class="transportBarInner">
+                  <div class="tpModes" role="tablist" aria-label="Modo de transporte">
+                    <button class="tpMode active" type="button" data-mode="walk" role="tab" aria-selected="true" title="Andando">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4.5" r="1.8"></circle><path d="M13 7v6l-3 6M13 13l3 5M13 9l-3.5 1M13 9l4 2"></path></svg>
+                      <span>Andando</span>
+                    </button>
+                    <button class="tpMode" type="button" data-mode="transit" role="tab" aria-selected="false" title="Transporte público">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="13" rx="2.5"></rect><path d="M6 11h12"></path><circle cx="9" cy="14" r=".9"></circle><circle cx="15" cy="14" r=".9"></circle><path d="M8 17l-2 3M16 17l2 3"></path></svg>
+                      <span>Público</span>
+                    </button>
+                    <button class="tpMode" type="button" data-mode="car" role="tab" aria-selected="false" title="En coche">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15.5l1.6-4A2 2 0 0 1 6.5 10h9a2 2 0 0 1 1.7 1l2.3 4"></path><path d="M3 15.5h17.5v2.2H3z"></path><circle cx="7" cy="18" r="1.6"></circle><circle cx="16" cy="18" r="1.6"></circle></svg>
+                      <span>Coche</span>
+                    </button>
+                    <button class="tpMode" type="button" data-mode="bike" role="tab" aria-selected="false" title="En bici">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.2"></circle><circle cx="18" cy="16" r="3.2"></circle><path d="M6 16l3-6h4.5M9 10l3 6M12 16l3-6h2.5"></path></svg>
+                      <span>Bici</span>
+                    </button>
+                  </div>
+
+                  <div class="tpRight">
+                    <div class="tpTime">
+                      <input id="tpRange" class="tpRange" type="range" min="0" max="4" step="1" value="2" aria-label="Minutos de trayecto" />
+                      <div class="tpTimeVal"><strong id="tpMinsVal">15</strong> min</div>
+                    </div>
+                    <div class="tpHint" id="tpHint">Toca el mapa para mover el punto de salida</div>
+                  </div>
+                </div>
+              </div>
+
               <div id="areaHint" class="areaHint" aria-hidden="true">
                 <div class="areaHintInner">
                   <div class="areaHintDot" aria-hidden="true"></div>
@@ -421,7 +453,7 @@
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
       import { initFiltersBar, clearAllFilters } from "./bh-map-filters.js?v=20260602_modefilters";
-      import { initMap } from "./bh-map-core.js?v=20260531_hidemap_keeplist";
+      import { initMap } from "./bh-map-core.js?v=20260604_transport";
       import { getSession, saveCurrentSearch } from "./bh-user-data.js?v=20260512_saved_searches_real_v3";
 
       // Header / auth
@@ -872,5 +904,6 @@
         saveSearchFromMap(mobileSaveSearchBtn);
       });
     </script>
+  <script src="./homyo-secret.js"></script>
 </body>
 </html>

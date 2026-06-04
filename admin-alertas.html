@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Alertas del sistema · Homyo Admin</title>
+    <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body class="adminTheme">
+    <div class="proLayout">
+      <aside class="proSidebar" id="proSidebar"></aside>
+      <div class="sbScrim" id="sbScrim"></div>
+      <div class="proContent">
+        <header class="proTopbar" id="proTopbar"></header>
+        <main class="proMain" data-screen-label="Alertas">
+
+          <div class="pageHead">
+            <div class="pageHeadMain">
+              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Plataforma · Avisos</p>
+              <h1 class="pageTitle">Centro de <strong>alertas</strong></h1>
+              <p class="pageLede">Todo lo que pasa en Homyo en un único sitio: altas, moderación, cobros, incidencias y estado técnico de la plataforma.</p>
+            </div>
+            <div class="pageHeadActions">
+              <button class="btn ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 6 9 17l-5-5"/></svg>Marcar todo como leído</button>
+            </div>
+          </div>
+
+          <div class="filterChips" style="margin-bottom:18px;">
+            <button class="fchip isOn">Todo</button>
+            <button class="fchip">Sin leer <span class="c">4</span></button>
+            <button class="fchip">Altas</button>
+            <button class="fchip">Moderación</button>
+            <button class="fchip">Cobros</button>
+            <button class="fchip">Sistema</button>
+          </div>
+
+          <div class="card" style="padding:8px 24px;">
+            <ul class="actList">
+              <li>
+                <span class="actIc" style="background:var(--infoSoft);color:var(--info)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+                <div class="actBody"><h5>Nueva solicitud de alta</h5><p><b>Nidos del Sur Gestión</b> (Sevilla) ha enviado su documentación. Lista para revisar.</p></div>
+                <span class="actWhen">Hace 12 min</span>
+              </li>
+              <li>
+                <span class="actIc" style="background:var(--warnSoft);color:var(--warn)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+                <div class="actBody"><h5>Anuncio supera las 12 h en cola</h5><p>Ático en Calle Ferraz 12 (<b>Áurea</b>) lleva 14 h esperando moderación.</p></div>
+                <span class="actWhen">Hace 40 min</span>
+              </li>
+              <li>
+                <span class="actIc" style="background:var(--dangerSoft);color:var(--danger)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/></svg></span>
+                <div class="actBody"><h5>Posible anuncio duplicado reportado</h5><p>Piso en <b>Calle Goya 41</b> con la misma referencia en dos agencias distintas.</p></div>
+                <span class="actWhen">Hace 2 h</span>
+              </li>
+              <li>
+                <span class="actIc" style="background:var(--goodSoft);color:var(--good)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg></span>
+                <div class="actBody"><h5>Cobro mensual ejecutado</h5><p>412 suscripciones cobradas por <b>27.718 €</b>. 7 pagos fallidos requieren revisión.</p></div>
+                <span class="actWhen">Hoy, 06:00</span>
+              </li>
+              <li>
+                <span class="actIc" style="background:var(--infoSoft);color:var(--info)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+                <div class="actBody"><h5>Mensaje de soporte sin responder</h5><p><b>Inmobiliaria Vega</b> pregunta por el certificado energético obligatorio.</p></div>
+                <span class="actWhen">Ayer</span>
+              </li>
+              <li>
+                <span class="actIc" style="background:var(--lineSoft);color:var(--ink2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg></span>
+                <div class="actBody"><h5>Copia de seguridad completada</h5><p>Backup diario de la base de datos finalizado sin errores · 03:12.</p></div>
+                <span class="actWhen">Hoy, 03:12</span>
+              </li>
+              <li>
+                <span class="actIc" style="background:var(--cardWarm);color:var(--granate)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="8" r="3.2"/><path d="M2.6 20c1.1-3.4 11.7-3.4 12.8 0"/></svg></span>
+                <div class="actBody"><h5>Pico de registros de usuarios</h5><p>+318 usuarios nuevos esta semana, <b>+22 %</b> sobre la media.</p></div>
+                <span class="actWhen">Hace 2 días</span>
+              </li>
+            </ul>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <script>
+      window.ADMIN_PAGE = { active: "alertas", title: "Centro de alertas", crumb: "Plataforma · Todos los avisos" };
+    </script>
+    <script src="admin-shell.js"></script>
+  </body>
+</html>

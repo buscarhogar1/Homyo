@@ -1103,6 +1103,165 @@ body{
   background: rgba(0,0,0,0.78);
 }
 
+/* ---------------------------------------------------------------------
+   Transporte — barra de "área alcanzable" por modo (andando / público /
+   coche / bici). Mismo idioma visual que la timebar del Sol: crema
+   translúcido, blur, esquinas suaves, acento granate Homyo. */
+.transportBar{
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 720;
+  display: none;
+  pointer-events: auto;
+  max-width: calc(100% - 28px);
+}
+.transportBarInner{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 10px;
+  border-radius: 16px;
+  background: rgba(255,253,250,0.86);
+  border: 1px solid rgba(140,31,45,0.14);
+  box-shadow: 0 18px 40px rgba(60,12,18,0.16), inset 0 1px 0 rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  box-sizing: border-box;
+}
+
+.tpModes{
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(140,31,45,0.05);
+}
+.tpMode{
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 9px;
+  padding: 7px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: rgba(60,30,34,0.62);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.tpMode svg{ width: 19px; height: 19px; flex: 0 0 auto; }
+.tpMode:hover{ color: var(--bh-granate, #8C1F2D); background: rgba(255,255,255,0.6); }
+.tpMode.active{
+  background: #fff;
+  color: var(--bh-granate, #8C1F2D);
+  border-color: rgba(196,150,42,0.55);
+  box-shadow: 0 6px 16px rgba(140,31,45,0.14), inset 0 0 0 1px rgba(196,150,42,0.22);
+}
+
+.tpRight{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 168px;
+}
+.tpTime{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tpRange{
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 1 1 auto;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(140,31,45,0.18);
+  outline: none;
+  cursor: pointer;
+}
+.tpRange::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--bh-granate, #8C1F2D);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(140,31,45,0.35);
+  cursor: pointer;
+}
+.tpRange::-moz-range-thumb{
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: var(--bh-granate, #8C1F2D);
+  box-shadow: 0 2px 6px rgba(140,31,45,0.35);
+  cursor: pointer;
+}
+.tpTimeVal{
+  font-size: 13px;
+  color: rgba(60,30,34,0.62);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.tpTimeVal strong{
+  color: var(--bh-granate, #8C1F2D);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.tpHint{
+  font-size: 11px;
+  color: rgba(60,30,34,0.5);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* Pin de origen de la isócrona */
+.tpPin{ background: transparent; border: 0; }
+.tpPin span{
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--bh-granate, #8C1F2D);
+  border: 3px solid #fff;
+  box-shadow: 0 3px 10px rgba(140,31,45,0.45);
+  cursor: grab;
+}
+.tpPin span:active{ cursor: grabbing; }
+.leaflet-container.tpPicking{ cursor: crosshair; }
+
+/* Polígono isócrona (refuerzo por si Leaflet ignora opacidades inline) */
+.leaflet-interactive.tpIso{ transition: none; }
+
+@media (max-width: 768px){
+  .transportBar{
+    left: 10px;
+    right: 10px;
+    transform: none;
+    max-width: none;
+  }
+  .transportBarInner{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .tpModes{ justify-content: space-between; }
+  .tpMode{ flex: 1 1 0; justify-content: center; padding: 8px 6px; }
+  .tpMode span{ display: none; }
+  .tpMode svg{ width: 21px; height: 21px; }
+  .tpRight{ min-width: 0; }
+  .tpHint{ text-align: center; white-space: normal; }
+}
+
 /* Responsive: en móvil permitimos scroll normal y layout en columna */
 @media (max-width: 980px) {
   body{ overflow: auto; }
