@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sol · opciones de disposición</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #ECE8E1; }
+    * { box-sizing: border-box; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" src="sun-layout/design-canvas.jsx"></script>
+  <script type="text/babel" src="sun-layout/sun-scene.jsx"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useEffect } = React;
+
+    /* ---------- OPCIÓN A — Una sola barra inferior ---------- */
+    function OptionA() {
+      return (
+        <MapScene>
+          <Glass style={{
+            position: "absolute", bottom: 16, left: 176, width: 456, zIndex: 40,
+            padding: "10px 14px", display: "flex", flexDirection: "column", gap: 8,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <Readout />
+              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <DateControls compact />
+              </div>
+            </div>
+            <HourTrack />
+          </Glass>
+        </MapScene>
+      );
+    }
+
+    /* ---------- OPCIÓN B — Fecha arriba · tiempo abajo ---------- */
+    function OptionB() {
+      return (
+        <MapScene>
+          {/* dock superior: estado + día */}
+          <Glass style={{
+            position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", zIndex: 40,
+            padding: "8px 12px", display: "flex", alignItems: "center", gap: 12, whiteSpace: "nowrap",
+          }}>
+            <Readout />
+            <span style={{ width: 1, height: 20, background: "rgba(0,0,0,0.12)" }} />
+            <DateControls compact />
+          </Glass>
+          {/* scrubber inferior, centrado y estrecho */}
+          <Glass style={{
+            position: "absolute", bottom: 16, left: 176, width: 456, zIndex: 40,
+            padding: "9px 14px",
+          }}>
+            <HourTrack />
+          </Glass>
+        </MapScene>
+      );
+    }
+
+    /* ---------- OPCIÓN C — Panel lateral compacto ---------- */
+    function OptionC() {
+      return (
+        <MapScene>
+          <Glass style={{
+            position: "absolute", left: 14, top: 132, width: 214, zIndex: 40,
+            padding: "14px 14px 16px", display: "flex", flexDirection: "column", gap: 12,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "system-ui, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: SUN.granate }}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={SUN.granate} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="13" r="4" /><path d="M12 4v2M5 13H3M21 13h-2M6.5 7.5 5 6M17.5 7.5 19 6M3 18h18" /></svg>
+              Sol
+            </div>
+            <Readout style={{ fontSize: 12 }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <DateControls compact />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", fontSize: 9.5, color: SUN.inkSoft, fontFamily: "system-ui, sans-serif", lineHeight: 1 }}>
+                {["00","06","12","18","24"].map((h, i) => (
+                  <span key={h} style={{ textAlign: i === 0 ? "left" : i === 4 ? "right" : "center" }}>{h}</span>
+                ))}
+              </div>
+              <div style={{ position: "relative", height: 14, borderRadius: 999, border: "1px solid rgba(0,0,0,0.10)", overflow: "hidden", background: "rgba(0,0,0,0.04)" }}>
+                <div style={{ position: "absolute", left: "30%", width: "45%", top: 0, bottom: 0, background: SUN.orangeSoft }} />
+                <div style={{ position: "absolute", left: "44%", top: "50%", width: 14, height: 14, transform: "translate(-50%,-50%)", borderRadius: 999, background: SUN.orange, border: "3px solid #fff", boxShadow: "0 4px 12px rgba(0,0,0,0.18)" }} />
+              </div>
+            </div>
+          </Glass>
+        </MapScene>
+      );
+    }
+
+    function App() {
+      return (
+        <DesignCanvas>
+          <DCSection id="sol" title="Sol · disposición de controles" subtitle="Sin la etiqueta flotante sobre los grados · la lectura (hora · orientación · grados) se reubica en el control. Elige una.">
+            <DCArtboard id="a" label="A · Una sola barra inferior" width={W} height={H}><OptionA /></DCArtboard>
+            <DCArtboard id="b" label="B · Fecha arriba · tiempo abajo" width={W} height={H}><OptionB /></DCArtboard>
+            <DCArtboard id="c" label="C · Panel lateral compacto" width={W} height={H}><OptionC /></DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

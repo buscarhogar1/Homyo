@@ -597,6 +597,7 @@ export function initMap(){
     areaState.isDrawing = false;
     areaState.isFreehandActive = false;
     areaState.drawingMode = null;
+    disableDrawLock();
     clearTempDrawing();
     setMarkersVisible(true);
     setAreaHintVisible(false, "");
@@ -761,6 +762,7 @@ export function initMap(){
       setAreaHintVisible(true, "Mantén pulsado y dibuja el área. Suelta para terminar.");
       areaState.points = [];
       areaState.isFreehandActive = false;
+      enableDrawLock();
     }
   }
 
@@ -888,25 +890,56 @@ export function initMap(){
     return uniq.length >= 3 ? uniq : [];
   }
 
-  let freehandMoveHandler = null;
-  let freehandUpHandler = null;
   let freehandLastSample = null;
+  let freehandBound = false;
 
-  function startFreehand(e){
+  // Convierte un evento de ratón O táctil en latlng del mapa.
+  function drawLatLngFromEvent(ev){
+    let src = ev;
+    if (ev.touches && ev.touches.length) src = ev.touches[0];
+    else if (ev.changedTouches && ev.changedTouches.length) src = ev.changedTouches[0];
+    if (!src || src.clientX == null) return null;
+    try { return map.mouseEventToLatLng(src); } catch (err) { return null; }
+  }
+
+  // Bloquea el arrastre/zoom del mapa mientras el modo "dibujo libre" está activo.
+  // En pantallas táctiles esto es lo que evita que el dedo mueva o haga zoom al
+  // mapa: en su lugar el dedo dibuja el área.
+  function enableDrawLock(){
+    if (areaState._drawLocked) return;
+    areaState._drawLocked = true;
+    try { map.dragging.disable(); } catch (e) {}
+    try { map.touchZoom.disable(); } catch (e) {}
+    try { map.doubleClickZoom.disable(); } catch (e) {}
+    try { map.boxZoom.disable(); } catch (e) {}
+    if (map.tap) { try { map.tap.disable(); } catch (e) {} }
+    map.getContainer().classList.add("bh-drawing");
+  }
+
+  function disableDrawLock(){
+    if (!areaState._drawLocked) return;
+    areaState._drawLocked = false;
+    try { map.dragging.enable(); } catch (e) {}
+    try { map.touchZoom.enable(); } catch (e) {}
+    try { map.doubleClickZoom.enable(); } catch (e) {}
+    try { map.boxZoom.enable(); } catch (e) {}
+    if (map.tap) { try { map.tap.enable(); } catch (e) {} }
+    map.getContainer().classList.remove("bh-drawing");
+  }
+
+  function freehandStart(ev){
     if (!areaState.isDrawing || areaState.drawingMode !== "freehand") return;
     if (areaState.isFreehandActive) return;
 
+    const startLL = drawLatLngFromEvent(ev);
+    if (!startLL) return;
+
+    // Impide que el navegador haga scroll / pan / zoom al arrastrar el dedo.
+    if (ev.cancelable) ev.preventDefault();
+
     areaState.isFreehandActive = true;
-    areaState.points = [];
-    freehandLastSample = null;
-
-    map.dragging.disable();
-
-    const startLL = e.latlng;
-    if (startLL) {
-      areaState.points.push(startLL);
-      freehandLastSample = { ll: startLL, t: Date.now() };
-    }
+    areaState.points = [startLL];
+    freehandLastSample = { ll: startLL, t: Date.now() };
 
     if (areaState.tempLine) { areasLayer.removeLayer(areaState.tempLine); areaState.tempLine = null; }
     if (areaState.tempLivePoly) { areasLayer.removeLayer(areaState.tempLivePoly); areaState.tempLivePoly = null; }
@@ -916,56 +949,60 @@ export function initMap(){
       weight: 3,
       opacity: 1
     }).addTo(areasLayer);
+  }
 
-    freehandMoveHandler = (ev) => {
-      if (!areaState.isFreehandActive) return;
-      const ll = ev.latlng;
-      if (!ll) return;
+  function freehandMove(ev){
+    if (!areaState.isFreehandActive) return;
+    // Mientras dibujamos, bloqueamos el gesto nativo en cada movimiento.
+    if (ev.cancelable) ev.preventDefault();
 
-      const now = Date.now();
-      const prev = freehandLastSample?.ll;
+    const ll = drawLatLngFromEvent(ev);
+    if (!ll) return;
 
-      let ok = true;
-      if (freehandLastSample) {
-        const dt = now - freehandLastSample.t;
-        const dist = prev ? map.distance(prev, ll) : 999;
-        ok = (dt >= 18) && (dist >= 2.0);
-      }
+    const now = Date.now();
+    const prev = freehandLastSample?.ll;
 
-      if (!ok) return;
+    let ok = true;
+    if (freehandLastSample) {
+      const dt = now - freehandLastSample.t;
+      const dist = prev ? map.distance(prev, ll) : 999;
+      ok = (dt >= 18) && (dist >= 2.0);
+    }
 
-      areaState.points.push(ll);
-      freehandLastSample = { ll, t: now };
-      if (areaState.tempLine) areaState.tempLine.addLatLng(ll);
-    };
+    if (!ok) return;
 
-    freehandUpHandler = () => {
-      finishFreehand();
-    };
+    areaState.points.push(ll);
+    freehandLastSample = { ll, t: now };
+    if (areaState.tempLine) areaState.tempLine.addLatLng(ll);
+  }
 
-    map.on("mousemove", freehandMoveHandler);
-    map.on("mouseup", freehandUpHandler);
+  function freehandEnd(ev){
+    if (!areaState.isFreehandActive) return;
+    if (ev && ev.cancelable) ev.preventDefault();
+    finishFreehand();
+  }
 
-    map.on("touchmove", freehandMoveHandler);
-    map.on("touchend", freehandUpHandler);
-    map.on("touchcancel", freehandUpHandler);
+  // Listeners DOM nativos sobre el contenedor del mapa. Se enlazan una sola vez;
+  // sólo actúan cuando estamos en modo "dibujo libre" (las funciones comprueban
+  // el estado). Usar listeners nativos con { passive: false } nos permite llamar
+  // a preventDefault() y así evitar el desplazamiento táctil de la página.
+  function bindFreehandListeners(){
+    if (freehandBound) return;
+    freehandBound = true;
+    const c = map.getContainer();
+    c.addEventListener("mousedown", freehandStart);
+    window.addEventListener("mousemove", freehandMove);
+    window.addEventListener("mouseup", freehandEnd);
+    c.addEventListener("touchstart", freehandStart, { passive: false });
+    c.addEventListener("touchmove", freehandMove, { passive: false });
+    c.addEventListener("touchend", freehandEnd, { passive: false });
+    c.addEventListener("touchcancel", freehandEnd, { passive: false });
   }
 
   function finishFreehand(){
     if (!areaState.isDrawing || areaState.drawingMode !== "freehand") return;
 
-    map.off("mousemove", freehandMoveHandler);
-    map.off("mouseup", freehandUpHandler);
-    map.off("touchmove", freehandMoveHandler);
-    map.off("touchend", freehandUpHandler);
-    map.off("touchcancel", freehandUpHandler);
-
-    freehandMoveHandler = null;
-    freehandUpHandler = null;
-
     if (areaState.tempLine) { areasLayer.removeLayer(areaState.tempLine); areaState.tempLine = null; }
-
-    map.dragging.enable();
 
     const raw = areaState.points.slice();
     areaState.isFreehandActive = false;
@@ -1009,20 +1046,15 @@ export function initMap(){
     return true;
   }
 
-  map.on("mousedown", (e) => {
-    if (areaState.isDrawing && areaState.drawingMode === "freehand") {
-      startFreehand(e);
-    }
-  });
-
-  map.on("touchstart", (e) => {
-    if (areaState.isDrawing && areaState.drawingMode === "freehand") {
-      startFreehand(e);
-    }
-  });
+  // Enlaza los listeners de dibujo libre (ratón + táctil) una sola vez.
+  bindFreehandListeners();
 
   // Estado de resultados actuales (para listado)
   let currentRows = [];
+  // Último conjunto de anuncios traído del servidor (sin filtrar por áreas),
+  // para poder re-filtrar al vuelo cuando cambia el área de transporte.
+  let lastFetchedRows = [];
+  let lastViewInfo = { z: 0, mode: "" };
 
   function getListOrder(){
     return window.__bhListOrder || "date_desc";
@@ -1155,7 +1187,19 @@ export function initMap(){
 
     setStatus(`Cargando...`);
     const rows = await rpcSearchMapPoints(b, f);
-    const filtered = rows.filter(isInsideAnyArea);
+    lastFetchedRows = rows;
+    lastViewInfo = { z, mode: f.mode };
+    applyAreaFilterAndRender();
+  }
+
+  // Aplica TODOS los filtros geográficos (áreas dibujadas + área de transporte)
+  // sobre el último conjunto de anuncios traído del servidor y vuelve a pintar
+  // mapa + listado. Se puede invocar sin volver a consultar al servidor (p. ej.
+  // al mover el punto de transporte o el slider de minutos).
+  function applyAreaFilterAndRender() {
+    const filtered = lastFetchedRows.filter(
+      (p) => isInsideAnyArea(p) && isInsideTransportArea(p)
+    );
 
     currentRows = filtered;
 
@@ -1164,7 +1208,8 @@ export function initMap(){
 
     renderList();
 
-    setStatus(`Anuncios: ${filtered.length} | zoom ${z} | modo=${f.mode}`);
+    const z = lastViewInfo.z, mode = lastViewInfo.mode;
+    setStatus(`Anuncios: ${filtered.length} | zoom ${z} | modo=${mode}`);
   }
 
   function isMapHidden() {
@@ -1556,6 +1601,7 @@ export function initMap(){
     sunOverlayEl.style.display = ok ? "block" : "none";
     sunTimebarEl.style.display = ok ? "block" : "none";
     sunDateDockEl.style.display = ok ? "block" : "none";
+    document.body.classList.toggle("sunActive", !!ok);
 
     if (!ok) return;
 
@@ -1741,6 +1787,29 @@ export function initMap(){
   let transportMinsIdx = 2; // 15 min
   let transportOrigin = null;
   let transportPin = null;
+  // Anillo (polígono) del área alcanzable actual, como [{lat,lng}], usado para
+  // filtrar los anuncios igual que las áreas dibujadas a mano.
+  let transportRing = null;
+
+  // ¿El anuncio cae dentro del área de transporte? Si el transporte está
+  // apagado o aún no hay anillo, no filtra (deja pasar todo).
+  function isInsideTransportArea(p){
+    if (!transportEnabled || !transportRing || transportRing.length < 3) return true;
+    if (p.lat == null || p.lng == null) return false;
+    return pointInPoly(p.lat, p.lng, transportRing);
+  }
+
+  // Re-filtra (sin reconsultar al servidor) los anuncios ya cargados cuando
+  // cambia el área de transporte. Pequeño debounce para arrastres del punto y
+  // del slider de minutos.
+  let transportRefilterTimer = null;
+  function scheduleTransportRefilter(){
+    if (transportRefilterTimer) clearTimeout(transportRefilterTimer);
+    transportRefilterTimer = setTimeout(() => {
+      transportRefilterTimer = null;
+      if (typeof applyAreaFilterAndRender === "function") applyAreaFilterAndRender();
+    }, 90);
+  }
 
   function tpHash(str){
     let h = 2166136261;
@@ -1782,10 +1851,18 @@ export function initMap(){
 
   function tpDrawIso(){
     transportLayer.clearLayers();
-    if (!transportEnabled || !transportOrigin) return;
+    if (!transportEnabled || !transportOrigin) {
+      transportRing = null;
+      scheduleTransportRefilter();
+      return;
+    }
     const mins = TP_MINUTES[transportMinsIdx];
     const radiusM = tpReachMeters(transportMode, mins);
     const ring = tpIsoRing(transportOrigin, radiusM, transportMode);
+
+    // Guarda el anillo como [{lat,lng}] para filtrar los anuncios.
+    transportRing = ring.map((pt) => ({ lat: pt[0], lng: pt[1] }));
+    scheduleTransportRefilter();
 
     // Halo exterior suave + relleno + borde nítido.
     L.polygon(ring, {
@@ -1860,6 +1937,8 @@ export function initMap(){
     } else {
       tpRemovePin();
       transportLayer.clearLayers();
+      transportRing = null;
+      scheduleTransportRefilter();
       cont.classList.remove("tpPicking");
     }
   }
