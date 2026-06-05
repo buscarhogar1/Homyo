@@ -15,7 +15,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css?v=20260604_freehandtouch" />
+    <link rel="stylesheet" href="./bh-map.css?v=20260605_fixes9" />
 
     <style>
       @media (max-width: 720px){
@@ -301,8 +301,11 @@
               <div id="sunDateDock" class="sunDateDock" aria-hidden="true">
                 <div class="sunDateDockInner">
                   <input type="date" id="sunDate" />
-                  <button type="button" id="sunNowBtn">Ahora</button>
                 </div>
+              </div>
+
+              <div id="sunNowDock" class="sunNowDock" aria-hidden="true">
+                <button type="button" id="sunNowBtn">Ahora</button>
               </div>
 
               <div id="sunTimebar" class="sunTimebar" aria-hidden="true">
@@ -453,7 +456,7 @@
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
       import { initFiltersBar, clearAllFilters } from "./bh-map-filters.js?v=20260602_modefilters";
-      import { initMap } from "./bh-map-core.js?v=20260604_freehandtouch";
+      import { initMap } from "./bh-map-core.js?v=20260605_fixes8";
       import { getSession, saveCurrentSearch } from "./bh-user-data.js?v=20260512_saved_searches_real_v3";
 
       // Header / auth
@@ -536,9 +539,15 @@
         // Reglas: no se puede ocultar mapa y listado a la vez
         if (btnList) btnList.disabled = mapHidden;
         if (btnMap) btnMap.disabled = listHidden;
-        // Si filtros y listado están ocultos a la vez, sólo queda el mapa:
-        // no tiene sentido el botón "Ocultar mapa", así que lo ocultamos.
-        if (btnMap) btnMap.hidden = filtersHidden && listHidden;
+        // "Ocultar mapa": no tiene sentido cuando el listado está oculto (no se
+        // pueden ocultar mapa y listado a la vez) → lo ocultamos por completo.
+        if (btnMap) btnMap.hidden = listHidden;
+        // "Ocultar listado": no tiene sentido cuando el mapa está oculto → lo ocultamos.
+        if (btnList) btnList.hidden = mapHidden;
+        // Filtros ocultos: reposiciona el cartel de ubicación junto al botón
+        // "Mostrar filtros" (ver .topRow.filtersHidden en el CSS).
+        const topRowEl = document.querySelector(".topRow");
+        if (topRowEl) topRowEl.classList.toggle("filtersHidden", filtersHidden);
         // Botón "Eliminar filtros" sólo visible cuando hay filtros aplicados
         // (y, en escritorio, cuando la columna de filtros está visible)
         syncClearFiltersVisibility();

@@ -48,6 +48,7 @@ export function initMap(){
 
   const sunTimebarEl = document.getElementById("sunTimebar");
   const sunDateDockEl = document.getElementById("sunDateDock");
+  const sunNowDockEl = document.getElementById("sunNowDock");
   const sunHoursRowEl = document.getElementById("sunHoursRow");
   const sunTrackEl = document.getElementById("sunTrack");
   const sunRangeEl = document.getElementById("sunRange");
@@ -349,6 +350,44 @@ export function initMap(){
     }
     [p.photo_2_url, p.photo_3_url, p.second_photo_url, p.third_photo_url].forEach(push);
     return out.slice(0, max);
+  }
+
+  // Recoge TODAS las fotos de un anuncio (principal + adicionales) en orden,
+  // tolerando los distintos nombres de campo del backend.
+  function collectAllPhotoUrls(p){
+    const out = [];
+    const push = (u) => {
+      if (typeof u === "string"){
+        const v = u.trim();
+        if (v && !out.includes(v)) out.push(v);
+      } else if (u && typeof u === "object"){
+        push(u.url || u.src || u.photo_url);
+      }
+    };
+    push(p && p.main_photo_url);
+    const arrays = [p.photo_urls, p.photos, p.gallery, p.gallery_urls, p.extra_photos, p.images, p.image_urls];
+    for (const arr of arrays){ if (Array.isArray(arr)) arr.forEach(push); }
+    [p.photo_2_url, p.photo_3_url, p.second_photo_url, p.third_photo_url].forEach(push);
+    return out;
+  }
+
+  // Guarda las fotos de cada anuncio para que la ficha (listing.html) pueda
+  // mostrarlas aunque la vista de detalle del backend no las devuelva. Se
+  // conserva entre navegaciones en la misma pestaña (sessionStorage).
+  function storeListingPhotos(rows){
+    try {
+      const store = {};
+      (rows || []).forEach((p) => {
+        const id = String((p && p.listing_id) || "");
+        if (!id) return;
+        const urls = collectAllPhotoUrls(p);
+        if (urls.length) store[id] = urls;
+      });
+      if (!Object.keys(store).length) return;
+      let prev = {};
+      try { prev = JSON.parse(sessionStorage.getItem("homyo_listing_photos") || "{}"); } catch {}
+      sessionStorage.setItem("homyo_listing_photos", JSON.stringify({ ...prev, ...store }));
+    } catch {}
   }
 
   function createListMediaWrap(p, img, ph){
@@ -1188,6 +1227,7 @@ export function initMap(){
     setStatus(`Cargando...`);
     const rows = await rpcSearchMapPoints(b, f);
     lastFetchedRows = rows;
+    storeListingPhotos(rows);
     lastViewInfo = { z, mode: f.mode };
     applyAreaFilterAndRender();
   }
@@ -1472,7 +1512,8 @@ export function initMap(){
         y: o.y,
         "text-anchor": o.anchor,
         "font-size": "34",
-        fill: "rgba(0,0,0,0.45)"
+        fill: "rgba(0,0,0,0.45)",
+        "data-axis": o.label
       });
       t.textContent = o.label;
       svg.appendChild(t);
@@ -1595,12 +1636,64 @@ export function initMap(){
     sunTrackEl.style.setProperty("--ss", `${ssPct.toFixed(3)}%`);
   }
 
+  function sizeSunOverlayMobile(){
+    // El tamaño (y la posición vertical) del diagrama solar lo determina el
+    // espacio disponible entre las dos tarjetas:
+    //  · MÓVIL: borde SUPERIOR de la "N" a 5px por debajo de la tarjeta de la
+    //    fecha, y borde INFERIOR de la "S" a 5px por encima de la barra de horas.
+    //  · WEB (escritorio): borde SUPERIOR de la "N" justo en la horizontal del
+    //    borde INFERIOR del campo de calendario (0px), y borde INFERIOR de la "S"
+    //    a 5px por encima de la barra de horas.
+    // Medimos las cajas reales de las letras (getBBox, en unidades del viewBox)
+    // para que el ajuste sea exacto independientemente de la tipografía.
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+    const nText = sunPolarOverlaySvg.querySelector('[data-axis="N"]');
+    const sText = sunPolarOverlaySvg.querySelector('[data-axis="S"]');
+    if (!nText || !sText) return;
+
+    let nBB, sBB;
+    try { nBB = nText.getBBox(); sBB = sText.getBBox(); } catch (e) { return; }
+
+    const V = 1120; // ancho/alto del viewBox del SVG
+    const nTopUnit = nBB.y;                  // borde superior de la N (uds. SVG)
+    const sBottomUnit = sBB.y + sBB.height;  // borde inferior de la S (uds. SVG)
+    const spanUnit = sBottomUnit - nTopUnit;
+    if (!(spanUnit > 0)) return;
+
+    const parent = sunOverlayEl.offsetParent || sunOverlayEl.parentElement;
+    if (!parent) return;
+    const pRect = parent.getBoundingClientRect();
+    const dockRect = sunDateDockEl.getBoundingClientRect();
+    const barRect = sunTimebarEl.getBoundingClientRect();
+
+    // En web la N arranca justo en el borde inferior del calendario (sin hueco);
+    // en móvil queda a 5px por debajo de la tarjeta de la fecha.
+    const GAP_TOP = isMobile ? 5 : 0;
+    const GAP_BOTTOM = 5;
+    const topTargetPx = (dockRect.bottom - pRect.top) + GAP_TOP;  // borde sup. de la N
+    const bottomTargetPx = (barRect.top - pRect.top) - GAP_BOTTOM; // borde inf. de la S
+    const availPx = bottomTargetPx - topTargetPx;
+    if (!(availPx > 0)) return;
+
+    // Caja cuadrada con viewBox cuadrado => sin letterbox: px = unidad * (box/V).
+    const scale = availPx / spanUnit;       // px por unidad SVG
+    const boxPx = V * scale;
+    const boxTopPx = topTargetPx - nTopUnit * scale;
+
+    sunOverlayEl.style.width = boxPx + "px";
+    sunOverlayEl.style.height = boxPx + "px";
+    sunOverlayEl.style.top = boxTopPx + "px";
+    sunOverlayEl.style.transform = "translateX(-50%)";
+  }
+
   function updateSunOverlay(){
     const ok = sunEnabled && map.getZoom() >= ZOOM_SOL_MIN;
 
     sunOverlayEl.style.display = ok ? "block" : "none";
     sunTimebarEl.style.display = ok ? "block" : "none";
     sunDateDockEl.style.display = ok ? "block" : "none";
+    if (sunNowDockEl) sunNowDockEl.style.display = ok ? "block" : "none";
     document.body.classList.toggle("sunActive", !!ok);
 
     if (!ok) return;
@@ -1613,6 +1706,10 @@ export function initMap(){
 
     const meta = drawSunPolar(sunPolarOverlaySvg, c, iso, mins);
 
+    // El diagrama ya está dibujado (existen las letras N/S): ahora lo medimos y
+    // lo dimensionamos/posicionamos respecto a las dos tarjetas en móvil.
+    sizeSunOverlayMobile();
+
     const card = bearingToCardinal(meta.bearingDeg);
     if (meta.isDay) {
       sunOverlayLabelEl.textContent = `${minutesToHHMM(mins)} · ${card} · ${Math.round(meta.bearingDeg)}° · alt ${Math.round(meta.altDeg)}°`;
@@ -1624,6 +1721,60 @@ export function initMap(){
   function setSunEnabled(next){
     sunEnabled = next;
     updateSunOverlay();
+    updateZoomShift();
+  }
+
+  // Sube los botones +/- del zoom (esquina inferior derecha en escritorio) cuando
+  // alguna barra/overlay inferior está activa, para que no se solapen. Mismo
+  // comportamiento que ya tenía la barra de Transporte (.tpPicking), ahora
+  // compartido por Sol, Área por puntos y Área de dibujo libre.
+  function updateZoomShift(){
+    if (!map) return;
+    const areaActive = !!(areaState && (areaState.pointsActive || areaState.freehandActive));
+    const barShift = !!sunEnabled || !!transportEnabled;
+    const cont = map.getContainer();
+    // Con un área activa (por puntos / dibujo libre) los botones +/- del zoom se
+    // colocan en la misma vertical que la cartela explicativa (.areaHint), con la
+    // base del "−" a 8px de su borde superior → clase específica .bhAreaShift.
+    // Para Sol / Transporte se mantiene el desplazamiento general (.bhBottomShift).
+    cont.classList.toggle("bhAreaShift", areaActive);
+    // Sol: los botones +/- suben justo encima de la barra de horario del sol
+    // (la base del "−" a 8px de la cara superior de la barra) → clase propia.
+    const sunShift = !!sunEnabled && !areaActive;
+    cont.classList.toggle("bhSunShift", sunShift);
+    // Transporte (u otras barras inferiores) usan el desplazamiento general,
+    // salvo cuando manda el Sol (que tiene su propio cálculo).
+    cont.classList.toggle("bhBottomShift", barShift && !areaActive && !sunShift);
+    updateTransportStacked();
+  }
+
+  // En escritorio, si el mapa es demasiado estrecho para que la barra de
+  // transporte quepa en una sola fila (iconos a la izquierda, tiempo a la
+  // derecha), apilamos el bloque del tiempo DEBAJO de los iconos. Se decide
+  // midiendo el ancho disponible del mapa frente al ancho natural de los
+  // iconos + el bloque de tiempo.
+  function updateTransportStacked(){
+    if (!transportBarEl) return;
+    const wrap = document.getElementById("mapWrap");
+    const inner = transportBarEl.querySelector(".transportBarInner");
+    const modes = transportBarEl.querySelector(".tpModes");
+    if (!wrap || !inner || !modes) return;
+
+    const desktop = window.matchMedia("(min-width: 769px)").matches;
+    const visible = transportEnabled && transportBarEl.style.display !== "none";
+    if (!desktop || !visible){
+      transportBarEl.classList.remove("tpStacked");
+      return;
+    }
+
+    // Los iconos ahora se estiran a igual ancho (flex), así que su scrollWidth ya
+    // no refleja el ancho "natural". Decidimos apilar por un umbral fijo: ancho
+    // mínimo cómodo para que la fila completa (iconos con texto + bloque de
+    // tiempo) quepa sin apretarse.
+    const MIN_ROW_WIDTH = 620;  // ~4 iconos con etiqueta + tiempo + huecos
+    const BAR_MARGIN = 28;      // 14px de margen a cada lado
+    const available = wrap.clientWidth - BAR_MARGIN;
+    transportBarEl.classList.toggle("tpStacked", available < MIN_ROW_WIDTH);
   }
 
   function initHoursRow(){
@@ -1648,6 +1799,7 @@ export function initMap(){
   initHoursRow();
   preventMapDragOn(sunTimebarEl);
   preventMapDragOn(sunDateDockEl);
+  if (sunNowDockEl) preventMapDragOn(sunNowDockEl);
 
   sunState.dateISO = todayISO();
   sunState.minutes = nowMinutes();
@@ -1929,6 +2081,7 @@ export function initMap(){
     if (transportEnabled){
       // Exclusión mutua con el Sol (comparten zona inferior).
       if (areaState && typeof areaState.sunBtnForceOff === "function") areaState.sunBtnForceOff();
+      if (areaState && typeof areaState.areasForceOff === "function") areaState.areasForceOff();
       if (!transportOrigin) transportOrigin = map.getCenter();
       tpEnsurePin();
       tpUpdateBar();
@@ -1941,6 +2094,7 @@ export function initMap(){
       scheduleTransportRefilter();
       cont.classList.remove("tpPicking");
     }
+    updateZoomShift();
   }
 
   // Permite que el Sol apague el transporte al activarse.
@@ -2030,6 +2184,7 @@ export function initMap(){
 
         const next = !sunEnabled;
         if (next && typeof areaState.transportForceOff === "function") areaState.transportForceOff();
+        if (next && typeof areaState.areasForceOff === "function") areaState.areasForceOff();
         btn.classList.toggle("active", next);
         setSunEnabled(next);
       });
@@ -2050,6 +2205,7 @@ export function initMap(){
   window.addEventListener("resize", () => {
     initHoursRow();
     if (sunEnabled) updateSunOverlay();
+    updateTransportStacked();
   });
 
   // Cuando cambia layout (ocultar/mostrar columnas) Leaflet necesita invalidateSize
@@ -2074,6 +2230,7 @@ export function initMap(){
   window.addEventListener("bh:layout-resize", () => {
     requestAnimationFrame(() => {
       safeInvalidate();
+      updateTransportStacked();
       setTimeout(() => safeInvalidate(), 120);
       setTimeout(() => safeInvalidate(), 260);
     });
@@ -2151,9 +2308,30 @@ export function initMap(){
         btnPoints.classList.toggle("active", areaState.pointsActive);
         btnFree.classList.toggle("active", areaState.freehandActive);
         refreshPlusVisibility();
+        updateZoomShift();
       }
 
       areaState.refreshAreasUI = refreshButtons;
+
+      // Apaga cualquier área activa (puntos o dibujo libre). Lo usan el Sol y el
+      // Transporte para que solo una herramienta del mapa esté activa a la vez.
+      function areasForceOff(){
+        let changed = false;
+        if (areaState.pointsActive){
+          areaState.pointsActive = false;
+          if (areaState.isDrawing && areaState.drawingMode === "points") cancelCurrentDrawing();
+          removeAreasByType("points");
+          changed = true;
+        }
+        if (areaState.freehandActive){
+          areaState.freehandActive = false;
+          if (areaState.isDrawing && areaState.drawingMode === "freehand") cancelCurrentDrawing();
+          removeAreasByType("freehand");
+          changed = true;
+        }
+        if (changed) refreshButtons();
+      }
+      areaState.areasForceOff = areasForceOff;
 
       function startPointsArea(){
         if (areaState.polys.length >= MAX_AREAS) return;
@@ -2180,6 +2358,10 @@ export function initMap(){
           return;
         }
 
+        // Exclusión mutua con las otras herramientas del mapa (Sol/Transporte).
+        if (typeof areaState.transportForceOff === "function") areaState.transportForceOff();
+        if (typeof areaState.sunBtnForceOff === "function") areaState.sunBtnForceOff();
+
         areaState.freehandActive = false;
         if (areaState.isDrawing && areaState.drawingMode === "freehand") cancelCurrentDrawing();
 
@@ -2197,6 +2379,10 @@ export function initMap(){
           refreshButtons();
           return;
         }
+
+        // Exclusión mutua con las otras herramientas del mapa (Sol/Transporte).
+        if (typeof areaState.transportForceOff === "function") areaState.transportForceOff();
+        if (typeof areaState.sunBtnForceOff === "function") areaState.sunBtnForceOff();
 
         areaState.pointsActive = false;
         if (areaState.isDrawing && areaState.drawingMode === "points") cancelCurrentDrawing();
@@ -2267,6 +2453,32 @@ export function initMap(){
   map.on("moveend", schedulePlaceUpdate);
   map.on("zoomend", schedulePlaceUpdate);
 
+  // Activa la herramienta que el usuario dejó seleccionada en el index
+  // (Área / Trazo / Sol / Distancia) leyendo el parámetro ?quick=…
+  function activateQuickToolFromUrl(){
+    try {
+      const quick = (new URL(window.location.href)).searchParams.get("quick");
+      if (!quick) return;
+      if (quick === "vehicle" || quick === "transport"){
+        const b = document.getElementById("transportBtn");
+        if (b && !b.classList.contains("active")) b.click();
+      } else if (quick === "sun"){
+        const b = document.getElementById("sunBtn");
+        if (!b) return;
+        // El Sol necesita un zoom mínimo: nos acercamos si hace falta.
+        if (map.getZoom() < ZOOM_SOL_MIN) map.setZoom(ZOOM_SOL_MIN, { animate: false });
+        if (!b.classList.contains("active")) b.click();
+      } else if (quick === "area"){
+        const b = areaState && areaState.btnPointsEl;
+        if (b && !b.classList.contains("active")) b.click();
+      } else if (quick === "trace"){
+        const b = areaState && areaState.btnFreeEl;
+        if (b && !b.classList.contains("active")) b.click();
+      }
+      // quick === "location" lo gestiona el propio index (geolocaliza y centra).
+    } catch {}
+  }
+
   (async function init(){
     try {
       wireHeaderMiniSearch();
@@ -2301,6 +2513,9 @@ export function initMap(){
 
       // etiqueta inicial
       schedulePlaceUpdate();
+
+      // Herramienta seleccionada en el index (Área / Trazo / Sol / Distancia)
+      activateQuickToolFromUrl();
 
       // Segunda pasada por si el layout termina de ajustar, sin permitir desplazamientos automáticos
       setTimeout(() => {

@@ -398,6 +398,28 @@
         inset 0 1px 0 rgba(255,255,255,.95);
     }
 
+    .quickAction.selected .quickActionIcon{
+      background:var(--granate);
+      border-color:var(--granate);
+      box-shadow:
+        0 12px 28px rgba(138,31,45,.22),
+        inset 0 1px 0 rgba(255,255,255,.18);
+    }
+
+    .quickAction.selected:hover .quickActionIcon{
+      border-color:var(--granate);
+      transform:translateY(-2px);
+    }
+
+    .quickAction.selected .quickActionIcon svg{
+      stroke:#fff;
+    }
+
+    .quickAction.selected .quickActionLabel{
+      color:var(--granate);
+      font-weight:800;
+    }
+
     .quickActionIcon svg{
       width:24px;
       height:24px;
@@ -979,6 +1001,7 @@
       const params = new URLSearchParams();
       params.set("city", cleanCity);
       params.set("mode", getSelectedMode());
+      if (window.BH_selectedQuick) params.set("quick", window.BH_selectedQuick);
 
       window.location.href = "./map.html?" + params.toString();
     }
@@ -1040,6 +1063,14 @@
         const coreTop0 = coreRect.top;
         if (H <= 0 || Gh <= 0) return;
 
+        // Alto natural de la fila de los 5 iconos (no cambia con su posición).
+        const quickActionsEl = quickZone.querySelector(".quickActions");
+        const iconsH = quickActionsEl
+          ? Math.ceil(quickActionsEl.getBoundingClientRect().height)
+          : 80;
+        const KB_TOP = 8;   // margen superior de los iconos con el teclado abierto
+        const KB_GAP = 12;  // hueco entre los iconos y el buscador
+
         // Modo "buscador expandido" en móvil: con el buscador enfocado (teclado
         // visible) o cuando el usuario escribió y ocultó el teclado manteniendo
         // las sugerencias (BH_searchExpanded).
@@ -1089,13 +1120,13 @@
         const maxTop  = Math.max(minTop, H - Gh - 4);
         let coreTopPx;
         if (kbMode) {
-          // Teclado abierto: llevamos el centro del hueco botones↔buscador
-          // pegado a la parte superior. Así el buscador queda arriba del
-          // todo y abajo queda libre para las sugerencias (que de otro modo
-          // se quedan tras el teclado). Permitimos que los botones suban
-          // fuera de vista (sin tope mínimo).
-          const TOP_MARGIN = 8;
-          coreTopPx = Math.min(TOP_MARGIN - anchorRel, maxTop);
+          // Teclado abierto: bajamos el buscador justo lo necesario para que los
+          // 5 iconos quepan ENCIMA de él (iconos: KB_TOP … KB_TOP+iconsH, hueco,
+          // luego el buscador). La fila de botones (Comprar/Alquilar/Habitación)
+          // se oculta para dejar sitio.
+          const sbEl = inner.querySelector(".searchBox");
+          const sbTopRel = sbEl ? (sbEl.getBoundingClientRect().top - coreTop0) : 0;
+          coreTopPx = Math.min((KB_TOP + iconsH + KB_GAP) - sbTopRel, maxTop);
         } else {
           coreTopPx = (H - blockTop) / 2 - anchorRel;
           coreTopPx = Math.max(minTop, Math.min(coreTopPx, maxTop));
@@ -1107,20 +1138,25 @@
         logoZone.style.top    = "0px";
         logoZone.style.height = Math.max(0, comprarTopAbs) + "px";
 
-        // Banda de los iconos: del final de las frases a la base.
+        // Banda de los iconos.
         const subBottomAbs = coreTopPx + subBottomRel;
-        quickZone.style.top    = subBottomAbs + "px";
-        quickZone.style.height = Math.max(0, H - subBottomAbs) + "px";
+        const modeRowEl = inner.querySelector(".modeRow");
 
-        // En móvil, durante la búsqueda expandida (teclado abierto, o el usuario
-        // ha escrito y oculta el teclado con sugerencias visibles), ocultamos
-        // los 5 accesos rápidos para que no aparezcan bajo las sugerencias.
         if (mq.matches && kbMode) {
-          quickZone.style.visibility   = "hidden";
-          quickZone.style.pointerEvents = "none";
-        } else {
-          quickZone.style.visibility   = "";
+          // Teclado abierto: los 5 iconos se colocan ENCIMA del buscador, en la
+          // parte superior, y ocultamos la fila de botones para ganar espacio.
+          quickZone.style.top           = KB_TOP + "px";
+          quickZone.style.height        = iconsH + "px";
+          quickZone.style.visibility    = "";
           quickZone.style.pointerEvents = "";
+          if (modeRowEl) modeRowEl.style.visibility = "hidden";
+        } else {
+          // Estado normal: los iconos van abajo, bajo las frases.
+          quickZone.style.top           = subBottomAbs + "px";
+          quickZone.style.height        = Math.max(0, H - subBottomAbs) + "px";
+          quickZone.style.visibility    = "";
+          quickZone.style.pointerEvents = "";
+          if (modeRowEl) modeRowEl.style.visibility = "";
         }
 
         // Si el panel de sugerencias está montado, lo recolocamos para que
@@ -1253,6 +1289,26 @@
       go(city);
     });
 
+    // Estado de herramienta seleccionada (Área / Trazo / Sol / Distancia).
+    // Al seleccionar una NO se navega: se marca como activa y, cuando el usuario
+    // busque (sugerencia o botón Buscar), se abre el mapa con esa herramienta ya
+    // activada sobre la ubicación elegida.
+    window.BH_selectedQuick = null;
+
+    function applySelectedQuickUI(){
+      document.querySelectorAll("[data-quick-action]").forEach((b) => {
+        const a = b.getAttribute("data-quick-action");
+        const on = a === window.BH_selectedQuick;
+        b.classList.toggle("selected", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+
+    function setSelectedQuick(action){
+      window.BH_selectedQuick = (window.BH_selectedQuick === action) ? null : action;
+      applySelectedQuickUI();
+    }
+
     document.querySelectorAll("[data-quick-action]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const action = btn.getAttribute("data-quick-action");
@@ -1283,24 +1339,9 @@
           return;
         }
 
-        if (action === "area") {
-          window.location.href = mapUrl({ quick: "area" });
-          return;
-        }
-
-        if (action === "trace") {
-          window.location.href = mapUrl({ quick: "trace" });
-          return;
-        }
-
-        if (action === "sun") {
-          window.location.href = mapUrl({ quick: "sun" });
-          return;
-        }
-
-        if (action === "vehicle") {
-          window.location.href = mapUrl({ quick: "vehicle" });
-        }
+        // Resto de herramientas (Área / Trazo / Sol / Distancia): se seleccionan
+        // sin navegar. El icono queda marcado como activo.
+        setSelectedQuick(action);
       });
     });
 
@@ -1553,6 +1594,7 @@
         const params = new URLSearchParams();
         params.set("city", it.label);
         params.set("mode", getSelectedMode());
+        if (window.BH_selectedQuick) params.set("quick", window.BH_selectedQuick);
         if (it.lat != null && it.lon != null) {
           params.set("lat", it.lat);
           params.set("lng", it.lon);

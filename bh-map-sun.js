@@ -12,6 +12,7 @@
 
   const sunTimebarEl = document.getElementById("sunTimebar");
   const sunDateDockEl = document.getElementById("sunDateDock");
+  const sunNowDockEl = document.getElementById("sunNowDock");
   const sunHoursRowEl = document.getElementById("sunHoursRow");
   const sunTrackEl = document.getElementById("sunTrack");
   const sunRangeEl = document.getElementById("sunRange");
@@ -145,7 +146,8 @@ function polarXY(cx, cy, R, bearingDeg, altDeg){
         y: o.y,
         "text-anchor": o.anchor,
         "font-size": "34",
-        fill: "rgba(0,0,0,0.45)"
+        fill: "rgba(0,0,0,0.45)",
+        "data-axis": o.label
       });
       t.textContent = o.label;
       svg.appendChild(t);
@@ -327,12 +329,65 @@ function polarXY(cx, cy, R, bearingDeg, altDeg){
     sunTrackEl.style.setProperty("--ss", `${ssPct.toFixed(3)}%`);
   }
 
+  // En móvil, el tamaño del diagrama solar lo determina el espacio vertical
+  // disponible: la parte SUPERIOR de la "N" debe quedar a 5px por debajo de la
+  // tarjeta de la fecha, y la parte INFERIOR de la "S" a 5px por encima de la
+  // tarjeta de las horas. Medimos las cajas reales de las letras (getBBox) para
+  // que el ajuste sea exacto independientemente de la tipografía.
+  function applyMobileSunLayout(svg){
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+    if (!isMobile) {
+      // En escritorio dejamos que mande el CSS.
+      sunOverlayEl.style.width = "";
+      sunOverlayEl.style.height = "";
+      sunOverlayEl.style.top = "";
+      sunOverlayEl.style.transform = "";
+      return;
+    }
+
+    const nText = svg.querySelector('[data-axis="N"]');
+    const sText = svg.querySelector('[data-axis="S"]');
+    if (!nText || !sText) return;
+
+    let nBB, sBB;
+    try { nBB = nText.getBBox(); sBB = sText.getBBox(); } catch (e) { return; }
+
+    const V = 1120; // ancho/alto del viewBox del SVG
+    const nTopUnit = nBB.y;                  // borde superior de la N (uds. SVG)
+    const sBottomUnit = sBB.y + sBB.height;  // borde inferior de la S (uds. SVG)
+    const spanUnit = sBottomUnit - nTopUnit;
+    if (!(spanUnit > 0)) return;
+
+    const parent = sunOverlayEl.offsetParent || sunOverlayEl.parentElement;
+    if (!parent) return;
+    const pRect = parent.getBoundingClientRect();
+    const dockRect = sunDateDockEl.getBoundingClientRect();
+    const barRect = sunTimebarEl.getBoundingClientRect();
+
+    const GAP = 5;
+    const topTargetPx = (dockRect.bottom - pRect.top) + GAP;   // dónde va el borde sup. de la N
+    const bottomTargetPx = (barRect.top - pRect.top) - GAP;    // dónde va el borde inf. de la S
+    const availPx = bottomTargetPx - topTargetPx;
+    if (!(availPx > 0)) return;
+
+    const scale = availPx / spanUnit; // px por unidad SVG (caja cuadrada, sin letterbox)
+    const boxPx = V * scale;
+    const boxTopPx = topTargetPx - nTopUnit * scale;
+
+    sunOverlayEl.style.width = boxPx + "px";
+    sunOverlayEl.style.height = boxPx + "px";
+    sunOverlayEl.style.top = boxTopPx + "px";
+    sunOverlayEl.style.transform = "translateX(-50%)";
+  }
+
   function updateSunOverlay(){
     const ok = sunEnabled && map.getZoom() >= ZOOM_SOL_MIN;
 
     sunOverlayEl.style.display = ok ? "block" : "none";
     sunTimebarEl.style.display = ok ? "block" : "none";
     sunDateDockEl.style.display = ok ? "block" : "none";
+    if (sunNowDockEl) sunNowDockEl.style.display = ok ? "block" : "none";
 
     if (!ok) return;
 
@@ -343,6 +398,8 @@ function polarXY(cx, cy, R, bearingDeg, altDeg){
     updateDaylightBand();
 
     const meta = drawSunPolar(sunPolarOverlaySvg, c, iso, mins);
+
+    applyMobileSunLayout(sunPolarOverlaySvg);
 
     const card = bearingToCardinal(meta.bearingDeg);
     if (meta.isDay) {
@@ -378,6 +435,7 @@ function polarXY(cx, cy, R, bearingDeg, altDeg){
   initHoursRow();
   preventMapDragOn(sunTimebarEl);
   preventMapDragOn(sunDateDockEl);
+  if (sunNowDockEl) preventMapDragOn(sunNowDockEl);
 
   sunState.dateISO = todayISO();
   sunState.minutes = nowMinutes();

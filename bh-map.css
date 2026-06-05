@@ -722,7 +722,7 @@ body{
   line-height: 1 !important;
   border-radius: 14px !important;
   border: 1px solid rgba(140,31,45,0.14) !important;
-  background: rgba(255,253,250,0.94) !important;
+  background: rgba(255,253,250,0.92) !important;
   color: var(--bh-granate, #8C1F2D) !important;
   font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
   font-size: 22px !important;
@@ -733,8 +733,7 @@ body{
   text-decoration: none !important;
   box-shadow:
     0 10px 24px rgba(138,31,45,0.06),
-    0 1px 0 rgba(255,255,255,0.9) inset,
-    inset 0 0 0 1px rgba(196,150,42,0.06) !important;
+    inset 0 1px 0 rgba(255,255,255,0.9) !important;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   transition:
@@ -748,11 +747,11 @@ body{
 /* Hover: tinte granate más definido (mismo lenguaje que .topToggleBtn:hover) */
 .leaflet-control-zoom a:hover{
   background: #fff !important;
-  border-color: rgba(140,31,45,0.38) !important;
+  border-color: rgba(196,150,42,0.42) !important;
   color: #6e1622 !important;
   box-shadow:
-    0 12px 28px rgba(138,31,45,0.12),
-    inset 0 0 0 1px rgba(196,150,42,0.10) !important;
+    0 14px 30px rgba(138,31,45,0.09),
+    inset 0 1px 0 rgba(255,255,255,0.95) !important;
   transform: translateY(-1px);
 }
 
@@ -769,12 +768,16 @@ body{
   outline-offset: 2px;
 }
 
-/* Quitamos la línea separadora gris por defecto entre + y - */
-.leaflet-bar a,
-.leaflet-bar a:hover,
-.leaflet-bar a + a{
-  border-bottom: none !important;
-  border-top: none !important;
+/* Cada botón +/- es ahora un "chip" redondeado independiente (con gap entre
+   ellos), así que conservan su borde completo granate como los .qBtn — no se
+   quita el borde superior/inferior. */
+.leaflet-bar a{
+  border-top: 1px solid rgba(140,31,45,0.14) !important;
+  border-bottom: 1px solid rgba(140,31,45,0.14) !important;
+}
+.leaflet-bar a:hover{
+  border-top-color: rgba(196,150,42,0.42) !important;
+  border-bottom-color: rgba(196,150,42,0.42) !important;
 }
 
 /* Estado deshabilitado (zoom-in al máximo / zoom-out al mínimo) */
@@ -782,7 +785,7 @@ body{
 .leaflet-control-zoom a.leaflet-disabled:hover{
   opacity: 0.45 !important;
   background: rgba(255,253,250,0.7) !important;
-  border-color: rgba(140,31,45,0.10) !important;
+  border-color: rgba(140,31,45,0.14) !important;
   color: rgba(140,31,45,0.55) !important;
   cursor: not-allowed !important;
   transform: none !important;
@@ -814,9 +817,26 @@ body{
     float: right;
   }
   /* Con la barra de transporte abierta (.tpPicking en el contenedor del mapa),
-     subir los botones +/- del zoom para que no choquen con la barra inferior. */
-  .mapWrap .tpPicking .leaflet-control-container .leaflet-top.leaflet-left{
+     subir los botones +/- del zoom para que no choquen con la barra inferior.
+     .bhBottomShift hace lo mismo para Sol, Área por puntos y Dibujo libre. */
+  .mapWrap .tpPicking .leaflet-control-container .leaflet-top.leaflet-left,
+  .mapWrap .bhBottomShift .leaflet-control-container .leaflet-top.leaflet-left{
     bottom: 96px;
+  }
+  /* Sol: la base del botón "−" del zoom queda a 8px de la cara superior de la
+     barra de horario del sol (que vive a bottom:26px con alto --sunbar-inner-h). */
+  .mapWrap .bhSunShift .leaflet-control-container .leaflet-top.leaflet-left{
+    bottom: calc(26px + var(--sunbar-inner-h) + 8px) !important;
+  }
+  /* Transporte apilado (barra más alta): subimos los +/- por encima de ella. */
+  .mapWrap:has(#transportBar.tpStacked) .leaflet-control-container .leaflet-top.leaflet-left{
+    bottom: 150px !important;
+  }
+  /* Área por puntos / dibujo libre: los botones +/- quedan en la misma vertical
+     que la cartela explicativa (.areaHint, bottom:26px + ~34px de alto → top ≈ 60px),
+     con la base del botón "−" a 8px de su borde superior → bottom: 68px. */
+  .mapWrap .bhAreaShift .leaflet-control-container .leaflet-top.leaflet-left{
+    bottom: 68px !important;
   }
 }
 
@@ -944,21 +964,27 @@ body{
 @media (max-width: 768px){
   .areaHint{
     bottom: 30px;
-    max-width: calc(100% - 24px);
+    left: 12px;
+    right: 12px;
+    transform: none;
+    max-width: none;
   }
   .areaHintInner{
+    width: 100%;
     border-radius: 16px;
-    padding: 7px 13px;
-    align-items: flex-start;
-    gap: 8px;
+    padding: 9px 16px;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
   }
   .areaHintDot{
-    margin-top: 4px;
+    margin-top: 0;
   }
   .areaHintText{
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.3;
     white-space: normal;
+    /* Una sola línea si cabe; se divide en dos solo cuando no entra */
     text-wrap: balance;
   }
 }
@@ -1020,9 +1046,10 @@ body{
   height: var(--sunbar-inner-h);
   padding: 8px 12px;
   border-radius: 14px;
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(0,0,0,0.10);
-  backdrop-filter: blur(6px);
+  background: rgba(255,253,250,0.92);
+  border: 1px solid rgba(140,31,45,0.16);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(140,31,45,0.10);
   box-sizing: border-box;
   display: grid;
   grid-template-rows: 14px 1fr;
@@ -1116,35 +1143,114 @@ body{
   display:flex;
   align-items:center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 9px 11px;
   border-radius: 14px;
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(0,0,0,0.10);
-  backdrop-filter: blur(6px);
+  background: rgba(255,253,250,0.92);
+  border: 1px solid rgba(140,31,45,0.16);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(140,31,45,0.10);
+}
+
+/* En la web (escritorio): el calendario va sin recuadro blanco (sólo el campo
+   de fecha) y el botón "Ahora" sin sombra/difuminado alrededor. */
+@media (min-width: 769px){
+  .sunDateDockInner{
+    padding: 0;
+    background: transparent;
+    border: 0;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+  #sunNowDock button,
+  #sunNowDock button:hover{
+    box-shadow: none;
+  }
+
+  /* Subimos la tira de selección de horas para que su cara inferior quede a la
+     misma altura que la cara inferior del botón "−" del zoom (bottom: 26px) y no
+     se solape con la línea de atribución del mapa. */
+  .sunTimebar{
+    bottom: 26px;
+  }
+  /* El botón "Ahora" sigue justo encima de la barra ya elevada. */
+  #sunNowDock{
+    bottom: calc(26px + var(--sunbar-inner-h) + 10px);
+  }
+}
+
+/* Botón "Ahora": dock propio, anclado abajo a la izquierda, justo encima de la
+   barra de selección de hora (.sunTimebar). Estrecho (ajustado a su texto). */
+.sunNowDock{
+  position: absolute;
+  left: 14px;
+  /* justo encima de la barra de horas: 14 base + altura barra + hueco */
+  bottom: calc(14px + var(--sunbar-inner-h) + 10px);
+  z-index: 715;
+  display: none;
+  pointer-events: auto;
 }
 
 .sunDateDock input[type="date"]{
+  font-family: 'Montserrat', system-ui, sans-serif;
   font-size: 12.5px;
-  padding: 7px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,0.12);
-  background: rgba(255,255,255,0.92);
+  font-weight: 500;
+  padding: 7px 11px;
+  border-radius: 11px;
+  border: 1px solid rgba(140,31,45,0.20);
+  background: #FFFDFA;
+  color: #241f1b;
   outline: none;
+  /* Tiñe el calendario nativo (día seleccionado, controles) con el granate Homyo */
+  accent-color: #8C1F2D;
+  color-scheme: light;
+  transition: border-color .14s ease, box-shadow .14s ease;
 }
 
-.sunDateDock button{
-  border: 0;
-  background: rgba(0,0,0,0.70);
-  color: rgba(255,255,255,0.92);
-  padding: 8px 12px;
-  border-radius: 12px;
+.sunDateDock input[type="date"]:hover{
+  border-color: rgba(140,31,45,0.40);
+}
+
+.sunDateDock input[type="date"]:focus-visible{
+  border-color: #8C1F2D;
+  box-shadow: 0 0 0 3px rgba(140,31,45,0.14);
+}
+
+/* El icono del selector de fecha, teñido al granate del proyecto */
+.sunDateDock input[type="date"]::-webkit-calendar-picker-indicator{
   cursor: pointer;
+  opacity: 0.85;
+  /* convierte el icono negro por defecto en granate #8C1F2D */
+  filter: invert(16%) sepia(64%) saturate(2200%) hue-rotate(327deg) brightness(85%) contrast(90%);
+}
+.sunDateDock input[type="date"]::-webkit-calendar-picker-indicator:hover{
+  opacity: 1;
+}
+
+.sunDateDock button,
+.sunNowDock button{
+  border: 0;
+  background: #8C1F2D;
+  color: #FFFDFA;
+  padding: 8px 13px;
+  border-radius: 11px;
+  cursor: pointer;
+  font-family: 'Raleway', system-ui, sans-serif;
   font-size: 12.5px;
   font-weight: 650;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 12px rgba(140,31,45,0.18);
+  transition: background .14s ease, box-shadow .14s ease, transform .06s ease;
 }
 
-.sunDateDock button:hover{
-  background: rgba(0,0,0,0.78);
+.sunDateDock button:hover,
+.sunNowDock button:hover{
+  background: #761724;
+  box-shadow: 0 6px 16px rgba(140,31,45,0.26);
+}
+
+.sunDateDock button:active,
+.sunNowDock button:active{
+  transform: translateY(1px);
 }
 
 /* ---------------------------------------------------------------------
@@ -1268,6 +1374,34 @@ body{
   color: rgba(60,30,34,0.5);
   line-height: 1.2;
   white-space: nowrap;
+}
+
+/* Escritorio: si el mapa es demasiado estrecho para la fila completa, el JS
+   añade .tpStacked y el bloque de tiempo pasa DEBAJO de los iconos (en lugar de
+   a su derecha), respetando los márgenes del mapa. */
+@media (min-width: 769px){
+  /* La tarjeta de transporte ocupa todo el ancho del mapa (con márgenes a los
+     lados) para que los iconos de modo se repartan toda la horizontal con el
+     mismo ancho cada uno. */
+  #transportBar{
+    left: 14px;
+    right: 14px;
+    transform: none;
+    max-width: none;
+  }
+  /* Iconos a igual ancho, ocupando todo el espacio disponible de la fila. */
+  #transportBar .tpModes{ flex: 1 1 auto; }
+  #transportBar .tpMode{ flex: 1 1 0; justify-content: center; }
+
+  /* Mapa demasiado estrecho: el bloque de tiempo pasa DEBAJO de los iconos
+     (en lugar de a su derecha), respetando los márgenes del mapa. */
+  #transportBar.tpStacked .transportBarInner{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  #transportBar.tpStacked .tpRight{ min-width: 0; }
+  #transportBar.tpStacked .tpHint{ white-space: normal; }
 }
 
 /* Pin de origen de la isócrona */
@@ -1960,6 +2094,14 @@ body{
     display: none !important;
   }
 
+  /* En móvil el tamaño del diagrama lo fija el JS (applyMobileSunLayout): la N
+     queda a 5px de la tarjeta de la fecha y la S a 5px de la tarjeta de las
+     horas. Estos valores son sólo un respaldo si el JS aún no ha medido. */
+  .sunOverlay{
+    width: min(94vmin, 96vw);
+    height: min(94vmin, 96vw);
+  }
+
   /* Debajo de la fila de 5 botones del mapa (top:0, padding 10px + botón 44px). */
   .sunDateDock{
     top: 66px !important;
@@ -1978,7 +2120,8 @@ body{
   .sunTimebar{
     left: 10px !important;
     right: 10px !important;
-    bottom: 10px !important;
+    /* Subida para dejar un margen mínimo sobre la tira de atribución del plano */
+    bottom: calc(34px + env(safe-area-inset-bottom, 0px)) !important;
     z-index: 2200 !important;
   }
 
@@ -2797,8 +2940,14 @@ body{
   box-shadow: 0 18px 40px rgba(140,31,45,0.10) !important;
   margin-top: 4px !important;
   padding: 6px !important;
+  width: max-content !important;
+  min-width: 248px !important;
+  max-width: min(320px, calc(100vw - 40px)) !important;
 }
 .orderItem{
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
   border-radius: 3.5px !important;
   font-family: inherit !important;
   font-size: 12.5px !important;
@@ -3864,6 +4013,17 @@ body.saveSearchAuthOpen{
     transform: none;
   }
 
+  /* Filtros ocultos: el cartón de ubicación se coloca 10px a la derecha del
+     botón "Mostrar filtros" (que se queda solo a la izquierda). La columna
+     izquierda se ajusta al ancho del botón y la separación se fija en 10px. */
+  .topRow.filtersHidden{
+    grid-template-columns: auto 1fr var(--sideW);
+    column-gap: 10px;
+  }
+  .topRow.filtersHidden .topCellCenter{
+    justify-content: flex-start;
+  }
+
   /* Tarjeta anclada al borde izquierdo del mapa (deja de estar centrada). */
   .card{
     left: 0;
@@ -3872,5 +4032,24 @@ body.saveSearchAuthOpen{
   }
   .card.visible{
     transform: translateY(0);
+  }
+}
+
+/* =====================================================================
+   Transporte (escritorio): la tarjeta inferior no debe meterse debajo
+   de la columna de 5 iconos (arriba-derecha del mapa). Se estrecha por
+   el lado de los iconos para quedar a 10px de la vertical que forma su
+   lado izquierdo.
+   Geometría: la columna de iconos es un control Leaflet "topright"
+   (46px de ancho + 10px de margen) → su lado izquierdo está a 56px del
+   borde derecho del mapa. 56 + 10 de separación = 66px.
+   Solo se aplica con transporte activo (#map.tpPicking) y en escritorio.
+   ===================================================================== */
+@media (min-width: 981px){
+  .mapWrap:has(.tpPicking) #card{
+    /* Mantiene el ancho máximo habitual (720px) pero, cuando haría falta,
+       se estrecha lo justo para dejar 10px hasta el lado izquierdo de los
+       iconos. left:0 lo hereda de la regla de escritorio de .card. */
+    width: min(720px, calc(100% - 66px));
   }
 }
