@@ -134,6 +134,40 @@
         position:relative;
       }
       .mediaBig{height:100%;}
+
+      /* ===== Hover zoom de medios (estilo Funda) — solo escritorio con cursor =====
+         Cada celda hace de marco que recorta; una capa interior (::before) hereda
+         la misma imagen de fondo y se agranda suavemente al pasar el cursor, sin
+         invadir a las celdas vecinas. Solo se activa en celdas con foto real. */
+      @media (hover:hover) and (pointer:fine){
+        .mediaBig.hasPhoto::before,
+        .mediaSmall.hasPhoto::before{
+          content:"";
+          position:absolute;
+          inset:0;
+          background-image: inherit;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          transform: scale(1);
+          transform-origin: center;
+          transition: transform 0.55s cubic-bezier(0.22,0.61,0.36,1);
+          pointer-events:none;
+          z-index:1;
+          will-change: transform;
+        }
+        .mediaBig.hasPhoto:hover::before,
+        .mediaSmall.hasPhoto:hover::before{
+          transform: scale(1.06);
+        }
+      }
+      @media (prefers-reduced-motion: reduce){
+        .mediaBig.hasPhoto::before,
+        .mediaSmall.hasPhoto::before{ transition:none; }
+        .mediaBig.hasPhoto:hover::before,
+        .mediaSmall.hasPhoto:hover::before{ transform:none; }
+      }
+
       .mediaSmallGrid{
         display:grid;
         grid-template-columns: 1fr 1fr;
@@ -2254,6 +2288,32 @@
         return data[0] || null;
       }
 
+      // Medios del anuncio (fotos + planos) directamente desde la tabla
+      // public.listing_media, por listing_id. Esta es la fuente PRINCIPAL:
+      // ya no dependemos del traspaso del mapa (sessionStorage), así que la
+      // galería funciona igual entrando por el mapa, recargando o por enlace
+      // directo. Orden: sort_order asc, después created_at asc.
+      async function fetchListingMedia(listingId) {
+        const sb = await getBhSupabase();
+        const { data, error } = await sb
+          .from("listing_media")
+          .select("media_type, url, sort_order, created_at")
+          .eq("listing_id", listingId)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true });
+        if (error) throw error;
+
+        const rows = data || [];
+        const photos = rows
+          .filter((item) => item.media_type === "photo" && item.url)
+          .map((item) => item.url);
+        const floorplans = rows
+          .filter((item) => item.media_type === "floorplan" && item.url)
+          .map((item) => item.url);
+
+        return { photos, floorplans };
+      }
+
       async function copyToClipboard(text) {
         try { await navigator.clipboard.writeText(text); return true; }
         catch { return false; }
@@ -2436,8 +2496,8 @@ function fillPhotoBox(el, url){
   el.classList.add("hasPhoto");
 }
 
-function renderHandoffPhotos(id){
-  const photos = getHandoffPhotos(id);
+function renderPhotos(photos){
+  photos = (photos || []).filter(Boolean);
   if (!photos.length) return 0;
 
   // Escritorio: foto principal grande + rejilla de pequeñas (S2 reservada a vídeo).
@@ -2451,6 +2511,20 @@ function renderHandoffPhotos(id){
   }
 
   return photos.length;
+}
+
+// Planos: pestaña/sección "Planta". Usa los floorplans de listing_media si los hay.
+function renderFloorplans(floorplans){
+  floorplans = (floorplans || []).filter(Boolean);
+  if (!floorplans.length) return 0;
+  ["mobileFloor1", "mobileFloor2"].forEach((id, i) => fillPhotoBox(document.getElementById(id), floorplans[i]));
+  return floorplans.length;
+}
+
+// Fallback temporal: fotos traspasadas por el mapa (sessionStorage). Solo se usa
+// si listing_media no devolviera nada.
+function renderHandoffPhotos(id){
+  return renderPhotos(getHandoffPhotos(id));
 }
 
 function renderFeatures(row) {
@@ -3072,9 +3146,25 @@ function renderFeatures(row) {
 
           navHintEl.textContent = "Actualizado: " + fmtDate(row.listed_at);
 
-          const nHandoffPhotos = renderHandoffPhotos(listingId);
-          photosCountEl.textContent = String(nHandoffPhotos || 0);
-          floorCountEl.textContent = "0";
+          // Fotos y planos: fuente PRINCIPAL = tabla listing_media (por listing_id).
+          // Fallback temporal = traspaso del mapa (sessionStorage). Así la galería
+          // muestra TODAS las fotos tanto entrando por el mapa como recargando o
+          // abriendo un enlace directo.
+          let mediaPhotos = [];
+          let mediaFloorplans = [];
+          try {
+            const media = await fetchListingMedia(listingId);
+            mediaPhotos = media.photos;
+            mediaFloorplans = media.floorplans;
+          } catch (err) {
+            console.warn("No se pudieron cargar medios de listing_media:", err);
+          }
+          if (!mediaPhotos.length) mediaPhotos = getHandoffPhotos(listingId);
+
+          const nPhotos = renderPhotos(mediaPhotos);
+          const nFloor = renderFloorplans(mediaFloorplans);
+          photosCountEl.textContent = String(nPhotos || 0);
+          floorCountEl.textContent = String(nFloor || 0);
           panoCountEl.textContent = "0";
 
           renderDescription(row);

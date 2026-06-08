@@ -19,7 +19,7 @@
   const sunDateEl = document.getElementById("sunDate");
   const sunNowBtn = document.getElementById("sunNowBtn");
 
-  const ZOOM_SOL_MIN = 14;
+  const ZOOM_SOL_MIN = 13;
   let sunEnabled = false;
   const sunState = { dateISO: null, minutes: null, sunriseMin: null, sunsetMin: null };
 

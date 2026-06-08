@@ -964,14 +964,14 @@ body{
 @media (max-width: 768px){
   .areaHint{
     bottom: 30px;
-    left: 12px;
-    right: 12px;
-    transform: none;
-    max-width: none;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    max-width: calc(100% - 24px);
   }
   .areaHintInner{
-    width: 100%;
-    border-radius: 16px;
+    width: auto;
+    border-radius: 999px;
     padding: 9px 16px;
     align-items: center;
     justify-content: center;
@@ -983,9 +983,7 @@ body{
   .areaHintText{
     font-size: 13px;
     line-height: 1.3;
-    white-space: normal;
-    /* Una sola línea si cabe; se divide en dos solo cuando no entra */
-    text-wrap: balance;
+    white-space: nowrap;
   }
 }
 
@@ -2784,6 +2782,99 @@ body{
   place-items: center !important;
 }
 
+/* Hero del listado: foto principal + flechas de navegación + contador.
+   Permite hojear las fotos del anuncio sin abrir la ficha. */
+.listHero{
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  line-height: 0 !important;
+  overflow: hidden !important;
+  border-radius: 3.5px !important;
+}
+.listHero .listImg,
+.listHero .listImgPh{
+  display: block !important;
+}
+/* Flechas izquierda / derecha sobre la foto principal */
+.listNav{
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 4 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.86) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
+  backdrop-filter: blur(2px) !important;
+  color: var(--bh-granate) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
+  cursor: pointer !important;
+  opacity: 0.92 !important;
+  transition: background .15s ease, transform .15s ease, opacity .15s ease !important;
+}
+.listNav svg{
+  width: 13px !important;
+  height: 13px !important;
+}
+.listNavPrev{ left: 5px !important; }
+.listNavNext{ right: 5px !important; }
+.listNav:hover{
+  background: #fff !important;
+  opacity: 1 !important;
+  transform: translateY(-50%) scale(1.08) !important;
+}
+.listNav:active{
+  transform: translateY(-50%) scale(0.94) !important;
+}
+/* Contador de fotos (p. ej. 2/8) en la esquina inferior derecha */
+.listHeroCount{
+  position: absolute !important;
+  right: 5px !important;
+  bottom: 5px !important;
+  z-index: 4 !important;
+  padding: 1px 7px !important;
+  border-radius: 999px !important;
+  background: rgba(0,0,0,0.55) !important;
+  color: #fff !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.5 !important;
+  pointer-events: none !important;
+}
+.listThumb{
+  cursor: pointer !important;
+}
+/* Insignia (Nuevo / Nuevo en tu búsqueda) sobre la foto principal */
+.listHero .listBadge{
+  position: absolute !important;
+  top: 6px !important;
+  left: 6px !important;
+  z-index: 3 !important;
+  padding: 2px 8px !important;
+  border-radius: 999px !important;
+  background: var(--bh-dorado) !important;
+  color: #fff !important;
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.07em !important;
+  line-height: 1.6 !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
+}
+.listHero .listBadge-search{
+  background: var(--bh-granate) !important;
+}
+
 .listTitle{
   font-size: 13.5px !important;
   font-weight: 600 !important;
@@ -3690,6 +3781,29 @@ body.saveSearchAuthOpen{
   .grid3.hideMap .listThumbPh{
     height: 78px !important;
     border-radius: 0 !important;
+  }
+  /* Flechas y contador más grandes cuando la foto es protagonista */
+  .grid3.hideMap .listHero{
+    border-radius: 0 !important;
+  }
+  .grid3.hideMap .listNav{
+    width: 30px !important;
+    height: 30px !important;
+    left: 10px !important;
+  }
+  .grid3.hideMap .listNavNext{
+    left: auto !important;
+    right: 10px !important;
+  }
+  .grid3.hideMap .listNav svg{
+    width: 17px !important;
+    height: 17px !important;
+  }
+  .grid3.hideMap .listHeroCount{
+    right: 10px !important;
+    bottom: 10px !important;
+    font-size: 11px !important;
+    padding: 2px 9px !important;
   }
   .grid3.hideMap .listMediaWrap .listBadge{
     position: absolute !important;

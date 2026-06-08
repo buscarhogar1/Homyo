@@ -105,6 +105,77 @@ export function initMap(){
     };
   }
 
+  // ===== Carrusel de fotos de la tarjeta flotante =====================
+  // Mismo lenguaje que el carrusel del listado: foto principal + flechas
+  // (clase .listNav) + contador (clase .listHeroCount). Permite hojear
+  // todas las fotos del anuncio sin abrir la ficha.
+  const mediaSideEl = cardEl ? cardEl.querySelector(".mediaSide") : null;
+  let cardPhotos = [];
+  let cardPhotoIdx = 0;
+  let cardPrevBtn = null;
+  let cardNextBtn = null;
+  let cardCountEl = null;
+
+  function ensureCardCarouselControls() {
+    if (!mediaSideEl || cardPrevBtn) return;
+    const chevron = (d) =>
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+
+    cardPrevBtn = document.createElement("button");
+    cardPrevBtn.type = "button";
+    cardPrevBtn.className = "listNav listNavPrev";
+    cardPrevBtn.setAttribute("aria-label", "Foto anterior");
+    cardPrevBtn.innerHTML = chevron("M15 18l-6-6 6-6");
+
+    cardNextBtn = document.createElement("button");
+    cardNextBtn.type = "button";
+    cardNextBtn.className = "listNav listNavNext";
+    cardNextBtn.setAttribute("aria-label", "Foto siguiente");
+    cardNextBtn.innerHTML = chevron("M9 6l6 6-6 6");
+
+    cardCountEl = document.createElement("div");
+    cardCountEl.className = "listHeroCount";
+
+    mediaSideEl.appendChild(cardPrevBtn);
+    mediaSideEl.appendChild(cardNextBtn);
+    mediaSideEl.appendChild(cardCountEl);
+
+    cardPrevBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (cardPhotos.length < 2) return;
+      cardPhotoIdx = (cardPhotoIdx - 1 + cardPhotos.length) % cardPhotos.length;
+      renderCardPhoto();
+    });
+    cardNextBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (cardPhotos.length < 2) return;
+      cardPhotoIdx = (cardPhotoIdx + 1) % cardPhotos.length;
+      renderCardPhoto();
+    });
+  }
+
+  function renderCardPhoto() {
+    const n = cardPhotos.length;
+    setPhoto(n > 0 ? cardPhotos[cardPhotoIdx] : null);
+    const multi = n > 1;
+    // Las flechas usan la clase .listNav, que trae `display:grid !important`;
+    // por eso hay que ocultarlas también con !important (un estilo inline normal
+    // no podría ganarle).
+    if (cardPrevBtn) cardPrevBtn.style.setProperty("display", multi ? "grid" : "none", "important");
+    if (cardNextBtn) cardNextBtn.style.setProperty("display", multi ? "grid" : "none", "important");
+    if (cardCountEl) {
+      cardCountEl.style.display = multi ? "block" : "none";
+      cardCountEl.textContent = `${cardPhotoIdx + 1}/${n}`;
+    }
+  }
+
+  function setCardPhotos(photos) {
+    ensureCardCarouselControls();
+    cardPhotos = Array.isArray(photos) ? photos.filter(Boolean) : [];
+    cardPhotoIdx = 0;
+    renderCardPhoto();
+  }
+
   function isRecent(listedAtIso, days = 14) {
     if (!listedAtIso) return false;
     const d = new Date(listedAtIso);
@@ -192,7 +263,7 @@ export function initMap(){
 
     cardPriceEl.textContent = (p.price_eur != null) ? euro(p.price_eur) : "—";
 
-    setPhoto(p.main_photo_url || null);
+    setCardPhotos(collectAllPhotoUrls(p));
 
     badgeNewEl.style.display = isRecent(p.listed_at, 14) ? "inline-flex" : "none";
 
@@ -390,43 +461,184 @@ export function initMap(){
     } catch {}
   }
 
+  // Enriquece las filas del RPC con TODAS sus fotos/planos desde
+  // public.listing_media (el RPC del mapa solo devuelve main_photo_url). Una
+  // sola consulta por lote con filtro IN sobre listing_id; rellena p.photo_urls
+  // y p.floorplan_urls para que el listado, las tarjetas y el traspaso a la
+  // ficha muestren la galería completa. Orden: sort_order asc, created_at asc.
+  async function attachListingMedia(rows){
+    try {
+      const list = (rows || []).filter((p) => p && p.listing_id);
+      if (!list.length) return;
+      const ids = [...new Set(list.map((p) => String(p.listing_id)))];
+
+      const byId = new Map();
+      const CHUNK = 100;
+      for (let i = 0; i < ids.length; i += CHUNK){
+        const slice = ids.slice(i, i + CHUNK);
+        const params = new URLSearchParams();
+        params.set("select", "listing_id,media_type,url,sort_order,created_at");
+        params.set("listing_id", "in.(" + slice.join(",") + ")");
+        params.set("order", "sort_order.asc,created_at.asc");
+        const url = `${SUPABASE_URL}/rest/v1/listing_media?${params.toString()}`;
+        const res = await fetch(url, {
+          headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        for (const m of (data || [])){
+          if (!m || !m.url) continue;
+          const id = String(m.listing_id);
+          let entry = byId.get(id);
+          if (!entry){ entry = { photos: [], floorplans: [] }; byId.set(id, entry); }
+          if (m.media_type === "floorplan") entry.floorplans.push(m.url);
+          else entry.photos.push(m.url);
+        }
+      }
+
+      list.forEach((p) => {
+        const entry = byId.get(String(p.listing_id));
+        if (!entry) return;
+        if (entry.photos.length) p.photo_urls = entry.photos;
+        if (entry.floorplans.length) p.floorplan_urls = entry.floorplans;
+      });
+    } catch (e) {
+      console.warn("No se pudieron cargar medios de listing_media:", e);
+    }
+  }
+
   function createListMediaWrap(p, img, ph){
     const mediaWrap = document.createElement("div");
     mediaWrap.className = "listMediaWrap";
 
-    if (img) mediaWrap.appendChild(img);
-    else mediaWrap.appendChild(ph);
+    // Todas las fotos del anuncio (principal + adicionales), en orden.
+    const photos = collectAllPhotoUrls(p);
+    const n = photos.length;
+
+    // Índice de la foto principal mostrada. El carrusel rota alrededor de él.
+    let idx = 0;
+
+    // --- Hero: foto principal con flechas de navegación -------------------
+    const hero = document.createElement("div");
+    hero.className = "listHero";
+
+    const makeThumbPh = () => {
+      const tph = document.createElement("div");
+      tph.className = "listThumbPh";
+      tph.textContent = "Foto";
+      return tph;
+    };
+
+    let mainEl;
+    if (n > 0){
+      mainEl = document.createElement("img");
+      mainEl.className = "listImg";
+      mainEl.alt = "";
+      // Eager: la foto principal del anuncio debe verse siempre, sin depender
+      // de que la tarjeta entre en el viewport (el lazy fallaba en listas
+      // largas / contenedores con scroll y dejaba el hero en blanco).
+      mainEl.loading = "eager";
+      mainEl.decoding = "async";
+      mainEl.fetchPriority = "high";
+      mainEl.onerror = () => {
+        const mph = document.createElement("div");
+        mph.className = "listImgPh";
+        mph.textContent = "Foto";
+        mainEl.replaceWith(mph);
+      };
+    } else {
+      mainEl = ph; // placeholder existente
+    }
+    hero.appendChild(mainEl);
 
     const badge = createListBadge(p);
-    if (badge) mediaWrap.appendChild(badge);
+    if (badge) hero.appendChild(badge);
 
-    // Fila de dos miniaturas bajo la foto principal (rellena el hueco del lateral).
-    const extras = getExtraPhotoUrls(p, 2);
+    let counterEl = null;
+    let prevBtn = null;
+    let nextBtn = null;
+    if (n > 1){
+      counterEl = document.createElement("div");
+      counterEl.className = "listHeroCount";
+      hero.appendChild(counterEl);
+
+      const chevron = (d) =>
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+
+      prevBtn = document.createElement("button");
+      prevBtn.type = "button";
+      prevBtn.className = "listNav listNavPrev";
+      prevBtn.setAttribute("aria-label", "Foto anterior");
+      prevBtn.innerHTML = chevron("M15 18l-6-6 6-6");
+
+      nextBtn = document.createElement("button");
+      nextBtn.type = "button";
+      nextBtn.className = "listNav listNavNext";
+      nextBtn.setAttribute("aria-label", "Foto siguiente");
+      nextBtn.innerHTML = chevron("M9 6l6 6-6 6");
+
+      hero.appendChild(prevBtn);
+      hero.appendChild(nextBtn);
+    }
+
+    mediaWrap.appendChild(hero);
+
+    // --- Miniaturas: tira de las demás fotos del anuncio ------------------
+    // Se renderizan SOLO las fotos que existen de verdad: nunca dibujamos
+    // huecos "Foto" vacíos. En producción cada anuncio trae 5+ fotos, así que
+    // siempre habrá tira; durante la beta (1 foto) la tira queda vacía y se
+    // retira del DOM para que el hero ocupe todo, sin espacios muertos.
     const thumbs = document.createElement("div");
     thumbs.className = "listThumbs";
-    for (let i = 0; i < 2; i++){
-      const url = extras[i];
-      if (url){
-        const t = document.createElement("img");
-        t.className = "listThumb";
-        t.src = url;
-        t.alt = "";
-        t.loading = "lazy";
-        t.onerror = () => {
-          const tph = document.createElement("div");
-          tph.className = "listThumbPh";
-          tph.textContent = "Foto";
-          t.replaceWith(tph);
-        };
-        thumbs.appendChild(t);
-      } else {
-        const tph = document.createElement("div");
-        tph.className = "listThumbPh";
-        tph.textContent = "Foto";
-        thumbs.appendChild(tph);
+
+    // Actualiza foto principal, contador y miniaturas según el índice actual.
+    function render(){
+      if (n > 0) mainEl.src = photos[idx];
+      if (counterEl) counterEl.textContent = `${idx + 1}/${n}`;
+
+      // Las dos siguientes fotos distintas (rotando alrededor de la principal).
+      const upcoming = [];
+      for (let k = 1; k < n; k++) upcoming.push({ url: photos[(idx + k) % n], i: (idx + k) % n });
+      const show = upcoming.slice(0, 2);
+
+      thumbs.innerHTML = "";
+      show.forEach((data) => {
+        const el = document.createElement("img");
+        el.className = "listThumb";
+        el.src = data.url;
+        el.alt = "";
+        el.loading = "lazy";
+        el.decoding = "async";
+        el.title = "Ver esta foto";
+        el.onerror = () => { el.replaceWith(makeThumbPh()); };
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          idx = data.i;
+          render();
+        });
+        thumbs.appendChild(el);
+      });
+
+      // Sin fotos adicionales: retiramos la tira para que no deje hueco.
+      if (show.length === 0){
+        if (thumbs.parentNode) thumbs.remove();
+      } else if (!thumbs.parentNode){
+        mediaWrap.appendChild(thumbs);
       }
     }
-    mediaWrap.appendChild(thumbs);
+
+    if (prevBtn) prevBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      idx = (idx - 1 + n) % n;
+      render();
+    });
+    if (nextBtn) nextBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      idx = (idx + 1) % n;
+      render();
+    });
+
+    render();
 
     return mediaWrap;
   }
@@ -788,7 +1000,7 @@ export function initMap(){
     setMarkersVisible(false);
 
     if (mode === "points") {
-      setAreaHintVisible(true, "Haz clic punto a punto para dibujar el área. Cierra en el primer punto.");
+      setAreaHintVisible(true, "Haz clic punto a punto para dibujar el área");
       areaState.points = [];
       areaState.tempLine = L.polyline([], {
         color: "rgba(26,115,232,0.88)",
@@ -798,7 +1010,7 @@ export function initMap(){
     }
 
     if (mode === "freehand") {
-      setAreaHintVisible(true, "Mantén pulsado y dibuja el área. Suelta para terminar.");
+      setAreaHintVisible(true, "Mantén pulsado y dibuja el área");
       areaState.points = [];
       areaState.isFreehandActive = false;
       enableDrawLock();
@@ -1227,6 +1439,7 @@ export function initMap(){
     setStatus(`Cargando...`);
     const rows = await rpcSearchMapPoints(b, f);
     lastFetchedRows = rows;
+    await attachListingMedia(rows);
     storeListingPhotos(rows);
     lastViewInfo = { z, mode: f.mode };
     applyAreaFilterAndRender();
@@ -1389,7 +1602,7 @@ export function initMap(){
   });
 
   // Sol (tu implementación original, casi intacta)
-  const ZOOM_SOL_MIN = 14;
+  const ZOOM_SOL_MIN = 13;
   let sunEnabled = false;
   const sunState = { dateISO: null, minutes: null, sunriseMin: null, sunsetMin: null };
 
@@ -1933,10 +2146,13 @@ export function initMap(){
   // Factor de desvío: las calles no van en línea recta, así que el alcance
   // real es menor que el radio teórico. El transporte público suma espera.
   const TP_DETOUR = { walk: 0.80, transit: 0.62, car: 0.74, bike: 0.78 };
+  // Fracción del lado corto del mapa que debe ocupar el DIÁMETRO del área al
+  // encuadrar/ajustar el zoom automáticamente.
+  const TP_FIT_FRACTION = 0.75;
 
   let transportEnabled = false;
   let transportMode = "walk";
-  let transportMinsIdx = 2; // 15 min
+  let transportMinsIdx = 4; // 45 min
   let transportOrigin = null;
   let transportPin = null;
   // Anillo (polígono) del área alcanzable actual, como [{lat,lng}], usado para
@@ -1976,6 +2192,31 @@ export function initMap(){
     const v = TP_MODES[mode].speed;          // km/h
     const km = v * (mins / 60);               // distancia teórica
     return km * 1000 * (TP_DETOUR[mode] || 0.75);
+  }
+
+  // Zoom (fraccionario, alineado a 0.25) para que un círculo de radio `radiusM`
+  // alrededor de `lat` tenga un diámetro = `fraction` del lado corto del mapa.
+  function tpZoomForRadius(lat, radiusM, fraction){
+    let sz = null;
+    try { sz = map.getSize(); } catch {}
+    let minDim = sz ? Math.min(sz.x || 0, sz.y || 0) : 0;
+    if (!minDim) minDim = Math.min(window.innerWidth || 800, window.innerHeight || 600);
+    const targetPx = (fraction || TP_FIT_FRACTION) * minDim; // diámetro objetivo (px)
+    const metersPerPixel = (2 * radiusM) / targetPx;
+    const zRaw = Math.log2(
+      (156543.03392 * Math.cos(lat * Math.PI / 180)) / metersPerPixel
+    );
+    return Math.max(9, Math.min(16, Math.round(zRaw * 4) / 4));
+  }
+
+  // Reajusta el zoom del mapa para mantener el área de transporte actual
+  // ocupando ~TP_FIT_FRACTION del lado corto, centrada en el punto de salida.
+  function tpFitZoomToArea(){
+    if (!transportEnabled || !transportOrigin) return;
+    const mins = TP_MINUTES[transportMinsIdx];
+    const radiusM = tpReachMeters(transportMode, mins);
+    const z = tpZoomForRadius(transportOrigin.lat, radiusM, TP_FIT_FRACTION);
+    map.setView(transportOrigin, z, { animate: true });
   }
 
   // Contorno orgánico determinista: misma forma para un modo dado, solo escala
@@ -2112,6 +2353,7 @@ export function initMap(){
         transportMode = b.dataset.mode || "walk";
         tpUpdateBar();
         tpDrawIso();
+        tpFitZoomToArea();
       });
     });
     if (tpRangeEl){
@@ -2119,6 +2361,7 @@ export function initMap(){
         transportMinsIdx = Math.max(0, Math.min(TP_MINUTES.length - 1, parseInt(tpRangeEl.value, 10) || 0));
         tpUpdateBar();
         tpDrawIso();
+        tpFitZoomToArea();
       });
     }
   }
@@ -2492,6 +2735,24 @@ export function initMap(){
       const _lng = parseFloat(_u.searchParams.get("lng"));
       const _zoom = parseInt(_u.searchParams.get("zoom"), 10);
       let initialZoom = Number.isFinite(_zoom) ? Math.min(Math.max(_zoom, 6), 17) : 13;
+
+      // Si el usuario llega con la herramienta "Sol" seleccionada desde el index
+      // (móvil o web), abrimos la búsqueda con el zoom MÍNIMO al que el Sol
+      // funciona (ZOOM_SOL_MIN). Así la vista es lo más amplia posible sin que
+      // el diagrama solar se desactive, y las re-centrados posteriores
+      // (setView con initialZoom) no lo vuelven a romper.
+      const _quickTool = _u.searchParams.get("quick");
+      if (_quickTool === "sun") initialZoom = ZOOM_SOL_MIN;
+
+      // Si el usuario llega con "Distancia" (transporte) seleccionado desde el
+      // index, encuadramos el mapa con un zoom calculado para que el área de
+      // 45 min (modo por defecto: andando) ocupe ~75% del lado corto del mapa.
+      // Así la isócrona no se ve minúscula al abrir la búsqueda.
+      if (_quickTool === "vehicle" || _quickTool === "transport") {
+        const latForZoom = Number.isFinite(_lat) ? _lat : 40.4168;
+        const radius45 = tpReachMeters("walk", 45); // metros, radio a 45 min andando
+        initialZoom = tpZoomForRadius(latForZoom, radius45, TP_FIT_FRACTION);
+      }
 
       if (Number.isFinite(_lat) && Number.isFinite(_lng)) {
         initialCityCenter = [_lat, _lng];
