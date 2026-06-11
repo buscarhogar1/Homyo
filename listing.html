@@ -89,7 +89,7 @@
         cursor:pointer;
       }
       .crumbLink:hover{text-decoration:underline;}
-      .crumbCurrent{color:var(--muted);}
+      .crumbCurrent{color:var(--muted); font-variant-numeric: lining-nums tabular-nums; font-feature-settings:"lnum" 1,"tnum" 1;}
       .sep{color:#C4962A;}
 
       .mediaOuter{
@@ -474,6 +474,19 @@
       }
       .mapHeaderTitle{font-size:14px; color:#8C1F2D; font-weight:600;}
       .mapHeaderSmall{font-size:13px; color:#C4962A;}
+      .mapHeaderSmall.isClickable{
+        cursor:pointer;
+        font-weight:600;
+        border-radius:8px;
+        padding:2px 6px;
+        margin:-2px -6px;
+        transition:color .16s ease, background .16s ease;
+      }
+      .mapHeaderSmall.isClickable:hover{
+        color:#8C1F2D;
+        background:rgba(196,150,42,0.10);
+      }
+      .mapHeaderSmall.isClickable:active{ background:rgba(196,150,42,0.18); }
       /* Botones +/- del zoom — branding Homyo (mismo estilo que map.html) */
       .leaflet-control-zoom{
         border: none !important;
@@ -1576,6 +1589,8 @@
   font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
   color:var(--muted) !important;
   letter-spacing:0.01em;
+  font-variant-numeric: lining-nums tabular-nums !important;
+  font-feature-settings:"lnum" 1,"tnum" 1 !important;
 }
 
 /* Precio */
@@ -1584,6 +1599,8 @@
   font-weight:665 !important;
   color:var(--text) !important;
   letter-spacing:-0.6px !important;
+  font-variant-numeric:lining-nums tabular-nums !important;
+  font-feature-settings:"lnum" 1,"tnum" 1 !important;
 }
 .priceNoteBtn{
   font-family:'Raleway',sans-serif !important;
@@ -1594,6 +1611,12 @@
 .factsRow{
   font-family:'Raleway','Montserrat',system-ui,sans-serif !important;
   color:var(--text) !important;
+  font-variant-numeric:lining-nums tabular-nums !important;
+  font-feature-settings:"lnum" 1,"tnum" 1 !important;
+}
+.factsRow .fact, .factsRow .factMuted{
+  font-variant-numeric:lining-nums tabular-nums !important;
+  font-feature-settings:"lnum" 1,"tnum" 1 !important;
 }
 .fact{ font-weight:500 !important; color:#111 !important; }
 .fact .factMuted{ color:#111 !important; }
@@ -1609,7 +1632,7 @@
   color:#111 !important;
   letter-spacing:0.01em;
 }
-.tabCount{ color:var(--dorado) !important; font-weight:600 !important; }
+.tabCount{ color:var(--dorado) !important; font-weight:600 !important; font-variant-numeric: lining-nums tabular-nums !important; font-feature-settings:"lnum" 1,"tnum" 1 !important; }
 
 /* Sub-navegación de secciones (oculta) */
 .subnav{ display:none !important; }
@@ -1647,6 +1670,8 @@
   font-family:'Raleway',sans-serif !important;
   font-weight:700 !important;
   color:var(--text) !important;
+  font-variant-numeric:lining-nums tabular-nums !important;
+  font-feature-settings:"lnum" 1,"tnum" 1 !important;
 }
 
 /* Accesos a medios en móvil */
@@ -2323,11 +2348,34 @@
         const hasCoords = (typeof lat === "number" && typeof lng === "number" && isFinite(lat) && isFinite(lng));
         if (!hasCoords) {
           mapHintEl.textContent = "Sin coordenadas";
+          mapHintEl.classList.remove("isClickable");
+          mapHintEl.onclick = null;
           if (miniMap) { miniMap.remove(); miniMap = null; miniMarker = null; }
           return;
         }
 
         mapHintEl.textContent = "Ver ubicación";
+        mapHintEl.classList.add("isClickable");
+        mapHintEl.setAttribute("role", "button");
+        mapHintEl.setAttribute("tabindex", "0");
+        mapHintEl.title = "Centrar el mapa en la ubicación";
+        const recenterToLocation = () => {
+          // Recentra el mini-mapa…
+          if (miniMap) miniMap.setView([lat, lng], 15, { animate: true });
+          // …baja a la sección Ubicación y recentra el mapa grande.
+          const sec = document.getElementById("ubicacion");
+          if (sec) {
+            const top = sec.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({ top, behavior: "smooth" });
+          }
+          if (mainMap && mainCoords) {
+            mainMap.setView([mainCoords.lat, mainCoords.lng], 14, { animate: true });
+          }
+        };
+        mapHintEl.onclick = recenterToLocation;
+        mapHintEl.onkeydown = (e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); recenterToLocation(); }
+        };
 
         if (!miniMap) {
           miniMap = L.map("miniMap", {

@@ -378,12 +378,14 @@ body{
 
 .priceMode .dotPrice {
   display: inline;
-  font-family: inherit;
+  font-family: 'Raleway',system-ui,sans-serif;
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.01em;
   line-height: 1;
   color: #5A2A00;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1,"tnum" 1;
 }
 
 /* Vistos: mantienen fondo crema + borde dorado; texto granate */
@@ -725,7 +727,7 @@ body{
   background: rgba(255,253,250,0.92) !important;
   color: var(--bh-granate, #8C1F2D) !important;
   font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
-  font-size: 22px !important;
+  font-size: 0 !important; /* ocultamos el +/− tipográfico: el glifo se dibuja con líneas */
   font-weight: 400 !important;
   display: grid !important;
   place-items: center !important;
@@ -742,6 +744,33 @@ body{
     box-shadow 0.16s ease,
     transform 0.16s ease,
     color 0.16s ease;
+}
+
+/* Glifo + y − dibujado con líneas (opción 5: geométrico medio).
+   Se reemplaza el texto del botón por dos líneas centradas con currentColor,
+   así heredan el granate y el estado disabled automáticamente. */
+.leaflet-control-zoom a{
+  position: relative !important;
+}
+.leaflet-control-zoom a::before,
+.leaflet-control-zoom a::after{
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  background: currentColor !important;
+  border-radius: 99px !important;
+  transform: translate(-50%, -50%) !important;
+}
+/* línea horizontal: presente en + y en − */
+.leaflet-control-zoom a::before{
+  width: 13.6px !important;
+  height: 1.7px !important;
+}
+/* línea vertical: solo en el botón de acercar (+) */
+.leaflet-control-zoom-in::after{
+  width: 1.7px !important;
+  height: 13.6px !important;
 }
 
 /* Hover: tinte granate más definido (mismo lenguaje que .topToggleBtn:hover) */
@@ -816,21 +845,21 @@ body{
     margin: 0 10px 0 0;
     float: right;
   }
-  /* Con la barra de transporte abierta (.tpPicking en el contenedor del mapa),
-     subir los botones +/- del zoom para que no choquen con la barra inferior.
-     .bhBottomShift hace lo mismo para Sol, Área por puntos y Dibujo libre. */
-  .mapWrap .tpPicking .leaflet-control-container .leaflet-top.leaflet-left,
-  .mapWrap .bhBottomShift .leaflet-control-container .leaflet-top.leaflet-left{
-    bottom: 96px;
-  }
-  /* Sol: la base del botón "−" del zoom queda a 8px de la cara superior de la
-     barra de horario del sol (que vive a bottom:26px con alto --sunbar-inner-h). */
+  /* Con la barra de transporte abierta, los botones +/- del zoom solo se
+     mueven cuando el cartel está APILADO (mapa estrecho); en fila (timeline a
+     la derecha) el cartel ya no llega hasta el zoom, así que estos se quedan en
+     su posición estándar (bottom:26px). .bhBottomShift/.tpPicking se mantienen
+     únicamente para el caso apilado (ver regla con :has(.tpStacked) más abajo).
+     Sol y áreas conservan su propio desplazamiento. */
   .mapWrap .bhSunShift .leaflet-control-container .leaflet-top.leaflet-left{
     bottom: calc(26px + var(--sunbar-inner-h) + 8px) !important;
   }
-  /* Transporte apilado (barra más alta): subimos los +/- por encima de ella. */
+  /* Transporte apilado (barra más alta, mapa estrecho): los botones +/- se
+     bajan hasta que la base del "−" quede a 8px de la cara superior del cartel
+     de transporte (que vive a bottom:26px). La altura real del cartel la publica
+     el JS en --tpbar-h. */
   .mapWrap:has(#transportBar.tpStacked) .leaflet-control-container .leaflet-top.leaflet-left{
-    bottom: 150px !important;
+    bottom: calc(26px + var(--tpbar-h, 94px) + 8px) !important;
   }
   /* Área por puntos / dibujo libre: los botones +/- quedan en la misma vertical
      que la cartela explicativa (.areaHint, bottom:26px + ~34px de alto → top ≈ 60px),
@@ -1390,6 +1419,22 @@ body{
   /* Iconos a igual ancho, ocupando todo el espacio disponible de la fila. */
   #transportBar .tpModes{ flex: 1 1 auto; }
   #transportBar .tpMode{ flex: 1 1 0; justify-content: center; }
+
+  /* Fila completa (NO apilada, timeline a la derecha): el grupo de 4 botones
+     ocupa la mitad del cartel y la línea del tiempo la otra mitad, ajustándose
+     al ancho del mapa. Los botones se reparten su mitad a partes iguales. */
+  #transportBar:not(.tpStacked) .tpModes{ flex: 1 1 0; }
+  #transportBar:not(.tpStacked) .tpMode{ flex: 1 1 0; justify-content: center; }
+  #transportBar:not(.tpStacked) .tpRight{ flex: 1 1 0; min-width: 0; }
+  /* En fila, el lado derecho del cartel no llega hasta el borde del mapa: se
+     queda a 8px del lado izquierdo de los botones de zoom (cuyo lado izquierdo
+     está a 56px del borde derecho del mapa → 56 + 8 = 64px). */
+  #transportBar:not(.tpStacked){ right: 64px; }
+  /* La línea del tiempo queda centrada verticalmente en el cartel: se centra su
+     contenido y se colapsa la pista de ayuda cuando está vacía (que de otro
+     modo añadía un hueco que empujaba el slider hacia arriba). */
+  #transportBar:not(.tpStacked) .tpRight{ justify-content: center; }
+  #transportBar:not(.tpStacked) .tpHint:empty{ display: none; }
 
   /* Mapa demasiado estrecho: el bloque de tiempo pasa DEBAJO de los iconos
      (en lugar de a su derecha), respetando los márgenes del mapa. */
@@ -2308,7 +2353,7 @@ body{
 
 .fTitleText{
   font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
-  font-size: 12.5px !important;
+  font-size: 11.5px !important;
   font-weight: 600 !important;
   letter-spacing: 0.14em !important;
   text-transform: uppercase !important;
@@ -2316,6 +2361,9 @@ body{
 }
 .fBlock.active .fTitleText{
   color: var(--bh-granate) !important;
+}
+.fTitleText .unitM2{
+  text-transform: none !important;
 }
 
 /* ===== Icono de información (i) en el título del filtro =====
@@ -2333,13 +2381,15 @@ body{
   border: 1.3px solid rgba(140,31,45,0.45) !important;
   background: #fff !important;
   color: var(--bh-granate) !important;
-  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
-  font-size: 10px !important;
+  font-family: 'Georgia','Times New Roman',serif !important;
+  font-size: 11px !important;
   font-weight: 700 !important;
-  font-style: italic !important;
+  font-style: normal !important;
   line-height: 1 !important;
-  display: grid !important;
-  place-items: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
   cursor: pointer !important;
   padding: 0 !important;
   flex: 0 0 auto !important;
@@ -2443,11 +2493,11 @@ body{
 /* Inputs */
 .fInp,
 .fSel{
-  height: 42px !important;
+  height: 34px !important;
   border-radius: 3.5px !important;
   border: 1px solid var(--bh-border) !important;
   padding: 0 12px !important;
-  font-size: 14px !important;
+  font-size: 10px !important;
   font-family: inherit !important;
   color: #222 !important;
   background: #fff !important;
@@ -2654,7 +2704,7 @@ body{
 
   .fInp,
   .fSel{
-    height: 48px !important;
+    height: 40px !important;
     font-size: 15px !important;
   }
 
@@ -2915,7 +2965,7 @@ body{
   font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
   font-weight: 600 !important;
   letter-spacing: 0.08em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   color: rgba(0,0,0,0.58) !important;
 }
 .listMeta > *{
@@ -4167,3 +4217,23 @@ body.saveSearchAuthOpen{
     width: min(720px, calc(100% - 66px));
   }
 }
+
+/* =====================================================================
+   PRECIOS Y CIFRAS — Raleway con números alineados y tabulares.
+   lining-nums evita que unos números queden más altos/bajos que otros;
+   tabular-nums les da ancho fijo para que no se descuadren entre
+   tarjetas/pines. Incluye los números dentro de los chips de iconos
+   del listado (.listMeta / .listFact). Va al final para ganar a las
+   reglas !important de más arriba.
+   ===================================================================== */
+.listPrice,
+.price,
+.priceMode .dotPrice,
+.listMeta,
+.listMeta > *,
+.listFact{
+  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-variant-numeric: lining-nums tabular-nums !important;
+  font-feature-settings: "lnum" 1,"tnum" 1 !important;
+}
+.listPrice, .price, .priceMode .dotPrice{ font-weight: 700 !important; }

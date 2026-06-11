@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opciones de filtro · Publicación — Homyo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Spectral:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Space+Mono:wght@400;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --granate:#8C1F2D;
+    --dorado:#C4962A;
+    --text:rgba(0,0,0,0.82);
+    --muted:#8f8578;
+    --bg:#F4EFE7;
+    --card:#FFFDFA;
+    --border:#e7dfd2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Raleway',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 32px 90px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  header.page{margin-bottom:14px;}
+  .kicker{
+    font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--dorado);margin:0 0 10px;
+  }
+  h1{
+    font-family:'Raleway',sans-serif;font-weight:700;
+    font-size:32px;color:var(--granate);margin:0 0 8px;letter-spacing:-.01em;
+  }
+  .lede{font-size:14.5px;color:var(--muted);max-width:680px;line-height:1.55;margin:0;}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:22px;
+    margin-top:34px;
+  }
+
+  .opt{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px 18px 20px;
+    box-shadow:0 14px 34px rgba(36,31,27,0.05);
+    display:flex;flex-direction:column;
+  }
+  .opt .meta{display:flex;align-items:baseline;gap:8px;margin:0 0 4px;}
+  .opt .num{
+    font-size:10px;font-weight:700;letter-spacing:.14em;color:#fff;
+    background:var(--granate);border-radius:999px;padding:3px 8px;line-height:1;
+  }
+  .opt .name{font-size:13px;font-weight:700;color:var(--text);}
+  .opt .desc{font-size:11.5px;color:var(--muted);margin:6px 0 16px;line-height:1.5;min-height:30px;}
+
+  /* ============ Tarjeta REAL del filtro — idéntica en las 10 ============ */
+  /* Solo cambian: la fuente (.fcard font-family) y la caja del título.   */
+  .fcard{
+    border:1px solid var(--border);
+    border-radius:3.5px;
+    background:#fff;
+    padding:14px 14px 12px;
+    box-shadow:0 1px 6px rgba(0,0,0,0.03);
+  }
+  .fhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .ftitle{display:inline-flex;align-items:center;gap:10px;min-width:0;}
+  .fdot{width:8px;height:8px;border-radius:999px;border:1.5px solid var(--granate);background:var(--granate);flex:0 0 auto;}
+  .ftitletext{
+    /* base: la del producto. Cada variante sobreescribe font-family,
+       font-size, peso, tracking y text-transform en línea. */
+    font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+    color:rgba(0,0,0,0.72);
+  }
+  .fclear{
+    width:24px;height:24px;border-radius:999px;border:1px solid var(--border);
+    background:#fff;color:rgba(0,0,0,0.4);font-size:13px;line-height:1;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;
+  }
+  .fclear:hover{background:rgba(140,31,45,0.06);border-color:rgba(140,31,45,0.32);color:var(--granate);}
+
+  .optcol{display:flex;flex-direction:column;}
+  .optline{display:flex;align-items:center;gap:12px;padding:6px;border-radius:6px;cursor:pointer;transition:background .12s ease;}
+  .optline:hover{background:rgba(196,150,42,0.07);}
+  .optline input{appearance:none;-webkit-appearance:none;width:18px;height:18px;border-radius:999px;border:1.5px solid rgba(0,0,0,0.28);background:#fff;flex:0 0 auto;margin:0;position:relative;cursor:pointer;}
+  .optline input:hover{border-color:var(--granate);}
+  .optline input:checked{border-color:var(--granate);}
+  .optline input:checked::after{content:"";position:absolute;inset:3px;border-radius:999px;background:var(--granate);}
+  .optline .t{font-size:14px;color:rgba(0,0,0,0.82);line-height:1.3;white-space:nowrap;}
+  .optline input:checked ~ .t{color:var(--granate);font-weight:600;}
+
+  @media (max-width:980px){ .grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:640px){ .grid{grid-template-columns:1fr;} body{padding:30px 18px 60px;} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="page">
+      <p class="kicker">Homyo · Filtros</p>
+      <h1>«Publicación» — 10 opciones de tipografía</h1>
+      <p class="lede">El mismo recuadro, los mismos colores y la misma ✕. Lo único que cambia es la <strong>tipografía</strong> y las <strong>mayúsculas / minúsculas del título</strong>. Las opciones usan la misma fuente de cada variante para que veas el conjunto.</p>
+    </header>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+<script>
+  const OPTS = ["Últimas 24 horas","Últimos 5 días","Últimos 10 días","Últimos 30 días","Últimos 60 días"];
+
+  // Cada variante = una fuente + una forma de escribir el título.
+  // El recuadro, los colores, el punto, la ✕ y los radios NO cambian.
+  const V = [
+    { name:"Actual",            font:"'Raleway',sans-serif",
+      title:"PUBLICACIÓN", ts:"font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;",
+      desc:"La de hoy. Raleway, versales con tracking amplio.", optSize:14 },
+
+    { name:"Raleway · Capitalize", font:"'Raleway',sans-serif",
+      title:"Publicación", ts:"font-size:15px;font-weight:600;letter-spacing:.01em;text-transform:none;",
+      desc:"Misma fuente, título con inicial mayúscula. Más cercano.", optSize:14 },
+
+    { name:"Raleway · minúsculas", font:"'Raleway',sans-serif",
+      title:"publicación", ts:"font-size:15px;font-weight:500;letter-spacing:.02em;text-transform:lowercase;",
+      desc:"Todo en minúsculas y peso medio. Sereno y minimal.", optSize:14 },
+
+    { name:"Manrope · MAYÚS", font:"'Manrope',sans-serif",
+      title:"PUBLICACIÓN", ts:"font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;",
+      desc:"Geométrica y limpia. Versales algo más firmes.", optSize:14 },
+
+    { name:"Spectral · Capitalize", font:"'Spectral',serif",
+      title:"Publicación", ts:"font-size:17px;font-weight:600;letter-spacing:0;text-transform:none;",
+      desc:"Serif editorial. Inicial mayúscula, aire de revista.", optSize:14.5 },
+
+    { name:"Spectral · MAYÚS", font:"'Spectral',serif",
+      title:"PUBLICACIÓN", ts:"font-size:12.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;",
+      desc:"La misma serif en versales con tracking suave.", optSize:14.5 },
+
+    { name:"Fraunces · Capitalize", font:"'Fraunces',serif",
+      title:"Publicación", ts:"font-size:17px;font-weight:600;letter-spacing:0;text-transform:none;",
+      desc:"Serif cálida con carácter. Tono acogedor.", optSize:14.5 },
+
+    { name:"Space Grotesk · MAYÚS", font:"'Space Grotesk',sans-serif",
+      title:"PUBLICACIÓN", ts:"font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;",
+      desc:"Grotesca técnica. Versales con personalidad.", optSize:14 },
+
+    { name:"Cormorant · minúsculas", font:"'Cormorant Garamond',serif",
+      title:"publicación", ts:"font-size:22px;font-weight:600;letter-spacing:.01em;text-transform:lowercase;",
+      desc:"Serif señorial a gran tamaño, en minúsculas. Lujo.", optSize:16 },
+
+    { name:"Space Mono · MAYÚS", font:"'Space Mono',monospace",
+      title:"PUBLICACIÓN", ts:"font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;",
+      desc:"Monoespaciada. Versales con aire de dato/precisión.", optSize:13 }
+  ];
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = V.map((v,idx)=>{
+    const name = "r"+idx;
+    const rows = OPTS.map((o,i)=>`
+        <label class="optline">
+          <input type="radio" name="${name}" ${i===0?"checked":""}>
+          <span class="t" style="font-family:${v.font};font-size:${v.optSize}px;">${o}</span>
+        </label>`).join("");
+    return `
+      <div class="opt">
+        <div class="meta"><span class="num">${String(idx+1).padStart(2,"0")}</span><span class="name">${v.name}</span></div>
+        <p class="desc">${v.desc}</p>
+        <div class="fcard">
+          <div class="fhead">
+            <span class="ftitle">
+              <span class="fdot"></span>
+              <span class="ftitletext" style="font-family:${v.font};${v.ts}">${v.title}</span>
+            </span>
+            <button type="button" class="fclear">×</button>
+          </div>
+          <div class="optcol">${rows}</div>
+        </div>
+      </div>`;
+  }).join("");
+</script>
+</body>
+</html>

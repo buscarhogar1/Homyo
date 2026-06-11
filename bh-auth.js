@@ -116,6 +116,7 @@ export function initAuth() {
   const backStartFromRegBtn = $("backStartFromRegBtn");
 
   const googleBtn = $("googleBtn");
+  const appleBtn = $("appleBtn");
 
   let pendingEmail = "";
 
@@ -134,7 +135,7 @@ export function initAuth() {
   }
 
   function setBusy(isBusy){
-    [googleBtn, emailContinueBtn, pwLoginBtn, regCreateBtn].forEach((b) => {
+    [googleBtn, appleBtn, emailContinueBtn, pwLoginBtn, regCreateBtn].forEach((b) => {
       if (b) b.disabled = isBusy;
     });
   }
@@ -255,13 +256,14 @@ export function initAuth() {
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
     } catch(e){
-      setMsg(authMsgStart, "No se pudo iniciar sesión. Revisa que Google esté activado en Supabase y que exista callback.html.");
+      setMsg(authMsgStart, "No se pudo iniciar sesión. Revisa que el proveedor esté activado en Supabase y que exista callback.html.");
       console.error(e);
       setBusy(false);
     }
   }
 
   googleBtn.addEventListener("click", ()=> oauth("google"));
+  if (appleBtn) appleBtn.addEventListener("click", ()=> oauth("apple"));
 
   async function checkEmailExists(email){
     try{

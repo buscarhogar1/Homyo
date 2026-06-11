@@ -52,6 +52,8 @@ function getParamsFromURL() {
     priceMax: intOrNull(u.searchParams.get("price_max")),
     usefulMin: intOrNull(u.searchParams.get("useful_min")),
     usefulMax: intOrNull(u.searchParams.get("useful_max")),
+    commonMin: intOrNull(u.searchParams.get("common_min")),
+    commonMax: intOrNull(u.searchParams.get("common_max")),
     builtMin: intOrNull(u.searchParams.get("built_min")),
     builtMax: intOrNull(u.searchParams.get("built_max")),
     buildPeriods: fromCSV(u.searchParams.get("build_periods")),
@@ -172,7 +174,13 @@ function infoTip({ title, body } = {}) {
 
 function filterBlock({ title, isActiveFn, onClear, contentEl, isVisibleFn, info }) {
   const dot = el("div", { class: "fDot" });
-  const titleEl = el("div", { class: "fTitleText", text: title });
+  const titleEl = el("div", { class: "fTitleText" });
+  // Mantenemos el título en mayúsculas (estilo de la etiqueta) pero la unidad
+  // "m²" debe ir siempre con la m en minúscula → la envolvemos en un span que
+  // anula la transformación a mayúsculas.
+  titleEl.innerHTML = String(title)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/m²/g, '<span class="unitM2">m²</span>');
   const clearBtn = el("button", { class: "fClearBtn", type: "button", "aria-label": "Limpiar filtro", text: "×" });
 
   clearBtn.addEventListener("click", (e) => {
@@ -283,18 +291,20 @@ function numericRangeControl({ type, initialMin, initialMax, placeholderMin, pla
   const minWrap = el("div", { class: "fInpWrap" });
   const maxWrap = el("div", { class: "fInpWrap" });
 
+  const unit = type === "price" ? " €" : (type === "area" ? " m²" : "");
+
   const minInput = el("input", {
     class: "fInp",
     type: "text",
     inputmode: "numeric",
-    placeholder: placeholderMin,
+    placeholder: placeholderMin + unit,
     value: initialMin == null ? "" : String(initialMin)
   });
   const maxInput = el("input", {
     class: "fInp",
     type: "text",
     inputmode: "numeric",
-    placeholder: placeholderMax,
+    placeholder: placeholderMax + unit,
     value: initialMax == null ? "" : String(initialMax)
   });
 
@@ -633,8 +643,8 @@ export function initFiltersBar({ mountId }) {
       type: "price",
       initialMin: p.priceMin,
       initialMax: p.priceMax,
-      placeholderMin: isRental ? "Mínimo al mes" : "Precio mínimo",
-      placeholderMax: isRental ? "Máximo al mes" : "Precio máximo",
+      placeholderMin: isRental ? "Mínimo" : "Mínimo",
+      placeholderMax: isRental ? "Máximo" : "Máximo",
       onChange: (min, max) => {
         setURLParam("price_min", min);
         setURLParam("price_max", max);
@@ -664,8 +674,8 @@ export function initFiltersBar({ mountId }) {
       type: "area",
       initialMin: p.usefulMin,
       initialMax: p.usefulMax,
-      placeholderMin: mode === "room" ? "Habitación mín. (m²)" : "Útiles mínimos (m²)",
-      placeholderMax: mode === "room" ? "Habitación máx. (m²)" : "Útiles máximos (m²)",
+      placeholderMin: "Mínimo",
+      placeholderMax: "Máximo",
       onChange: (min, max) => {
         setURLParam("useful_min", min);
         setURLParam("useful_max", max);
@@ -689,6 +699,41 @@ export function initFiltersBar({ mountId }) {
         c.maxInput.value = "";
         setURLParam("useful_min", null);
         setURLParam("useful_max", null);
+        touch();
+      },
+      contentEl: c.el
+    }));
+  }
+
+  // --- m² útiles zonas comunes (solo habitación) ---
+  function buildUsefulCommon() {
+    const c = numericRangeControl({
+      type: "area",
+      initialMin: p.commonMin,
+      initialMax: p.commonMax,
+      placeholderMin: "Mínimo",
+      placeholderMax: "Máximo",
+      onChange: (min, max) => {
+        setURLParam("common_min", min);
+        setURLParam("common_max", max);
+        touch();
+      }
+    });
+    return add(filterBlock({
+      title: "m² útiles zonas comunes",
+      info: {
+        title: "m² útiles de las zonas comunes",
+        body: "Son los metros útiles compartidos de la vivienda fuera de la habitación: salón, cocina, pasillos y demás espacios de uso común."
+      },
+      isActiveFn: () => {
+        const x = getParamsFromURL();
+        return x.commonMin != null || x.commonMax != null;
+      },
+      onClear: () => {
+        c.minInput.value = "";
+        c.maxInput.value = "";
+        setURLParam("common_min", null);
+        setURLParam("common_max", null);
         touch();
       },
       contentEl: c.el
@@ -819,8 +864,8 @@ export function initFiltersBar({ mountId }) {
       type: "area",
       initialMin: p.builtMin,
       initialMax: p.builtMax,
-      placeholderMin: "Construidos mínimos (m²)",
-      placeholderMax: "Construidos máximos (m²)",
+      placeholderMin: "Mínimo",
+      placeholderMax: "Máximo",
       onChange: (min, max) => {
         setURLParam("built_min", min);
         setURLParam("built_max", max);
@@ -1418,17 +1463,18 @@ export function initFiltersBar({ mountId }) {
     buildCoexistence();
     buildRoomAmenities();
     buildUseful();
+    buildUsefulCommon();
     buildBathrooms();
     buildSince();
   } else {
     // Comprar / Obra nueva / Todas: filtros de venta (sin cambios)
     buildPrice();
     buildUseful();
+    buildBuilt();
     buildBuildPeriods();
     buildSince();
     buildBedrooms();
     buildBathrooms();
-    buildBuilt();
     buildOutdoor();
     buildAccessibility();
     buildParking();
@@ -1448,6 +1494,7 @@ export function clearAllFilters({ mountId } = {}) {
   [
     "price_min", "price_max",
     "useful_min", "useful_max",
+    "common_min", "common_max",
     "built_min", "built_max",
     "build_periods",
     "since_days",

@@ -1985,9 +1985,22 @@ export function initMap(){
     // mínimo cómodo para que la fila completa (iconos con texto + bloque de
     // tiempo) quepa sin apretarse.
     const MIN_ROW_WIDTH = 620;  // ~4 iconos con etiqueta + tiempo + huecos
-    const BAR_MARGIN = 28;      // 14px de margen a cada lado
+    // En fila (no apilado) el cartel ya no llega hasta el borde derecho del mapa:
+    // su lado derecho se queda a 8px del lado izquierdo de los botones de zoom
+    // (que están en su posición estándar). Margen izquierdo 14px + 64px a la
+    // derecha (56px hasta el zoom + 8px de hueco) = 78px de margen total.
+    const BAR_MARGIN = 78;
     const available = wrap.clientWidth - BAR_MARGIN;
-    transportBarEl.classList.toggle("tpStacked", available < MIN_ROW_WIDTH);
+    const stacked = available < MIN_ROW_WIDTH;
+    transportBarEl.classList.toggle("tpStacked", stacked);
+
+    // Publicamos la altura real del cartel (cuando está apilado) para que los
+    // botones +/- del zoom se posicionen con la base del "−" a 8px de su cara
+    // superior (ver regla en bh-map.css que usa --tpbar-h).
+    if (stacked){
+      const h = Math.round(transportBarEl.getBoundingClientRect().height);
+      if (h > 0) document.documentElement.style.setProperty("--tpbar-h", h + "px");
+    }
   }
 
   function initHoursRow(){
@@ -2130,12 +2143,13 @@ export function initMap(){
   const transportBarEl = document.getElementById("transportBar");
   const tpRangeEl = document.getElementById("tpRange");
   const tpMinsValEl = document.getElementById("tpMinsVal");
+  const tpMinsUnitEl = document.getElementById("tpMinsUnit");
   const tpHintEl = document.getElementById("tpHint");
   const tpModeBtns = transportBarEl
     ? Array.from(transportBarEl.querySelectorAll(".tpMode"))
     : [];
 
-  const TP_MINUTES = [5, 10, 15, 30, 45];
+  const TP_MINUTES = [5, 10, 15, 30, 45, 60];
   // Velocidades urbanas medias (km/h) puerta a puerta.
   const TP_MODES = {
     walk:    { label: "andando",   speed: 4.8 },
@@ -2301,14 +2315,16 @@ export function initMap(){
   }
 
   function tpUpdateBar(){
-    if (tpMinsValEl) tpMinsValEl.textContent = String(TP_MINUTES[transportMinsIdx]);
+    const tpMins = TP_MINUTES[transportMinsIdx];
+    if (tpMinsValEl) tpMinsValEl.textContent = tpMins >= 60 ? String(tpMins / 60) : String(tpMins);
+    if (tpMinsUnitEl) tpMinsUnitEl.textContent = tpMins >= 60 ? "h" : "min";
     tpModeBtns.forEach((b) => {
       const on = b.dataset.mode === transportMode;
       b.classList.toggle("active", on);
       b.setAttribute("aria-selected", on ? "true" : "false");
     });
     if (tpHintEl){
-      tpHintEl.textContent = `Área alcanzable ${TP_MODES[transportMode].label} · arrastra el punto o toca el mapa`;
+      tpHintEl.textContent = "";
     }
   }
 

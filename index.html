@@ -151,9 +151,9 @@
     }
 
     .heroLogo{
-      width:504px;
-      height:77.4px;
-      background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20376%2058'%3E%3Cpolyline%20points='8,50%20164,50%20164,28%20188,8%20212,28%20212,50%20368,50'%20fill='none'%20stroke='%238C1F2D'%20stroke-width='3.4'%20stroke-linejoin='miter'%20stroke-linecap='butt'/%3E%3C/svg%3E") no-repeat center center;
+      width:454.86px;
+      height:69.85px;
+      background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20376%2058'%3E%3Cpolyline%20points='15.8,50%20164,50%20164,28%20188,8%20212,28%20212,50%20360.2,50'%20fill='none'%20stroke='%238C1F2D'%20stroke-width='3.4'%20stroke-linejoin='miter'%20stroke-linecap='butt'/%3E%3C/svg%3E") no-repeat center center;
       background-size:contain;
     }
 
@@ -364,6 +364,7 @@
       appearance:none;
       border:none;
       background:transparent;
+      padding:0;
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -371,7 +372,10 @@
       gap:10px;
       cursor:pointer;
       color:#8A1F2D;
-      min-width:67px;
+      /* Holgura suficiente para que la etiqueta más larga (Distancia) quepa
+         incluso en negrita al seleccionarse: así el ancho del botón —y por tanto
+         el de la fila centrada— no cambia y los iconos no se desplazan. */
+      min-width:74px;
     }
 
     .quickActionIcon{
@@ -399,20 +403,20 @@
     }
 
     .quickAction.selected .quickActionIcon{
-      background:var(--granate);
-      border-color:var(--granate);
+      background:rgba(196,150,42,.12);
+      border-color:var(--dorado);
       box-shadow:
-        0 12px 28px rgba(138,31,45,.22),
-        inset 0 1px 0 rgba(255,255,255,.18);
+        0 8px 20px rgba(196,150,42,.14),
+        inset 0 1px 0 rgba(255,255,255,.6);
     }
 
     .quickAction.selected:hover .quickActionIcon{
-      border-color:var(--granate);
+      border-color:var(--dorado);
       transform:translateY(-2px);
     }
 
     .quickAction.selected .quickActionIcon svg{
-      stroke:#fff;
+      stroke:var(--granate);
     }
 
     .quickAction.selected .quickActionLabel{
@@ -503,7 +507,7 @@
       .heroLogo{
         width:192px;
         height:56px;
-        background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20220%2058'%3E%3Cpolyline%20points='8,50%2086,50%2086,28%20110,8%20134,28%20134,50%20212,50'%20fill='none'%20stroke='%238C1F2D'%20stroke-width='3.4'%20stroke-linejoin='miter'%20stroke-linecap='butt'/%3E%3C/svg%3E") no-repeat center center;
+        background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20220%2058'%3E%3Cpolyline%20points='8,50%2086,50%2086,28%20110,8%20134,28%20134,50%20212,50'%20fill='none'%20stroke='%238C1F2D'%20stroke-width='3.57'%20stroke-linejoin='miter'%20stroke-linecap='butt'/%3E%3C/svg%3E") no-repeat center center;
         background-size:contain;
       }
 
@@ -611,7 +615,7 @@
       }
 
       .quickAction{
-        min-width:58px;
+        min-width:66px;
         gap:8px;
       }
 
@@ -1026,6 +1030,29 @@
     (function setupAnchorLayout(){
       const mq = window.matchMedia("(max-width:720px)");
 
+      /* El grosor del trazo del logo (la casita) debe igualar SIEMPRE el grosor
+         del palo de las letras "homyo" del header. Como el logo escala con
+         --uiScale y el header no, recalculamos el stroke en cada layout para que
+         el grosor renderizado se mantenga clavado al del wordmark. Solo web. */
+      function updateLogoStroke(){
+        const logo  = document.querySelector(".heroLogo");
+        const brand = document.querySelector(".brandText");
+        if (!logo) return;
+        if (mq.matches){ logo.style.backgroundImage = ""; return; } // móvil intacto
+        const r = logo.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0) return;
+        const VB_W = 376, VB_H = 58;
+        const containScale = Math.min(r.width / VB_W, r.height / VB_H);
+        // Stem de Raleway 627 ≈ 11.36% del tamaño de fuente (5px @ 44px, medido),
+        // menos un 10% por preferencia visual.
+        const brandFs = brand ? (parseFloat(getComputedStyle(brand).fontSize) || 44) : 44;
+        const stemPx  = brandFs * (5 / 44) * 0.9;
+        const strokeVB = (stemPx / containScale).toFixed(3);
+        const pts = "15.8,50 164,50 164,28 188,8 212,28 212,50 360.2,50";
+        const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 " + VB_W + " " + VB_H + "'><polyline points='" + pts + "' fill='none' stroke='#8C1F2D' stroke-width='" + strokeVB + "' stroke-linejoin='miter' stroke-linecap='butt'/></svg>";
+        logo.style.backgroundImage = "url(\"data:image/svg+xml," + encodeURIComponent(svg) + "\")";
+      }
+
       function apply(){
         const block     = document.querySelector(".searchBlock");
         const logoZone  = document.querySelector(".tagline");
@@ -1094,17 +1121,10 @@
             anchorY = coreTop0 + Gh / 2;
           }
         } else {
-          const pills = inner.querySelectorAll(".pill");
-          const sb    = inner.querySelector(".searchBox");
-          if (pills.length && sb) {
-            // centro del hueco entre la fila de botones y el buscador
-            let pillsBottom = 0;
-            pills.forEach(p => { pillsBottom = Math.max(pillsBottom, p.getBoundingClientRect().bottom); });
-            anchorY = (pillsBottom + sb.getBoundingClientRect().top) / 2;
-          } else {
-            const r = sb ? sb.getBoundingClientRect() : coreRect;
-            anchorY = r.top + r.height / 2;
-          }
+          // Web: el ancla es el CENTRO REAL de la barra del buscador.
+          const sb = inner.querySelector(".searchBox");
+          const r  = sb ? sb.getBoundingClientRect() : coreRect;
+          anchorY  = r.top + r.height / 2;
         }
 
         const anchorRel    = anchorY - coreTop0;        // ancla dentro del grupo
@@ -1128,7 +1148,13 @@
           const sbTopRel = sbEl ? (sbEl.getBoundingClientRect().top - coreTop0) : 0;
           coreTopPx = Math.min((KB_TOP + iconsH + KB_GAP) - sbTopRel, maxTop);
         } else {
-          coreTopPx = (H - blockTop) / 2 - anchorRel;
+          // Centro de la pantalla completa (abs, desde el borde superior).
+          const screenCenter = (blockTop + H) / 2;
+          // Web: el centro de la barra queda un 10% POR DEBAJO del centro
+          // (un "menos 10%"), relativo a la distancia parte superior→centro.
+          // Móvil: centro.
+          const targetAbs = mq.matches ? screenCenter : (screenCenter + 0.10 * screenCenter);
+          coreTopPx = (targetAbs - blockTop) - anchorRel;
           coreTopPx = Math.max(minTop, Math.min(coreTopPx, maxTop));
         }
         core.style.top = coreTopPx + "px";
@@ -1162,6 +1188,9 @@
         // Si el panel de sugerencias está montado, lo recolocamos para que
         // siga al buscador tras mover el grupo (más alto = más sitio abajo).
         if (window.BH_positionAutocomplete) window.BH_positionAutocomplete();
+
+        // El trazo del logo se mantiene igual de grueso que las letras del header.
+        updateLogoStroke();
       }
 
       let raf = null;

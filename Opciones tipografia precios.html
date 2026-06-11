@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opciones tipografía de precios — Homyo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Spectral:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&family=Space+Mono:wght@400;700&family=Archivo:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --granate:#8C1F2D;
+    --dorado:#E2B84C;
+    --text:#241f1b;
+    --muted:#8f8578;
+    --bg:#F4EFE7;
+    --card:#FFFDFA;
+    --border:rgba(140,31,45,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Raleway','Montserrat',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 32px 80px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+
+  header.page{margin-bottom:38px;}
+  .kicker{
+    font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--dorado);margin:0 0 10px;
+  }
+  h1{
+    font-family:'Raleway',sans-serif;font-weight:700;
+    font-size:34px;color:var(--granate);margin:0 0 8px;letter-spacing:-.01em;
+  }
+  .lede{font-size:15px;color:var(--muted);max-width:640px;line-height:1.55;margin:0;}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:22px;
+    margin-top:34px;
+  }
+
+  .opt{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:26px 28px 30px;
+    box-shadow:0 14px 34px rgba(36,31,27,0.05);
+    display:flex;flex-direction:column;
+  }
+  .opt h2{
+    display:flex;align-items:baseline;gap:10px;
+    font-family:'Raleway',sans-serif;font-weight:700;font-size:17px;
+    color:var(--text);margin:0 0 3px;
+  }
+  .opt .tag{
+    font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--granate);background:rgba(226,184,76,0.26);
+    padding:3px 8px;border-radius:999px;
+  }
+  .opt .desc{font-size:12.5px;color:var(--muted);margin:0 0 20px;line-height:1.45;}
+
+  /* ---- Contexto 1: precio grande (ficha) ---- */
+  .ctx{padding-top:18px;border-top:1px dashed var(--border);}
+  .ctx + .ctx{margin-top:18px;}
+  .ctxLabel{
+    font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 12px;
+  }
+  .bigPrice{
+    font-size:38px;font-weight:700;color:var(--text);
+    letter-spacing:-.01em;line-height:1;
+    font-feature-settings:"tnum" 1,"lnum" 1;
+  }
+
+  /* ---- Contexto 2: tarjeta del listado del mapa ---- */
+  .listCard{
+    display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;
+    padding:10px;border-radius:14px;border:1px solid rgba(0,0,0,0.10);
+    background:#fff;max-width:340px;
+  }
+  .listImg{
+    width:84px;height:72px;border-radius:11px;
+    background:
+      repeating-linear-gradient(135deg,#efe7d8 0 7px,#e7ddca 7px 14px);
+  }
+  .listTitle{font-family:'Raleway',sans-serif;font-size:14px;color:var(--granate);font-weight:600;line-height:1.2;margin:1px 0 0;}
+  .listSub{font-size:12px;color:var(--muted);margin:2px 0 0;}
+  .listPrice{
+    margin-top:7px;font-size:17px;font-weight:700;color:var(--text);
+    font-feature-settings:"tnum" 1,"lnum" 1;
+  }
+
+  /* ---- Contexto 3: pin de precio del mapa ---- */
+  .pinRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .pin{
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:6px 11px;border-radius:999px;
+    background:#FFFDFA;border:1.5px solid var(--dorado);
+    box-shadow:0 4px 10px rgba(36,31,27,0.12);
+  }
+  .pin .p{
+    font-size:12.5px;font-weight:700;color:#5A2A00;line-height:1;letter-spacing:.01em;
+    font-feature-settings:"tnum" 1,"lnum" 1;
+  }
+  .pin.active{background:var(--granate);border-color:var(--dorado);}
+  .pin.active .p{color:#FFFDFA;}
+  .pin.seen .p{color:var(--granate);}
+  .pin.seen{background:#F2E9D8;}
+
+  /* Per-option font assignments (only the numeric/price elements switch) */
+  .f-raleway .bigPrice,.f-raleway .listPrice,.f-raleway .pin .p{font-family:'Raleway',sans-serif;}
+  .f-manrope .bigPrice,.f-manrope .listPrice,.f-manrope .pin .p{font-family:'Manrope',sans-serif;}
+  .f-grotesk .bigPrice,.f-grotesk .listPrice,.f-grotesk .pin .p{font-family:'Space Grotesk',sans-serif;}
+  .f-spectral .bigPrice,.f-spectral .listPrice,.f-spectral .pin .p{font-family:'Spectral',serif;}
+  .f-cormorant .bigPrice,.f-cormorant .listPrice,.f-cormorant .pin .p{font-family:'Cormorant Garamond',serif;}
+  .f-mono .bigPrice,.f-mono .listPrice,.f-mono .pin .p{font-family:'Space Mono',monospace;letter-spacing:-.02em;}
+  .f-archivo .bigPrice,.f-archivo .listPrice,.f-archivo .pin .p{font-family:'Archivo',sans-serif;}
+  .f-fraunces .bigPrice,.f-fraunces .listPrice,.f-fraunces .pin .p{font-family:'Fraunces',serif;}
+
+  /* Cormorant runs small — bump it up a touch */
+  .f-cormorant .bigPrice{font-size:46px;font-weight:600;}
+  .f-cormorant .listPrice{font-size:20px;font-weight:600;}
+  .f-cormorant .pin .p{font-size:14px;}
+  .f-spectral .bigPrice{font-weight:700;}
+  .f-mono .bigPrice{font-size:34px;}
+
+  @media (max-width:760px){
+    .grid{grid-template-columns:1fr;}
+    body{padding:30px 18px 60px;}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="page">
+      <p class="kicker">Homyo · Tipografía de precios</p>
+      <h1>Opciones para los números</h1>
+      <p class="lede">Cada tarjeta aplica una tipografía distinta a las cifras en los tres sitios donde aparecen: el precio grande de la ficha, la tarjeta del listado y el pin del mapa. El resto del texto (títulos, etiquetas) se mantiene en Raleway para que solo compares los números.</p>
+    </header>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+<script>
+  const PRICE_BIG = "319.000 €";
+  const PRICE_LIST = "319.000 €";
+  const PINS = ["285.000 €","319.000 €","452.000 €"];
+
+  const OPTIONS = [
+    {cls:"f-raleway", name:"Raleway", tag:"Actual", desc:"La tipografía actual. Coherente con el resto de la marca, pero los números resultan algo blandos y poco distintos."},
+    {cls:"f-manrope", name:"Manrope", tag:"Limpia", desc:"Geométrica y muy legible, con cifras tabulares de aspecto moderno y neutro. Apuesta segura."},
+    {cls:"f-grotesk", name:"Space Grotesk", tag:"Carácter", desc:"Grotesca con personalidad: el 1, el 4 y el 9 tienen detalles que dan un aire técnico y actual."},
+    {cls:"f-spectral", name:"Spectral", tag:"Editorial", desc:"Serif contemporánea con números elegantes. Da un toque más premium y de revista inmobiliaria."},
+    {cls:"f-cormorant", name:"Cormorant Garamond", tag:"Lujo", desc:"Serif de alto contraste, muy señorial. Ideal para producto de gama alta; menos para cifras pequeñas."},
+    {cls:"f-archivo", name:"Archivo", tag:"Sólida", desc:"Grotesca firme y compacta. Números rotundos que pesan bien sin gritar."},
+    {cls:"f-mono", name:"Space Mono", tag:"Precisión", desc:"Monoespaciada: las cifras se alinean perfectas y transmiten exactitud, dato, tasación."},
+    {cls:"f-fraunces", name:"Fraunces", tag:"Cálida", desc:"Serif con un punto retro y amable. Más expresiva; combina con un tono de marca acogedor."},
+  ];
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML = OPTIONS.map(o => `
+    <div class="opt ${o.cls}">
+      <h2>${o.name}<span class="tag">${o.tag}</span></h2>
+      <p class="desc">${o.desc}</p>
+
+      <div class="ctx">
+        <p class="ctxLabel">Precio en la ficha</p>
+        <div class="bigPrice">${PRICE_BIG}</div>
+      </div>
+
+      <div class="ctx">
+        <p class="ctxLabel">Tarjeta del listado</p>
+        <div class="listCard">
+          <div class="listImg"></div>
+          <div>
+            <p class="listTitle">Calle del Pez, 14</p>
+            <p class="listSub">Malasaña · Madrid</p>
+            <div class="listPrice">${PRICE_LIST}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ctx">
+        <p class="ctxLabel">Pin del mapa</p>
+        <div class="pinRow">
+          <span class="pin"><span class="p">${PINS[0]}</span></span>
+          <span class="pin seen"><span class="p">${PINS[1]}</span></span>
+          <span class="pin active"><span class="p">${PINS[2]}</span></span>
+        </div>
+      </div>
+    </div>
+  `).join("");
+</script>
+</body>
+</html>
