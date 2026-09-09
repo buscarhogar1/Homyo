@@ -267,6 +267,18 @@ export function initLayout(opts = {}) {
   const { showMiniSearch = false } = opts;
 
   const root = getSiteRoot();
+
+  // Registrar el service worker para que Chrome/Android trate el sitio como
+  // PWA instalable y el acceso directo use el icono del manifest (no el
+  // genérico). Se registra con scope relativo, así funciona también si el
+  // sitio se sirve bajo un subpath de GitHub Pages.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register(root + "sw.js", { scope: root })
+        .catch((err) => console.warn("SW no registrado:", err));
+    });
+  }
   const headerMount = document.getElementById("bhHeader");
   const footerMount = document.getElementById("bhFooter");
 
