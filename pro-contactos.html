@@ -53,7 +53,7 @@
       .directNote{ display:flex; gap:10px; align-items:flex-start; font-size:12.5px; color:var(--muted); line-height:1.5; margin-top:18px; }
       .directNote svg{ width:16px; height:16px; color:var(--good); flex:0 0 auto; margin-top:1px; }
     </style>
-  </head>
+  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body>
     <div class="proLayout">
       <aside class="proSidebar" id="proSidebar"></aside>
@@ -116,7 +116,7 @@
         { id: 2, name: "Daniel Ortega", init: "DO", email: "d.ortega@outlook.es", tel: "+34 600 451 220", prop: "Chalet · Av. de Europa 9", zone: "Pozuelo · 890.000 €", when: "Hace 4 h", st: "new", msg: "Buenos días, estamos buscando una vivienda con jardín para la familia. ¿El chalet tiene piscina propia o comunitaria? ¿Cuántas plazas de garaje incluye?" },
         { id: 3, name: "María Fdez.", init: "MF", email: "maria.fz@gmail.com", tel: "+34 678 339 014", prop: "Piso · Calle Velázquez 80", zone: "Salamanca · 485.000 €", when: "Ayer", st: "progress", msg: "Hola, ¿el precio es negociable? Me encaja todo salvo que esperaba algo por debajo de 460.000. ¿Podríamos hablarlo?" },
         { id: 4, name: "Jorge Alonso", init: "JA", email: "jorge.alonso@empresa.com", tel: "+34 611 778 002", prop: "Piso · Bravo Murillo 200", zone: "Tetuán · 298.000 €", when: "Hace 2 días", st: "progress", msg: "¿Está disponible para entrar a vivir? ¿Qué gastos de comunidad tiene al mes?" },
-        { id: 5, name: "Sara Giménez", init: "SG", email: "sara.gimenez@gmail.com", tel: "+34 699 010 553", prop: "Estudio · Fuencarral 120", zone: "Chamberí · 1.150 €/mes", when: "Hace 5 días", st: "done", msg: "Gracias por enseñarme el estudio. Finalmente nos hemos decidido por otra opción, pero todo perfecto en el trato." }
+        { id: 5, name: "Sara Giménez", init: "SG", email: "sara.gimenez@gmail.com", tel: "+34 699 010 553", prop: "Piso · Príncipe de Vergara 150", zone: "Chamartín · 2.100 €/mes", when: "Hace 5 días", st: "done", msg: "Gracias por enseñarme el piso. Finalmente nos hemos decidido por otra opción, pero todo perfecto en el trato." }
       ];
       var STMAP = { new: { t: "Nuevo", cls: "ok" }, progress: { t: "En curso", cls: "infop" }, done: { t: "Gestionado", cls: "neutral" } };
       var items = document.getElementById("leadItems");

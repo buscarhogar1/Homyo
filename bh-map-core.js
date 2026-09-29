@@ -32,6 +32,8 @@ export function initMap(){
   const heartBtn = document.getElementById("heartBtn");
 
   const badgeNewEl = document.getElementById("badgeNew");
+  const badgeOfferEl = document.getElementById("badgeOffer");
+  const badgeSoldEl = document.getElementById("badgeSold");
   const mediaImgEl = document.getElementById("mediaImg");
   const mediaPlaceholderEl = document.getElementById("mediaPlaceholder");
 
@@ -249,7 +251,7 @@ export function initMap(){
 
   function buildAddressTop(p) {
     const base = joinNonEmpty([p.street_name, p.street_number], " ");
-    const extras = joinNonEmpty([p.building, p.staircase, p.floor, p.door], ", ");
+    const extras = joinNonEmpty([p.building, p.staircase, joinNonEmpty([p.floor, p.door], " ")], ", ");
     if (base && extras) return base + ", " + extras;
     return base || extras || "Dirección";
   }
@@ -296,7 +298,45 @@ export function initMap(){
     }
   }
 
+  const availabilityCache = new Map();
+  function setOfferBadge(av) {
+    if (badgeOfferEl) badgeOfferEl.style.display = av === "negotiation" ? "inline-flex" : "none";
+    if (badgeSoldEl) {
+      const mode = (new URL(location.href).searchParams.get("mode") || "").toLowerCase();
+      badgeSoldEl.textContent = (mode === "rent" || mode === "room") ? "Alquilado" : "Vendido";
+      badgeSoldEl.style.display = av === "sold" ? "inline-flex" : "none";
+    }
+  }
+  function setNewBadge(listedAt) {
+    badgeNewEl.style.display = isRecent(listedAt, 14) ? "inline-flex" : "none";
+  }
+  async function updateOfferBadge(p) {
+    const id = p.listing_id;
+    const cached = availabilityCache.get(id);
+    let av = p.availability ?? cached?.availability;
+    let la = p.listed_at ?? cached?.listed_at;
+    const avFilter = new URL(location.href).searchParams.get("availability");
+    if (av === undefined && (avFilter === "negotiation" || avFilter === "sold")) av = avFilter;
+    setOfferBadge(av);
+    setNewBadge(la);
+    if (cached || (p.availability !== undefined && p.listed_at !== undefined) || id == null) return;
+    try {
+      const url = `${SUPABASE_URL}/rest/v1/listing_detail_public?select=availability,listed_at&listing_id=eq.${encodeURIComponent(id)}&limit=1`;
+      const res = await fetch(url, { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } });
+      if (!res.ok) return;
+      const rows = await res.json();
+      const val = { availability: rows[0]?.availability ?? null, listed_at: rows[0]?.listed_at ?? null };
+      availabilityCache.set(id, val);
+      if (currentCardListingId === id) {
+        setOfferBadge(p.availability ?? val.availability);
+        setNewBadge(p.listed_at ?? val.listed_at);
+      }
+    } catch {}
+  }
+  let currentCardListingId = null;
+
   function openCardForPoint(p) {
+    currentCardListingId = p.listing_id;
     // Marcar visto al abrir card (pedido)
     markSeen(p.listing_id);
 
@@ -309,7 +349,7 @@ export function initMap(){
 
     setCardPhotos(collectAllPhotoUrls(p));
 
-    badgeNewEl.style.display = isRecent(p.listed_at, 14) ? "inline-flex" : "none";
+    updateOfferBadge(p);
 
     const m2 = (p.useful_area_m2 != null) ? `${p.useful_area_m2} m²` : "— m²";
     const beds = (p.bedrooms != null) ? `${p.bedrooms}` : "—";
@@ -741,7 +781,7 @@ export function initMap(){
   }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
   window.__bhMap = map;
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_42x5_1_561b29f37317473c79c5d504", {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap &copy; CARTO"
   }).addTo(map);
@@ -1477,6 +1517,11 @@ export function initMap(){
       agency.className = "listAgency";
       agency.textContent = p.agency_name || "—";
 
+      const agencyUnder = document.createElement("div");
+      agencyUnder.className = "listAgencyUnder";
+      agencyUnder.textContent = p.agency_name || "—";
+      left.appendChild(agencyUnder);
+
       const right = document.createElement("div");
       right.className = "listBody";
       right.appendChild(title);
@@ -1632,6 +1677,21 @@ export function initMap(){
 
     if (!best) return null;
     return [parseFloat(best.lat), parseFloat(best.lon)];
+  }
+
+  async function geocodeNeighborhood(hood, city) {
+    const q = [hood, city, "España"].filter(Boolean).join(", ");
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&countrycodes=es&limit=5`, { headers: { "Accept": "application/json" } });
+      if (!res.ok) return null;
+      const data = await res.json();
+      const best = (data || []).find((item) => {
+        const type = String(item.type || "").toLowerCase();
+        return ["suburb","neighbourhood","quarter","administrative","city_district"].includes(type) || String(item.class || "").toLowerCase() === "boundary";
+      }) || data?.[0];
+      if (!best) return null;
+      return [parseFloat(best.lat), parseFloat(best.lon)];
+    } catch { return null; }
   }
 
   async function goToCity(city) {
@@ -2846,7 +2906,8 @@ export function initMap(){
       const _lat = parseFloat(_u.searchParams.get("lat"));
       const _lng = parseFloat(_u.searchParams.get("lng"));
       const _zoom = parseInt(_u.searchParams.get("zoom"), 10);
-      let initialZoom = Number.isFinite(_zoom) ? Math.min(Math.max(_zoom, 6), 17) : 13;
+      const _hood = (_u.searchParams.get("hood") || "").trim();
+      let initialZoom = Number.isFinite(_zoom) ? Math.min(Math.max(_zoom, 6), 17) : (_hood ? 15 : 13);
 
       // Si el usuario llega con la herramienta "Sol" seleccionada desde el index
       // (móvil o web), abrimos la búsqueda con el zoom MÍNIMO al que el Sol
@@ -2869,7 +2930,10 @@ export function initMap(){
       if (Number.isFinite(_lat) && Number.isFinite(_lng)) {
         initialCityCenter = [_lat, _lng];
         map.setView(initialCityCenter, initialZoom, { animate: false });
+      } else if (_hood && (initialCityCenter = await geocodeNeighborhood(_hood, initialParams.city))) {
+        map.setView(initialCityCenter, initialZoom, { animate: false });
       } else if (initialParams.city) {
+        if (_hood && !Number.isFinite(_zoom)) initialZoom = 13;
         initialCityCenter = await geocodeCity(initialParams.city);
         if (initialCityCenter) {
           map.setView(initialCityCenter, initialZoom, { animate: false });

@@ -102,7 +102,7 @@
       .modelNote{ display:flex; gap:13px; align-items:flex-start; font-size:13px; color:var(--ink2); line-height:1.55; }
       .modelNote svg{ width:20px; height:20px; color:var(--good); flex:0 0 auto; margin-top:1px; }
     </style>
-  </head>
+  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body>
     <div class="proLayout">
       <aside class="proSidebar" id="proSidebar"></aside>
@@ -119,11 +119,11 @@
               <div class="heroPills">
                 <span class="pill ok"><span class="dot"></span>Cuenta aprobada</span>
                 <span class="pill gold">Agencia fundadora · 3 meses gratis</span>
-                <span class="pill neutral">Madrid · Chamberí, Salamanca, Retiro</span>
+                <span class="pill neutral">Madrid · Centro, Chamberí, Salamanca y 4 zonas más</span>
               </div>
             </div>
             <div class="heroDate">
-              <span class="big">Jueves, 28 de mayo</span>
+              <span class="big">Miércoles, 3 de junio</span>
               Última conexión: hoy, 09:14
             </div>
           </section>
@@ -142,7 +142,7 @@
             </div>
             <div class="kpi">
               <p class="kpiLabel">Visualizaciones · 30 días</p>
-              <p class="kpiValue">9.2<span class="u">K</span></p>
+              <p class="kpiValue">1.2<span class="u">K</span></p>
               <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+8 % últimos 30 días</span>
             </div>
             <div class="kpi">
@@ -174,13 +174,14 @@
 
           <!-- ESTADO DEL INVENTARIO -->
           <div class="sectionHead"><h2>Estado del inventario</h2><a class="btnLink" href="pro-viviendas.html">Ir a viviendas <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></div>
+          <div class="opBar"><span class="opLbl">Operación</span><div class="seg" id="panelOpSeg"><button class="isOn" data-op="all">Todas <span class="c">30</span></button><button data-op="venta">Venta <span class="c">22</span></button><button data-op="alquiler">Alquiler <span class="c">6</span></button><button data-op="habitacion">Habitación <span class="c">2</span></button></div></div>
           <div class="statRow">
-            <a class="statMini" href="pro-viviendas.html"><div class="n">18</div><div class="l">Publicadas</div></a>
-            <a class="statMini" href="pro-viviendas.html"><div class="n">4</div><div class="l">En borrador</div></a>
-            <a class="statMini" href="pro-viviendas.html"><div class="n">2</div><div class="l">Pendientes de revisión</div></a>
-            <a class="statMini alert" href="pro-viviendas.html"><div class="n">1</div><div class="l">Rechazadas</div></a>
-            <a class="statMini" href="pro-viviendas.html"><div class="n">3</div><div class="l">Necesitan actualización</div></a>
-            <a class="statMini" href="pro-viviendas.html"><div class="n">2</div><div class="l">Retiradas</div></a>
+            <a class="statMini" href="pro-viviendas.html"><div class="n" data-k="pub">18</div><div class="l">Publicadas</div></a>
+            <a class="statMini" href="pro-viviendas.html"><div class="n" data-k="draft">4</div><div class="l">En borrador</div></a>
+            <a class="statMini" href="pro-viviendas.html"><div class="n" data-k="review">2</div><div class="l">Pendientes de revisión</div></a>
+            <a class="statMini alert" href="pro-viviendas.html"><div class="n" data-k="rej">1</div><div class="l">Rechazadas</div></a>
+            <a class="statMini" href="pro-viviendas.html"><div class="n" data-k="upd">3</div><div class="l">Necesitan actualización</div></a>
+            <a class="statMini" href="pro-viviendas.html"><div class="n" data-k="off">2</div><div class="l">Retiradas</div></a>
           </div>
 
           <!-- ACCESOS RÁPIDOS -->
@@ -221,7 +222,7 @@
                 </li>
                 <li>
                   <span class="actIc" style="background:var(--goodSoft);color:var(--good)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-                  <div class="actBody"><h5>Anuncio aprobado y publicado</h5><p>Piso reformado en Calle Velázquez 80 ya está visible en Homyo</p></div>
+                  <div class="actBody"><h5>Cambios aprobados y publicados</h5><p>Piso reformado en Calle Velázquez 80 · la nueva versión ya está visible</p></div>
                   <span class="actWhen">Hace 5 h</span>
                 </li>
                 <li>
@@ -231,8 +232,8 @@
                 </li>
                 <li>
                   <span class="actIc" style="background:var(--cardWarm);color:var(--granate)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
-                  <div class="actBody"><h5>Factura disponible</h5><p>Periodo gratuito de fundadora activo · próxima factura estimada: <b>125,82 €</b></p></div>
-                  <span class="actWhen">Ayer</span>
+                  <div class="actBody"><h5>Factura de junio disponible</h5><p>0,00 € · bonificada (periodo fundadora hasta el 18 jun) · primer cargo el 1 jul</p></div>
+                  <span class="actWhen">1 jun</span>
                 </li>
               </ul>
             </div>
@@ -272,5 +273,24 @@
       window.PRO_PAGE = { active: "panel", title: "Panel", crumb: "Áurea Inmobiliaria · Cuenta aprobada" };
     </script>
     <script src="pro-shell.js"></script>
+  <script>
+      (function(){
+        var OP_COUNTS = {
+        all:        { total:30, pub:18, draft:4, review:2, rej:1, upd:3, off:2 },
+        venta:      { total:22, pub:13, draft:3, review:1, rej:1, upd:3, off:1 },
+        alquiler:   { total:6,  pub:3,  draft:1, review:1, rej:0, upd:0, off:1 },
+        habitacion: { total:2,  pub:2,  draft:0, review:0, rej:0, upd:0, off:0 }
+      };
+      var OP_LABEL = { venta:"Venta", alquiler:"Alquiler", habitacion:"Habitación" };
+        document.querySelectorAll("#panelOpSeg button").forEach(function (b) {
+          b.addEventListener("click", function () {
+            document.querySelectorAll("#panelOpSeg button").forEach(function (x) { x.classList.remove("isOn"); });
+            b.classList.add("isOn");
+            var k = OP_COUNTS[b.getAttribute("data-op")];
+            document.querySelectorAll(".statMini .n[data-k]").forEach(function (n) { n.textContent = k[n.getAttribute("data-k")]; });
+          });
+        });
+      })();
+    </script>
   </body>
 </html>

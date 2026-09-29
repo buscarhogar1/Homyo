@@ -26,7 +26,7 @@
       .docRow .dm{ font-size:12px; color:var(--muted); }
       .docRow .da{ margin-left:auto; }
     </style>
-  </head>
+  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body class="adminTheme">
     <div class="proLayout">
       <aside class="proSidebar" id="proSidebar"></aside>
@@ -53,8 +53,8 @@
                 <span class="liWhen">12 min</span>
               </a>
               <a class="lpItem unread" data-sel="vg">
-                <span class="avatar sm">VG</span>
-                <span><span class="li1">Inmobiliaria Vega</span><span class="li2">Valencia · B-77001234 · falta nota del Registro</span></span>
+                <span class="avatar sm">AC</span>
+                <span><span class="li1">Alquiler Claro</span><span class="li2">Valencia · B-46119820 · falta nota simple del Registro</span></span>
                 <span class="liWhen">3 h</span>
               </a>
               <a class="lpItem" data-sel="tl">
@@ -82,24 +82,24 @@
                 </div>
 
                 <dl class="kv" style="margin-bottom:6px;">
-                  <dt>Persona de contacto</dt><dd>Marina Ortega (gerente)</dd>
+                  <dt>Responsable</dt><dd>Marina Ortega · Directora / gerente</dd>
                   <dt>Email</dt><dd>marina@nidosdelsur.es</dd>
                   <dt>Teléfono</dt><dd>+34 954 11 22 33</dd>
-                  <dt>Colegiación / API</dt><dd>API Sevilla nº 4821</dd>
-                  <dt>Viviendas estimadas</dt><dd>≈ 30 a publicar</dd>
+                  <dt>Registro autonómico</dt><dd>No aplica en Andalucía</dd>
+                <dt>Nº colegiado API</dt><dd>API Sevilla nº 4821</dd>
                 </dl>
               </div>
 
               <div class="card">
                 <p class="cardLabel">Documentación aportada</p>
-                <div class="docRow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span><span class="dn">Escritura de constitución</span><br><span class="dm">PDF · 1,2 MB</span></span><span class="da pill ok">Verificado</span></div>
-                <div class="docRow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span><span class="dn">Tarjeta del CIF</span><br><span class="dm">PDF · 320 KB</span></span><span class="da pill ok">Verificado</span></div>
-                <div class="docRow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span><span class="dn">Alta colegial / API</span><br><span class="dm">PDF · 540 KB</span></span><span class="da pill ok">Verificado</span></div>
+                <div class="docRow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span><span class="dn">Tarjeta de identificación fiscal (CIF)</span><br><span class="dm">PDF · 320 KB</span></span><span class="da pill ok">Verificado</span></div>
+                <div class="docRow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span><span class="dn">DNI / NIE del responsable</span><br><span class="dm">PDF · 780 KB · coincide con el paso 2</span></span><span class="da pill ok">Verificado</span></div>
+                <div class="docRow"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><span><span class="dn">Autorización del administrador</span><br><span class="dm">PDF · 540 KB · la responsable no es administradora</span></span><span class="da pill ok">Verificado</span></div>
               </div>
 
               <div class="callout infoc">
                 <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v4h1"/></svg></span>
-                <div><h4>Comprobación automática superada</h4><p>El CIF figura activo en el censo y no hay otra cuenta con el mismo NIF. Sin duplicados detectados.</p></div>
+                <div><h4>Comprobación automática superada</h4><p>Empresa encontrada y activa en el Registro Mercantil (no requiere nota simple). No hay otra cuenta con el mismo CIF.</p></div>
               </div>
 
               <div class="card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
@@ -123,7 +123,7 @@
       (function () {
         var DATA = {
           ns: ["Nidos del Sur Gestión Inmobiliaria, S.L.", "Sevilla · CIF B-41200999 · Solicitud recibida hace 12 min"],
-          vg: ["Inmobiliaria Vega, S.L.", "Valencia · CIF B-77001234 · Solicitud recibida hace 3 h"],
+          vg: ["Alquiler Claro Gestión, S.L.", "Valencia · CIF B-46119820 · Solicitud recibida hace 3 h"],
           tl: ["Terra & Llave Asociados, S.L.", "Zaragoza · CIF B-50880221 · Solicitud recibida ayer"],
           mm: ["Mediterráneo Inmuebles, S.L.", "Murcia · CIF B-30551200 · Solicitud recibida hace 2 días"]
         };

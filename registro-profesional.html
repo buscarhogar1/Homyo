@@ -529,6 +529,37 @@
         color:var(--good);
       }
 
+      [hidden]{display:none !important}
+      /* ===== CIF lookup ===== */
+      .lookupRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:stretch}
+      .lookupRow .btnPrimary{white-space:nowrap}
+      @media (max-width:520px){.lookupRow{grid-template-columns:1fr}}
+      .lookupCard{margin-top:6px;border:1px solid var(--line);border-radius:4px;background:#fff;padding:18px 20px}
+      .lookupCard.isFound{border-color:var(--granate);background:linear-gradient(180deg,#fff 0%,var(--cardWarm) 100%)}
+      .lookupCard.isConfirmed{border-color:rgba(31,122,76,.4);background:var(--goodSoft)}
+      .lookupCard.isManual{border-color:rgba(168,116,27,.35);background:var(--warnSoft)}
+      .lookupState{display:none}
+      .lookupState.isOn{display:block}
+      .lookupState[data-state="loading"].isOn{display:flex;align-items:center;gap:12px}
+      .lookupState[data-state="loading"] p{margin:0;font-size:13.5px;color:var(--ink2)}
+      .lookupSpin{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--granate);animation:lkSpin .8s linear infinite}
+      @keyframes lkSpin{to{transform:rotate(360deg)}}
+      .lookupHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+      .lookupState[data-state="confirmed"] .lookupHead{margin-bottom:0}
+      .lookupKicker{margin:0 0 4px;font-family:'Raleway',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--granate)}
+      .lookupKicker.good{color:var(--good)}
+      .lookupKicker.warn{color:var(--warn)}
+      .lookupName{margin:0;font-family:'Raleway',sans-serif;font-size:17px;font-weight:600;color:var(--ink)}
+      .lookupMeta{margin:4px 0 0;font-size:13px;color:var(--ink2)}
+      .lookupMsg{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink2)}
+      .lookupBadge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--good);background:var(--goodSoft);border:1px solid rgba(31,122,76,.3);border-radius:999px;padding:4px 10px;white-space:nowrap}
+      .lookupBadge .dot{width:6px;height:6px;border-radius:50%;background:var(--good)}
+      .lookupList li{grid-template-columns:130px 1fr}
+      .lookupActions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:18px}
+      #manualFields .field,#contactFields .field{margin-bottom:0}
+      #manualFields .fieldGrid + .fieldGrid{margin-top:16px}
+      #errLookup.isOn{display:block}
+
       /* ===== Verification banner ===== */
       .verifyBanner{
         display:flex;
@@ -1080,7 +1111,7 @@
         .actionsBtns .btnGhost{ flex:1 1 auto; padding:14px 16px; letter-spacing:.18em; }
       }
     </style>
-  </head>
+  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
 
   <body>
     <div id="bhHeader"></div>
@@ -1145,102 +1176,96 @@
             <section class="section" id="step-1">
               <p class="sectionLabel">Paso 1 · Empresa</p>
               <h2 class="sectionTitle">Identifica tu inmobiliaria</h2>
-              <p class="sectionHelp">
-                Necesitamos los datos fiscales y registrales de la empresa que va a operar en Homyo.
-                Tienen que coincidir con lo que figura en el Registro Mercantil o en tu certificado fiscal.
-              </p>
-
-              <div class="verifyBanner">
-                <span class="icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"></path>
-                    <path d="M9 12l2 2 4-4"></path>
-                  </svg>
-                </span>
-                <div>
-                  <h4>Comprobaremos tu empresa en fuentes oficiales</h4>
-                  <p>Cruzamos el CIF y el número de Registro Mercantil con datos públicos. Si no aparece o no coincide, te lo decimos para que lo corrijas antes de seguir.</p>
+              <p class="sectionHelp">Solo necesitamos tu CIF. Con él buscamos tu empresa en el Registro Mercantil y rellenamos el resto de datos por ti.</p>
+              <div class="field full">
+                <label class="fieldLabel">¿Cómo operas? <span class="req">obligatorio</span></label>
+                <div class="radioCards" id="entityCards">
+                  <label class="radioCard isOn"><input type="radio" name="entity" value="soc" checked="checked" /><h4>Como sociedad</h4><p>S.L., S.A., cooperativa u otra forma inscrita en el Registro Mercantil.</p></label>
+                  <label class="radioCard"><input type="radio" name="entity" value="auto" /><h4>Como autónomo</h4><p>Agente que opera como persona física con su propio NIF.</p></label>
                 </div>
               </div>
-
-              <div class="fieldGrid cols2to1">
-                <div class="field full">
-                  <label class="fieldLabel" for="fCompanyName">Razón social <span class="req">obligatorio</span></label>
-                  <input class="inputBase" type="text" id="fCompanyName" name="companyName" placeholder="Ej. Inmobiliaria Casas del Mar, S.L." required />
-                  <p class="fieldHint">Nombre fiscal completo, tal y como figura en el modelo 036 o en la escritura.</p>
+              <div class="field full" style="margin-top:18px;">
+                <label class="fieldLabel" for="fCif"><span id="cifLabel">CIF de la empresa</span> <span class="req">obligatorio</span></label>
+                <div class="lookupRow">
+                  <input class="inputBase" type="text" id="fCif" name="cif" placeholder="B12345678" required maxlength="9" autocomplete="off" />
+                  <button type="button" class="btnPrimary" id="lookupBtn">Buscar empresa</button>
                 </div>
-
-                <div class="field">
-                  <label class="fieldLabel" for="fBrandName">Nombre comercial <span class="opt">(opcional)</span></label>
-                  <input class="inputBase" type="text" id="fBrandName" name="brandName" placeholder="Ej. Casas del Mar" />
+                <p class="fieldHint" id="cifHint">9 caracteres. Lo buscamos en el Registro Mercantil al momento.</p>
+                <p class="errorMsg" id="errCif">Formato no válido. Debe tener 9 caracteres (ej. B12345678).</p>
+                <p class="errorMsg" id="errLookup">Busca tu empresa por CIF y confírmala para continuar.</p>
+              </div>
+              <div class="lookupCard" id="lookupCard" hidden="hidden">
+                <div class="lookupState" data-state="loading"><span class="lookupSpin" aria-hidden="true"></span><p>Buscando en el Registro Mercantil…</p></div>
+                <div class="lookupState" data-state="found">
+                  <div class="lookupHead"><div><p class="lookupKicker">Hemos encontrado tu empresa</p><h4 class="lookupName" id="lkName">—</h4></div><span class="lookupBadge"><span class="dot"></span>Activa</span></div>
+                  <ul class="summaryList lookupList">
+                    <li><span class="k">Forma jurídica</span><span class="v" id="lkForm">—</span></li>
+                    <li><span class="k">Constitución</span><span class="v" id="lkDate">—</span></li>
+                    <li><span class="k">Domicilio</span><span class="v" id="lkAddr">—</span></li>
+                    <li><span class="k">Administración</span><span class="v" id="lkAdmin">—</span></li>
+                    <li><span class="k">Fuente</span><span class="v" id="lkSrc">—</span></li>
+                  </ul>
+                  <div class="lookupActions"><button type="button" class="btnGhost" id="lkNo">No es mi empresa</button><button type="button" class="btnPrimary" id="lkYes">Sí, es mi empresa</button></div>
                 </div>
-
-                <div class="field">
-                  <label class="fieldLabel" for="fCif">CIF / NIF empresa <span class="req">obligatorio</span></label>
-                  <input class="inputBase" type="text" id="fCif" name="cif" placeholder="B12345678" required maxlength="9" />
-                  <p class="fieldHint">9 caracteres. Verificaremos su validez automáticamente.</p>
-                  <p class="errorMsg" id="errCif">Formato no válido. Debe tener 9 caracteres (ej. B12345678).</p>
+                <div class="lookupState" data-state="confirmed">
+                  <div class="lookupHead"><div><p class="lookupKicker good">Empresa verificada</p><h4 class="lookupName" id="lkNameOk">—</h4><p class="lookupMeta" id="lkMetaOk">—</p></div><button type="button" class="summaryEdit" id="lkChange">Cambiar</button></div>
                 </div>
-
-                <div class="field">
-                  <label class="fieldLabel" for="fLegalForm">Forma jurídica <span class="req">obligatorio</span></label>
-                  <select class="inputBase" id="fLegalForm" name="legalForm" required>
-                    <option value="">Selecciona…</option>
-                    <option>Sociedad Limitada (S.L.)</option>
-                    <option>Sociedad Anónima (S.A.)</option>
-                    <option>Comunidad de bienes</option>
-                    <option>Autónomo / persona física</option>
-                    <option>Cooperativa</option>
-                    <option>Otra</option>
-                  </select>
+                <div class="lookupState warn" data-state="manual">
+                  <p class="lookupKicker warn" id="lkManualTitle">No hemos encontrado este CIF</p>
+                  <p class="lookupMsg" id="lkManualMsg">Revisa el número o introduce los datos a mano. En ese caso te pediremos la nota simple del Registro Mercantil en el paso 3.</p>
                 </div>
-
-                <div class="field">
-                  <label class="fieldLabel" for="fRegMerc">Nº Registro Mercantil <span class="req">obligatorio</span></label>
-                  <input class="inputBase" type="text" id="fRegMerc" name="regMerc" placeholder="Tomo · Folio · Hoja" required />
-                  <p class="fieldHint">No aplica solo en autónomos. <a href="#">¿Dónde lo encuentro?</a></p>
-                </div>
-
-                <div class="field">
-                  <label class="fieldLabel" for="fIncDate">Fecha de constitución <span class="req">obligatorio</span></label>
-                  <input class="inputBase" type="date" id="fIncDate" name="incDate" required />
-                </div>
-
-                <div class="field full">
-                  <label class="fieldLabel" for="fAddress">Domicilio fiscal <span class="req">obligatorio</span></label>
-                  <input class="inputBase" type="text" id="fAddress" name="address" placeholder="Calle, número, piso" required />
-                </div>
-
-                <div class="field">
-                  <label class="fieldLabel" for="fPostal">Código postal</label>
-                  <input class="inputBase" type="text" id="fPostal" name="postal" placeholder="28013" maxlength="5" />
-                </div>
-
-                <div class="field">
-                  <label class="fieldLabel" for="fCity">Localidad</label>
-                  <input class="inputBase" type="text" id="fCity" name="city" placeholder="Madrid" />
-                </div>
-
-                <div class="field">
-                  <label class="fieldLabel" for="fProvince">Provincia</label>
-                  <input class="inputBase" type="text" id="fProvince" name="province" placeholder="Madrid" />
-                </div>
-
-                <div class="field">
-                  <label class="fieldLabel" for="fPhone">Teléfono de la empresa <span class="req">obligatorio</span></label>
-                  <div class="inputCombo">
-                    <span class="prefix">+34</span>
-                    <input class="inputBase" type="tel" id="fPhone" name="phone" placeholder="912 345 678" required />
+              </div>
+              <div id="manualFields" hidden="hidden">
+                <p class="sectionLabel" style="margin-top:24px;" id="manualLabel">Datos fiscales</p>
+                <div class="fieldGrid cols2to1">
+                  <div class="field full">
+                    <label class="fieldLabel" for="fCompanyName"><span id="nameLabel">Razón social</span> <span class="req">obligatorio</span></label>
+                    <input class="inputBase" type="text" id="fCompanyName" name="companyName" placeholder="Ej. Inmobiliaria Casas del Mar, S.L." required />
+                  </div>
+                  <div class="field" data-soc="">
+                    <label class="fieldLabel" for="fLegalForm">Forma jurídica <span class="req">obligatorio</span></label>
+                    <select class="inputBase" id="fLegalForm" name="legalForm" required>
+                      <option value="">Selecciona…</option>
+                      <option>Sociedad Limitada (S.L.)</option>
+                      <option>Sociedad Anónima (S.A.)</option>
+                      <option>Comunidad de bienes</option>
+                      <option>Cooperativa</option>
+                      <option>Otra</option>
+                    </select>
+                  </div>
+                  <div class="field" data-soc="">
+                    <label class="fieldLabel" for="fIncDate">Fecha de constitución <span class="req">obligatorio</span></label>
+                    <input class="inputBase" type="date" id="fIncDate" name="incDate" required />
+                  </div>
+                  <div class="field full">
+                    <label class="fieldLabel" for="fAddress">Domicilio fiscal <span class="req">obligatorio</span></label>
+                    <input class="inputBase" type="text" id="fAddress" name="address" placeholder="Calle, número, piso" required />
                   </div>
                 </div>
-
-                <div class="field">
-                  <label class="fieldLabel" for="fWeb">Web pública <span class="opt">(opcional)</span></label>
-                  <input class="inputBase" type="url" id="fWeb" name="web" placeholder="https://" />
-                  <p class="fieldHint">Nos ayuda a verificar tu actividad pública.</p>
+                <div class="fieldGrid cols3">
+                  <div class="field"><label class="fieldLabel" for="fPostal">Código postal</label><input class="inputBase" type="text" id="fPostal" name="postal" placeholder="28013" maxlength="5" /></div>
+                  <div class="field"><label class="fieldLabel" for="fCity">Localidad</label><input class="inputBase" type="text" id="fCity" name="city" placeholder="Madrid" /></div>
+                  <div class="field"><label class="fieldLabel" for="fProvince">Provincia</label><input class="inputBase" type="text" id="fProvince" name="province" placeholder="Madrid" /></div>
                 </div>
               </div>
-
+              <div id="contactFields" hidden="hidden">
+                <p class="sectionLabel" style="margin-top:24px;">Cómo te verán los clientes</p>
+                <div class="fieldGrid cols2to1">
+                  <div class="field full">
+                    <label class="fieldLabel" for="fBrandName">Nombre comercial <span class="opt">(opcional)</span></label>
+                    <input class="inputBase" type="text" id="fBrandName" name="brandName" placeholder="Ej. Casas del Mar" />
+                    <p class="fieldHint">Es el nombre que aparecerá en tus anuncios. Si lo dejas vacío, usaremos el nombre fiscal.</p>
+                  </div>
+                  <div class="field">
+                    <label class="fieldLabel" for="fPhone">Teléfono de contacto <span class="req">obligatorio</span></label>
+                    <div class="inputCombo"><span class="prefix">+34</span><input class="inputBase" type="tel" id="fPhone" name="phone" placeholder="912 345 678" required /></div>
+                  </div>
+                  <div class="field">
+                    <label class="fieldLabel" for="fWeb">Web pública <span class="opt">(opcional)</span></label>
+                    <input class="inputBase" type="url" id="fWeb" name="web" placeholder="https://" />
+                  </div>
+                </div>
+              </div>
               <div class="actionsRow">
                 <span class="actionsHint">Tus datos se guardan automáticamente mientras avanzas.</span>
                 <div class="actionsBtns">
@@ -1388,6 +1413,7 @@
               </div>
 
               <p class="sectionLabel" style="margin-top:28px;">Documentación a aportar</p>
+              <p class="fieldHint" id="docsIntro" style="margin:-4px 0 14px;">Solo te pedimos lo que no hemos podido verificar automáticamente.</p>
 
               <div class="uploadList">
                 <div class="uploadRow" data-upload="cif">
@@ -1398,8 +1424,8 @@
                     </svg>
                   </span>
                   <div class="uploadBody">
-                    <h4>Tarjeta de identificación fiscal (CIF) <span class="uploadReq">Obligatorio</span></h4>
-                    <p>Documento emitido por Hacienda con el CIF de la empresa.</p>
+                    <h4><span id="docCifTitle">Tarjeta de identificación fiscal (CIF)</span> <span class="uploadReq">Obligatorio</span></h4>
+                    <p id="docCifDesc">Documento emitido por Hacienda con el CIF de la empresa.</p>
                     <span class="uploadFile">
                       <span class="name">archivo.pdf</span>
                       <button type="button" class="x" aria-label="Quitar">×</button>
@@ -1408,7 +1434,7 @@
                   <button type="button" class="uploadBtn">Subir archivo</button>
                 </div>
 
-                <div class="uploadRow" data-upload="merc">
+                <div class="uploadRow" data-upload="merc" hidden="hidden">
                   <span class="uploadIcon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M4 4h16v6H4z"></path>
@@ -1418,7 +1444,7 @@
                   </span>
                   <div class="uploadBody">
                     <h4>Nota simple del Registro Mercantil <span class="uploadReq">Obligatorio</span></h4>
-                    <p>Acredita la existencia legal de la empresa. No más de 6 meses de antigüedad.</p>
+                    <p>No hemos podido verificar tu empresa automáticamente. Acredita su existencia legal con una nota simple de menos de 6 meses.</p>
                     <span class="uploadFile">
                       <span class="name">archivo.pdf</span>
                       <button type="button" class="x" aria-label="Quitar">×</button>
@@ -1455,8 +1481,8 @@
                     </svg>
                   </span>
                   <div class="uploadBody">
-                    <h4>Escritura de poderes <span class="uploadReq opt">Si procede</span></h4>
-                    <p>Necesaria solo si el responsable no es el administrador único o socio único.</p>
+                    <h4>Autorización del administrador <span class="uploadReq">Obligatorio</span></h4>
+                    <p id="docPodDesc">El responsable no figura como administrador de la empresa. Sube una autorización firmada por el administrador o la escritura de poderes. <a href="#" style="color:var(--granate);">Descargar plantilla</a></p>
                     <span class="uploadFile">
                       <span class="name">archivo.pdf</span>
                       <button type="button" class="x" aria-label="Quitar">×</button>
@@ -1465,22 +1491,6 @@
                   <button type="button" class="uploadBtn">Subir archivo</button>
                 </div>
 
-                <div class="uploadRow" data-upload="seguro">
-                  <span class="uploadIcon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"></path>
-                    </svg>
-                  </span>
-                  <div class="uploadBody">
-                    <h4>Seguro de responsabilidad civil <span class="uploadReq opt">Recomendado</span></h4>
-                    <p>Algunas comunidades autónomas lo exigen para inscripción en su registro.</p>
-                    <span class="uploadFile">
-                      <span class="name">archivo.pdf</span>
-                      <button type="button" class="x" aria-label="Quitar">×</button>
-                    </span>
-                  </div>
-                  <button type="button" class="uploadBtn">Subir archivo</button>
-                </div>
               </div>
 
               <div class="actionsRow">
@@ -1509,9 +1519,9 @@
                   </div>
                   <ul class="summaryList" id="sumEmpresa">
                     <li><span class="k">Razón social</span><span class="v" data-from="fCompanyName">—</span></li>
-                    <li><span class="k">CIF</span><span class="v" data-from="fCif">—</span></li>
+                    <li><span class="k">CIF / NIF</span><span class="v" data-from="fCif">—</span></li>
                     <li><span class="k">Forma jurídica</span><span class="v" data-from="fLegalForm">—</span></li>
-                    <li><span class="k">Registro Mercantil</span><span class="v" data-from="fRegMerc">—</span></li>
+                    <li><span class="k">Verificación</span><span class="v" id="sumVerif">—</span></li>
                     <li><span class="k">Domicilio</span><span class="v" data-from="fAddress">—</span></li>
                     <li><span class="k">Teléfono</span><span class="v" data-from="fPhone">—</span></li>
                   </ul>
@@ -1721,8 +1731,8 @@
               </li>
               <li class="helpItem">
                 <span>
-                  <strong>Registro Mercantil</strong>
-                  Tomo, folio y hoja, o nota simple en PDF.
+                  <strong>Nota simple</strong>
+                  Solo si no encontramos tu empresa automáticamente.
                 </span>
               </li>
               <li class="helpItem">
@@ -1742,7 +1752,7 @@
 
           <div class="calloutCard">
             <h3>¿Eres autónomo?</h3>
-            <p>También puedes darte de alta como agente individual: en el paso 1 selecciona "Autónomo" en forma jurídica y omitiremos los datos de Registro Mercantil.</p>
+            <p>También puedes darte de alta como agente individual: en el paso 1 elige "Como autónomo" y solo te pediremos tu NIF y tu domicilio fiscal.</p>
             <a href="./contacto.html?tipo=inmobiliaria">Hablar con el equipo →</a>
           </div>
         </aside>
@@ -1771,6 +1781,7 @@
           // Validate current step before forward
           if (n > currentStep && !validateStep(currentStep)) return;
 
+          if (n === 3) renderEntity();
           if (n === totalSteps) refreshSummary();
 
           currentStep = n;
@@ -1799,6 +1810,7 @@
           let firstBad = null;
           let ok = true;
           requireds.forEach(el => {
+            if (el.closest("[hidden]")) { el.classList.remove("isError"); return; }
             const isEmpty = !String(el.value || "").trim();
             if (isEmpty){
               ok = false;
@@ -1814,11 +1826,14 @@
             const cif = $("#fCif");
             const errCif = $("#errCif");
             if (cif && cif.value){
-              const ok2 = /^[A-Z][0-9]{7}[A-Z0-9]$/i.test(cif.value.trim());
+              const ok2 = cifValid(cif.value);
               cif.classList.toggle("isError", !ok2);
               errCif.classList.toggle("isOn", !ok2);
               if (!ok2){ ok = false; if (!firstBad) firstBad = cif; }
             }
+            const needLookup = entity === "soc" && lookup !== "confirmed" && lookup !== "manual";
+            $("#errLookup").classList.toggle("isOn", needLookup && !!cif.value && cifValid(cif.value));
+            if (needLookup){ ok = false; if (!firstBad) firstBad = cif; }
           }
 
           // DNI format check
@@ -1923,6 +1938,13 @@
             el.classList.toggle("muted", !txt);
           });
 
+          const sv = $("#sumVerif");
+          if (sv){
+            sv.textContent = entity === "auto" ? "Autónomo · se revisa con el alta censal" : (lookup === "confirmed" ? "Verificada en el Registro Mercantil" : "Manual · pendiente de nota simple");
+            sv.classList.toggle("muted", lookup === "manual" && entity === "soc");
+          }
+          if (entity === "auto"){ const fl = $("#step-4 [data-from=fLegalForm]"); if (fl){ fl.textContent = "Autónomo / persona física"; fl.classList.remove("muted"); } }
+
           // regCCAA + number
           const regAutoVal = ($("input[name=regAuto]:checked") || {}).value;
           const ccaa = ($("#fRegCcaa")?.value || "").trim();
@@ -1939,7 +1961,7 @@
 
           // Docs count
           const filled = $$(".uploadRow.isFilled").length;
-          const total = $$(".uploadRow").length;
+          const total = $$(".uploadRow:not([hidden])").length;
           const sumDocs = $("#sumDocs");
           if (sumDocs){
             sumDocs.textContent = filled === 0
@@ -1979,6 +2001,112 @@
             window.scrollTo({ top: 0, behavior: "smooth" });
           }, 900);
         });
+
+
+        // ===== Entity type + CIF lookup =====
+        let entity = "soc";
+        let lookup = "idle";
+        const DEMO = {
+          name:"Inmobiliaria Casas del Mar, S.L.", form:"Sociedad Limitada (S.L.)", date:"2011-03-14", dateTxt:"14 de marzo de 2011",
+          address:"Calle de Alcalá 112, 3º B", postal:"28009", city:"Madrid", province:"Madrid",
+          admin:"María Sánchez Ruiz · Administradora única", src:"Registro Mercantil de Madrid · BORME"
+        };
+        function cifValid(v){ v = String(v||"").trim(); return entity === "auto" ? /^[XYZ]?[0-9]{7,8}[A-Z]$/i.test(v) : /^[A-Z][0-9]{7}[A-Z0-9]$/i.test(v); }
+        function setVal(id, v){ const el = document.getElementById(id); if (el) el.value = v; }
+        function renderEntity(){
+          const auto = entity === "auto";
+          const card = $("#lookupCard");
+          const show = (sel, on) => { const el = $(sel); if (el) el.hidden = !on; };
+          $("#cifLabel").textContent = auto ? "Tu NIF / NIE" : "CIF de la empresa";
+          $("#fCif").placeholder = auto ? "12345678X" : "B12345678";
+          $("#cifHint").textContent = auto ? "El NIF con el que facturas como autónomo." : "9 caracteres. Lo buscamos en el Registro Mercantil al momento.";
+          $("#errCif").textContent = auto ? "Formato no válido (ej. 12345678X o X1234567L)." : "Formato no válido. Debe tener 9 caracteres (ej. B12345678).";
+          $("#lookupBtn").hidden = auto;
+          $("#nameLabel").textContent = auto ? "Nombre y apellidos" : "Razón social";
+          $("#fCompanyName").placeholder = auto ? "Ej. María Sánchez Ruiz" : "Ej. Inmobiliaria Casas del Mar, S.L.";
+          $("#manualLabel").textContent = auto ? "Tus datos fiscales" : "Datos fiscales";
+          $$("#manualFields [data-soc]").forEach(el => el.hidden = auto);
+          card.hidden = auto || lookup === "idle";
+          card.className = "lookupCard" + ({found:" isFound", confirmed:" isConfirmed", manual:" isManual"}[lookup] || "");
+          $$("#lookupCard .lookupState").forEach(s => s.classList.toggle("isOn", s.dataset.state === lookup));
+          show("#manualFields", auto || lookup === "manual");
+          show("#contactFields", auto || lookup === "confirmed" || lookup === "manual");
+          show(".uploadRow[data-upload=merc]", !auto && lookup === "manual");
+          show(".uploadRow[data-upload=cif]", auto || lookup === "manual");
+          show(".uploadRow[data-upload=poderes]", needsPoderes());
+          $("#docCifTitle").textContent = auto ? "Certificado de situación censal" : "Tarjeta de identificación fiscal (CIF)";
+          $("#docCifDesc").textContent = auto ? "Lo descargas en la sede electrónica de Hacienda. Acredita que sigues de alta en una actividad inmobiliaria." : "No hemos podido verificar tu CIF automáticamente. Sube el documento emitido por Hacienda.";
+          if (lookup !== "idle") $("#errLookup").classList.remove("isOn");
+        }
+        function norm(s){ return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim(); }
+        function needsPoderes(){
+          if (entity === "auto") return false;
+          const role = ($("#fRespRole")?.value || "");
+          if (role === "Apoderado / representante legal" || role === "Otro") return true;
+          if (lookup === "confirmed"){
+            const full = norm(($("#fRespName")?.value || "") + " " + ($("#fRespSurname")?.value || ""));
+            const adminName = norm(DEMO.admin.split("·")[0]);
+            if (full && full !== adminName) return true;
+          }
+          return false;
+        }
+        function setLookup(s){ lookup = s; renderEntity(); }
+        $$("#entityCards input[name=entity]").forEach(r => {
+          r.addEventListener("change", () => {
+            $$("#entityCards .radioCard").forEach(c => c.classList.remove("isOn"));
+            r.closest(".radioCard").classList.add("isOn");
+            entity = r.value;
+            $("#fCif").value = ""; $("#fCif").classList.remove("isError"); $("#errCif").classList.remove("isOn");
+            ["fCompanyName","fIncDate","fAddress","fPostal","fCity","fProvince"].forEach(id => setVal(id, ""));
+            setVal("fLegalForm", "");
+            setLookup("idle");
+          });
+        });
+        function runLookup(){
+          const cif = $("#fCif");
+          const v = cif.value.trim().toUpperCase();
+          cif.value = v;
+          const ok = cifValid(v);
+          cif.classList.toggle("isError", !ok);
+          $("#errCif").classList.toggle("isOn", !ok);
+          if (!ok){ cif.focus(); return; }
+          setLookup("loading");
+          setTimeout(() => {
+            if (/^[A-Z]0{7}/.test(v)){
+              $("#lkManualTitle").textContent = "No hemos encontrado este CIF";
+              $("#lkManualMsg").textContent = "Revisa el número o introduce los datos a mano. En ese caso te pediremos la nota simple del Registro Mercantil en el paso 3.";
+              setLookup("manual");
+              return;
+            }
+            $("#lkName").textContent = DEMO.name;
+            $("#lkForm").textContent = DEMO.form;
+            $("#lkDate").textContent = DEMO.dateTxt;
+            $("#lkAddr").textContent = DEMO.address + " · " + DEMO.postal + " " + DEMO.city;
+            $("#lkAdmin").textContent = DEMO.admin;
+            $("#lkSrc").textContent = DEMO.src;
+            setLookup("found");
+          }, 1100);
+        }
+        $("#lookupBtn").addEventListener("click", runLookup);
+        $("#fCif").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); if (entity === "soc") runLookup(); } });
+        $("#fCif").addEventListener("input", () => { if (entity === "soc" && lookup !== "idle" && lookup !== "loading") setLookup("idle"); });
+        $("#lkYes").addEventListener("click", () => {
+          setVal("fCompanyName", DEMO.name); setVal("fLegalForm", DEMO.form); setVal("fIncDate", DEMO.date);
+          setVal("fAddress", DEMO.address); setVal("fPostal", DEMO.postal); setVal("fCity", DEMO.city); setVal("fProvince", DEMO.province);
+          $("#lkNameOk").textContent = DEMO.name;
+          $("#lkMetaOk").textContent = "CIF " + $("#fCif").value + " · " + DEMO.src;
+          setLookup("confirmed");
+          setTimeout(() => $("#fBrandName").focus(), 50);
+        });
+        $("#lkNo").addEventListener("click", () => {
+          ["fCompanyName","fIncDate","fAddress","fPostal","fCity","fProvince"].forEach(id => setVal(id, ""));
+          setVal("fLegalForm", "");
+          $("#lkManualTitle").textContent = "Introduce los datos a mano";
+          $("#lkManualMsg").textContent = "Revisa que el CIF sea correcto. Si lo es, rellena los datos de tu empresa y te pediremos la nota simple del Registro Mercantil en el paso 3.";
+          setLookup("manual");
+        });
+        $("#lkChange").addEventListener("click", () => { setLookup("idle"); $("#fCif").focus(); });
+        renderEntity();
 
         // Initial state
         goStep(1);

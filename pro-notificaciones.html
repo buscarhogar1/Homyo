@@ -34,7 +34,7 @@
       .nWhen{ font-size:11.5px; color:var(--muted); }
       @media (max-width:620px){ .nItem{ grid-template-columns:44px 1fr; } .nRight{ grid-column:2; align-items:flex-start; flex-direction:row; } }
     </style>
-  </head>
+  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body>
     <div class="proLayout">
       <aside class="proSidebar" id="proSidebar"></aside>
@@ -90,10 +90,10 @@
         { g:"Hoy", cat:"contactos", tone:"ok", ic:"contactos", unread:true, t:"Nueva solicitud de contacto", d:"Lucía Bravo está interesada en el Ático en Calle Ferraz 12 y quiere visitarlo esta semana.", when:"Hace 1 h", href:"pro-contactos.html" },
         { g:"Hoy", cat:"viviendas", tone:"dangerp", ic:"revision", unread:true, t:"Anuncio rechazado por falta de plano", d:"El dúplex en Calle Goya 41 ha sido rechazado en revisión. Sube el plano en planta para reenviarlo.", when:"Hace 3 h", href:"pro-revision-calidad.html" },
         { g:"Esta semana", cat:"viviendas", tone:"warnp", ic:"viviendas", unread:true, t:"Falta confirmar disponibilidad", d:"3 viviendas llevan más de 60 días sin actualizar. Confirma que siguen disponibles.", when:"Ayer", href:"pro-viviendas.html" },
-        { g:"Esta semana", cat:"viviendas", tone:"infop", ic:"subir", unread:false, t:"Certificado energético pendiente", d:"El chalet en Pozuelo está publicado en trámite. Quedan 9 días para aportar el certificado.", when:"Hace 2 días", href:"pro-viviendas.html" },
-        { g:"Esta semana", cat:"contactos", tone:"ok", ic:"revision", unread:false, t:"Anuncio aprobado y publicado", d:"El piso reformado en Calle Velázquez 80 ya está visible en Homyo.", when:"Hace 2 días", href:"pro-viviendas.html" },
-        { g:"Antes", cat:"viviendas", tone:"neutral", ic:"viviendas", unread:false, t:"Una vivienda vuelve a estar disponible", d:"Otra agencia ha retirado un inmueble en Calle Alcalá 211. Ya puedes volver a publicarlo.", when:"Hace 4 días", href:"pro-viviendas.html" },
-        { g:"Antes", cat:"facturacion", tone:"neutral", ic:"facturacion", unread:false, t:"Recordatorio de fin de periodo gratuito", d:"Tu periodo de agencia fundadora termina el 18 de mayo. Después se factura por vivienda publicada.", when:"Hace 6 días", href:"pro-facturacion.html" }
+        { g:"Esta semana", cat:"viviendas", tone:"infop", ic:"subir", unread:false, t:"Certificado energético pendiente", d:"La habitación en Calle Argumosa 22 está publicada con el certificado en trámite. Quedan 9 días para aportar el certificado.", when:"Hace 2 días", href:"pro-viviendas.html" },
+        { g:"Hoy", cat:"viviendas", tone:"ok", ic:"revision", unread:false, t:"Cambios aprobados y publicados", d:"La nueva versión del piso reformado en Calle Velázquez 80 ya está visible en Homyo.", when:"Hace 5 h", href:"pro-viviendas.html" },
+        { g:"Antes", cat:"viviendas", tone:"neutral", ic:"viviendas", unread:false, t:"Una vivienda vuelve a estar disponible", d:"Otra agencia ha retirado un inmueble en Calle Castelló 30. Ya puedes volver a publicarlo.", when:"Hace 4 días", href:"pro-viviendas.html" },
+        { g:"Antes", cat:"facturacion", tone:"neutral", ic:"facturacion", unread:false, t:"Recordatorio de fin de periodo gratuito", d:"Tu periodo de agencia fundadora termina el 18 de junio. Desde el 1 de julio se factura por vivienda publicada.", when:"Hace 2 días", href:"pro-facturacion.html" }
       ];
       var wrap = document.getElementById("nWrap");
       function render(filter){

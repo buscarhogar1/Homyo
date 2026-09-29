@@ -474,7 +474,7 @@
         .searchActions{ flex-direction:row; justify-content:flex-end; }
       }
     </style>
-  </head>
+  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
 
   <body>
     <div id="bhHeader"></div>
@@ -653,11 +653,12 @@
       const parkingLabels = {
         incluido: "Parking incluido",
         opcional: "Parking opcional",
-        no_disponible: "Parking no disponible"
+        no_disponible: "Parking no incluido"
       };
 
       const storageLabels = {
         incluido: "Trastero incluido",
+        opcional: "Trastero opcional",
         no_incluido: "Trastero no incluido"
       };
 

@@ -50,7 +50,7 @@
       profesionales: 412,
       usuarios: 18420,
       anunciosActivos: 3964,
-      mrr: 27718,          // ingresos recurrentes mensuales (€)
+      mrr: 27708,          // ingresos recurrentes mensuales (€)
       mrrPrev: 25210
     }
   };
@@ -101,9 +101,9 @@
 
   var NOTIFS = [
     { ic: "solicitudes", tone: "infop", unread: true, t: "Nueva solicitud de alta", d: "Nidos del Sur Gestión Inmobiliaria (Sevilla) ha solicitado acceso. Documentación adjunta.", when: "Hace 12 min", href: "admin-solicitudes.html" },
-    { ic: "anuncios", tone: "warnp", unread: true, t: "Anuncio marca el límite de revisión", d: "Ático en Calle Ferraz 12 (Áurea Inmobiliaria) lleva 14 h en cola de moderación.", when: "Hace 40 min", href: "admin-anuncios.html" },
-    { ic: "incidencias", tone: "dangerp", unread: true, t: "Posible anuncio duplicado reportado", d: "Un usuario ha reportado un piso en Calle Goya con la misma referencia que otra agencia.", when: "Hace 2 h", href: "admin-incidencias.html" },
-    { ic: "facturacion", tone: "ok", unread: true, t: "Cobro mensual ejecutado", d: "Se han cobrado 412 suscripciones de vivienda. 7 pagos han fallado y requieren revisión.", when: "Hoy, 06:00", href: "admin-facturacion.html" },
+    { ic: "anuncios", tone: "warnp", unread: true, t: "Anuncio marca el límite de revisión", d: "Piso en Calle Colón 8 (Ribera Homes) lleva 14 h en cola de moderación.", when: "Hace 40 min", href: "admin-anuncios.html" },
+    { ic: "incidencias", tone: "dangerp", unread: true, t: "Posible anuncio duplicado reportado", d: "Un usuario ha reportado un piso en Calle Sagasta 20 con la misma referencia que otra agencia.", when: "Hace 2 h", href: "admin-incidencias.html" },
+    { ic: "facturacion", tone: "ok", unread: true, t: "Cobro mensual ejecutado", d: "Se han emitido 124 facturas. 3 cobros han fallado y requieren revisión.", when: "Hoy, 06:00", href: "admin-facturacion.html" },
     { ic: "mensajes", tone: "infop", unread: false, t: "Mensaje de soporte sin responder", d: "Inmobiliaria Vega pregunta por el certificado energético obligatorio.", when: "Ayer", href: "admin-mensajes.html" },
     { ic: "usuarios", tone: "neutral", unread: false, t: "Pico de registros de usuarios", d: "+318 usuarios nuevos esta semana, un 22 % más que la media.", when: "Hace 2 días", href: "admin-estadisticas.html" }
   ];

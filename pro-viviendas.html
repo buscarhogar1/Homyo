@@ -27,7 +27,7 @@
       .vRef{ font-size:11px; color:var(--muted); font-family:'Raleway',sans-serif; letter-spacing:.04em; }
       @media (max-width:760px){ .toolbarRight{ width:100%; } }
     </style>
-  </head>
+  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body>
     <div class="proLayout">
       <aside class="proSidebar" id="proSidebar"></aside>
@@ -53,7 +53,7 @@
               <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></span>
               <div>
                 <h4>Esta vivienda ya está publicada en Homyo</h4>
-                <p>La referencia catastral <strong>3477301VK4737N0012LP</strong> (Calle Alcalá 211) ya está publicada por otro profesional. No se puede crear un anuncio duplicado. Si es un error o gestionas tú el inmueble, contacta con soporte para reclamarlo.</p>
+                <p>La referencia catastral <strong>1854602VK4715S0008HT</strong> (Calle Serrano 95) ya está publicada por otro profesional. No se puede crear un anuncio duplicado. Si es un error o gestionas tú el inmueble, contacta con soporte para reclamarlo.</p>
               </div>
               <a class="btn ghost sm cAct" href="pro-soporte.html">Reclamar vivienda</a>
             </div>
@@ -61,14 +61,15 @@
 
           <!-- POPULATED -->
           <div id="viewFull">
+            <div class="opBar"><span class="opLbl">Operación</span><div class="seg" id="opSeg"><button class="isOn" data-op="all">Todas <span class="c">30</span></button><button data-op="venta">Venta <span class="c">22</span></button><button data-op="alquiler">Alquiler <span class="c">6</span></button><button data-op="habitacion">Habitación <span class="c">2</span></button></div></div>
             <div class="filterBar" id="filterBar">
-              <button class="fchip isOn" data-f="all">Todas <span class="c">30</span></button>
-              <button class="fchip" data-f="pub">Publicadas <span class="c">18</span></button>
-              <button class="fchip" data-f="draft">Borrador <span class="c">4</span></button>
-              <button class="fchip" data-f="review">Pendiente de revisión <span class="c">2</span></button>
-              <button class="fchip" data-f="rej">Rechazadas <span class="c">1</span></button>
-              <button class="fchip" data-f="upd">Necesita actualización <span class="c">3</span></button>
-              <button class="fchip" data-f="off">Retiradas <span class="c">2</span></button>
+              <button class="fchip isOn" data-f="all">Todas <span class="c" data-c="total"></span></button>
+              <button class="fchip" data-f="pub">Publicadas <span class="c" data-c="pub"></span></button>
+              <button class="fchip" data-f="draft">Borrador <span class="c" data-c="draft"></span></button>
+              <button class="fchip" data-f="review">Pendiente de revisión <span class="c" data-c="review"></span></button>
+              <button class="fchip" data-f="rej">Rechazadas <span class="c" data-c="rej"></span></button>
+              <button class="fchip" data-f="upd">Necesita actualización <span class="c" data-c="upd"></span></button>
+              <button class="fchip" data-f="off">Retiradas <span class="c" data-c="off"></span></button>
             </div>
 
             <div class="tableWrap">
@@ -81,7 +82,7 @@
                 <tbody id="vBody"></tbody>
               </table>
             </div>
-            <p class="muted" style="font-size:12.5px; margin-top:14px;">Mostrando <span id="shownCount">8</span> de 30 viviendas · la fecha de 1ª publicación es la real y no se reinicia al editar.</p>
+            <p class="muted" style="font-size:12.5px; margin-top:14px;">Mostrando <span id="shownCount">8</span> de <span id="opTotal">30</span> viviendas · la fecha de 1ª publicación es la real y no se reinicia al editar.</p>
           </div>
 
           <!-- EMPTY -->
@@ -115,6 +116,13 @@
     </script>
     <script src="pro-shell.js"></script>
     <script>
+      var OP_COUNTS = {
+        all:        { total:30, pub:18, draft:4, review:2, rej:1, upd:3, off:2 },
+        venta:      { total:22, pub:13, draft:3, review:1, rej:1, upd:3, off:1 },
+        alquiler:   { total:6,  pub:3,  draft:1, review:1, rej:0, upd:0, off:1 },
+        habitacion: { total:2,  pub:2,  draft:0, review:0, rej:0, upd:0, off:0 }
+      };
+      var OP_LABEL = { venta:"Venta", alquiler:"Alquiler", habitacion:"Habitación" };
       var ESTADOS = {
         pub:    { t: "Publicada", cls: "ok" },
         draft:  { t: "Borrador", cls: "neutral" },
@@ -124,21 +132,24 @@
         off:    { t: "Retirada", cls: "neutral" }
       };
       var DATA = [
-        { addr: "Ático · Calle Ferraz 12", zone: "Moncloa", ref: "9872023VH5797S0001WX", price: "620.000 €", m2: "104 m²", st: "pub", pub: "12 mar 2026", upd: "Hace 3 días", c: 14 },
-        { addr: "Piso reformado · Calle Velázquez 80", zone: "Salamanca", ref: "0145702VK4704N0009MQ", price: "485.000 €", m2: "92 m²", st: "pub", pub: "28 feb 2026", upd: "Hace 1 día", c: 9 },
-        { addr: "Dúplex · Calle Goya 41", zone: "Salamanca", ref: "3201914VK4730S0007BD", price: "540.000 €", m2: "118 m²", st: "rej", pub: "—", upd: "Hace 3 h", c: 0, note: "Falta plano en planta" },
-        { addr: "Piso · Calle Hortaleza 88", zone: "Centro", ref: "—", price: "—", m2: "—", st: "draft", pub: "—", upd: "Hace 20 min", c: 0, note: "Faltan fotos y certificado" },
-        { addr: "Estudio · Calle Fuencarral 120", zone: "Chamberí", ref: "7781204VK4778S0003KJ", price: "1.150 €/mes", m2: "38 m²", st: "review", pub: "—", upd: "Hace 6 h", c: 0 },
-        { addr: "Chalet · Av. de Europa 9, Pozuelo", zone: "Pozuelo", ref: "5512903VK2851S0001AB", price: "890.000 €", m2: "210 m²", st: "upd", pub: "5 ene 2026", upd: "Hace 64 días", c: 21, note: "Confirmar disponibilidad" },
-        { addr: "Piso exterior · Calle Bravo Murillo 200", zone: "Tetuán", ref: "6634012VK4763N0021CD", price: "298.000 €", m2: "74 m²", st: "pub", pub: "19 ene 2026", upd: "Hace 8 días", c: 17 },
-        { addr: "Piso · Calle Alcalá 211", zone: "Salamanca", ref: "3477301VK4737N0012LP", price: "—", m2: "—", st: "off", pub: "2 dic 2025", upd: "Retirada hace 11 días", c: 6 }
+        { op: "venta", addr: "Ático · Calle Ferraz 12", zone: "Moncloa", ref: "9872023VH5797S0001WX", price: "620.000 €", m2: "104 m²", st: "pub", pub: "24 mar 2026", upd: "Hace 3 días", c: 14 },
+        { op: "venta", addr: "Piso reformado · Calle Velázquez 80", zone: "Salamanca", ref: "0145702VK4704N0009MQ", price: "485.000 €", m2: "92 m²", st: "pub", pub: "20 mar 2026", upd: "Hace 1 día", c: 9 },
+        { op: "venta", addr: "Dúplex · Calle Goya 41", zone: "Salamanca", ref: "3201914VK4730S0007BD", price: "540.000 €", m2: "118 m²", st: "rej", pub: "—", upd: "Hace 3 h", c: 0, note: "Falta plano en planta" },
+        { op: "venta", addr: "Piso · Calle Hortaleza 88", zone: "Centro", ref: "—", price: "—", m2: "—", st: "draft", pub: "—", upd: "Hace 20 min", c: 0, note: "Faltan fotos y certificado" },
+        { op: "alquiler", addr: "Estudio · Calle Fuencarral 120", zone: "Chamberí", ref: "7781204VK4778S0003KJ", price: "1.150 €/mes", m2: "38 m²", st: "review", pub: "—", upd: "Hace 6 h", c: 0 },
+        { op: "venta", addr: "Chalet · Av. de Europa 9, Pozuelo", zone: "Pozuelo", ref: "5512903VK2851S0001AB", price: "890.000 €", m2: "210 m²", st: "upd", pub: "19 mar 2026", upd: "Hace 64 días", c: 21, note: "Confirmar disponibilidad" },
+        { op: "venta", addr: "Piso exterior · Calle Bravo Murillo 200", zone: "Tetuán", ref: "6634012VK4763N0021CD", price: "298.000 €", m2: "74 m²", st: "pub", pub: "26 mar 2026", upd: "Hace 8 días", c: 17 },
+        { op: "venta", addr: "Piso · Calle Alcalá 211", zone: "Salamanca", ref: "3477301VK4737N0012LP", price: "—", m2: "—", st: "off", pub: "20 mar 2026", upd: "Retirada hace 11 días", c: 6 },
+        { op: "alquiler", addr: "Piso amueblado · Calle Príncipe de Vergara 150", zone: "Chamartín", ref: "2290415VK4729S0014RT", price: "2.100 €/mes", m2: "86 m²", st: "pub", pub: "2 abr 2026", upd: "Hace 2 días", c: 11 },
+        { op: "habitacion", addr: "Habitación exterior · Calle Toledo 60", zone: "La Latina", ref: "8123006VK4782S0006PL", price: "520 €/mes", m2: "14 m²", st: "pub", pub: "20 abr 2026", upd: "Hace 1 día", c: 8 },
+        { op: "habitacion", addr: "Habitación con baño · Calle Argumosa 22", zone: "Lavapiés", ref: "8019813VK4781N0003GS", price: "610 €/mes", m2: "16 m²", st: "pub", pub: "12 may 2026", upd: "Hace 5 h", c: 5 }
       ];
       function row(d) {
         var e = ESTADOS[d.st];
         var note = d.note ? '<div class="vAddr" style="color:var(--granate);">' + d.note + '</div>' : '';
         return '<tr data-st="' + d.st + '">' +
           '<td class="noLabel"><div class="tCellMain"><span class="tThumb"><span class="thumbImg"></span></span>' +
-            '<span><span class="strong">' + d.addr + '</span><div class="vAddr">' + d.zone + ' · <span class="vRef">' + d.ref + '</span></div>' + note + '</span></div></td>' +
+            '<span><span class="opTag ' + d.op + '">' + OP_LABEL[d.op] + '</span><span class="strong">' + d.addr + '</span><div class="vAddr">' + d.zone + ' · <span class="vRef">' + d.ref + '</span></div>' + note + '</span></div></td>' +
           '<td data-th="Precio" class="strong">' + d.price + '</td>' +
           '<td data-th="Sup. útil">' + d.m2 + '</td>' +
           '<td data-th="Estado"><span class="pill ' + e.cls + '"><span class="dot"></span>' + e.t + '</span></td>' +
@@ -152,17 +163,28 @@
           '</div></td></tr>';
       }
       var body = document.getElementById("vBody");
-      function render(filter) {
-        var rows = DATA.filter(function (d) { return filter === "all" || d.st === filter; });
-        body.innerHTML = rows.map(row).join("");
+      var curSt = "all", curOp = "all";
+      function render() {
+        var rows = DATA.filter(function (d) { return (curSt === "all" || d.st === curSt) && (curOp === "all" || d.op === curOp); });
+        body.innerHTML = rows.length ? rows.map(row).join("") : '<tr><td colspan="8" class="muted" style="text-align:center;padding:28px;">No hay viviendas con este filtro.</td></tr>';
         document.getElementById("shownCount").textContent = rows.length;
+        var k = OP_COUNTS[curOp];
+        document.getElementById("opTotal").textContent = k.total;
+        document.querySelectorAll("#filterBar .c").forEach(function (c) { c.textContent = k[c.getAttribute("data-c")]; });
       }
-      render("all");
+      render();
       document.querySelectorAll("#filterBar .fchip").forEach(function (c) {
         c.addEventListener("click", function () {
           document.querySelectorAll("#filterBar .fchip").forEach(function (x) { x.classList.remove("isOn"); });
           c.classList.add("isOn");
-          render(c.getAttribute("data-f"));
+          curSt = c.getAttribute("data-f"); render();
+        });
+      });
+      document.querySelectorAll("#opSeg button").forEach(function (b) {
+        b.addEventListener("click", function () {
+          document.querySelectorAll("#opSeg button").forEach(function (x) { x.classList.remove("isOn"); });
+          b.classList.add("isOn");
+          curOp = b.getAttribute("data-op"); render();
         });
       });
     </script>

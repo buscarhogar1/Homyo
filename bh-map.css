@@ -2856,56 +2856,66 @@ body{
 .listHero .listImgPh{
   display: block !important;
 }
-/* Flechas izquierda / derecha sobre la foto principal */
+/* Flechas izquierda / derecha sobre la foto principal: chevron blanco sin
+   fondo, con sombra suave. Aparecen al pasar el ratón (en táctil, siempre). */
 .listNav{
   position: absolute !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  transform: none !important;
   z-index: 4 !important;
   display: grid !important;
   place-items: center !important;
-  width: 22px !important;
-  height: 22px !important;
+  width: 24px !important;
+  height: auto !important;
   padding: 0 !important;
-  border: 1px solid rgba(0,0,0,0.08) !important;
-  border-radius: 999px !important;
-  background: rgba(255,255,255,0.86) !important;
-  -webkit-backdrop-filter: blur(2px) !important;
-  backdrop-filter: blur(2px) !important;
-  color: var(--bh-granate) !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.18) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.55)) !important;
   cursor: pointer !important;
-  opacity: 0.92 !important;
-  transition: background .15s ease, transform .15s ease, opacity .15s ease !important;
+  opacity: 0 !important;
+  transition: opacity .15s ease !important;
 }
 .listNav svg{
-  width: 13px !important;
-  height: 13px !important;
+  width: 15px !important;
+  height: 15px !important;
+  transition: transform .15s ease !important;
 }
-.listNavPrev{ left: 5px !important; }
-.listNavNext{ right: 5px !important; }
-.listNav:hover{
-  background: #fff !important;
-  opacity: 1 !important;
-  transform: translateY(-50%) scale(1.08) !important;
+.listNavPrev{ left: 0 !important; }
+.listNavNext{ right: 0 !important; }
+.listHero:hover .listNav,
+.mediaSide:hover .listNav,
+.listNav:focus-visible{
+  opacity: 0.95 !important;
 }
-.listNav:active{
-  transform: translateY(-50%) scale(0.94) !important;
+.listNav:hover{ opacity: 1 !important; }
+.listNavPrev:hover svg{ transform: translateX(-1px) !important; }
+.listNavNext:hover svg{ transform: translateX(1px) !important; }
+.listNav:active svg{ transform: scale(0.9) !important; }
+@media (hover: none){
+  .listNav{ opacity: 0.95 !important; }
 }
-/* Contador de fotos (p. ej. 2/8) en la esquina inferior derecha */
+/* Contador de fotos (p. ej. 2/8): texto blanco sin fondo, Manrope */
 .listHeroCount{
   position: absolute !important;
-  right: 5px !important;
-  bottom: 5px !important;
+  right: 6px !important;
+  bottom: 4px !important;
   z-index: 4 !important;
-  padding: 1px 7px !important;
-  border-radius: 999px !important;
-  background: rgba(0,0,0,0.55) !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
   color: #fff !important;
-  font-family: 'Raleway','Montserrat',system-ui,sans-serif !important;
+  font-family: 'Manrope','Raleway',system-ui,sans-serif !important;
   font-size: 9.5px !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.04em !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  font-variant-numeric: tabular-nums !important;
+  text-shadow: 0 0 3px rgba(0,0,0,0.6), 0 1px 1px rgba(0,0,0,0.4) !important;
   line-height: 1.5 !important;
   pointer-events: none !important;
 }
@@ -3224,6 +3234,11 @@ body{
   padding: 5px 9px !important;
   box-shadow: 0 2px 8px rgba(196,150,42,0.30) !important;
 }
+
+.mediaBadges{position:absolute;top:10px;left:10px;z-index:2;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;}
+.mediaBadges .badgeNew{position:static !important;}
+.badgeOffer{background:var(--bh-granate) !important;box-shadow:0 2px 8px rgba(140,31,45,0.30) !important;}
+.badgeSold{background:#2b2522 !important;box-shadow:0 2px 8px rgba(0,0,0,0.30) !important;}
 
 .mediaMiniIcon{
   border-radius: 3.5px !important;
@@ -3856,23 +3871,16 @@ body.saveSearchAuthOpen{
     border-radius: 0 !important;
   }
   .grid3.hideMap .listNav{
-    width: 30px !important;
-    height: 30px !important;
-    left: 10px !important;
-  }
-  .grid3.hideMap .listNavNext{
-    left: auto !important;
-    right: 10px !important;
+    width: 40px !important;
   }
   .grid3.hideMap .listNav svg{
-    width: 17px !important;
-    height: 17px !important;
+    width: 22px !important;
+    height: 22px !important;
   }
   .grid3.hideMap .listHeroCount{
     right: 10px !important;
-    bottom: 10px !important;
-    font-size: 11px !important;
-    padding: 2px 9px !important;
+    bottom: 8px !important;
+    font-size: 12px !important;
   }
   .grid3.hideMap .listMediaWrap .listBadge{
     position: absolute !important;
@@ -4060,6 +4068,17 @@ body.saveSearchAuthOpen{
     grid-template-columns: 168px minmax(0, 1fr) !important;
     gap: 14px !important;
     padding: 14px !important;
+  }
+  .grid3.hideFilters:not(.hideMap) .listBody{
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100% !important;
+  }
+  .grid3.hideFilters:not(.hideMap) .listTitle{
+    font-size: 14.25px !important;
+  }
+  .grid3.hideFilters:not(.hideMap) .listAgency{
+    margin-top: auto !important;
   }
   .grid3.hideFilters:not(.hideMap) .listMediaWrap .listImg,
   .grid3.hideFilters:not(.hideMap) .listMediaWrap .listImgPh{
@@ -4264,3 +4283,10 @@ body.saveSearchAuthOpen{
   font-feature-settings: "lnum" 1,"tnum" 1 !important;
 }
 .listPrice, .price, .priceMode .dotPrice{ font-weight: 700 !important; }
+
+/* Modo normal (escritorio): agencia bajo las fotos para liberar la columna de texto */
+.listAgencyUnder{display:none}
+@media (min-width: 769px){
+  .grid3:not(.hideFilters):not(.hideMap) .listAgencyUnder{display:block;margin-top:5px;font-size:6.5px;font-family:'Raleway','Montserrat',system-ui,sans-serif;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--bh-dorado);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .grid3:not(.hideFilters):not(.hideMap) .listBody .listAgency{display:none !important}
+}

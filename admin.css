@@ -2,7 +2,7 @@
    HOMYO · ADMIN — capa interna sobre pro.css
    Reutiliza todos los componentes de pro.css (.card, .kpi, .btn,
    .pill, .proTable, .callout, formularios…) y reescribe el shell
-   para un modo "sala de control": sidebar oscuro, badge ADMIN.
+   con el mismo aspecto claro que pro; solo añade el sello ADMIN.
    Carga SIEMPRE después de pro.css y con <body class="adminTheme">.
    ========================================================= */
 
@@ -17,67 +17,13 @@
   --adminGoldSoft:#C4962A;
 }
 
-/* El admin usa un fondo de trabajo ligeramente más frío que el pro */
-body.adminTheme{ background:#FBF8F2; }
-
-/* =========================================================
-   SIDEBAR OSCURO
-   ========================================================= */
-.adminTheme .proSidebar{
-  background:var(--adminInk);
-  border-right:1px solid #0d0b09;
-  color:var(--adminTxt);
-}
-.adminTheme .sbBrand{
-  border-bottom:1px solid var(--adminLine);
-}
-.adminTheme .sbBrandMark{ color:var(--granate); }
-.adminTheme .sbBrandTag{
-  background:var(--granate);
-  color:#fff;
-}
-.adminTheme .sbGroupLabel{ color:#6f685c; }
-
-.adminTheme .sbItem{ color:var(--adminTxt2); }
-.adminTheme .sbItem svg{ color:#6f685c; }
-.adminTheme .sbItem:hover{ background:var(--adminInk3); color:#fff; }
-.adminTheme .sbItem:hover svg{ color:var(--adminGold); }
-.adminTheme .sbItem.isActive{
-  background:linear-gradient(90deg, rgba(226,184,76,.16), rgba(226,184,76,.02));
-  color:#fff; font-weight:600;
-}
-.adminTheme .sbItem.isActive svg{ color:var(--adminGold); }
-.adminTheme .sbItem.isActive::before{ background:var(--adminGold); }
+/* Shell claro, idéntico al entorno pro. Solo se marca el sello ADMIN. */
+.adminTheme .sbBrandTag{ background:var(--granate); color:#fff; }
 .adminTheme .sbBadge{ background:var(--granate); color:#fff; }
-.adminTheme .sbBadge.soft{
-  background:rgba(226,184,76,.14); color:var(--adminGold);
-  border:1px solid rgba(226,184,76,.3);
-}
-
-/* CTA en el sidebar */
-.adminTheme .sbCta .btn.primary{
-  background:var(--granate); border-color:var(--granate);
-}
-.adminTheme .sbCta .btn.primary:hover{ background:var(--granateSoft); border-color:var(--granateSoft); }
-
-/* Pie del sidebar — la cuenta del jefe */
-.adminTheme .sbFoot{ border-top:1px solid var(--adminLine); }
-.adminTheme .sbAgency:hover{ background:var(--adminInk3); }
-.adminTheme .sbAgencyLogo{
-  background:rgba(226,184,76,.12);
-  border:1px solid rgba(226,184,76,.32);
-  color:var(--adminGold);
-}
-.adminTheme .sbAgencyName{ color:#fff; }
-.adminTheme .sbAgencyMeta{ color:var(--adminTxt2); }
-.adminTheme .sbAgencyMeta .dotok{ background:var(--adminGold); }
 
 /* =========================================================
    TOPBAR — claro, con sello interno
    ========================================================= */
-.adminTheme .proTopbar{
-  background:rgba(251,248,242,.86);
-}
 /* Evita que los títulos largos del topbar se recorten por arriba (altura fija). */
 .adminTheme .proTopbar > div{ min-width:0; }
 .adminTheme .tbTitle{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
@@ -109,36 +55,32 @@ body.adminTheme{ background:#FBF8F2; }
 .kpi.biz::before{ background:var(--granate); opacity:.8; }
 .kpi.biz .kpiValue{ color:var(--ink); }
 
-/* Banda hero del panel admin (oscura) */
+/* Banda hero del panel admin (clara, como pro) */
 .adminHero{
-  background:linear-gradient(135deg, var(--adminInk) 0%, #241f18 100%);
-  border:1px solid #0d0b09; border-radius:var(--rad);
+  background:linear-gradient(135deg,#fff 0%, var(--cardWarm) 130%);
+  border:1px solid var(--line); border-radius:var(--rad);
   padding:30px 34px; position:relative; overflow:hidden;
-  display:flex; align-items:center; gap:26px; flex-wrap:wrap;
-  color:#fff;
+  display:flex; align-items:center; gap:24px; flex-wrap:wrap;
 }
 .adminHero::after{
-  content:""; position:absolute; right:-90px; top:-110px; width:320px; height:320px;
-  border-radius:50%; background:radial-gradient(circle,rgba(226,184,76,.18) 0%,transparent 66%);
+  content:""; position:absolute; right:-90px; top:-90px; width:280px; height:280px;
+  border-radius:50%; background:radial-gradient(circle,rgba(196,150,42,.15) 0%,transparent 66%);
 }
 .adminHeroLogo{
-  width:64px; height:64px; flex:0 0 auto; border-radius:14px;
-  background:rgba(226,184,76,.12); border:1px solid rgba(226,184,76,.3);
-  display:grid; place-items:center; position:relative; z-index:1;
-  font-family:'Raleway',sans-serif; font-weight:700; font-size:24px; color:var(--adminGold);
+  width:74px; height:74px; flex:0 0 auto; border-radius:var(--rad);
+  background:#fff; border:1px solid var(--line); display:grid; place-items:center;
+  font-family:'Raleway',sans-serif; font-weight:600; font-size:24px; color:var(--granate);
+  box-shadow:0 8px 22px rgba(140,31,45,.06); position:relative; z-index:1;
 }
 .adminHeroBody{ position:relative; z-index:1; min-width:0; flex:1 1 auto; }
 .adminHeroBody h1{
-  margin:0 0 9px; font-family:'Raleway',sans-serif; font-weight:300;
-  font-size:30px; line-height:1.06; letter-spacing:-.5px; color:#fff;
+  margin:0 0 8px; font-family:'Raleway',sans-serif; font-weight:300;
+  font-size:32px; line-height:1.05; letter-spacing:-.6px; color:var(--granate);
 }
-.adminHeroBody h1 strong{ font-weight:600; color:var(--adminGold); }
+.adminHeroBody h1 strong{ font-weight:600; }
 .adminHeroPills{ display:flex; gap:9px; flex-wrap:wrap; }
-.adminHero .pill.neutral{ background:rgba(255,255,255,.08); color:#d8d0c2; border-color:rgba(255,255,255,.12); }
-.adminHero .pill.ok{ background:rgba(31,122,76,.18); color:#7fd3a3; border-color:rgba(31,122,76,.3); }
-.adminHero .pill.gold{ background:rgba(226,184,76,.14); color:var(--adminGold); border-color:rgba(226,184,76,.3); }
-.adminHeroDate{ position:relative; z-index:1; text-align:right; font-size:12.5px; color:var(--adminTxt2); }
-.adminHeroDate .big{ font-family:'Raleway',sans-serif; font-size:15px; color:#fff; font-weight:600; display:block; }
+.adminHeroDate{ position:relative; z-index:1; text-align:right; font-size:12.5px; color:var(--muted); }
+.adminHeroDate .big{ font-family:'Raleway',sans-serif; font-size:15px; color:var(--ink); font-weight:600; display:block; }
 @media (max-width:620px){ .adminHeroDate{ text-align:left; } }
 
 /* Mini-stats fila */

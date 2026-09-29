@@ -1,86 +1,216 @@
 <!doctype html>
 <html lang="es">
-  <head>
-  <!-- Icono de acceso directo (pantalla de inicio) -->
-  <link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png" />
-  <link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png" />
-  <link rel="manifest" href="./site.webmanifest" />
-  <meta name="theme-color" content="#8C1F2D" />
-  <meta name="apple-mobile-web-app-title" content="Homyo" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
-
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Cuenta en revisión · Homyo Pro</title>
-    <link rel="stylesheet" href="pro.css" />
-    <style>
-      body{ background:var(--bg); min-height:100vh; display:flex; flex-direction:column; }
-      .regTop{ background:#fff; border-bottom:1px solid var(--line); height:var(--topbarH); display:flex; align-items:center; padding:0 28px; }
-      .regTop .brand{ font-family:'Raleway',sans-serif; font-size:23px; font-weight:627; letter-spacing:.24em; color:var(--granate); text-decoration:none; }
-      .regTop .tag{ font-family:'Raleway',sans-serif; font-size:8.5px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:#fff; background:var(--dorado); padding:3px 6px; border-radius:3px; margin-left:10px; }
-      .regTop .right{ margin-left:auto; }
-      .regTop .right a{ font-family:'Raleway',sans-serif; font-size:11.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink2); text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
-      .regTop .right svg{ width:15px; height:15px; }
-      .center{ flex:1 1 auto; display:flex; align-items:center; justify-content:center; padding:48px 24px; }
-      .pendCard{ width:min(620px,100%); background:#fff; border:1px solid var(--line); border-radius:var(--rad); padding:48px 44px 40px; text-align:center; }
-      @media (max-width:600px){ .pendCard{ padding:34px 22px 30px; } }
-      .pendIc{ width:80px; height:80px; margin:0 auto 24px; border-radius:50%; background:var(--warnSoft); border:1px solid rgba(168,116,27,.32); color:var(--warn); display:grid; place-items:center; }
-      .pendIc svg{ width:36px; height:36px; }
-      .pendKick{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:600; letter-spacing:.3em; text-transform:uppercase; color:var(--dorado); margin:0 0 12px; }
-      .pendTitle{ font-family:'Raleway',sans-serif; font-size:34px; font-weight:300; color:var(--granate); letter-spacing:-.6px; margin:0 0 14px; }
-      .pendTitle strong{ font-weight:600; }
-      .pendSub{ font-size:15px; line-height:1.6; color:var(--ink2); max-width:460px; margin:0 auto 26px; }
-      .statusTrack{ display:flex; align-items:center; gap:0; margin:0 auto 28px; max-width:440px; }
-      .stNode{ flex:1 1 0; display:flex; flex-direction:column; align-items:center; gap:8px; position:relative; }
-      .stNode .c{ width:30px; height:30px; border-radius:50%; display:grid; place-items:center; background:#fff; border:2px solid var(--line); color:var(--muted); z-index:1; }
-      .stNode .c svg{ width:15px; height:15px; }
-      .stNode.done .c{ background:var(--good); border-color:var(--good); color:#fff; }
-      .stNode.cur .c{ background:var(--granate); border-color:var(--granate); color:#fff; box-shadow:0 0 0 5px rgba(140,31,45,.12); }
-      .stNode .lbl{ font-family:'Raleway',sans-serif; font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
-      .stNode.cur .lbl{ color:var(--granate); } .stNode.done .lbl{ color:var(--good); }
-      .stLine{ position:absolute; top:15px; left:50%; right:-50%; height:2px; background:var(--line); z-index:0; }
-      .stNode.done .stLine{ background:var(--good); }
-      .stNode:last-child .stLine{ display:none; }
-      .pendMeta{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:24px; }
-      .pendActions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-      .pendNote{ margin-top:26px; padding-top:22px; border-top:1px solid var(--lineSoft); font-size:13px; color:var(--muted); line-height:1.55; }
-      .pendNote a{ color:var(--granate); font-weight:600; text-decoration:none; }
-    </style>
-  </head>
-  <body>
-    <header class="regTop">
-      <a class="brand" href="index.html">H<span class="brandO">O</span>MY<span class="brandO">O</span></a><span class="tag">Pro</span>
-      <div class="right"><a href="pro-acceso.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>Cerrar sesión</a></div>
-    </header>
-
-    <div class="center">
-      <div class="pendCard">
-        <div class="pendIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
-        <p class="pendKick">Cuenta en revisión</p>
-        <h1 class="pendTitle">Tu solicitud se está <strong>revisando</strong></h1>
-        <p class="pendSub">Hemos recibido el alta de <strong>Áurea Inmobiliaria</strong>. Nuestro equipo está verificando la información. Aún no puedes acceder al panel profesional: te avisaremos por email en cuanto tu cuenta esté aprobada.</p>
-
-        <div class="statusTrack">
-          <div class="stNode done"><span class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><span class="lbl">Recibida</span><span class="stLine"></span></div>
-          <div class="stNode cur"><span class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 1.5"/></svg></span><span class="lbl">En revisión</span><span class="stLine"></span></div>
-          <div class="stNode"><span class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/></svg></span><span class="lbl">Aprobada</span></div>
-        </div>
-
-        <div class="pendMeta">
-          <span class="pill warnp"><span class="dot"></span>Estado: en revisión</span>
-          <span class="pill neutral">Ref. HMY-PRO-2026-0418</span>
-          <span class="pill neutral">Enviada hace 1 día</span>
-        </div>
-
-        <div class="pendActions">
-          <a class="btn ghost" href="index.html">Volver al inicio</a>
-          <a class="btn primary" href="contacto.html?tipo=inmobiliaria">Contactar con soporte</a>
-        </div>
-
-        <p class="pendNote">¿Crees que falta algún dato o quieres acelerar la revisión? <a href="contacto.html?tipo=inmobiliaria">Escríbenos</a> indicando tu referencia. Normalmente respondemos el mismo día laborable.</p>
-      </div>
-    </div>
-  </body>
+<head>
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png" />
+<link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png" />
+<link rel="manifest" href="./site.webmanifest" />
+<meta name="theme-color" content="#8C1F2D" />
+<meta name="apple-mobile-web-app-title" content="Homyo" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Estado de tu solicitud · Homyo Pro</title>
+<link rel="stylesheet" href="pro.css" />
+<style>
+[hidden]{display:none !important}
+body{background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--granate)}a:hover{color:var(--granateDark)}
+.regTop{background:#fff;border-bottom:1px solid var(--line);height:var(--topbarH);display:flex;align-items:center;padding:0 28px}
+.regTop .brand{font-family:'Raleway',sans-serif;font-size:23px;font-weight:627;letter-spacing:.24em;color:var(--granate);text-decoration:none}
+.regTop .tag{font-family:'Raleway',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#fff;background:var(--dorado);padding:3px 6px;border-radius:3px;margin-left:10px}
+.regTop .right{margin-left:auto}
+.regTop .right a{font-family:'Raleway',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.regTop .right svg{width:15px;height:15px}
+.demoBar{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:10px 20px;background:var(--lineSoft);border-bottom:1px solid var(--line)}
+.demoBar .lbl{font-family:'Raleway',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.demoSeg{display:flex;gap:4px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px}
+.demoSeg button{appearance:none;border:0;background:none;cursor:pointer;font:600 12px/1 system-ui,sans-serif;color:var(--ink2);padding:7px 12px;border-radius:999px}
+.demoSeg button.isOn{background:var(--granate);color:#fff}
+.center{flex:1 1 auto;display:flex;justify-content:center;padding:44px 20px 64px}
+.stCard{width:min(700px,100%);background:#fff;border:1px solid var(--line);border-radius:var(--rad);padding:40px 44px 34px}
+@media (max-width:600px){.stCard{padding:28px 20px 26px}}
+.stHead{text-align:center}
+.stIc{width:72px;height:72px;margin:0 auto 20px;border-radius:50%;display:grid;place-items:center;border:1px solid}
+.stIc svg{width:32px;height:32px}
+.tone-warn .stIc{background:var(--warnSoft);border-color:rgba(168,116,27,.32);color:var(--warn)}
+.tone-action .stIc{background:var(--dangerSoft);border-color:rgba(176,50,71,.3);color:var(--danger)}
+.tone-bad .stIc{background:var(--lineSoft);border-color:var(--line);color:var(--ink2)}
+.tone-good .stIc{background:var(--goodSoft);border-color:rgba(31,122,76,.3);color:var(--good)}
+.stKick{font-family:'Raleway',sans-serif;font-size:11px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--dorado);margin:0 0 10px}
+.stTitle{font-family:'Raleway',sans-serif;font-size:32px;font-weight:300;color:var(--granate);letter-spacing:-.6px;margin:0 0 12px;text-wrap:balance}
+.stTitle strong{font-weight:600}
+.stSub{font-size:15px;line-height:1.6;color:var(--ink2);max-width:500px;margin:0 auto 20px;text-wrap:pretty}
+.stMeta{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:30px}
+.track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0 0 30px}
+.tNode{display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;text-align:center;padding:0 4px}
+.tNode .c{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff;border:2px solid var(--line);color:var(--muted);z-index:1}
+.tNode .c svg{width:14px;height:14px}
+.tNode .n{font:600 12px/1 system-ui,sans-serif}
+.tNode .l{font-family:'Raleway',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);line-height:1.35}
+.tNode .t{font-size:11.5px;color:var(--muted)}
+.tNode::after{content:"";position:absolute;top:15px;left:calc(50% + 15px);right:calc(-50% + 15px);height:2px;background:var(--line)}
+.tNode:last-child::after{display:none}
+.tNode.done .c{background:var(--good);border-color:var(--good);color:#fff}
+.tNode.done .l{color:var(--good)}
+.tNode.done::after{background:var(--good)}
+.tNode.cur .c{background:var(--granate);border-color:var(--granate);color:#fff;box-shadow:0 0 0 5px rgba(140,31,45,.12)}
+.tNode.cur .l{color:var(--granate)}
+.tNode.blocked .c{background:var(--danger);border-color:var(--danger);color:#fff;box-shadow:0 0 0 5px rgba(176,50,71,.12)}
+.tNode.blocked .l{color:var(--danger)}
+.tNode.stop .c{background:var(--ink2);border-color:var(--ink2);color:#fff}
+.tNode.stop .l{color:var(--ink2)}
+.panel{border:1px solid var(--line);border-radius:var(--rad);padding:20px 22px;margin-bottom:26px}
+.panel.action{border-color:rgba(176,50,71,.35);background:var(--dangerSoft)}
+.panel.bad{background:var(--lineSoft)}
+.panel.good{border-color:rgba(31,122,76,.3);background:var(--goodSoft)}
+.panel h3{margin:0 0 6px;font-family:'Raleway',sans-serif;font-size:15px;font-weight:600;color:var(--ink)}
+.panel p{margin:0;font-size:14px;line-height:1.55;color:var(--ink2);text-wrap:pretty}
+.panel .reason{margin-top:12px;padding:12px 14px;background:#fff;border:1px solid var(--line);border-radius:4px;font-size:13.5px;line-height:1.5;color:var(--ink)}
+.panel .reason b{display:block;font-family:'Raleway',sans-serif;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.upRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;margin-top:14px;padding:14px 16px;background:#fff;border:1px dashed rgba(176,50,71,.45);border-radius:4px}
+.upRow h4{margin:0 0 3px;font-size:14px;color:var(--ink)}
+.upRow p{font-size:12.5px;color:var(--muted)}
+.upRow.isDone{border-style:solid;border-color:rgba(31,122,76,.35)}
+.upRow .file{display:none;font-size:12.5px;color:var(--good);font-weight:600;margin-top:4px}
+.upRow.isDone .file{display:block}
+@media (max-width:520px){.upRow{grid-template-columns:1fr}}
+.panelActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.checks h3{font-family:'Raleway',sans-serif;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.checks ul{list-style:none;margin:0 0 26px;padding:0;border-top:1px solid var(--lineSoft)}
+.checks li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:12px;align-items:start;padding:13px 0;border-bottom:1px solid var(--lineSoft)}
+.checks .ic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;margin-top:1px}
+.checks .ic svg{width:12px;height:12px}
+.checks .k{font-size:14px;font-weight:600;color:var(--ink)}
+.checks .d{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+.checks .s{font-size:12px;font-weight:600;white-space:nowrap;padding-top:2px}
+.s-ok .ic{background:var(--good);color:#fff}.s-ok .s{color:var(--good)}
+.s-wait .ic{background:#fff;border:2px solid var(--line);color:var(--muted)}.s-wait .s{color:var(--muted)}
+.s-rev .ic{background:var(--warnSoft);border:1px solid rgba(168,116,27,.4);color:var(--warn)}.s-rev .s{color:var(--warn)}
+.s-miss .ic{background:var(--danger);color:#fff}.s-miss .s{color:var(--danger)}
+.s-no .ic{background:var(--ink2);color:#fff}.s-no .s{color:var(--ink2)}
+.stActions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.stNote{margin:24px 0 0;padding-top:20px;border-top:1px solid var(--lineSoft);font-size:13px;color:var(--muted);line-height:1.55;text-align:center}
+.stNote a{font-weight:600;text-decoration:none}
+</style>
+<style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
+<body>
+<header class="regTop">
+<a class="brand" href="index.html">H<span class="brandO">O</span>MY<span class="brandO">O</span></a><span class="tag">Pro</span>
+<div class="right"><a href="cuenta-inmobiliaria.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path></svg>Cerrar sesión</a></div>
+</header>
+<div class="demoBar" aria-label="Selector de estado del prototipo">
+<span class="lbl">Prototipo · ver estado</span>
+<div class="demoSeg" id="demoSeg">
+<button type="button" data-st="revision">En revisión</button>
+<button type="button" data-st="falta">Falta documentación</button>
+<button type="button" data-st="rechazada">Rechazada</button>
+<button type="button" data-st="aprobada">Aprobada</button>
+</div>
+</div>
+<div class="center">
+<main class="stCard" id="stCard" data-screen-label="Estado de la solicitud">
+<div class="stHead">
+<div class="stIc" id="stIc"></div>
+<p class="stKick" id="stKick"></p>
+<h1 class="stTitle" id="stTitle"></h1>
+<p class="stSub" id="stSub"></p>
+<div class="stMeta" id="stMeta"></div>
+</div>
+<div class="track" id="track"></div>
+<div id="panel"></div>
+<section class="checks">
+<h3>Qué hemos comprobado</h3>
+<ul id="checks"></ul>
+</section>
+<div class="stActions" id="stActions"></div>
+<p class="stNote" id="stNote"></p>
+</main>
+</div>
+<script>
+(function(){
+const I={
+clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
+doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M12 12v5"/><path d="M12 20h.01"/></svg>',
+x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>',
+check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>',
+dot:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>',
+bang:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 6v8"/><path d="M12 18h.01"/></svg>'
+};
+const SUPPORT='contacto.html?tipo=inmobiliaria&ref=HMY-PRO-2026-0418';
+const STEPS=["Recibida","Verificación automática","Revisión del equipo","Activada"];
+const CK={
+emp:["Empresa","Áurea Gestión Inmobiliaria, S.L. · Registro Mercantil de Madrid"],
+adm:["Responsable","Marta Sanz López figura como apoderada, no como administradora"],
+dni:["DNI del responsable","Comparado con los datos del paso 2"],
+aut:["Autorización del administrador","Necesaria porque el responsable no es administrador"]
+};
+const S={
+revision:{tone:"warn",ic:I.clock,kick:"En revisión",title:'Tu solicitud se está <strong>revisando</strong>',
+sub:'Hemos verificado <strong>Áurea Inmobiliaria</strong> automáticamente. Ahora una persona de nuestro equipo revisa tu documentación. Te avisaremos por email.',
+pill:['warnp','Estado: en revisión'],when:'Enviada hace 1 día',
+track:['done','done','cur',''],times:['17 mar','17 mar','24–48 h laborables',''],
+panel:'',
+checks:{emp:['ok','Verificada'],adm:['ok','Comprobado'],dni:['rev','En revisión'],aut:['rev','En revisión']},
+actions:['<a class="btn ghost" href="index.html">Volver al inicio</a>','<a class="btn primary" href="'+SUPPORT+'">Contactar con soporte</a>'],
+note:'No necesitas hacer nada más. Si falta algo, te lo pediremos aquí y por email.'},
+falta:{tone:"action",ic:I.doc,kick:"Acción necesaria",title:'Necesitamos <strong>un documento más</strong>',
+sub:'La revisión está en pausa hasta que subas lo que falta. En cuanto lo recibamos, seguimos donde lo dejamos.',
+pill:['dangerp','Estado: falta documentación'],when:'Pedido hoy, 10:42',
+track:['done','done','blocked',''],times:['17 mar','17 mar','En pausa',''],
+panel:`<div class="panel action"><h3>Autorización del administrador</h3><p>El DNI que has subido corresponde a Marta Sanz López, que figura como apoderada. Necesitamos que el administrador de la empresa autorice el alta.</p>
+<div class="upRow" id="upRow"><div><h4>Autorización firmada o escritura de poderes</h4><p>PDF, JPG o PNG · máx. 10 MB · <a href="#">Descargar plantilla</a></p><span class="file">autorizacion-aurea.pdf · subido</span></div><button type="button" class="btn primary sm" id="upBtn">Subir archivo</button></div>
+<div class="panelActions" id="sendWrap" hidden><button type="button" class="btn primary" id="sendBtn">Enviar y reanudar revisión</button></div></div>`,
+checks:{emp:['ok','Verificada'],adm:['ok','Comprobado'],dni:['ok','Verificado'],aut:['miss','Falta']},
+actions:['<a class="btn ghost" href="'+SUPPORT+'">Tengo dudas sobre este documento</a>'],
+note:'Si no lo recibimos en 14 días, cerraremos la solicitud. Podrás volver a empezar cuando quieras.'},
+rechazada:{tone:"bad",ic:I.x,kick:"Solicitud no aprobada",title:'No hemos podido <strong>aprobar tu cuenta</strong>',
+sub:'Hemos revisado tu solicitud y no podemos activar la cuenta profesional con los datos actuales.',
+pill:['neutral','Estado: rechazada'],when:'Revisada el 19 mar',
+track:['done','done','stop',''],times:['17 mar','17 mar','19 mar',''],
+panel:`<div class="panel bad"><h3>Motivo</h3><div class="reason"><b>Nota del equipo de verificación</b>La empresa con CIF B12345678 figura como extinguida en el Registro Mercantil desde 2024. Solo podemos dar de alta empresas activas.</div>
+<p style="margin-top:12px">Si crees que es un error o la empresa ha cambiado de CIF, puedes pedir una nueva revisión o empezar una solicitud nueva.</p></div>`,
+checks:{emp:['no','No válida'],adm:['wait','Sin revisar'],dni:['wait','Sin revisar'],aut:['wait','Sin revisar']},
+actions:['<a class="btn ghost" href="'+SUPPORT+'">Pedir nueva revisión</a>','<a class="btn primary" href="registro-profesional.html">Nueva solicitud</a>'],
+note:'Tus documentos se eliminarán en 30 días, salvo que pidas una nueva revisión.'},
+aprobada:{tone:"good",ic:I.shield,kick:"Cuenta activada",title:'Bienvenida a <strong>Homyo Pro</strong>',
+sub:'Hemos verificado <strong>Áurea Inmobiliaria</strong>. Ya puedes publicar viviendas y gestionar tus clientes desde el panel.',
+pill:['ok','Estado: aprobada'],when:'Aprobada hoy, 12:05',
+track:['done','done','done','done'],times:['17 mar','17 mar','18 mar','18 mar'],
+panel:'',
+checks:{emp:['ok','Verificada'],adm:['ok','Comprobado'],dni:['ok','Verificado'],aut:['ok','Verificada']},
+actions:['<a class="btn primary" href="pro-panel.html">Entrar al panel</a>'],
+note:'Tu perfil mostrará el sello de <strong>inmobiliaria verificada</strong>.'}
+};
+const $=s=>document.querySelector(s);
+const sIc={ok:I.check,wait:'',rev:I.dot,miss:I.bang,no:I.x};
+function render(k){
+const d=S[k];
+$("#stCard").className="stCard tone-"+d.tone;
+$("#stIc").innerHTML=d.ic;
+$("#stKick").textContent=d.kick;
+$("#stTitle").innerHTML=d.title;
+$("#stSub").innerHTML=d.sub;
+$("#stMeta").innerHTML=`<span class="pill ${d.pill[0]}"><span class="dot"></span>${d.pill[1]}</span><span class="pill neutral">Ref. HMY-PRO-2026-0418</span><span class="pill neutral">${d.when}</span>`;
+$("#track").innerHTML=STEPS.map((l,i)=>{const c=d.track[i];const ic=c==='done'?I.check:c==='blocked'?I.bang:c==='stop'?I.x:`<span class="n">${i+1}</span>`;return `<div class="tNode ${c}"><span class="c">${ic}</span><span class="l">${l}</span><span class="t">${d.times[i]||''}</span></div>`}).join('');
+$("#panel").innerHTML=d.panel;
+$("#checks").innerHTML=Object.keys(CK).map(key=>{const [st,lbl]=d.checks[key];return `<li class="s-${st}"><span class="ic">${sIc[st]}</span><div><div class="k">${CK[key][0]}</div><div class="d">${CK[key][1]}</div></div><span class="s">${lbl}</span></li>`}).join('');
+$("#stActions").innerHTML=d.actions.join('');
+$("#stNote").innerHTML=d.note;
+document.querySelectorAll("#demoSeg button").forEach(b=>b.classList.toggle("isOn",b.dataset.st===k));
+if(k==="falta"){
+$("#upBtn").addEventListener("click",()=>{$("#upRow").classList.add("isDone");$("#upBtn").textContent="Cambiar";$("#upBtn").className="btn ghost sm";$("#sendWrap").hidden=false;});
+$("#sendBtn").addEventListener("click",()=>go("revision"));
+}
+}
+function go(k){try{localStorage.setItem("hmyProStatus",k)}catch(e){}history.replaceState(null,"","?estado="+k);render(k);window.scrollTo(0,0);}
+document.querySelectorAll("#demoSeg button").forEach(b=>b.addEventListener("click",()=>go(b.dataset.st)));
+let init=new URLSearchParams(location.search).get("estado");
+if(!S[init]){try{init=localStorage.getItem("hmyProStatus")}catch(e){}}
+render(S[init]?init:"revision");
+})();
+</script>
+</body>
 </html>

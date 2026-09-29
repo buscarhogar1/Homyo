@@ -1885,7 +1885,7 @@
 }
 
 </style>
-  </head>
+  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
 
   <body>
     <div id="bhHeader"></div>
@@ -2590,7 +2590,7 @@
             boxZoom: false,
             keyboard: false
           }).setView([lat, lng], 15);
-          L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+          L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_42x5_1_561b29f37317473c79c5d504", {
             maxZoom: 19,
             attribution: "&copy; OpenStreetMap &copy; CARTO"
           }).addTo(miniMap);
@@ -2611,7 +2611,7 @@
 
         if (!mainMap) {
           mainMap = L.map("mainMap", { zoomControl: false, attributionControl: false, scrollWheelZoom: false }).setView([lat, lng], 14);
-          L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+          L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_42x5_1_561b29f37317473c79c5d504", {
             maxZoom: 19,
             attribution: "&copy; OpenStreetMap &copy; CARTO"
           }).addTo(mainMap);
@@ -3347,6 +3347,28 @@ function renderFeatures(row) {
           crumbsCityEl.textContent = row.city || "Ciudad";
           crumbsNeighborhoodEl.textContent = row.neighborhood || "Barrio";
           crumbsAddressEl.textContent = row.address_display || "Dirección";
+          (function wireCrumbMapLinks(){
+            let mode = "buy";
+            try {
+              const b = new URL(getBackUrl(), location.href);
+              mode = b.searchParams.get("mode") || mode;
+            } catch {}
+            const city = String(row.city || "").trim();
+            const hood = String(row.neighborhood || "").trim();
+            const lat = row.lat != null ? Number(row.lat) : NaN;
+            const lng = row.lng != null ? Number(row.lng) : NaN;
+            const hasPos = Number.isFinite(lat) && Number.isFinite(lng);
+            const build = (zoom, withHood) => {
+              const p = new URLSearchParams();
+              if (city) p.set("city", city);
+              if (withHood && hood) p.set("hood", hood);
+              p.set("mode", mode);
+              if (hasPos){ p.set("lat", lat.toFixed(6)); p.set("lng", lng.toFixed(6)); p.set("zoom", String(zoom)); }
+              return "map.html?" + p.toString();
+            };
+            if (city || hasPos) crumbsCityEl.href = build(13, false);
+            if (hood || hasPos) crumbsNeighborhoodEl.href = build(15, true);
+          })();
 
           function buildCleanTitle(row){
             const rawStreet = String(row.street_name || "").trim();

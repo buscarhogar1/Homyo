@@ -17,7 +17,7 @@
     <title>Profesionales · Homyo Admin</title>
     <link rel="stylesheet" href="pro.css" />
     <link rel="stylesheet" href="admin.css" />
-  </head>
+  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body class="adminTheme">
     <div class="proLayout">
       <aside class="proSidebar" id="proSidebar"></aside>
@@ -43,7 +43,7 @@
             <div class="kpi"><p class="kpiLabel">Inmobiliarias</p><p class="kpiValue">128</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+6 este mes</span></div>
             <div class="kpi"><p class="kpiLabel">Agentes (usuarios pro)</p><p class="kpiValue">412</p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>3,2 por agencia</span></div>
             <div class="kpi"><p class="kpiLabel">Suspendidas</p><p class="kpiValue">3</p><span class="kpiFoot down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 10 6 6 6-6"/></svg>impagos o incidencias</span></div>
-            <div class="kpi biz"><p class="kpiLabel">Ingresos del segmento</p><p class="kpiValue">27.718<span class="u">€</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>MRR</span></div>
+            <div class="kpi biz"><p class="kpiLabel">Ingresos del segmento</p><p class="kpiValue">27.708<span class="u">€</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>MRR</span></div>
           </section>
 
           <!-- TABLA CON FILTROS -->
@@ -75,11 +75,11 @@
               </thead>
               <tbody>
                 <tr data-state="verif">
-                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar">ÁI</span><span><span class="tn1">Áurea Inmobiliaria</span><span class="tn2">B-87654321 · Agencia fundadora</span></span></div></td>
+                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar">ÁI</span><span><span class="tn1">Áurea Inmobiliaria</span><span class="tn2">B-12345678 · Agencia fundadora</span></span></div></td>
                   <td data-th="Ciudad">Madrid</td>
                   <td data-th="Anuncios" class="right num">18</td>
                   <td data-th="Contactos/mes" class="right num">47</td>
-                  <td data-th="Cuota/mes" class="right amount">125,82 €</td>
+                  <td data-th="Cuota/mes" class="right amount">0,00 € <span class="muted" style="font-size:11.5px;">(bonificada)</span></td>
                   <td data-th="Estado"><span class="pill ok"><span class="dot"></span>Verificada</span></td>
                   <td class="noLabel"><div class="rowActions"><a class="iconBtn" href="admin-profesional-detalle.html" aria-label="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a></div></td>
                 </tr>
@@ -120,7 +120,7 @@
                   <td class="noLabel"><div class="rowActions"><a class="iconBtn" href="admin-profesional-detalle.html" aria-label="Ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a></div></td>
                 </tr>
                 <tr data-state="susp">
-                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar" style="background:var(--dangerSoft);border-color:rgba(176,50,71,.25);color:var(--danger)">PM</span><span><span class="tn1">Pisos Marina</span><span class="tn2">B-30099112 · 2 cobros fallidos</span></span></div></td>
+                  <td data-th="Inmobiliaria"><div class="tName"><span class="avatar" style="background:var(--dangerSoft);border-color:rgba(176,50,71,.25);color:var(--danger)">PM</span><span><span class="tn1">Pisos Marina</span><span class="tn2">B-30099112 · impago · 3 intentos</span></span></div></td>
                   <td data-th="Ciudad">Alicante</td>
                   <td data-th="Anuncios" class="right num">9</td>
                   <td data-th="Contactos/mes" class="right num">0</td>

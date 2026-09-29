@@ -973,7 +973,7 @@ export function initFiltersBar({ mountId }) {
       options: [
         ["incluido", "Incluido"],
         ["opcional", "Opcional"],
-        ["no_disponible", "No disponible"]
+        ["no_disponible", "No incluido"]
       ],
       initialValues: p.parkingTypes,
       onChange: (vals) => {
@@ -998,6 +998,7 @@ export function initFiltersBar({ mountId }) {
     const c = multiSelectControl({
       options: [
         ["incluido", "Incluido"],
+        ["opcional", "Opcional"],
         ["no_incluido", "No incluido"]
       ],
       initialValues: p.storageTypes,

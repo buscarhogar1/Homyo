@@ -75,8 +75,8 @@
     { ic: "contactos", tone: "ok", unread: true, t: "Nueva solicitud de contacto", d: "Lucía Bravo está interesada en el Ático en Calle Ferraz.", when: "Hace 1 h", href: "pro-contactos.html" },
     { ic: "revision", tone: "dangerp", unread: true, t: "Anuncio rechazado por falta de plano", d: "Dúplex en Calle Goya — sube el plano en planta para volver a revisión.", when: "Hace 3 h", href: "pro-revision-calidad.html" },
     { ic: "viviendas", tone: "warnp", unread: true, t: "Falta confirmar disponibilidad", d: "3 viviendas llevan más de 60 días sin actualizar. Confirma que siguen disponibles.", when: "Ayer", href: "pro-viviendas.html" },
-    { ic: "subir", tone: "infop", unread: false, t: "Certificado energético pendiente", d: "Chalet en Pozuelo — el plazo para aportar el certificado vence en 9 días.", when: "Hace 2 días", href: "pro-viviendas.html" },
-    { ic: "viviendas", tone: "neutral", unread: false, t: "Una vivienda vuelve a estar disponible", d: "Otra agencia ha retirado un inmueble en Calle Alcalá. Ya puedes publicarlo.", when: "Hace 4 días", href: "pro-viviendas.html" }
+    { ic: "subir", tone: "infop", unread: false, t: "Certificado energético pendiente", d: "Habitación en Calle Argumosa 22 — el plazo para aportar el certificado vence en 9 días.", when: "Hace 2 días", href: "pro-viviendas.html" },
+    { ic: "viviendas", tone: "neutral", unread: false, t: "Una vivienda vuelve a estar disponible", d: "Otra agencia ha retirado un inmueble en Calle Castelló 30. Ya puedes publicarlo.", when: "Hace 4 días", href: "pro-viviendas.html" }
   ];
 
   function toneColor(t) {
