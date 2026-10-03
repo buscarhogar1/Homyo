@@ -54,7 +54,7 @@
               <h1 class="pageTitle"><strong>Perfil</strong> de la inmobiliaria</h1>
               <p class="pageLede">Estos datos definen tu ficha pública en Homyo y respaldan tu verificación profesional.</p>
             </div>
-            <div class="pageHeadActions"><button class="btn primary">Guardar cambios</button></div>
+            <div class="pageHeadActions"><button class="btn primary" id="pfSave">Guardar cambios</button></div>
           </div>
 
           <div class="twoCol">
@@ -63,12 +63,12 @@
               <section class="formCard">
                 <p class="fcLabel">Identidad</p>
                 <div class="logoRow" style="margin-bottom:22px;">
-                  <span class="logoBox">ÁI</span>
-                  <div><button class="btn ghost sm">Cambiar logo</button><p class="fieldHint" style="margin-top:8px;">PNG o SVG, fondo transparente, mínimo 240×240 px.</p></div>
+                  <span class="logoBox" id="pfLogo">ÁI</span><input type="file" id="pfLogoIn" accept="image/png,image/svg+xml,image/jpeg,image/webp" hidden />
+                  <div><button class="btn ghost sm" id="pfLogoBtn">Cambiar logo</button><p class="fieldHint" style="margin-top:8px;">PNG o SVG, fondo transparente, mínimo 240×240 px.</p></div>
                 </div>
                 <div class="formGrid">
-                  <div class="field full"><label class="fieldLabel">Nombre comercial</label><input class="input" value="Áurea Inmobiliaria" /></div>
-                  <div class="field full"><label class="fieldLabel">Descripción profesional</label><textarea class="input" style="min-height:110px;">Inmobiliaria boutique especializada en vivienda de calidad en el centro de Madrid. Acompañamos a compradores y propietarios con un trato cercano y anuncios honestos: plano, superficies reales y certificación en cada vivienda.</textarea><p class="fieldHint">Se muestra en tu ficha pública. Máximo 600 caracteres.</p></div>
+                  <div class="field full"><label class="fieldLabel">Nombre comercial</label><input class="input" data-a="name" value="Áurea Inmobiliaria" /></div>
+                  <div class="field full"><label class="fieldLabel">Descripción profesional</label><textarea class="input" data-a="description" maxlength="600" style="min-height:110px;">Inmobiliaria boutique especializada en vivienda de calidad en el centro de Madrid. Acompañamos a compradores y propietarios con un trato cercano y anuncios honestos: plano, superficies reales y certificación en cada vivienda.</textarea><p class="fieldHint">Se muestra en tu ficha pública. Máximo 600 caracteres.</p></div>
                 </div>
               </section>
 
@@ -76,10 +76,10 @@
               <section class="formCard">
                 <p class="fcLabel">Datos fiscales</p>
                 <div class="formGrid">
-                  <div class="field"><label class="fieldLabel">Razón social</label><input class="input" value="Áurea Gestión Inmobiliaria, S.L." /></div>
-                  <div class="field"><label class="fieldLabel">CIF / NIF</label><input class="input" value="B12345678" /></div>
-                  <div class="field"><label class="fieldLabel">Nº API / colegio profesional</label><input class="input" value="API Madrid · Nº 2841" /></div>
-                  <div class="field"><label class="fieldLabel">Web</label><input class="input" value="https://aureainmobiliaria.es" /></div>
+                  <div class="field"><label class="fieldLabel">Razón social</label><input class="input" data-a="legal_name" value="Áurea Gestión Inmobiliaria, S.L." /></div>
+                  <div class="field"><label class="fieldLabel">CIF / NIF</label><input class="input" data-a="cif" value="B12345678" /></div>
+                  <div class="field"><label class="fieldLabel">Nº API / colegio profesional</label><input class="input" data-a="api_number" value="API Madrid · Nº 2841" /></div>
+                  <div class="field"><label class="fieldLabel">Web</label><input class="input" data-a="website" value="https://aureainmobiliaria.es" /></div>
                 </div>
               </section>
 
@@ -87,15 +87,15 @@
               <section class="formCard">
                 <p class="fcLabel">Contacto y oficina</p>
                 <div class="formGrid">
-                  <div class="field full"><label class="fieldLabel">Dirección de oficina</label><input class="input" value="Calle Almagro 18, 1º D" /></div>
-                  <div class="field"><label class="fieldLabel">Ciudad</label><input class="input" value="Madrid" /></div>
-                  <div class="field"><label class="fieldLabel">Código postal</label><input class="input" value="28010" /></div>
-                  <div class="field"><label class="fieldLabel">Teléfono</label><div class="inputCombo"><span class="prefix">+34</span><input class="input" value="914 023 110" /></div></div>
-                  <div class="field"><label class="fieldLabel">Email público</label><input class="input" value="hola@aureainmobiliaria.es" /></div>
+                  <div class="field full"><label class="fieldLabel">Dirección de oficina</label><input class="input" data-a="address" value="Calle Almagro 18, 1º D" /></div>
+                  <div class="field"><label class="fieldLabel">Ciudad</label><input class="input" data-a="city" value="Madrid" /></div>
+                  <div class="field"><label class="fieldLabel">Código postal</label><input class="input" data-a="postcode" value="28010" /></div>
+                  <div class="field"><label class="fieldLabel">Teléfono</label><div class="inputCombo"><span class="prefix">+34</span><input class="input" data-a="phone" value="914 023 110" /></div></div>
+                  <div class="field"><label class="fieldLabel">Email público</label><input class="input" data-a="email" value="hola@aureainmobiliaria.es" /></div>
                 </div>
                 <div class="field full" style="margin-top:18px;">
                   <label class="fieldLabel">Zonas de trabajo</label>
-                  <div class="chips" style="margin-top:6px;">
+                  <div class="chips" id="pfZones" style="margin-top:6px;">
                     <span class="chip">Centro <span class="x">×</span></span>
                   <span class="chip">Chamberí <span class="x">×</span></span>
                     <span class="chip">Salamanca <span class="x">×</span></span>
@@ -111,22 +111,8 @@
 
             <!-- SIDEBAR -->
             <aside class="stickySide">
-              <div class="card">
-                <p class="cardLabel">Estado de verificación</p>
-                <div class="row-sm" style="margin-bottom:14px;">
-                  <span class="pill ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>Inmobiliaria verificada</span>
-                </div>
-                <p style="font-size:13px; color:var(--ink2); line-height:1.55; margin:0;">Tu inmobiliaria fue verificada el 18 de marzo de 2026. Tu ficha muestra el sello de confianza de Homyo.</p>
-                <hr class="divider" style="margin:18px 0;" />
-                <p style="font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:0 0 8px;">Otros estados posibles</p>
-                <div class="stack-sm">
-                  <span class="pill warnp" style="width:fit-content;"><span class="dot"></span>Pendiente de revisión</span>
-                  <span class="pill dangerp" style="width:fit-content;"><span class="dot"></span>Documentación requerida</span>
-                </div>
-              </div>
-
-              <div class="card">
-                <p class="cardLabel">Documentación verificada</p>
+              <div class="card" id="pfDocs">
+                <p class="cardLabel">Documentación</p>
                 <ul class="docList">
                   <li class="docItem"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg></span><span class="dn"><b>CIF de la empresa</b><span>Verificado</span></span><span class="pill ok sm"><span class="dot"></span></span></li>
                   <li class="docItem"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/></svg></span><span class="dn"><b>DNI del responsable</b><span>Verificado</span></span><span class="pill ok sm"><span class="dot"></span></span></li>
@@ -137,10 +123,10 @@
 
               <div class="card">
                 <div class="spread" style="margin-bottom:12px;"><p class="cardLabel mt0">Equipo</p><a class="btnLink" href="pro-equipo.html">Gestionar</a></div>
-                <div class="teamMini" style="margin-bottom:12px;">
+                <div class="teamMini" id="pfTeam" style="margin-bottom:12px;">
                   <span class="av">MS</span><span class="av">CR</span><span class="av">PL</span>
                 </div>
-                <p style="font-size:12.5px; color:var(--muted); margin:0;">3 usuarios con acceso y 1 invitación pendiente.</p>
+                <p id="pfTeamTxt" style="font-size:12.5px; color:var(--muted); margin:0;">3 usuarios con acceso y 1 invitación pendiente.</p>
               </div>
             </aside>
           </div>
@@ -150,8 +136,8 @@
     </div>
 
     <script>
-      window.PRO_PAGE = { active: "perfil", title: "Perfil", crumb: "Áurea Inmobiliaria · Verificada" };
+      window.PRO_PAGE = { active: "perfil", title: "Perfil", crumb: "Áurea Inmobiliaria", live: true };
     </script>
-    <script src="pro-shell.js"></script>
+    <script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="pro-shell.js"></script><script src="pro-perfil-real.js"></script>
   </body>
 </html>

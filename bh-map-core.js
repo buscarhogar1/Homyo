@@ -356,7 +356,7 @@ export function initMap(){
     const baths = (p.bathrooms != null) ? `${p.bathrooms}` : "—";
 
     const builtFact = (p.built_area_m2 != null)
-      ? `<div class="fact">${iconBuilt()}<span>${p.built_area_m2} m² Const.</span></div>`
+      ? `<div class="fact">${iconBuilt()}<span>${p.built_area_m2} m² const.</span></div>`
       : "";
     const yearFact = (p.built_year != null)
       ? `<div class="fact">${iconYear()}<span>${p.built_year}</span></div>`
@@ -1563,6 +1563,16 @@ export function initMap(){
     listItemsEl.appendChild(frag);
   }
 
+  // Clave de la vista cargada: evita repetir la consulta cuando Leaflet emite
+  // moveend/zoomend sin que la vista ni los filtros hayan cambiado (init, invalidateSize…).
+  let lastLoadKey = null;
+  let pendingForceReload = false;
+  function currentViewKey() {
+    try {
+      return map.getZoom() + "|" + map.getBounds().toBBoxString() + "|" + JSON.stringify(getParams()) + "|" + location.search;
+    } catch { return String(Math.random()); }
+  }
+
   async function loadPointsForCurrentView() {
     const b = getCurrentBounds();
     const z = map.getZoom();
@@ -1573,14 +1583,23 @@ export function initMap(){
       return;
     }
 
+    lastLoadKey = currentViewKey();
     setStatus(`Cargando...`);
-    const rows = await rpcSearchMapPoints(b, f);
+    let rows;
+    try {
+      rows = await rpcSearchMapPoints(b, f);
+    } catch (e) {
+      lastLoadKey = null;
+      throw e;
+    }
     lastFetchedRows = rows;
-    await attachListingMedia(rows);
-    await attachListingDetail(rows);
-    storeListingPhotos(rows);
     lastViewInfo = { z, mode: f.mode };
+    // Pintado inmediato con los datos del RPC; fotos y detalle llegan en paralelo.
     applyAreaFilterAndRender();
+    await Promise.all([attachListingMedia(rows), attachListingDetail(rows)]);
+    if (lastFetchedRows !== rows) return; // otra carga más reciente tomó el relevo
+    storeListingPhotos(rows);
+    renderList();
   }
 
   // Aplica TODOS los filtros geográficos (áreas dibujadas + área de transporte)
@@ -1608,13 +1627,19 @@ export function initMap(){
     return !!(g && g.classList.contains("hideMap"));
   }
 
-  function scheduleReload() {
+  function scheduleReload(ev) {
     // Si el mapa está oculto (listado extendido) su contenedor mide 0×0 y
     // getBounds() devuelve un área degenerada: refetch -> 0 resultados ->
     // se vaciaría el listado. Mantenemos los resultados actuales.
     if (isMapHidden()) return;
+    // Llamadas explícitas (sin evento) fuerzan recarga; las de moveend/zoomend
+    // se descartan si la vista ya está cargada.
+    if (!(ev && ev.type)) pendingForceReload = true;
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
+      const force = pendingForceReload;
+      pendingForceReload = false;
+      if (!force && currentViewKey() === lastLoadKey) return;
       try {
         await loadNewInSearchIds();
       await loadPointsForCurrentView();
@@ -1634,7 +1659,30 @@ export function initMap(){
       .replace(/[\u0300-\u036f]/g, "");
   }
 
+  // Resuelve la ciudad sin red cuando es posible: 1) gazetteer local
+  // (bh-geo-suggest.js), 2) caché localStorage, 3) Nominatim.
+  const GEOCODE_CACHE_KEY = "bh_geocode_city_v1";
   async function geocodeCity(city) {
+    const k = normalizeSearchText(city);
+    if (k === "murcia") return [37.9922, -1.1307];
+    try {
+      const G = window.BH_GEO;
+      if (G) {
+        const hit = G.search(city, 20).find((e) => e.type === "Municipio" && G.normalize(e.label) === G.normalize(city));
+        if (hit && Number.isFinite(hit.lat) && Number.isFinite(hit.lon)) return [hit.lat, hit.lon];
+      }
+    } catch {}
+    let cache = {};
+    try { cache = JSON.parse(localStorage.getItem(GEOCODE_CACHE_KEY) || "{}") || {}; } catch {}
+    if (Array.isArray(cache[k])) return cache[k];
+    const r = await geocodeCityRemote(city);
+    if (r && Number.isFinite(r[0]) && Number.isFinite(r[1])) {
+      try { cache[k] = r; localStorage.setItem(GEOCODE_CACHE_KEY, JSON.stringify(cache)); } catch {}
+    }
+    return r;
+  }
+
+  async function geocodeCityRemote(city) {
     const normalized = normalizeSearchText(city);
 
     // Evita que Nominatim resuelva "Murcia" como zona periférica o punto turístico.

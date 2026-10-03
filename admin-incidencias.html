@@ -17,7 +17,7 @@
     <title>Incidencias · Homyo Admin</title>
     <link rel="stylesheet" href="pro.css" />
     <link rel="stylesheet" href="admin.css" />
-  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
+  <style>.track.bad>span{background:var(--danger)}</style><style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body class="adminTheme">
     <div class="proLayout">
       <aside class="proSidebar" id="proSidebar"></aside>
@@ -45,53 +45,53 @@
             <table class="proTable stack">
               <thead><tr><th>Incidencia</th><th>Tipo</th><th>Origen</th><th>Prioridad</th><th>Estado</th><th></th></tr></thead>
               <tbody>
-                <tr>
+                <tr data-inc="INC-2041">
                   <td data-th="Incidencia"><span class="strong">Posible anuncio duplicado</span><br><span class="muted" style="font-size:12px;">Piso en Calle Sagasta 20 · misma referencia en 2 agencias</span></td>
                   <td data-th="Tipo"><span class="pill neutral">Duplicado</span></td>
                   <td data-th="Origen">Reporte de usuario</td>
                   <td data-th="Prioridad"><span class="pill dangerp">Alta</span></td>
                   <td data-th="Estado"><span class="pill warnp"><span class="dot"></span>Abierta</span></td>
-                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Investigar</button></div></td>
+                  <td class="noLabel"><div class="rowActions"><a class="btn ghost sm" href="admin-incidencia-detalle.html?id=INC-2041">Investigar</a></div></td>
                 </tr>
-                <tr>
+                <tr data-inc="INC-2038">
                   <td data-th="Incidencia"><span class="strong">Fotos no corresponden a la vivienda</span><br><span class="muted" style="font-size:12px;">Loft junto al puerto · Ribera Homes</span></td>
                   <td data-th="Tipo"><span class="pill neutral">Contenido</span></td>
                   <td data-th="Origen">Reporte de usuario</td>
                   <td data-th="Prioridad"><span class="pill warnp">Media</span></td>
                   <td data-th="Estado"><span class="pill warnp"><span class="dot"></span>Abierta</span></td>
-                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Investigar</button></div></td>
+                  <td class="noLabel"><div class="rowActions"><a class="btn ghost sm" href="admin-incidencia-detalle.html?id=INC-2038">Investigar</a></div></td>
                 </tr>
-                <tr>
+                <tr data-inc="INC-2036">
                   <td data-th="Incidencia"><span class="strong">Precio sospechosamente bajo</span><br><span class="muted" style="font-size:12px;">Ático Centro · 60 % bajo el precio de zona</span></td>
                   <td data-th="Tipo"><span class="pill neutral">Fraude</span></td>
                   <td data-th="Origen">Detección automática</td>
                   <td data-th="Prioridad"><span class="pill dangerp">Alta</span></td>
                   <td data-th="Estado"><span class="pill warnp"><span class="dot"></span>Abierta</span></td>
-                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Investigar</button></div></td>
+                  <td class="noLabel"><div class="rowActions"><a class="btn ghost sm" href="admin-incidencia-detalle.html?id=INC-2036">Investigar</a></div></td>
                 </tr>
-                <tr>
+                <tr data-inc="INC-2029">
                   <td data-th="Incidencia"><span class="strong">Error al subir plano (formato)</span><br><span class="muted" style="font-size:12px;">Reportado por Hogar y Terrazas</span></td>
                   <td data-th="Tipo"><span class="pill neutral">Técnico</span></td>
                   <td data-th="Origen">Soporte</td>
                   <td data-th="Prioridad"><span class="pill warnp">Media</span></td>
                   <td data-th="Estado"><span class="pill infop"><span class="dot"></span>En curso</span></td>
-                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Ver</button></div></td>
+                  <td class="noLabel"><div class="rowActions"><a class="btn ghost sm" href="admin-incidencia-detalle.html?id=INC-2029">Ver</a></div></td>
                 </tr>
-                <tr>
+                <tr data-inc="INC-2024">
                   <td data-th="Incidencia"><span class="strong">Datos de contacto en la descripción</span><br><span class="muted" style="font-size:12px;">Chalet en Aravaca · Domus Capital</span></td>
                   <td data-th="Tipo"><span class="pill neutral">Norma</span></td>
                   <td data-th="Origen">Detección automática</td>
                   <td data-th="Prioridad"><span class="pill neutral">Baja</span></td>
                   <td data-th="Estado"><span class="pill infop"><span class="dot"></span>En curso</span></td>
-                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Ver</button></div></td>
+                  <td class="noLabel"><div class="rowActions"><a class="btn ghost sm" href="admin-incidencia-detalle.html?id=INC-2024">Ver</a></div></td>
                 </tr>
-                <tr>
+                <tr data-inc="INC-2011">
                   <td data-th="Incidencia"><span class="strong">Anuncio ya vendido sigue activo</span><br><span class="muted" style="font-size:12px;">Piso en Calle Alcalá 211 · Áurea Inmobiliaria · retirado</span></td>
                   <td data-th="Tipo"><span class="pill neutral">Disponibilidad</span></td>
                   <td data-th="Origen">Reporte de usuario</td>
                   <td data-th="Prioridad"><span class="pill neutral">Baja</span></td>
                   <td data-th="Estado"><span class="pill ok"><span class="dot"></span>Resuelta</span></td>
-                  <td class="noLabel"><div class="rowActions"><button class="btn ghost sm">Ver</button></div></td>
+                  <td class="noLabel"><div class="rowActions"><a class="btn ghost sm" href="admin-incidencia-detalle.html?id=INC-2011">Ver</a></div></td>
                 </tr>
               </tbody>
             </table>
@@ -102,8 +102,12 @@
     </div>
 
     <script>
-      window.ADMIN_PAGE = { active: "incidencias", title: "Incidencias", crumb: "Operación · Reportes y moderación" };
+      window.ADMIN_PAGE = { active: "incidencias", title: "Incidencias", crumb: "Operación · Reportes y moderación", live: true };
     </script>
-    <script src="admin-shell.js"></script>
+    <script src="incidencias-data.js"></script>
+<script>
+document.querySelectorAll('tr[data-inc]').forEach(tr=>{const s=incState(tr.dataset.inc);const m={Abierta:'warnp','En curso':'infop',Resuelta:'ok',Descartada:'neutral'};const td=tr.querySelector('td[data-th="Estado"]');td.innerHTML='<span class="pill '+m[s.status]+'"><span class="dot"></span>'+s.status+'</span>';const a=tr.querySelector('.rowActions a');a.textContent=s.status==='Abierta'?'Investigar':'Ver';tr.style.cursor='pointer';tr.addEventListener('click',e=>{if(!e.target.closest('a'))location.href=a.href;});});
+</script>
+<script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="admin-shell.js"></script><script src="admin-ops-real.js"></script>
   </body>
 </html>

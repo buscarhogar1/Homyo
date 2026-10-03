@@ -367,7 +367,7 @@
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
       import { getSession, openLoginModalOrAlert } from "./bh-user-data.js";
-      import { listConversations } from "./bh-conversations.js?v=1";
+      import { listConversations, syncFromServer } from "./bh-conversations.js?v=3";
 
       initLayout({ showMiniSearch: false });
       initAuth();
@@ -459,6 +459,7 @@
           empty.setAttribute("aria-hidden","false");
           return;
         }
+        await syncFromServer(session.user.id);
         const rows = listConversations(session.user.id);
         render(rows);
       })().catch(err => {

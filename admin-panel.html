@@ -30,15 +30,14 @@
           <section class="adminHero">
             <div class="adminHeroLogo">DH</div>
             <div class="adminHeroBody">
-              <h1>Buenos días, <strong>dirección</strong></h1>
+              <h1><span data-greet="">Hola</span>, <strong>dirección</strong></h1>
               <div class="adminHeroPills">
-                <span class="pill ok"><span class="dot"></span>Plataforma operativa</span>
-                <span class="pill gold">121 inmobiliarias verificadas</span>
+                <span class="pill gold">128 inmobiliarias verificadas</span>
                 <span class="pill neutral">19 pendientes de tu acción</span>
               </div>
             </div>
             <div class="adminHeroDate">
-              <span class="big">Miércoles, 3 de junio</span>
+              <span class="big" data-date="today">Hoy</span>
               Última conexión: ayer, 21:40
             </div>
           </section>
@@ -58,7 +57,7 @@
             <div class="kpi biz">
               <p class="kpiLabel">Ingresos recurrentes (MRR)</p>
               <p class="kpiValue">27.708<span class="u">€</span></p>
-              <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+9,9 % vs. mayo</span>
+              <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg><span>+9,9 % vs. <span data-month="-1">mes anterior</span></span></span>
             </div>
             <div class="kpi">
               <p class="kpiLabel">Usuarios registrados</p>
@@ -162,7 +161,7 @@
                 <p class="cardLabel">Salud del negocio</p>
                 <div class="perfBar" style="display:flex;flex-direction:column;gap:14px;">
                   <div>
-                    <div class="pl" style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--ink2)">Inmobiliarias al día con el pago</span><span style="font-family:'Raleway';font-weight:600;color:var(--ink)">121 / 124</span></div>
+                    <div class="pl" style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;"><span style="color:var(--ink2)">Agencias de pago al día <span style="color:var(--muted)">(sin fundadoras)</span></span><span style="font-family:'Raleway';font-weight:600;color:var(--ink)">121 / 124</span></div>
                     <div class="track good"><span style="width:98%"></span></div>
                   </div>
                   <div>
@@ -193,8 +192,8 @@
     </div>
 
     <script>
-      window.ADMIN_PAGE = { active: "panel", title: "Panel", crumb: "Vista general de Homyo" };
+      window.ADMIN_PAGE = { active: "panel", title: "Panel", crumb: "Vista general de Homyo", live: true };
     </script>
-    <script src="admin-shell.js"></script>
+    <script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="admin-shell.js"></script><script src="admin-real.js"></script>
   </body>
 </html>

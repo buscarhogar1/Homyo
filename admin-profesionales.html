@@ -17,6 +17,19 @@
     <title>Profesionales · Homyo Admin</title>
     <link rel="stylesheet" href="pro.css" />
     <link rel="stylesheet" href="admin.css" />
+  <style>
+      .riskList{border:1px solid var(--line);border-radius:var(--rad);background:#fff;overflow:hidden}
+      .risk{display:grid;grid-template-columns:38px minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:14px 18px;border-top:1px solid var(--lineSoft)}
+      .risk:first-child{border-top:0}
+      .rkT{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:'Raleway',sans-serif;font-size:14px;font-weight:600;color:var(--ink)}
+      .rkS{font-size:12.5px;color:var(--ink2);margin-top:3px;line-height:1.4}
+      .rkV{font-family:'Raleway',sans-serif;font-weight:600;font-size:14px;color:var(--ink);text-align:right;white-space:nowrap}
+      .rkV small{font-size:11px;color:var(--muted);font-weight:500}
+      .rkA{display:flex;gap:6px}
+      .rkNote{font-size:12px;color:var(--muted);margin:10px 0 28px}
+      @media (max-width:760px){.risk{grid-template-columns:38px minmax(0,1fr)}.rkV,.rkA{grid-column:2;text-align:left;justify-self:start}}
+      .noRows td{text-align:center;padding:32px 16px!important;color:var(--muted)}
+    </style>
   <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body class="adminTheme">
     <div class="proLayout">
@@ -45,6 +58,16 @@
             <div class="kpi"><p class="kpiLabel">Suspendidas</p><p class="kpiValue">3</p><span class="kpiFoot down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 10 6 6 6-6"/></svg>impagos o incidencias</span></div>
             <div class="kpi biz"><p class="kpiLabel">Ingresos del segmento</p><p class="kpiValue">27.708<span class="u">€</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>MRR</span></div>
           </section>
+
+          <!-- RIESGO DE BAJA -->
+          <div class="sectionHead" style="margin-top:0;"><h2>Riesgo de baja</h2><span class="pill warnp">4 agencias · 35 viviendas · 244,65 €/mes</span></div>
+          <div class="riskList">
+            <div class="risk"><span class="avatar" style="background:var(--dangerSoft);border-color:rgba(176,50,71,.25);color:var(--danger)">PM</span><div class="rkBody"><div class="rkT">Pisos Marina <span class="pill dangerp">Alto</span></div><div class="rkS">Suspendida por impago · 3 cobros fallidos · 0 contactos este mes</div></div><span class="rkV">62,91 €<small>/mes</small></span><div class="rkA"><a class="btn ghost sm" href="admin-mensajes.html">Contactar</a><a class="btn ghost sm" href="admin-profesional-detalle.html">Ficha</a></div></div>
+            <div class="risk"><span class="avatar">CB</span><div class="rkBody"><div class="rkT">Costa Brava Homes <span class="pill warnp">Medio</span></div><div class="rkS">2 cobros fallidos · 4 anuncios rechazados en 30 días</div></div><span class="rkV">13,98 €<small>/mes</small></span><div class="rkA"><a class="btn ghost sm" href="admin-mensajes.html">Contactar</a><a class="btn ghost sm" href="admin-profesional-detalle.html">Ficha</a></div></div>
+            <div class="risk"><span class="avatar">LF</span><div class="rkBody"><div class="rkT">Llaves del Faro <span class="pill warnp">Medio</span></div><div class="rkS">Sin entrar en el panel desde hace 34 días · 1 cobro fallido</div></div><span class="rkV">20,97 €<small>/mes</small></span><div class="rkA"><a class="btn ghost sm" href="admin-mensajes.html">Contactar</a><a class="btn ghost sm" href="admin-profesional-detalle.html">Ficha</a></div></div>
+            <div class="risk"><span class="avatar">CN</span><div class="rkBody"><div class="rkT">Casa Norte Gestión <span class="pill neutral">Bajo</span></div><div class="rkS">Tasa de rechazo del 18 % (media de la plataforma: 6 %) · 2 anuncios en cola</div></div><span class="rkV">146,79 €<small>/mes</small></span><div class="rkA"><a class="btn ghost sm" href="admin-mensajes.html">Contactar</a><a class="btn ghost sm" href="admin-profesional-detalle.html">Ficha</a></div></div>
+          </div>
+          <p class="rkNote">Señales: cobros fallidos, días sin actividad, rechazos en moderación y caída de contactos. Se recalcula cada noche.</p>
 
           <!-- TABLA CON FILTROS -->
           <div class="tableTop">
@@ -156,9 +179,9 @@
     </div>
 
     <script>
-      window.ADMIN_PAGE = { active: "profesionales", title: "Profesionales", crumb: "Directorio de inmobiliarias" };
+      window.ADMIN_PAGE = { active: "profesionales", title: "Profesionales", crumb: "Directorio de inmobiliarias", live: true };
     </script>
-    <script src="admin-shell.js"></script>
+    <script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="admin-shell.js"></script><script src="admin-cuentas-real.js"></script>
     <script>
       // Filtros + búsqueda de la tabla
       (function () {
@@ -173,6 +196,10 @@
             var okText = !q || r.textContent.toLowerCase().indexOf(q) !== -1;
             r.style.display = (okState && okText) ? "" : "none";
           });
+          var shown = rows.filter(function (r) { return r.style.display !== "none"; }).length;
+          var empty = document.getElementById("profEmpty");
+          if (!empty) { document.querySelector("#profTable tbody").insertAdjacentHTML("beforeend", '<tr class="noRows" id="profEmpty"><td colspan="7">Ninguna inmobiliaria coincide con la búsqueda. Prueba con el CIF o la ciudad.</td></tr>'); empty = document.getElementById("profEmpty"); }
+          empty.style.display = shown ? "none" : "";
         }
         chips.forEach(function (c) {
           c.addEventListener("click", function () {

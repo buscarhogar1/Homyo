@@ -154,7 +154,7 @@
 
     <script>
       window.PRO_PAGE = {
-        active: "analisis", title: "Análisis", crumb: "Áurea Inmobiliaria · Últimos 30 días",
+        active: "analisis", title: "Análisis", crumb: "Áurea Inmobiliaria · Últimos 30 días", live: true,
         states: [{ id: "data", label: "Con datos" }, { id: "none", label: "Sin métricas (vacío)" }],
         onState: function (id) {
           document.getElementById("viewData").classList.toggle("hide", id === "none");
@@ -162,7 +162,7 @@
         }
       };
     </script>
-    <script src="pro-shell.js"></script>
+    <script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="pro-shell.js"></script>
     <script>
       var weeks = [
         { w: "Sem 1", v: 58, l: 22 }, { w: "Sem 2", v: 72, l: 30 }, { w: "Sem 3", v: 64, l: 26 },
@@ -181,6 +181,7 @@
         });
       });
     </script>
+    <script src="pro-analisis-real.js"></script>
   <script>
       (function(){
         var K = {

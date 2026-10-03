@@ -17,6 +17,17 @@
   var buffer = "";
   var lastTime = 0;
   var RESET_MS = 1500;
+  var enabled = true;
+  try { enabled = localStorage.getItem("homyo_rule_shortcut") !== "off"; } catch (e) {}
+  try {
+    fetch("https://dpusnylssfjnksbieimj.supabase.co/rest/v1/platform_settings?id=eq.1&select=rules", { headers: { apikey: "sb_publishable_tSSgJcWWRfEe2uob7SFYgw_AqcBL7KK" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!j || !j[0] || !j[0].rules) return;
+        enabled = j[0].rules.shortcut !== false;
+        try { localStorage.setItem("homyo_rule_shortcut", enabled ? "on" : "off"); } catch (e) {}
+      }, function () {});
+  } catch (e) {}
 
   function inField(el) {
     if (!el) return false;
@@ -30,6 +41,7 @@
   }
 
   document.addEventListener("keydown", function (e) {
+    if (!enabled) return;
     // Combo Ctrl/Cmd + Shift + H
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "H" || e.key === "h")) {
       e.preventDefault();

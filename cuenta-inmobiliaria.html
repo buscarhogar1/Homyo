@@ -113,6 +113,11 @@
       .accSeg{display:flex;gap:4px;flex-wrap:wrap}
       .accSeg button{appearance:none;cursor:pointer;font:600 12px/1 system-ui,sans-serif;color:var(--ink2);background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 12px}
       .accSeg button.isOn{background:var(--granate);border-color:var(--granate);color:#fff}
+      .accErr{display:none;font-size:13px;color:var(--danger);background:#fbeaed;border:1px solid rgba(176,50,71,.22);border-radius:4px;padding:10px 13px}
+      .accErr.show{display:block}
+      .accForm .btnPrimary[disabled]{opacity:.6;cursor:wait}
+      .accDemoBtn{appearance:none;cursor:pointer;margin-top:12px;background:none;border:0;padding:0;font:600 13px/1.3 system-ui,sans-serif;color:var(--granate);text-decoration:underline;text-underline-offset:3px}
+      .accDemoBtn:hover{color:var(--granateDark)}
       .accSide{padding:48px 44px;background:var(--cardWarm);border-left:1px solid var(--line);display:flex;flex-direction:column;gap:18px}
       .accSide h2{margin:0;font-family:'Raleway',sans-serif;font-size:22px;font-weight:300;color:var(--granate)}
       .accSide h2 strong{font-weight:600}
@@ -152,16 +157,18 @@
               <div class="accField"><label for="accEmail">Email profesional</label><input type="email" id="accEmail" placeholder="nombre@inmobiliaria.com" autocomplete="email" /></div>
               <div class="accField"><div class="row"><label for="accPw">Contraseña</label><a href="./reset-password.html">¿La olvidaste?</a></div><input type="password" id="accPw" placeholder="Tu contraseña" autocomplete="current-password" /></div>
               <label class="accCheck"><input type="checkbox" checked="checked" />Mantener la sesión iniciada</label>
-              <button type="submit" class="btnPrimary">Iniciar sesión</button>
+              <div class="accErr" id="accErr" role="alert"></div>
+              <button type="submit" class="btnPrimary" id="accBtn">Iniciar sesión</button>
             </form>
             <div class="accDemo">
-              <p>Prototipo · estado de la cuenta</p>
+              <p>Modo demo · estado de la cuenta</p>
               <div class="accSeg" id="accSeg">
                 <button type="button" data-st="aprobada">Aprobada</button>
                 <button type="button" data-st="revision">En revisión</button>
                 <button type="button" data-st="falta">Falta documentación</button>
                 <button type="button" data-st="rechazada">Rechazada</button>
               </div>
+              <button type="button" class="accDemoBtn" id="accDemoBtn">Entrar en modo demo</button>
             </div>
           </div>
           <aside class="accSide">
@@ -181,6 +188,7 @@
 
     <div id="bhFooter"></div>
 
+    <script src="./homyo-mode.js"></script>
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
@@ -195,9 +203,23 @@
       function paint(){ seg.forEach(b => b.classList.toggle("isOn", b.dataset.st === st)); }
       seg.forEach(b => b.addEventListener("click", () => { st = b.dataset.st; try { localStorage.setItem(KEY, st); } catch (e) {} paint(); }));
       paint();
-      document.getElementById("accForm").addEventListener("submit", (e) => {
+      const demoGo = () => { location.href = st === "aprobada" ? "./pro-panel.html" : "./pro-cuenta-pendiente.html?estado=" + st; };
+      const err = document.getElementById("accErr");
+      const btn = document.getElementById("accBtn");
+      document.getElementById("accDemoBtn").addEventListener("click", () => { HOMYO.enterDemo("pro"); demoGo(); });
+      ["accEmail", "accPw"].forEach(id => document.getElementById(id).addEventListener("input", () => err.classList.remove("show")));
+      document.getElementById("accForm").addEventListener("submit", async (e) => {
         e.preventDefault();
-        location.href = st === "aprobada" ? "./pro-panel.html" : "./pro-cuenta-pendiente.html?estado=" + st;
+        err.classList.remove("show");
+        btn.disabled = true; btn.textContent = "Comprobando…";
+        try {
+          const r = await HOMYO.login("pro", document.getElementById("accEmail").value, document.getElementById("accPw").value);
+          if (r.mode === "demo") return demoGo();
+          location.href = r.ctx.pending ? "./pro-cuenta-pendiente.html?estado=" + r.ctx.pending : "./pro-panel.html";
+        } catch (ex) {
+          btn.disabled = false; btn.textContent = "Iniciar sesión";
+          err.textContent = ex.message; err.classList.add("show");
+        }
       });
     </script>
   </body>

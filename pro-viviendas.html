@@ -15,6 +15,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Viviendas · Homyo Pro</title>
     <link rel="stylesheet" href="pro.css" />
+    <link rel="stylesheet" href="bonus.css" />
     <style>
       .filterBar{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
       .fchip{ appearance:none; cursor:pointer; background:#fff; border:1px solid var(--line); border-radius:999px; padding:8px 15px; font-size:13px; color:var(--ink2); display:inline-flex; align-items:center; gap:8px; transition:all .14s ease; font-family:inherit; }
@@ -24,8 +25,30 @@
       .fchip.isOn .c{ background:var(--granate); color:#fff; }
       .thumbImg{ width:100%; height:100%; background:repeating-linear-gradient(45deg,#f3ece0,#f3ece0 7px,#ece3d4 7px,#ece3d4 14px); }
       .vAddr{ font-size:12px; color:var(--muted); margin-top:2px; }
+      .availAct{display:flex;gap:8px;flex-wrap:wrap}
+      .confirmBtn{white-space:nowrap}
+      .qChip{appearance:none;cursor:pointer;background:var(--cardWarm);border:1px solid var(--granate);border-radius:999px;padding:8px 13px;font-size:13px;color:var(--granate);font-family:inherit;display:inline-flex;align-items:center;gap:8px}
+      tr.isHit td{background:var(--cardWarm)}
       .vRef{ font-size:11px; color:var(--muted); font-family:'Raleway',sans-serif; letter-spacing:.04em; }
       @media (max-width:760px){ .toolbarRight{ width:100%; } }
+      body.noCupo .proTable th:nth-child(8), body.noCupo .proTable td:nth-child(8){ display:none; }
+      #viewFull .tableWrap{overflow-x:auto}
+      #viewFull .proTable .pill{white-space:normal;line-height:1.25}
+      .linkBtn{appearance:none;background:none;border:0;padding:0;margin-top:4px;cursor:pointer;font:inherit;font-size:12px;font-weight:600;color:var(--granate);display:inline-flex;align-items:center;gap:5px}
+      .linkBtn:hover{text-decoration:underline}
+      .qCell{min-width:84px}
+      .qTop{display:flex;align-items:center;gap:8px}
+      .qN{font-family:'Raleway',sans-serif;font-weight:700;font-size:13px;color:var(--ink);min-width:26px}
+      .qBar{flex:1 1 auto;height:6px;border-radius:999px;background:var(--lineSoft);overflow:hidden;min-width:50px}
+      .qBar span{display:block;height:100%;border-radius:999px}
+      .qBar .good{background:var(--good)}.qBar .mid{background:var(--dorado)}.qBar .low{background:var(--danger)}
+      .qMiss{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.35}
+      .qMiss.ok{color:var(--good)}
+      .vAg{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink2);margin-top:5px}
+      .agAv{width:18px;height:18px;border-radius:50%;background:var(--cardWarm);border:1px solid rgba(196,150,42,.35);color:var(--granate);font-family:'Raleway',sans-serif;font-weight:700;font-size:8.5px;display:grid;place-items:center}
+      .agSel{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:12px;color:var(--muted)}
+      .agSel select.input{width:auto;padding-top:8px;padding-bottom:8px;font-size:13px;min-width:200px}
+      @media (max-width:760px){.agSel{margin-left:0;width:100%}.agSel select.input{flex:1 1 auto}}
     </style>
   <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body>
@@ -61,7 +84,17 @@
 
           <!-- POPULATED -->
           <div id="viewFull">
-            <div class="opBar"><span class="opLbl">Operación</span><div class="seg" id="opSeg"><button class="isOn" data-op="all">Todas <span class="c">30</span></button><button data-op="venta">Venta <span class="c">22</span></button><button data-op="alquiler">Alquiler <span class="c">6</span></button><button data-op="habitacion">Habitación <span class="c">2</span></button></div></div>
+            <div class="opBar"><span class="opLbl">Operación</span><div class="seg" id="opSeg"><button class="isOn" data-op="all">Todas <span class="c">30</span></button><button data-op="venta">Venta <span class="c">22</span></button><button data-op="alquiler">Alquiler <span class="c">6</span></button><button data-op="habitacion">Habitación <span class="c">2</span></button></div><label class="agSel"><span>Agente</span><select class="input" id="agSel"><option value="all">Todo el equipo</option><option value="MS">Mis viviendas · Marta Sanz</option><option value="CR">Carlos Ríos</option><option value="PL">Paula León</option></select></label></div>
+            <div class="cupoBar" id="cupoBar">
+              <span class="bonIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg></span>
+              <div><div class="cT">Cupo gratis · <span id="cupoN">5</span> de 5 viviendas elegidas</div><div class="cS" id="cupoS">Bonificación de Homyo hasta el <span data-founder="cupoEnd"></span>. Las viviendas del cupo no se facturan. Los cambios cuentan para la factura del mes en curso.</div></div>
+              <div class="cupoDots" id="cupoDots"></div>
+            </div>
+            <div class="callout warnc hide" id="availBanner" style="margin-bottom:16px;">
+              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 1.5"/></svg></span>
+              <div><h4 id="availT">3 viviendas necesitan confirmar disponibilidad</h4><p>Llevan más de 60 días sin actualizar. Si no las confirmas en 7 días dejarán de mostrarse en el buscador.</p></div>
+              <div class="cAct availAct"><button class="btn ghost sm" type="button" id="availShow">Ver</button><button class="btn primary sm" type="button" id="availAll">Confirmar todas</button></div>
+            </div>
             <div class="filterBar" id="filterBar">
               <button class="fchip isOn" data-f="all">Todas <span class="c" data-c="total"></span></button>
               <button class="fchip" data-f="pub">Publicadas <span class="c" data-c="pub"></span></button>
@@ -76,7 +109,7 @@
               <table class="proTable stack">
                 <thead>
                   <tr>
-                    <th>Vivienda</th><th>Precio</th><th>Sup. útil</th><th>Estado</th><th>1ª publicación</th><th>Actualizado</th><th>Contactos</th><th></th>
+                    <th>Vivienda</th><th>Precio</th><th>Sup. útil</th><th>Estado</th><th>Calidad</th><th>Actualizado</th><th>Contactos</th><th>Cupo gratis</th><th></th>
                   </tr>
                 </thead>
                 <tbody id="vBody"></tbody>
@@ -101,21 +134,25 @@
 
     <script>
       window.PRO_PAGE = {
-        active: "viviendas", title: "Viviendas", crumb: "Áurea Inmobiliaria · 30 viviendas",
+        active: "viviendas", title: "Viviendas", crumb: "Áurea Inmobiliaria · 30 viviendas", live: true,
         states: [
           { id: "full", label: "Con inventario" },
           { id: "empty", label: "Vacío (sin viviendas)" },
-          { id: "dup", label: "Aviso de duplicado" }
+          { id: "dup", label: "Aviso de duplicado" },
+          { id: "nocupo", label: "Sin cupo gratis" }
         ],
         onState: function (id) {
+          document.getElementById("cupoBar").classList.toggle("hide", id === "nocupo");
+          document.body.classList.toggle("noCupo", id === "nocupo");
           document.getElementById("viewFull").classList.toggle("hide", id === "empty");
           document.getElementById("viewEmpty").classList.toggle("hide", id !== "empty");
           document.getElementById("dupWarn").classList.toggle("hide", id !== "dup");
         }
       };
     </script>
-    <script src="pro-shell.js"></script>
+    <script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="pro-shell.js"></script>
     <script>
+      var REALM = !!(window.HOMYO && HOMYO.mode === "real"), LOADING = REALM, LOAD_ERR = "";
       var OP_COUNTS = {
         all:        { total:30, pub:18, draft:4, review:2, rej:1, upd:3, off:2 },
         venta:      { total:22, pub:13, draft:3, review:1, rej:1, upd:3, off:1 },
@@ -132,47 +169,177 @@
         off:    { t: "Retirada", cls: "neutral" }
       };
       var DATA = [
-        { op: "venta", addr: "Ático · Calle Ferraz 12", zone: "Moncloa", ref: "9872023VH5797S0001WX", price: "620.000 €", m2: "104 m²", st: "pub", pub: "24 mar 2026", upd: "Hace 3 días", c: 14 },
-        { op: "venta", addr: "Piso reformado · Calle Velázquez 80", zone: "Salamanca", ref: "0145702VK4704N0009MQ", price: "485.000 €", m2: "92 m²", st: "pub", pub: "20 mar 2026", upd: "Hace 1 día", c: 9 },
+        { op: "venta", addr: "Ático · Calle Ferraz 12", zone: "Moncloa", ref: "9872023VH5797S0001WX", price: "620.000 €", m2: "104 m²", st: "pub", pub: "24 mar 2026", upd: "Hace 3 días", c: 14, cupo: true },
+        { op: "venta", addr: "Piso reformado · Calle Velázquez 80", zone: "Salamanca", ref: "0145702VK4704N0009MQ", price: "485.000 €", m2: "92 m²", st: "pub", pub: "20 mar 2026", upd: "Hace 1 día", c: 9, cupo: true },
         { op: "venta", addr: "Dúplex · Calle Goya 41", zone: "Salamanca", ref: "3201914VK4730S0007BD", price: "540.000 €", m2: "118 m²", st: "rej", pub: "—", upd: "Hace 3 h", c: 0, note: "Falta plano en planta" },
         { op: "venta", addr: "Piso · Calle Hortaleza 88", zone: "Centro", ref: "—", price: "—", m2: "—", st: "draft", pub: "—", upd: "Hace 20 min", c: 0, note: "Faltan fotos y certificado" },
         { op: "alquiler", addr: "Estudio · Calle Fuencarral 120", zone: "Chamberí", ref: "7781204VK4778S0003KJ", price: "1.150 €/mes", m2: "38 m²", st: "review", pub: "—", upd: "Hace 6 h", c: 0 },
-        { op: "venta", addr: "Chalet · Av. de Europa 9, Pozuelo", zone: "Pozuelo", ref: "5512903VK2851S0001AB", price: "890.000 €", m2: "210 m²", st: "upd", pub: "19 mar 2026", upd: "Hace 64 días", c: 21, note: "Confirmar disponibilidad" },
-        { op: "venta", addr: "Piso exterior · Calle Bravo Murillo 200", zone: "Tetuán", ref: "6634012VK4763N0021CD", price: "298.000 €", m2: "74 m²", st: "pub", pub: "26 mar 2026", upd: "Hace 8 días", c: 17 },
+        { op: "venta", addr: "Chalet · Av. de Europa 9, Pozuelo", zone: "Pozuelo", ref: "5512903VK2851S0001AB", price: "890.000 €", m2: "210 m²", st: "upd", pub: "19 mar 2026", upd: "Hace 64 días", c: 21, note: "Confirmar disponibilidad", cupo: true },
+        { op: "venta", addr: "Piso · Calle Princesa 31", zone: "Argüelles", ref: "9765104VK3796N0018FS", price: "455.000 €", m2: "88 m²", st: "upd", pub: "21 mar 2026", upd: "Hace 71 días", c: 12, note: "Confirmar disponibilidad" },
+        { op: "venta", addr: "Piso · Calle Ibiza 12", zone: "Retiro", ref: "1347809VK4714N0022HD", price: "410.000 €", m2: "79 m²", st: "upd", pub: "28 mar 2026", upd: "Hace 62 días", c: 7, note: "Confirmar disponibilidad" },
+        { op: "venta", addr: "Piso exterior · Calle Bravo Murillo 200", zone: "Tetuán", ref: "6634012VK4763N0021CD", price: "298.000 €", m2: "74 m²", st: "pub", pub: "26 mar 2026", upd: "Hace 8 días", c: 17, cupo: true },
         { op: "venta", addr: "Piso · Calle Alcalá 211", zone: "Salamanca", ref: "3477301VK4737N0012LP", price: "—", m2: "—", st: "off", pub: "20 mar 2026", upd: "Retirada hace 11 días", c: 6 },
-        { op: "alquiler", addr: "Piso amueblado · Calle Príncipe de Vergara 150", zone: "Chamartín", ref: "2290415VK4729S0014RT", price: "2.100 €/mes", m2: "86 m²", st: "pub", pub: "2 abr 2026", upd: "Hace 2 días", c: 11 },
+        { op: "alquiler", addr: "Piso amueblado · Calle Príncipe de Vergara 150", zone: "Chamartín", ref: "2290415VK4729S0014RT", price: "2.100 €/mes", m2: "86 m²", st: "pub", pub: "2 abr 2026", upd: "Hace 2 días", c: 11, cupo: true },
         { op: "habitacion", addr: "Habitación exterior · Calle Toledo 60", zone: "La Latina", ref: "8123006VK4782S0006PL", price: "520 €/mes", m2: "14 m²", st: "pub", pub: "20 abr 2026", upd: "Hace 1 día", c: 8 },
         { op: "habitacion", addr: "Habitación con baño · Calle Argumosa 22", zone: "Lavapiés", ref: "8019813VK4781N0003GS", price: "610 €/mes", m2: "16 m²", st: "pub", pub: "12 may 2026", upd: "Hace 5 h", c: 5 }
       ];
+      var EXTRA = {
+        "Calle Ferraz 12":["MS",[]], "Calle Velázquez 80":["MS",[]], "Calle Goya 41":["MS",["plano"]], "Calle Hortaleza 88":["CR",["fotos","cert","desc","ref"]],
+        "Calle Fuencarral 120":["PL",["fotos10"]], "Av. de Europa 9":["MS",["upd"]], "Calle Princesa 31":["CR",["upd","fotos10"]], "Calle Ibiza 12":["CR",["upd"]],
+        "Bravo Murillo 200":["CR",[]], "Calle Alcalá 211":["CR",[]], "Príncipe de Vergara 150":["PL",["desc"]], "Calle Toledo 60":["PL",["fotos10"]], "Calle Argumosa 22":["PL",["cert"]]
+      };
+      DATA.forEach(function (d) { for (var k in EXTRA) if (d.addr.indexOf(k) > -1) { d.ag = EXTRA[k][0]; d.miss = EXTRA[k][1].slice(); } if (!d.miss) d.miss = []; });
+      if (REALM) DATA = [];
+      var AGENTS = { MS:"Marta Sanz", CR:"Carlos Ríos", PL:"Paula León" }, ME = "MS", TEAM = [];
+      function canEd(d) { return !REALM || HOMYO.canEdit(d.raw); }
+      var QW = { plano:[25,"plano en planta"], cert:[20,"certificado energético"], fotos:[20,"mínimo 6 fotos"], fotos10:[10,"10 fotos o más"], desc:[10,"descripción completa"], ref:[15,"referencia catastral"], upd:[15,"confirmar disponibilidad"] };
+      function score(d) { return 100 - d.miss.reduce(function (s, k) { return s + QW[k][0]; }, 0); }
+      function qualityCell(d) {
+        if (d.st === "off") return '<span class="muted">—</span>';
+        var s = score(d), cls = s >= 90 ? "good" : s >= 70 ? "mid" : "low";
+        var miss = d.miss.length ? "Falta: " + d.miss.map(function (k) { return QW[k][1]; }).join(", ") : "Completo";
+        var short = d.miss.length ? (d.miss.length === 1 ? "Falta 1 dato" : "Faltan " + d.miss.length + " datos") : "Completo";
+        return '<div class="qCell" title="' + miss + '"><div class="qTop"><span class="qN">' + s + '</span><span class="qBar"><span class="' + cls + '" style="width:' + s + '%"></span></span></div><div class="qMiss' + (d.miss.length ? '' : ' ok') + '">' + short + '</div></div>';
+      }
+      var curAg = "all"; try { curAg = localStorage.getItem("homyo_pro_viv_agent") || "all"; } catch (e) {}
+      var CUPO = 5;
+      function used() { return DATA.filter(function (d) { return d.cupo; }).length; }
+      function cupoCell(d, i) {
+        if (d.st !== "pub" && d.st !== "upd") return '<span class="muted">—</span>';
+        if (d.cupo) return '<button class="cupoBtn on" type="button" data-cupo="' + i + '" title="Quitar del cupo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>Gratis</button>';
+        return '<button class="cupoBtn" type="button" data-cupo="' + i + '"' + (used() >= CUPO ? ' disabled title="Cupo completo: quita otra vivienda primero"' : '') + '>+ Añadir</button>';
+      }
       function row(d) {
+        var i = DATA.indexOf(d);
         var e = ESTADOS[d.st];
-        var note = d.note ? '<div class="vAddr" style="color:var(--granate);">' + d.note + '</div>' : '';
-        return '<tr data-st="' + d.st + '">' +
-          '<td class="noLabel"><div class="tCellMain"><span class="tThumb"><span class="thumbImg"></span></span>' +
-            '<span><span class="opTag ' + d.op + '">' + OP_LABEL[d.op] + '</span><span class="strong">' + d.addr + '</span><div class="vAddr">' + d.zone + ' · <span class="vRef">' + d.ref + '</span></div>' + note + '</span></div></td>' +
+        var note = d.st === "upd" ? (canEd(d) ? '<button class="linkBtn" type="button" data-confirm="' + DATA.indexOf(d) + '">Sigue disponible · confirmar</button>' : '<div class="vAddr" style="color:var(--granate);">Pendiente de confirmar disponibilidad</div>') : d.note ? '<div class="vAddr" style="color:var(--granate);">' + d.note + '</div>' : '';
+        return '<tr data-st="' + d.st + '"' + (curQ ? ' class="isHit"' : '') + '>' +
+          '<td class="noLabel"><div class="tCellMain"><span class="tThumb"><span class="thumbImg"' + (d.photo ? ' style="background:url(\'' + d.photo.replace(/'/g, "%27") + '\') center/cover"' : '') + '></span></span>' +
+            '<span><span class="opTag ' + d.op + '">' + OP_LABEL[d.op] + '</span><span class="strong">' + d.addr + '</span><div class="vAddr">' + d.zone + ' · <span class="vRef">' + d.ref + '</span></div>' + note + (d.ag ? '<div class="vAg"><span class="agAv">' + (d.agIni || d.ag) + '</span>' + (AGENTS[d.ag] || "Responsable") + (d.ag === ME ? " (tú)" : "") + '</div>' : REALM ? '<div class="vAg" style="color:var(--muted)">Sin responsable</div>' : '') + '</span></div></td>' +
           '<td data-th="Precio" class="strong">' + d.price + '</td>' +
           '<td data-th="Sup. útil">' + d.m2 + '</td>' +
           '<td data-th="Estado"><span class="pill ' + e.cls + '"><span class="dot"></span>' + e.t + '</span></td>' +
-          '<td data-th="1ª publicación">' + d.pub + '</td>' +
-          '<td data-th="Actualizado">' + d.upd + '</td>' +
+          '<td data-th="Calidad">' + qualityCell(d) + '</td>' +
+          '<td data-th="Actualizado">' + d.upd + (d.pub && d.pub !== "—" ? '<div class="vAddr">1ª pub. ' + d.pub + '</div>' : '') + '</td>' +
           '<td data-th="Contactos" class="strong">' + d.c + '</td>' +
+          '<td data-th="Cupo gratis">' + cupoCell(d, i) + '</td>' +
           '<td class="noLabel"><div class="rowActions">' +
-            '<a class="iconBtn" href="pro-revision-calidad.html" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></a>' +
-            '<a class="iconBtn" href="listing.html" title="Ver anuncio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a>' +
-            '<button class="iconBtn" title="Retirar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>' +
+            '<a class="iconBtn" href="pro-revision-calidad.html' + (d.id ? '?id=' + d.id : '') + '" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></a>' +
+            '<a class="iconBtn" href="listing.html' + (d.id ? '?id=' + d.id : '') + '" title="Ver anuncio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></a>' +
+            (REALM && HOMYO.isAgencyAdmin() ? '<button class="iconBtn" type="button" title="Cambiar responsable" aria-label="Cambiar responsable" data-assign="' + i + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.6 20c1.1-3.4 11.7-3.4 12.8 0"/><path d="M18 8v6M15 11h6"/></svg></button>' : '') +
+            (canEd(d) && (d.st === "pub" || d.st === "upd" || d.st === "review" || d.st === "rej") ? '<button class="iconBtn" type="button" title="Retirar" aria-label="Retirar" data-retire="' + i + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>' : '') +
           '</div></td></tr>';
       }
       var body = document.getElementById("vBody");
       var curSt = "all", curOp = "all";
+      var params = new URLSearchParams(location.search), curQ = params.get("q") || "";
+      if (params.get("f") && ESTADOS[params.get("f")]) curSt = params.get("f");
+      function normQ(s) { return (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+      var AV_KEY = "homyo_pro_avail_confirmed", TK_KEY = "homyo_pro_tasks_done";
+      var UPD_REFS = ["5512903VK2851S0001AB", "9765104VK3796N0018FS", "1347809VK4714N0022HD"];
+      function readArr(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } }
+      function writeArr(k, a) { try { localStorage.setItem(k, JSON.stringify(a)); } catch (e) {} }
+      function shiftCounts(d, dir) { [OP_COUNTS.all, OP_COUNTS[d.op]].forEach(function (k) { k.upd -= dir; k.pub += dir; }); }
+      function setConfirmed(d, on) {
+        if (on && d.st === "upd") { d._upd = d.upd; d._note = d.note; d._miss = d.miss.slice(); d.miss = d.miss.filter(function (k) { return k !== "upd"; }); d.st = "pub"; d.upd = "Ahora mismo"; d.note = ""; shiftCounts(d, 1); }
+        else if (!on && d.st === "pub" && d._upd) { d.st = "upd"; d.upd = d._upd; d.note = d._note; if (d._miss) d.miss = d._miss; delete d._upd; shiftCounts(d, -1); }
+      }
+      function syncStore() {
+        var refs = DATA.filter(function (d) { return d._upd; }).map(function (d) { return d.ref; });
+        writeArr(AV_KEY, refs);
+        var tasks = readArr(TK_KEY).filter(function (x) { return x !== "disp"; });
+        if (UPD_REFS.every(function (r) { return refs.indexOf(r) > -1; })) tasks.push("disp");
+        writeArr(TK_KEY, tasks);
+      }
+      readArr(AV_KEY).forEach(function (r) { DATA.forEach(function (d) { if (d.ref === r) setConfirmed(d, true); }); });
+      function moveCount(d, from, to) { [OP_COUNTS.all, OP_COUNTS[d.op]].forEach(function (k) { k[from]--; k[to]++; }); }
+      function assign(d) {
+        var opts = TEAM.map(function (m) { return m.full_name || m.email; }).concat(["Sin responsable"]);
+        window.homyoConfirm({ title: "Responsable de la vivienda", body: d.addr.replace(" · ", " en ") + ". El responsable puede editarla, confirmar disponibilidad y atender a sus interesados.", ok: "Guardar", field: { label: "Responsable", options: opts } }).then(function (lbl) {
+          if (!lbl) return;
+          var m = TEAM.filter(function (x) { return (x.full_name || x.email) === lbl; })[0], id = m ? m.id : null;
+          HOMYO.sb.from("listings").update({ assigned_to: id }).eq("id", d.id).then(function (r) {
+            if (r.error) { window.homyoToast("No se ha podido cambiar: " + r.error.message); return; }
+            d.ag = id; d.raw.assigned_to = id; d.agIni = m ? (m.full_name || m.email).split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(function (w) { return w.charAt(0).toUpperCase(); }).join("") : "";
+            render(); window.homyoToast(m ? "Responsable: " + lbl : "Vivienda sin responsable");
+          });
+        });
+      }
+      function retire(d) {
+        if (!window.homyoConfirm) return;
+        if (REALM) return retireReal(d);
+        window.homyoConfirm({ title: "¿Retirar esta vivienda?", body: d.addr.replace(" · ", " en ") + " dejará de mostrarse en Homyo y no se facturará desde mañana. Podrás volver a publicarla cuando quieras.", ok: "Retirar vivienda", danger: true, field: { label: "Motivo", options: ["Vendida", "Alquilada", "El propietario la retira", "Otro motivo"] } }).then(function (motivo) {
+          if (!motivo) return;
+          var prev = { st: d.st, upd: d.upd, note: d.note, cupo: d.cupo };
+          moveCount(d, d.st, "off"); d.st = "off"; d.upd = "Retirada ahora · " + motivo.toLowerCase(); d.note = ""; d.cupo = false;
+          render();
+          if (window.homyoToast) window.homyoToast("Vivienda retirada · " + d.addr.split("· ")[1], function () { moveCount(d, "off", prev.st); d.st = prev.st; d.upd = prev.upd; d.note = prev.note; d.cupo = prev.cupo; render(); });
+        });
+      }
+      function retireReal(d) {
+        var sale = d.op === "venta";
+        var OK = sale ? "Vendida" : "Alquilada", NO = sale ? "No vendida · se retira" : "No alquilada · se retira";
+        window.homyoConfirm({ title: "¿Retirar esta vivienda?", body: d.addr.replace(" · ", " en ") + " dejará de mostrarse en Homyo. Podrás volver a publicarla cuando quieras.", ok: "Retirar vivienda", danger: true,
+          field: { label: "Motivo", options: [OK, NO] },
+          input: { label: sale ? "Precio final de venta (€)" : "Precio final de alquiler (€/mes)", placeholder: "Obligatorio", showFor: [OK] }
+        }).then(function (r) {
+          if (!r) return;
+          var done = r.choice === OK, price = parseInt(String(r.input).replace(/\D/g, ""), 10);
+          if (done && !(price > 0)) { window.homyoToast("Indica el precio final para cerrar la operación"); return; }
+          var reason = sale ? (done ? "sold" : "not_sold") : (done ? "rented" : "not_rented");
+          HOMYO.proUnpublish(d.id, reason, done ? price : null).then(function () {
+            moveCount(d, d.st, "off"); d.st = "off"; d.upd = "Retirada ahora · " + r.choice.toLowerCase(); d.note = ""; render();
+            window.homyoToast("Vivienda retirada");
+          }).catch(function (e) { window.homyoToast("No se ha podido retirar: " + (e.message || "error")); });
+        });
+      }
+      function confirmRows(rows) {
+        if (REALM) {
+          rows = rows.filter(canEd);
+          if (!rows.length) { window.homyoToast("Solo el responsable o un administrador puede confirmarlas"); return; }
+          Promise.all(rows.map(function (d) { return HOMYO.proConfirm(d.id); })).then(function () {
+            rows.forEach(function (d) { setConfirmed(d, true); }); render();
+            window.homyoToast(rows.length === 1 ? "Disponibilidad confirmada" : rows.length + " viviendas confirmadas");
+          }).catch(function (e) { window.homyoToast("No se ha podido confirmar: " + (e.message || "error")); });
+          return;
+        }
+        rows.forEach(function (d) { setConfirmed(d, true); });
+        syncStore(); render();
+        if (window.homyoToast) window.homyoToast((rows.length === 1 ? "Disponibilidad confirmada · " + rows[0].addr.split("· ")[1] : rows.length + " viviendas confirmadas · siguen publicadas"), function () { rows.forEach(function (d) { setConfirmed(d, false); }); syncStore(); render(); });
+      }
       function render() {
-        var rows = DATA.filter(function (d) { return (curSt === "all" || d.st === curSt) && (curOp === "all" || d.op === curOp); });
-        body.innerHTML = rows.length ? rows.map(row).join("") : '<tr><td colspan="8" class="muted" style="text-align:center;padding:28px;">No hay viviendas con este filtro.</td></tr>';
+        var nq = normQ(curQ);
+        var rows = DATA.filter(function (d) { return (curSt === "all" || d.st === curSt) && (curOp === "all" || d.op === curOp) && (!nq || normQ(d.addr + " " + d.ref + " " + d.zone).indexOf(nq) > -1) && (curAg === "all" || d.ag === curAg); });
+        var pend = DATA.filter(function (d) { return d.st === "upd"; });
+        document.getElementById("availBanner").classList.toggle("hide", !pend.length);
+        document.getElementById("availT").textContent = pend.length === 1 ? "1 vivienda necesita confirmar disponibilidad" : pend.length + " viviendas necesitan confirmar disponibilidad";
+        document.getElementById("availAll").textContent = pend.length === 1 ? "Confirmar" : "Confirmar las " + pend.length;
+        var qc = document.getElementById("qChip");
+        if (curQ && !qc) { document.getElementById("filterBar").insertAdjacentHTML("beforeend", '<button class="qChip" id="qChip" type="button">Búsqueda: «' + curQ.replace(/</g, "&lt;") + '» ✕</button>'); document.getElementById("qChip").onclick = function () { curQ = ""; history.replaceState(null, "", location.pathname); this.remove(); render(); }; }
+        body.innerHTML = LOADING ? '<tr><td colspan="9" class="muted" style="text-align:center;padding:28px;">Cargando tus viviendas…</td></tr>' : LOAD_ERR ? '<tr><td colspan="9" class="muted" style="text-align:center;padding:28px;">' + LOAD_ERR + '</td></tr>' : rows.length ? rows.map(row).join("") : '<tr><td colspan="9" class="muted" style="text-align:center;padding:28px;">No hay viviendas con este filtro.</td></tr>';
         document.getElementById("shownCount").textContent = rows.length;
         var k = OP_COUNTS[curOp];
+        if (curAg !== "all") {
+          k = { total:0, pub:0, draft:0, review:0, rej:0, upd:0, off:0 };
+          DATA.forEach(function (d) { if (d.ag === curAg && (curOp === "all" || d.op === curOp)) { k.total++; k[d.st]++; } });
+        }
         document.getElementById("opTotal").textContent = k.total;
         document.querySelectorAll("#filterBar .c").forEach(function (c) { c.textContent = k[c.getAttribute("data-c")]; });
+        var u = used();
+        document.getElementById("cupoN").textContent = u;
+        document.getElementById("cupoDots").innerHTML = Array.from({ length: CUPO }, function (_, j) { return '<i' + (j < u ? ' class="on"' : '') + '></i>'; }).join("");
+        document.getElementById("cupoS").textContent = u < CUPO ? "Te quedan " + (CUPO - u) + " por elegir: marca «Añadir» en una vivienda publicada para no pagarla (ahorras 6,99 €/mes cada una)." : "Bonificación de Homyo hasta el " + window.homyoFounder.fmt(window.homyoFounder.cupoEnd) + ". Las viviendas del cupo no se facturan. Para cambiar una, quítala primero.";
+        body.querySelectorAll("[data-assign]").forEach(function (b) { b.onclick = function () { assign(DATA[+b.dataset.assign]); }; });
+        body.querySelectorAll("[data-retire]").forEach(function (b) { b.onclick = function () { retire(DATA[+b.dataset.retire]); }; });
+        body.querySelectorAll("[data-confirm]").forEach(function (b) { b.onclick = function () { confirmRows([DATA[+b.dataset.confirm]]); }; });
+        body.querySelectorAll("[data-cupo]").forEach(function (b) { b.onclick = function () { var d = DATA[+b.dataset.cupo]; if (!d.cupo && used() >= CUPO) return; d.cupo = !d.cupo; render(); }; });
       }
+      document.querySelectorAll("#filterBar .fchip").forEach(function (x) { x.classList.toggle("isOn", x.getAttribute("data-f") === curSt); });
       render();
+      var agSel = document.getElementById("agSel"); agSel.value = curAg;
+      agSel.addEventListener("change", function () { curAg = agSel.value; try { localStorage.setItem("homyo_pro_viv_agent", curAg); } catch (e) {} render(); });
+      document.getElementById("availAll").onclick = function () { confirmRows(DATA.filter(function (d) { return d.st === "upd"; })); };
+      document.getElementById("availShow").onclick = function () { var c = document.querySelector('#filterBar .fchip[data-f="upd"]'); if (c) c.click(); };
       document.querySelectorAll("#filterBar .fchip").forEach(function (c) {
         c.addEventListener("click", function () {
           document.querySelectorAll("#filterBar .fchip").forEach(function (x) { x.classList.remove("isOn"); });
@@ -187,6 +354,39 @@
           curOp = b.getAttribute("data-op"); render();
         });
       });
+      if (REALM) {
+        try { var fl = sessionStorage.getItem("homyo_pro_flash"); if (fl) { sessionStorage.removeItem("homyo_pro_flash"); setTimeout(function () { window.homyoToast(fl); }, 400); } } catch (e) {}
+        document.getElementById("cupoBar").classList.add("hide");
+        document.body.classList.add("noCupo");
+        agSel.innerHTML = '<option value="all">Todo el equipo</option>';
+        curAg = "all";
+        var crumbEl = document.querySelector(".tbCrumb");
+        HOMYO.ready.then(function (ctx) {
+          document.querySelector(".pageLede").textContent = "Todas las viviendas de " + ((ctx.agency && ctx.agency.name) || "tu inmobiliaria") + ". Una referencia catastral solo puede estar publicada por una agencia." + (ctx.role === "agent" ? " Puedes editar las viviendas de las que eres responsable." : ctx.role === "viewer" ? " Tu acceso es de solo lectura." : "");
+          ME = ctx.user.id;
+          return Promise.all([HOMYO.proListings(), HOMYO.sb.rpc("my_agency_team")]);
+        }).then(function (res) {
+          var rows = res[0];
+          TEAM = (res[1] && res[1].data) || [];
+          TEAM.forEach(function (m) { AGENTS[m.id] = m.full_name || m.email; });
+          var ini = function (n) { return String(n || "").split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(function (w) { return w.charAt(0).toUpperCase(); }).join(""); };
+          rows.forEach(function (d) { d.ag = d.raw.assigned_to || null; d.agIni = d.ag ? ini(AGENTS[d.ag]) : ""; });
+          agSel.innerHTML = '<option value="all">Todo el equipo</option>' + (HOMYO.ctx.role !== "viewer" ? '<option value="' + ME + '">Mis viviendas</option>' : '') + TEAM.filter(function (m) { return m.id !== ME; }).map(function (m) { return '<option value="' + m.id + '">' + (m.full_name || m.email).replace(/</g, "&lt;") + '</option>'; }).join("");
+          if (TEAM.length < 2) agSel.closest(".agSel").classList.add("hide");
+          else if (HOMYO.ctx.role === "agent") { curAg = ME; agSel.value = ME; }
+          DATA = rows; LOADING = false;
+          var z = function () { return { total:0, pub:0, draft:0, review:0, rej:0, upd:0, off:0 }; };
+          OP_COUNTS = { all:z(), venta:z(), alquiler:z(), habitacion:z() };
+          DATA.forEach(function (d) { [OP_COUNTS.all, OP_COUNTS[d.op]].forEach(function (k) { k.total++; k[d.st]++; }); });
+          document.querySelectorAll("#opSeg button").forEach(function (b) { b.querySelector(".c").textContent = OP_COUNTS[b.dataset.op].total; });
+          if (crumbEl) crumbEl.innerHTML = '<span data-hm-agency>' + (HOMYO.ctx.agency.name || "") + '</span> · ' + DATA.length + (DATA.length === 1 ? " vivienda" : " viviendas");
+          document.getElementById("viewFull").classList.toggle("hide", !DATA.length);
+          document.getElementById("viewEmpty").classList.toggle("hide", !!DATA.length);
+          render();
+        }).catch(function (e) {
+          LOADING = false; LOAD_ERR = "No se han podido cargar tus viviendas (" + ((e && e.message) || "error") + ")."; render();
+        });
+      }
     </script>
   </body>
 </html>

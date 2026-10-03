@@ -1761,6 +1761,7 @@
 
     <div id="bhFooter"></div>
 
+    <script src="homyo-mode.js"></script><script src="registro-real.js"></script>
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260515";
       import { initAuth } from "./bh-auth.js?v=20260515";
@@ -1905,6 +1906,8 @@
             input.addEventListener("change", () => {
               const f = input.files && input.files[0];
               if (!f) return;
+              if (f.size > 10 * 1048576) { alert("El archivo pesa más de 10 MB."); return; }
+              row._file = f;
               row.classList.add("isFilled");
               row.querySelector(".uploadFile .name").textContent = f.name;
               row.querySelector(".uploadBtn").textContent = "Cambiar";
@@ -1917,6 +1920,7 @@
             e.preventDefault();
             e.stopPropagation();
             const row = x.closest(".uploadRow");
+            row._file = null;
             row.classList.remove("isFilled");
             row.querySelector(".uploadBtn").textContent = "Subir archivo";
           });
@@ -1987,19 +1991,33 @@
           btn.disabled = true;
           btn.textContent = "Enviando…";
 
-          setTimeout(() => {
-            // Hide stepper + form, show submitted state
+          const showDone = (ref, res) => {
             $("#regForm").style.display = "none";
             $("#stepper").style.display = "none";
             $("#sideStack").style.display = "none";
-
-            // ref code
-            const ref = "HMY-PRO-" + Math.random().toString(36).slice(2, 8).toUpperCase();
             $("#refCode").textContent = ref;
-
+            if (res && res.needConfirm) {
+              const sb = document.querySelector("#submittedCard .submittedBody");
+              if (sb) sb.innerHTML = "Te hemos enviado un email a <strong>" + $("#fRespEmail").value.trim() + "</strong> para confirmar tu dirección. Confírmalo y entra en el <a href=\"cuenta-inmobiliaria.html\">acceso profesional</a>" + (res.docs.total ? ": ahí podrás subir la documentación." : ".") + " Nuestro equipo revisará tu solicitud en 24 a 48 horas laborables.";
+            } else if (res && res.docs.total && res.docs.uploaded < res.docs.total) {
+              const sb = document.querySelector("#submittedCard .submittedBody");
+              if (sb) sb.insertAdjacentHTML("beforeend", " Algún documento no se ha podido subir: puedes añadirlo desde tu cuenta.");
+            }
             $("#submittedCard").classList.add("isOn");
             window.scrollTo({ top: 0, behavior: "smooth" });
-          }, 900);
+          };
+          const showErr = (msg) => {
+            btn.disabled = false;
+            btn.textContent = "Enviar solicitud";
+            let box = $("#regSubmitErr");
+            if (!box) { btn.insertAdjacentHTML("beforebegin", '<div id="regSubmitErr" role="alert" style="flex-basis:100%;margin:0 0 12px;font-size:13.5px;color:#9f1d2f;background:#fbeaed;border:1px solid rgba(159,29,47,.22);border-radius:6px;padding:10px 13px"></div>'); box = $("#regSubmitErr"); }
+            box.textContent = msg;
+          };
+          if (!window.HOMYO_REG || window.HOMYO_REG.isDemo()) {
+            setTimeout(() => showDone("HMY-PRO-" + Math.random().toString(36).slice(2, 8).toUpperCase()), 900);
+          } else {
+            window.HOMYO_REG.submit().then(res => showDone(res.ref, res)).catch(err => showErr(err.message || "No se ha podido enviar la solicitud."));
+          }
         });
 
 

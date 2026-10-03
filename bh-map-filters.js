@@ -298,14 +298,14 @@ function numericRangeControl({ type, initialMin, initialMax, placeholderMin, pla
     type: "text",
     inputmode: "numeric",
     placeholder: placeholderMin + unit,
-    value: initialMin == null ? "" : String(initialMin)
+    value: initialMin == null ? "" : formatInt(initialMin) + unit
   });
   const maxInput = el("input", {
     class: "fInp",
     type: "text",
     inputmode: "numeric",
     placeholder: placeholderMax + unit,
-    value: initialMax == null ? "" : String(initialMax)
+    value: initialMax == null ? "" : formatInt(initialMax) + unit
   });
 
   const minDrop = el("div", { class: "fDrop bh-hidden" });
@@ -325,9 +325,24 @@ function numericRangeControl({ type, initialMin, initialMax, placeholderMin, pla
     maxDrop.classList.add("bh-hidden");
   }
 
+  const fmt = (n) => (n == null || n === "") ? "" : formatInt(String(n).replace(/^0+(?=\d)/, "")) + unit;
+
   function sanitize(input) {
-    const raw = input.value.replace(/[^\d]/g, "");
-    if (raw !== input.value) input.value = raw;
+    const val = input.value;
+    const caret = input.selectionStart ?? val.length;
+    const digitsBefore = val.slice(0, caret).replace(/[^0-9]/g, "").length;
+    const raw = val.replace(/[^0-9]/g, "");
+    const next = fmt(raw);
+    if (next !== val) {
+      input.value = next;
+      if (document.activeElement === input) {
+        let pos = 0, seen = 0;
+        while (pos < next.length && seen < digitsBefore) { if (/[0-9]/.test(next[pos])) seen++; pos++; }
+        const maxPos = Math.max(0, next.length - unit.length);
+        pos = Math.min(pos, maxPos);
+        try { input.setSelectionRange(pos, pos); } catch (_) {}
+      }
+    }
     return raw;
   }
 
@@ -339,8 +354,8 @@ function numericRangeControl({ type, initialMin, initialMax, placeholderMin, pla
       const tmp = min;
       min = max;
       max = tmp;
-      minInput.value = String(min);
-      maxInput.value = String(max);
+      minInput.value = fmt(min);
+      maxInput.value = fmt(max);
     }
 
     onChange?.(min, max);
@@ -374,7 +389,7 @@ function numericRangeControl({ type, initialMin, initialMax, placeholderMin, pla
       closeAll();
       const raw = sanitize(input);
       fillDrop(drop, suggestionsFor(raw), (picked) => {
-        input.value = String(picked);
+        input.value = fmt(picked);
         closeAll();
         emit();
       });
@@ -385,7 +400,7 @@ function numericRangeControl({ type, initialMin, initialMax, placeholderMin, pla
       closeAll();
       const raw = sanitize(input);
       fillDrop(drop, suggestionsFor(raw), (picked) => {
-        input.value = String(picked);
+        input.value = fmt(picked);
         closeAll();
         emit();
       });
@@ -397,8 +412,20 @@ function numericRangeControl({ type, initialMin, initialMax, placeholderMin, pla
       setTimeout(() => drop.classList.add("bh-hidden"), 120);
     });
 
+    const clampCaret = () => {
+      if (!unit || !input.value || input.selectionStart !== input.selectionEnd) return;
+      const maxPos = input.value.length - unit.length;
+      if (input.selectionStart > maxPos) input.setSelectionRange(maxPos, maxPos);
+    };
+    input.addEventListener("click", clampCaret);
+    input.addEventListener("focus", () => setTimeout(clampCaret, 0));
+
     input.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeAll();
+      if (e.key === "Backspace" || e.key === "End" || e.key === "ArrowRight") {
+        if (e.key !== "Backspace") { setTimeout(clampCaret, 0); return; }
+        clampCaret();
+      }
     });
   }
 
@@ -1265,8 +1292,7 @@ export function initFiltersBar({ mountId }) {
       options: [
         ["now", "Disponible ahora"],
         ["larga", "Larga estancia"],
-        ["temporal", "Temporal / por meses"],
-        ["reserva_online", "Con reserva online"]
+        ["temporal", "Temporal / por meses"]
       ],
       initial: p.roomStay,
       onChange: (val) => {

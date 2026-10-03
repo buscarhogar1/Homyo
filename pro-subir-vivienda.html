@@ -17,8 +17,8 @@
     <link rel="stylesheet" href="pro.css" />
     <style>
       /* Stepper */
-      .wzStepper{ display:flex; gap:0; border:1px solid var(--line); border-radius:var(--rad); background:#fff; overflow:hidden; margin-bottom:26px; }
-      .wzStep{ flex:1 1 0; padding:14px 12px; display:flex; align-items:center; gap:11px; border-right:1px solid var(--line); position:relative; cursor:pointer; min-width:0; transition:background .15s ease; }
+      .wzStepper{ display:flex; gap:0; border:1px solid var(--line); border-radius:var(--rad); background:#fff; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; margin-bottom:26px; }.wzStepper::-webkit-scrollbar{display:none}
+      .wzStep{ flex:1 0 auto; padding:14px 14px; display:flex; align-items:center; gap:10px; border-right:1px solid var(--line); position:relative; cursor:pointer; white-space:nowrap; transition:background .15s ease; }
       .wzStep:last-child{ border-right:none; }
       .wzStep:hover{ background:var(--bg); }
       .wzStep .n{ width:28px; height:28px; flex:0 0 auto; border-radius:50%; border:1px solid var(--line); display:grid; place-items:center; font-family:'Raleway',sans-serif; font-size:12.5px; font-weight:600; color:var(--muted); background:#fff; }
@@ -28,11 +28,21 @@
       .wzStep.active .t{ color:var(--granate); }
       .wzStep.active::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background:var(--granate); }
       .wzStep.done .n{ background:var(--dorado); border-color:var(--dorado); color:#fff; }
-      @media (max-width:900px){ .wzStepper{ overflow-x:auto; } .wzStep{ min-width:160px; } }
 
+
+      body[data-op="buy"] [data-only]:not([data-only~="buy"]),body[data-op="rent"] [data-only]:not([data-only~="rent"]),body[data-op="room"] [data-only]:not([data-only~="room"]){display:none!important}
+      #parkPrice.hide,#storPrice.hide,#parkPriceH.hide,#storPriceH.hide,#honWarn.hide{display:none}#honWarn{margin-top:8px}
+      .cxGroup{padding:20px 0;border-top:1px solid var(--lineSoft)}.cxGroup:first-of-type{border-top:0;padding-top:0}
+      .cxTitle{margin:0 0 14px;font-family:'Raleway',sans-serif;font-size:13px;font-weight:600;color:var(--ink);letter-spacing:.02em}
+      .chipSet{display:flex;flex-wrap:wrap;gap:8px}.field>.chipOpt.cxNone{align-self:flex-start}
+      .chipOpt{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-size:13px;color:var(--ink2);cursor:pointer;transition:all .15s ease}
+      .chipOpt:hover{border-color:var(--granateSoft)}.chipOpt input{position:absolute;opacity:0;pointer-events:none}
+      .chipOpt:has(input:checked){border-color:var(--granate);background:var(--cardWarm);color:var(--granate);font-weight:600}
+      .ynSeg{align-self:flex-start;flex-wrap:wrap}
+      .autoNote{margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.5}
       .wzPanel{ display:none; }
       .wzPanel.active{ display:block; }
-      .opCards{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+      .opCards{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }.opCards .opCard{padding:14px 14px 14px 40px}.opCards .opCard input{left:14px;top:16px}
       @media (max-width:560px){ .opCards{ grid-template-columns:1fr; } }
       .opCard{ position:relative; border:1px solid var(--line); border-radius:var(--rad); padding:18px 20px 18px 46px; cursor:pointer; background:#fff; transition:all .15s ease; }
       .opCard:hover{ border-color:var(--granateSoft); }
@@ -44,6 +54,8 @@
       /* Dropzone */
       .dropzone{ border:1.5px dashed var(--line); border-radius:var(--rad); background:linear-gradient(180deg,#fff,var(--bg)); padding:38px 28px; text-align:center; cursor:pointer; transition:all .16s ease; }
       .dropzone:hover{ border-color:var(--granateSoft); background:var(--cardWarm); }
+      .dropzone.drag{border-color:var(--granate);background:var(--cardWarm)}
+      .dzPrev{margin-top:0;border:1px solid var(--line);border-radius:var(--rad);background:#fff;overflow:hidden}.dzPrevBody{background:var(--bg);display:grid;place-items:center;padding:16px}.dzPrevBody img{max-width:100%;max-height:440px;display:block;background:#fff}.dzPrevBody iframe{width:100%;height:440px;border:0;background:#fff}.dzPrevBar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:12px 16px;border-top:1px solid var(--lineSoft);font-size:13px}.dzPrevBar .nm{flex:1;min-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);font-weight:500}.dzPrevBar .sz{color:var(--muted)}.dzPrevBar .acts{display:flex;gap:6px}.dzPrevBar button{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}.dzPrevBar button:hover{border-color:var(--granateSoft);color:var(--granate)}.dzErr{margin-top:12px;padding:12px 14px;border-radius:var(--rad);font-size:13px;line-height:1.5;color:var(--ink2);background:var(--warnSoft);border:1px solid rgba(168,116,27,.28)}
       .dropzone.filled{ border-style:solid; border-color:rgba(31,122,76,.4); background:var(--goodSoft); }
       .dzIc{ width:58px; height:58px; margin:0 auto 16px; border-radius:50%; background:var(--cardWarm); border:1px solid rgba(196,150,42,.3); color:var(--granate); display:grid; place-items:center; }
       .dropzone.filled .dzIc{ background:#fff; color:var(--good); border-color:rgba(31,122,76,.3); }
@@ -63,6 +75,8 @@
       .photoSlot.filled .order{ background:var(--good); color:#fff; border-color:var(--good); }
       .photoSlot svg{ width:22px; height:22px; color:var(--muted); }
       .photoSlot.filled svg{ color:var(--good); }
+      .photoSlot.drag{border-color:var(--granate);border-style:solid;background:var(--cardWarm)}.photoSlot.has{padding:0;border:1px solid var(--line);background:var(--bg);overflow:hidden;cursor:grab}.photoSlot.has img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.photoSlot.has .order{z-index:2;background:var(--good);color:#fff;border-color:var(--good)}.photoSlot.has .pn{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:16px 8px 7px;color:#fff;background:linear-gradient(transparent,rgba(20,14,12,.72));text-align:left}.photoSlot.has svg.ph{display:none}.photoSlot .rm{position:absolute;top:6px;right:6px;z-index:3;width:24px;height:24px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:var(--ink);display:none;place-items:center;cursor:pointer;padding:0}.photoSlot.has .rm{display:grid}.photoSlot .rm svg{width:13px;height:13px;color:var(--ink)}.photoSlot .rm:hover svg{color:var(--granate)}.photoSlot.has.dragging{opacity:.4}.photoSlot.cover::after{content:"Principal";position:absolute;top:32px;left:7px;z-index:2;font-family:'Raleway',sans-serif;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--granate);padding:3px 7px;border-radius:999px}
+      .phErr{margin-top:12px;padding:12px 14px;border-radius:var(--rad);font-size:13px;line-height:1.5;color:var(--ink2);background:var(--warnSoft);border:1px solid rgba(168,116,27,.28)}.phErr ul{margin:4px 0 0;padding-left:18px}.phBar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.phBar .btn{padding:7px 14px;font-size:13px}
 
       .descBlock{ margin-bottom:18px; }
       .descBlock .bh{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:7px; }
@@ -86,10 +100,62 @@
       .wzFoot{ display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:24px; padding-top:22px; border-top:1px solid var(--lineSoft); flex-wrap:wrap; }
       .wzFoot .hint{ font-size:12.5px; color:var(--muted); }
       .wzFoot .btns{ display:flex; gap:10px; }
+      .ctHead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}.ctHead .fieldLabel{white-space:nowrap}.ctHead .seg button{white-space:nowrap}
+      .ctGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;align-items:end}
+      .ctF{display:flex;flex-direction:column;gap:6px;position:relative;grid-column:span 3;min-width:0}
+      .ctF.ctWide{grid-column:span 3}.ctF.ctNumF{grid-column:span 1}.ctF.ctBtnF{grid-column:span 2}
+      .ctF.ctBtnF .btn{width:100%;justify-content:center;white-space:nowrap}
+      @media (max-width:640px){.ctF,.ctF.ctWide{grid-column:span 6}.ctF.ctNumF{grid-column:span 2}.ctF.ctBtnF{grid-column:span 4}}
+      .ctLbl{font-family:'Raleway',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+      .ctSug{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--line);border-radius:var(--rad);box-shadow:0 12px 28px rgba(30,20,15,.12);z-index:40;max-height:280px;overflow-y:auto;overflow-x:hidden;padding:4px}
+      .ctSug button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 12px;border:0;background:none;font:inherit;font-size:13.5px;color:var(--ink);cursor:pointer;border-radius:3px}
+      .ctSug button span{color:var(--muted);font-size:12px}
+      .ctSug button:hover,.ctSug button.on{background:var(--cardWarm)}
+      .ctSugInfo{padding:10px 12px;font-size:12.5px;color:var(--muted)}
+      .ctMono,.ctRc{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.06em}
+      .ctMsg{margin-top:12px;padding:12px 14px;border-radius:var(--rad);font-size:13px;line-height:1.5;color:var(--ink2);background:var(--warnSoft);border:1px solid rgba(168,116,27,.28)}
+      .ctNear{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px}
+      .ctNear span{font-size:12px;color:var(--muted);margin-right:4px}
+      .ctNear button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;font:inherit;font-size:12.5px;font-weight:600;color:var(--granate);cursor:pointer}
+      .ctNear button:hover{border-color:var(--granate)}.ctNear button.isOn{background:var(--granate);border-color:var(--granate);color:#fff}.ctNear:empty{display:none}
+      .ctUnits{margin-top:14px;border:1px solid var(--line);border-radius:var(--rad);overflow:hidden;background:#fff}
+      .ctUHead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;background:var(--bg);border-bottom:1px solid var(--line);font-size:13.5px;color:var(--ink)}
+      .ctUSub{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+      .ctUTools{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+      .ctOnly{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer}.ctOnly input{accent-color:var(--granate)}
+      .ctFilter{width:200px;padding:8px 12px;font-size:13px}
+      .ctURows{max-height:330px;overflow:auto}
+      .ctURow{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) 80px 70px;align-items:center;gap:10px;width:100%;padding:12px 16px;border:0;border-bottom:1px solid var(--lineSoft);background:#fff;font:inherit;font-size:13.5px;color:var(--ink);text-align:left;cursor:pointer}
+      .ctURow:last-child{border-bottom:0}.ctURow:hover{background:var(--cardWarm)}
+      .ctUName{font-weight:600}.ctUUse{color:var(--ink2);font-size:12.5px}.ctUSfc{color:var(--muted);font-size:12.5px;text-align:right}
+      .ctUGo{justify-self:end;font-family:'Raleway',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--granate)}
+      .ctUEmpty{padding:16px;font-size:13px;color:var(--muted)}
+      @media (max-width:560px){.ctURow{grid-template-columns:minmax(0,1fr) auto}.ctUUse,.ctUSfc{display:none}.ctFilter{width:100%}}
+      .ctFound{margin-top:14px;border:1px solid rgba(31,122,76,.3);background:linear-gradient(180deg,#fff,var(--goodSoft));border-radius:var(--rad);padding:18px 20px}
+      .ctFound.dup{border-color:rgba(176,50,71,.3);background:#fff}
+      .ctFTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+      .ctFKick{display:inline-flex;align-items:center;gap:6px;font-family:'Raleway',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--good)}
+      .ctFound.dup .ctFKick{color:var(--muted)}
+      .ctFKick svg{width:13px;height:13px}
+      .ctRc{font-size:20px;font-weight:600;color:var(--ink);margin:8px 0 6px;word-break:break-all}
+      .ctRc.sm{font-size:15px;margin:0}
+      .ctAddr{font-size:14px;color:var(--ink);line-height:1.45}
+      .ctAddr span{display:block;font-size:12.5px;color:var(--muted)}
+      .ctFacts{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+      .ctFAct{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px}
+      .ctFNote{font-size:12.5px;color:var(--muted)}
+      .ctLink{white-space:nowrap;border:0;background:none;padding:0;font:inherit;font-size:12.5px;font-weight:600;color:var(--granate);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+      .ctLock{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;border:1px solid rgba(31,122,76,.3);background:var(--goodSoft);border-radius:var(--rad)}
+      .ctLock>div{flex:1 1 220px;min-width:0}
+      .ctLockAddr{font-size:12.5px;color:var(--ink2);margin-top:3px}
+      .ctSpin{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:ctSpin .7s linear infinite;margin-right:8px;vertical-align:-2px}
+      @keyframes ctSpin{to{transform:rotate(360deg)}}
+      @keyframes ctFill{from{background:var(--cardWarm);border-color:var(--dorado)}to{background:#fff}}
+      .ctFilled{animation:ctFill 1.6s ease}
       .valBadge{ display:inline-flex; align-items:center; gap:7px; font-family:'Raleway',sans-serif; font-size:11px; font-weight:600; letter-spacing:.06em; padding:6px 12px; border-radius:999px; }
     </style>
   <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
-  <body>
+  <body data-op="buy">
     <div class="proLayout">
       <aside class="proSidebar" id="proSidebar"></aside>
       <div class="sbScrim" id="sbScrim"></div>
@@ -111,41 +177,40 @@
           <!-- STEPPER -->
           <div class="wzStepper" id="wzStepper">
             <div class="wzStep active" data-step="1"><span class="n">1</span><span class="t"><span class="s">Paso 1</span>Identificación</span></div>
-            <div class="wzStep" data-step="2"><span class="n">2</span><span class="t"><span class="s">Paso 2</span>Datos principales</span></div>
-            <div class="wzStep" data-step="3"><span class="n">3</span><span class="t"><span class="s">Paso 3</span>Plano</span></div>
-            <div class="wzStep" data-step="4"><span class="n">4</span><span class="t"><span class="s">Paso 4</span>Fotografías</span></div>
-            <div class="wzStep" data-step="5"><span class="n">5</span><span class="t"><span class="s">Paso 5</span>Certificado</span></div>
-            <div class="wzStep" data-step="6"><span class="n">6</span><span class="t"><span class="s">Paso 6</span>Descripción</span></div>
-            <div class="wzStep" data-step="7"><span class="n">7</span><span class="t"><span class="s">Paso 7</span>Revisión</span></div>
+            <div class="wzStep" data-step="2"><span class="n">2</span><span class="t"><span class="s">Paso 2</span>Datos principales</span></div><div class="wzStep" data-step="3"><span class="n">3</span><span class="t"><span class="s">Paso 3</span>Características</span></div>
+            <div class="wzStep" data-step="4"><span class="n">4</span><span class="t"><span class="s">Paso 4</span>Plano</span></div>
+            <div class="wzStep" data-step="5"><span class="n">5</span><span class="t"><span class="s">Paso 5</span>Fotografías</span></div>
+            <div class="wzStep" data-step="6"><span class="n">6</span><span class="t"><span class="s">Paso 6</span>Certificado</span></div>
+            <div class="wzStep" data-step="7"><span class="n">7</span><span class="t"><span class="s">Paso 7</span>Descripción</span></div>
+            <div class="wzStep" data-step="8"><span class="n">8</span><span class="t"><span class="s">Paso 8</span>Revisión</span></div>
           </div>
 
           <!-- STEP 1 -->
           <section class="wzPanel active card" data-panel="1">
             <p class="cardLabel">Paso 1 · Identificación</p>
             <h2 class="cardTitle">Identifica la vivienda</h2>
-            <p class="muted" style="margin:0 0 22px; font-size:14px; line-height:1.55;">Empezamos por la referencia catastral. Nos permite validar la vivienda y evitar anuncios duplicados.</p>
+            <p class="muted" style="margin:0 0 22px; font-size:14px; line-height:1.55;">Escribe la dirección y buscamos la referencia catastral en el Catastro. Nos permite validar la vivienda y evitar anuncios duplicados.</p>
             <div class="formGrid">
               <div class="field full">
-                <label class="fieldLabel">Referencia catastral <span class="req">obligatorio</span></label>
-                <div style="display:flex; gap:10px; align-items:flex-start;">
-                  <input class="input" id="catastral" placeholder="20 caracteres (ej. 9872023VH5797S0001WX)" maxlength="20" style="flex:1 1 auto;" />
-                  <button type="button" class="btn ghost" id="valBtn" style="flex:0 0 auto;">Validar</button>
-                </div>
-                <span id="valResult" class="hide"></span>
-                <p class="fieldHint">¿No la tienes? La encuentras en el recibo del IBI o en la <a href="#">Sede del Catastro</a>.</p>
+                <div class="ctHead"><label class="fieldLabel" style="margin:0;">Referencia catastral <span class="req">obligatorio</span></label><div class="seg" id="ctMode"><button type="button" class="isOn" data-m="dir">Buscar por dirección</button><button type="button" data-m="rc">Ya la tengo</button></div></div>
+                <div id="ctFinder"><div class="ctGrid"><div class="ctF"><span class="ctLbl">Provincia</span><select class="input" id="ctProv"><option>Cargando…</option></select></div><div class="ctF"><span class="ctLbl">Municipio</span><input class="input" id="ctMun" placeholder="Empieza a escribir…" autocomplete="off" /></div><div class="ctF ctWide"><span class="ctLbl">Calle</span><input class="input" id="ctVia" placeholder="Ej. Sagasta" autocomplete="off" disabled /></div><div class="ctF ctNumF"><span class="ctLbl">Número</span><input class="input" id="ctNum" inputmode="numeric" placeholder="20" autocomplete="off" disabled /></div><div class="ctF ctBtnF"><button type="button" class="btn primary" id="ctGo" disabled>Buscar</button></div></div></div>
+                <div id="ctManual" class="hide"><div style="display:flex; gap:10px; align-items:flex-start;"><input class="input ctMono" id="catastral" placeholder="20 caracteres (ej. 9872023VH5797S0001WX)" maxlength="24" autocomplete="off" style="flex:1 1 auto;" /><button type="button" class="btn ghost" id="valBtn" style="flex:0 0 auto;">Validar</button></div></div>
+                <div id="ctMsg" class="hide"></div>
+                <div id="ctOut"></div>
+                <div id="ctLocked" class="hide"></div>
+                <p class="fieldHint" id="ctFoot">Consultamos en tiempo real la Sede Electrónica del Catastro. País Vasco y Navarra tienen catastro foral propio: introduce la referencia en «Ya la tengo».</p>
               </div>
-              <div class="field full"><label class="fieldLabel">Dirección <span class="req">obligatorio</span></label><input class="input" placeholder="Calle, número, piso, puerta" /></div>
-              <div class="field"><label class="fieldLabel">Municipio <span class="req">obligatorio</span></label><input class="input" placeholder="Madrid" /></div>
-              <div class="field"><label class="fieldLabel">Barrio o zona <span class="req">obligatorio</span></label><input class="input" placeholder="Chamberí" /></div>
+              <div class="field full"><label class="fieldLabel">Dirección <span class="req">obligatorio</span></label><input class="input" id="f-dir" placeholder="Calle, número, piso, puerta" /></div>
+              <div class="field"><label class="fieldLabel">Municipio <span class="req">obligatorio</span></label><input class="input" id="f-mun" placeholder="Madrid" /></div>
+              <div class="field"><label class="fieldLabel">Barrio o zona <span class="req">obligatorio</span></label><input class="input" id="f-barrio" placeholder="Chamberí" /><div class="ctNear" id="barrioOpts" style="margin-top:2px"></div></div>
               <div class="field">
                 <label class="fieldLabel">Tipo de operación <span class="req">obligatorio</span></label>
                 <div class="opCards" style="margin-top:2px;">
-                  <label class="opCard isOn"><input type="radio" name="op" checked /><h4>Venta</h4><p>Precio de venta del inmueble</p></label>
-                  <label class="opCard"><input type="radio" name="op" /><h4>Alquiler</h4><p>Renta mensual</p></label>
+                  <label class="opCard isOn"><input type="radio" name="op" value="buy" checked /><h4>Venta</h4><p>Precio de venta</p></label><label class="opCard"><input type="radio" name="op" value="rent" /><h4>Alquiler</h4><p>Vivienda completa · renta mensual</p></label><label class="opCard"><input type="radio" name="op" value="room" /><h4>Habitación</h4><p>Alquiler de habitación en piso compartido</p></label>
                 </div>
               </div>
               <div class="field"><label class="fieldLabel">Tipo de inmueble <span class="req">obligatorio</span></label>
-                <select class="input"><option value="">Selecciona…</option><option>Piso</option><option>Ático</option><option>Dúplex</option><option>Estudio</option><option>Casa o chalet</option><option>Casa adosada</option><option>Local</option><option>Garaje</option></select>
+                <select class="input" data-k="ptype"><option value="">Selecciona…</option><option>Piso</option><option>Ático</option><option>Dúplex</option><option>Estudio</option><option>Casa o chalet</option><option>Casa adosada</option></select>
               </div>
             </div>
             <div class="wzFoot">
@@ -160,25 +225,81 @@
             <h2 class="cardTitle">Datos principales</h2>
             <p class="muted" style="margin:0 0 22px; font-size:14px; line-height:1.55;">La superficie útil interior y la exterior se declaran por separado. Es uno de los compromisos de claridad de Homyo.</p>
             <div class="formGrid">
-              <div class="field"><label class="fieldLabel">Precio <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">€</span><input class="input" type="text" placeholder="485.000" /></div></div>
-              <div class="field"><label class="fieldLabel">Estado de conservación <span class="req">obligatorio</span></label><select class="input"><option value="">Selecciona…</option><option>Obra nueva</option><option>Reformado</option><option>Buen estado</option><option>A reformar</option></select></div>
-              <div class="field"><label class="fieldLabel">Superficie útil interior <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">m²</span><input class="input" type="number" placeholder="92" /></div><p class="fieldHint">Solo el interior habitable. No sumes terraza ni exterior aquí.</p></div>
-              <div class="field"><label class="fieldLabel">Superficie exterior <span class="opt">(declarada aparte)</span></label><div class="inputCombo"><span class="prefix">m²</span><input class="input" type="number" placeholder="14" /></div><p class="fieldHint">Terraza, balcón o patio. Se muestra por separado en el anuncio.</p></div>
-              <div class="field"><label class="fieldLabel">Dormitorios <span class="req">obligatorio</span></label><input class="input" type="number" placeholder="3" /></div>
-              <div class="field"><label class="fieldLabel">Baños <span class="req">obligatorio</span></label><input class="input" type="number" placeholder="2" /></div>
-              <div class="field"><label class="fieldLabel">Año de construcción <span class="opt">(opcional)</span></label><input class="input" type="number" placeholder="1978" /></div>
-              <div class="field"><label class="fieldLabel">Planta <span class="opt">(opcional)</span></label><input class="input" placeholder="4ª" /></div>
-              <div class="field"><label class="fieldLabel">Ascensor <span class="req">obligatorio</span></label><select class="input"><option value="">Selecciona…</option><option>Sí</option><option>No</option></select></div>
+              <div class="field"><label class="fieldLabel"><span data-only="buy">Precio</span><span data-only="rent">Renta mensual</span><span data-only="room">Precio al mes</span> <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">€</span><input class="input" type="text" placeholder="385.000" data-only="buy" data-k="price" /><input class="input" type="text" placeholder="1.350" data-only="rent" data-k="price" /><input class="input" type="text" placeholder="550" data-only="room" data-k="price" /></div></div>
+              <div class="field" data-only="buy rent"><label class="fieldLabel">Estado de conservación <span class="req">obligatorio</span></label><select class="input" data-k="cond"><option value="">Selecciona…</option><option>Obra nueva</option><option>Reformado</option><option>Buen estado</option><option>A reformar</option></select><p class="fieldHint">«Obra nueva» la incluye en la búsqueda de obra nueva.</p></div>
+              <div class="field" data-only="buy rent"><label class="fieldLabel">Superficie útil interior <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">m²</span><input class="input" type="number" placeholder="92" data-k="useful" /></div><p class="fieldHint">Solo el interior habitable. No sumes terraza ni exterior aquí.</p><p class="fieldHint hide" id="sfcCat"></p></div>
+              <div class="field" data-only="buy rent"><label class="fieldLabel">Superficie construida <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">m²</span><input class="input" type="number" id="f-built" placeholder="108" /></div><p class="fieldHint">La que figura en Catastro. Se muestra junto a la útil, nunca en su lugar.</p></div>
+              <div class="field" data-only="room"><label class="fieldLabel">Superficie útil de la habitación <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">m²</span><input class="input" type="number" placeholder="14" data-k="useful" /></div><p class="fieldHint">Solo el suelo de la habitación, sin paredes.</p></div>
+              <div class="field" data-only="room"><label class="fieldLabel">Superficie útil de zonas comunes <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">m²</span><input class="input" type="number" placeholder="46" data-k="common" /></div><p class="fieldHint">Salón, cocina, pasillos y demás espacios compartidos.</p></div>
+              <div class="field" data-only="buy rent"><label class="fieldLabel">Superficie exterior <span class="opt">(declarada aparte)</span></label><div class="inputCombo"><span class="prefix">m²</span><input class="input" type="number" placeholder="14" data-k="extm2" /></div><p class="fieldHint">Terraza, balcón o patio. Se muestra por separado en el anuncio.</p></div>
+              <div class="field" data-only="buy rent"><label class="fieldLabel">Dormitorios <span class="req">obligatorio</span></label><input class="input" type="number" id="f-dorm" min="0" placeholder="3" /></div>
+              <div class="field"><label class="fieldLabel">Baños<span data-only="room"> del piso</span> <span class="req">obligatorio</span></label><input class="input" type="number" placeholder="2" data-k="baths" /></div>
+              <div class="field"><label class="fieldLabel">Año de construcción <span class="req" data-only="buy rent">obligatorio</span><span class="opt" data-only="room">(opcional)</span></label><input class="input" id="f-anio" type="number" placeholder="1978" /><p class="fieldHint">Lo rellenamos desde Catastro si está disponible.</p></div>
+              <div class="field"><label class="fieldLabel">Planta <span class="opt">(opcional)</span></label><input class="input" id="f-planta" placeholder="4ª" /></div>
             </div>
             <div class="wzFoot">
-              <span class="hint">Superficie útil ≠ superficie construida. Declara la útil interior.</span>
+              <span class="hint">Superficie útil ≠ superficie construida. Declara las dos.</span>
               <div class="btns"><button type="button" class="btn ghost" data-go="1">Volver</button><button type="button" class="btn primary" data-go="3">Continuar</button></div>
             </div>
           </section>
 
           <!-- STEP 3 -->
           <section class="wzPanel card" data-panel="3">
-            <p class="cardLabel">Paso 3 · Plano</p>
+            <p class="cardLabel">Paso 3 · Características</p>
+            <h2 class="cardTitle">Características</h2>
+            <p class="muted" style="margin:0 0 22px; font-size:14px; line-height:1.55;">Cada dato de este paso es un filtro del buscador. Si falta, la vivienda no aparece cuando alguien filtra por él.</p>
+            <div class="cxGroup" data-only="buy rent"><p class="cxTitle">Exterior</p><div class="formGrid">
+              <div class="field"><label class="fieldLabel">Espacio exterior <span class="req">obligatorio</span></label><div class="chipSet"><label class="chipOpt"><input type="checkbox" name="ext" />Balcón</label><label class="chipOpt"><input type="checkbox" name="ext" />Terraza</label><label class="chipOpt"><input type="checkbox" name="ext" />Jardín</label><label class="chipOpt"><input type="checkbox" name="ext" />Patio</label></div><label class="chipOpt cxNone"><input type="checkbox" name="extNone" />Sin espacio exterior</label><p class="fieldHint">Marca todos los que tenga, o «Sin espacio exterior».</p></div>
+              <div class="field" id="oriField"><label class="fieldLabel">Orientación del espacio exterior <span class="req">obligatorio si hay exterior</span></label><div class="chipSet"><label class="chipOpt"><input type="checkbox" name="ori" />Norte</label><label class="chipOpt"><input type="checkbox" name="ori" />Sur</label><label class="chipOpt"><input type="checkbox" name="ori" />Este</label><label class="chipOpt"><input type="checkbox" name="ori" />Oeste</label></div><p class="fieldHint">Hacia dónde da el espacio exterior principal.</p></div>
+            </div></div>
+            <div class="cxGroup"><p class="cxTitle">Accesibilidad</p><div class="formGrid">
+              <div class="field"><label class="fieldLabel">Ascensor <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="asc"><button type="button">Sí</button><button type="button">No</button></div></div>
+              <div class="field"><label class="fieldLabel">Adaptada a movilidad reducida <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="pmr"><button type="button">Sí</button><button type="button">No</button></div><p class="fieldHint">Acceso sin escalones desde la calle y ascensor adaptado.</p></div>
+            </div></div>
+            <div class="cxGroup" data-only="buy rent"><p class="cxTitle">Parking y trastero</p><div class="formGrid">
+              <div class="field"><label class="fieldLabel">Plaza de parking <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="park"><button type="button">Incluida</button><button type="button">Opcional</button><button type="button">No disponible</button></div><div class="inputCombo hide" id="parkPrice" style="margin-top:10px;"><span class="prefix">€<span data-only="rent">/mes</span></span><input class="input" type="number" placeholder="25.000" data-k="park_price" /></div><p class="fieldHint hide" id="parkPriceH">Precio aparte del de la vivienda.</p></div>
+              <div class="field"><label class="fieldLabel">Trastero <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="stor"><button type="button">Incluido</button><button type="button">Opcional</button><button type="button">No disponible</button></div><div class="inputCombo hide" id="storPrice" style="margin-top:10px;"><span class="prefix">€<span data-only="rent">/mes</span></span><input class="input" type="number" placeholder="6.000" data-k="stor_price" /></div><p class="fieldHint hide" id="storPriceH">Precio aparte del de la vivienda.</p></div>
+            </div></div>
+            <div class="cxGroup" data-only="rent"><p class="cxTitle">Condiciones del alquiler</p><div class="formGrid">
+              <div class="field full"><label class="fieldLabel">Tipo de alquiler <span class="req">obligatorio</span></label><div class="chipSet"><label class="chipOpt"><input type="checkbox" name="rt" />Larga estancia</label><label class="chipOpt"><input type="checkbox" name="rt" />Temporal / por meses</label><label class="chipOpt"><input type="checkbox" name="rt" />Para estudiantes</label><label class="chipOpt"><input type="checkbox" name="rt" />Con opción a compra</label></div></div>
+              <div class="field"><label class="fieldLabel">Mobiliario <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="furn"><button type="button">Amueblado</button><button type="button">Sin amueblar</button></div></div>
+              <div class="field"><label class="fieldLabel">Mascotas <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="pets"><button type="button">Admite</button><button type="button">No admite</button></div></div>
+              <div class="field full"><label class="fieldLabel">Equipamiento <span class="req">marca lo que incluya</span></label><div class="chipSet"><label class="chipOpt"><input type="checkbox" name="eq" />Cocina equipada</label><label class="chipOpt"><input type="checkbox" name="eq" />Electrodomésticos</label><label class="chipOpt"><input type="checkbox" name="eq" />Calefacción</label><label class="chipOpt"><input type="checkbox" name="eq" />Aire acondicionado</label><label class="chipOpt"><input type="checkbox" name="eq" />Armarios empotrados</label></div></div>
+              <div class="field"><label class="fieldLabel">Fianza <span class="req">obligatorio</span></label><div class="inputCombo"><span class="prefix">meses</span><input class="input" type="number" placeholder="1" data-k="deposit" /></div></div>
+              <div class="field"><label class="fieldLabel">Aval o garantía adicional <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="aval"><button type="button">Sí</button><button type="button">No</button></div></div>
+              <div class="field"><label class="fieldLabel">Gastos de suministros incluidos <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="gas"><button type="button">Sí</button><button type="button">No</button></div></div>
+              <div class="field"><label class="fieldLabel">Comunidad incluida <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="com"><button type="button">Sí</button><button type="button">No</button></div></div>
+              <div class="field"><label class="fieldLabel">¿El inquilino paga comisión a la agencia? <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="hon"><button type="button">Sí</button><button type="button" class="isOn">No</button></div><p class="fieldHint">Indica si, además de la fianza y el primer mes, el inquilino tiene que pagar algo a la agencia por gestionar el alquiler.</p><p class="ctMsg hide" id="honWarn">Desde la Ley de Vivienda (2023), en el alquiler de vivienda habitual la comisión de la agencia la paga el propietario. Cobrársela al inquilino solo es posible en alquileres de temporada o de uso distinto a vivienda.</p></div>
+            </div></div>
+            <div class="cxGroup" data-only="room"><p class="cxTitle">La habitación</p><div class="formGrid">
+              <div class="field full"><label class="fieldLabel">Cama <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="bed"><button type="button">Individual</button><button type="button">Doble</button><button type="button">Dos camas</button><button type="button">Sin cama</button></div></div>
+              <div class="field full"><label class="fieldLabel">Características de la habitación <span class="req">marca lo que tenga</span></label><div class="chipSet"><label class="chipOpt"><input type="checkbox" name="rch" />Amueblada</label><label class="chipOpt"><input type="checkbox" name="rch" />Exterior</label><label class="chipOpt"><input type="checkbox" name="rch" />Baño privado</label><label class="chipOpt"><input type="checkbox" name="rch" />Balcón</label><label class="chipOpt"><input type="checkbox" name="rch" />Escritorio</label><label class="chipOpt"><input type="checkbox" name="rch" />Armario</label></div></div>
+              <div class="field full"><label class="fieldLabel">El precio incluye <span class="req">marca lo que incluya</span></label><div class="chipSet"><label class="chipOpt"><input type="checkbox" name="inc" />Gastos de comunidad</label><label class="chipOpt"><input type="checkbox" name="inc" />Suministros (luz, agua, gas)</label><label class="chipOpt"><input type="checkbox" name="inc" />Internet</label><label class="chipOpt"><input type="checkbox" name="inc" />Limpieza</label></div></div>
+              <div class="field"><label class="fieldLabel">Disponible desde <span class="req">obligatorio</span></label><input class="input" type="date" data-k="avail_from" /></div>
+              <div class="field"><label class="fieldLabel">Estancia <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="stay"><button type="button">Larga</button><button type="button">Temporal</button></div></div>
+              <div class="field"><label class="fieldLabel">Estancia mínima <span class="opt">(opcional)</span></label><div class="inputCombo"><span class="prefix">meses</span><input class="input" type="number" placeholder="6" data-k="min_stay" /></div></div>
+              
+            </div></div>
+            <div class="cxGroup" data-only="room"><p class="cxTitle">El piso compartido</p><div class="formGrid">
+              <div class="field"><label class="fieldLabel">Tipo de piso <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="hh"><button type="button">Mixto</button><button type="button">Solo chicas</button><button type="button">Solo chicos</button></div></div>
+              <div class="field"><label class="fieldLabel">El propietario vive en el piso <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="own"><button type="button">Sí</button><button type="button">No</button></div></div>
+              <div class="field full"><label class="fieldLabel">Perfil de los compañeros <span class="req">obligatorio</span></label><div class="chipSet"><label class="chipOpt"><input type="checkbox" name="mates" />Estudiantes</label><label class="chipOpt"><input type="checkbox" name="mates" />Trabajadores</label><label class="chipOpt"><input type="checkbox" name="mates" />Ambiente joven (18–30)</label><label class="chipOpt"><input type="checkbox" name="mates" />Ambiente profesional</label><label class="chipOpt"><input type="checkbox" name="mates" />Ambiente tranquilo</label></div><p class="fieldHint">Marca al menos uno.</p></div>
+              <div class="field"><label class="fieldLabel">Se puede fumar <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="smk"><button type="button">Sí</button><button type="button">No</button></div></div>
+              <div class="field"><label class="fieldLabel">Se aceptan mascotas <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="rpet"><button type="button">Sí</button><button type="button">No</button></div></div>
+              <div class="field"><label class="fieldLabel">Se aceptan parejas <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="cpl"><button type="button">Sí</button><button type="button">No</button></div></div>
+              <div class="field"><label class="fieldLabel">Se aceptan menores <span class="req">obligatorio</span></label><div class="seg ynSeg" data-pick="kid"><button type="button">Sí</button><button type="button">No</button></div></div>
+              <div class="field full"><label class="fieldLabel">Convivencia <span class="req">marca lo que aplique</span></label><div class="chipSet"><label class="chipOpt"><input type="checkbox" name="cv" />LGTB friendly</label><label class="chipOpt"><input type="checkbox" name="cv" />Limpieza o turnos incluidos</label></div></div>
+              <div class="field full"><label class="fieldLabel">Características del piso <span class="req">marca lo que tenga</span></label><div class="chipSet"><label class="chipOpt"><input type="checkbox" name="ram" />Aire acondicionado</label><label class="chipOpt"><input type="checkbox" name="ram" />Calefacción</label><label class="chipOpt"><input type="checkbox" name="ram" />Terraza o zonas comunes</label><label class="chipOpt"><input type="checkbox" name="ram" />Cocina equipada</label><label class="chipOpt"><input type="checkbox" name="ram" />Lavadora</label><label class="chipOpt"><input type="checkbox" name="ram" />Lavavajillas</label><label class="chipOpt"><input type="checkbox" name="ram" />Internet / wifi</label><label class="chipOpt"><input type="checkbox" name="ram" />Salón compartido</label></div></div>
+            </div></div>
+            <div class="wzFoot">
+              <span class="hint">Lo que no marques se mostrará como «no incluido».</span>
+              <div class="btns"><button type="button" class="btn ghost" data-go="2">Volver</button><button type="button" class="btn primary" data-go="4">Continuar</button></div>
+            </div>
+          </section>
+
+          <!-- STEP 4 -->
+          <section class="wzPanel card" data-panel="4">
+            <p class="cardLabel">Paso 4 · Plano</p>
             <h2 class="cardTitle">Plano en planta <span style="font-size:13px; color:var(--granate); font-weight:600; letter-spacing:.02em;">· obligatorio</span></h2>
             <div class="callout" style="margin-bottom:20px;">
               <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
@@ -189,64 +310,72 @@
               <h4>Arrastra el plano o haz clic para subir</h4>
               <p>PDF, PNG o JPG · hasta 12 MB · mínimo 1.200 px de ancho</p>
             </div>
+            <input type="file" id="fPlano" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" hidden />
+            <div id="planoPrev" class="dzPrev hide"></div>
             <div id="planoVal" class="hide" style="margin-top:16px;"></div>
             <div class="wzFoot">
               <span class="hint">¿No tienes plano? <a href="pro-soporte.html" style="color:var(--granate);">Consulta la guía del plano obligatorio</a>.</span>
-              <div class="btns"><button type="button" class="btn ghost" data-go="2">Volver</button><button type="button" class="btn primary" data-go="4">Continuar</button></div>
+              <div class="btns"><button type="button" class="btn ghost" data-go="3">Volver</button><button type="button" class="btn primary" data-go="5">Continuar</button></div>
             </div>
           </section>
 
           <!-- STEP 4 -->
-          <section class="wzPanel card" data-panel="4">
-            <p class="cardLabel">Paso 4 · Fotografías</p>
+          <section class="wzPanel card" data-panel="5">
+            <p class="cardLabel">Paso 5 · Fotografías</p>
             <h2 class="cardTitle">Reportaje fotográfico</h2>
-            <p class="muted" style="margin:0 0 18px; font-size:14px; line-height:1.55;">Mínimo 6 fotografías en este orden recomendado. Imágenes nítidas, horizontales y bien iluminadas. La primera será la foto principal del anuncio.</p>
+            <p class="muted" style="margin:0 0 18px; font-size:14px; line-height:1.55;">Mínimo <span id="phMinTxt">6 fotografías</span> en este orden recomendado, con al menos una por dormitorio. Imágenes nítidas, horizontales y bien iluminadas. La primera será la foto principal del anuncio.</p>
             <div class="spread" style="margin-bottom:14px;">
-              <span class="pill gold" id="photoCount">0 / 6 mínimas</span>
-              <span class="muted" style="font-size:12.5px;">Calidad mínima: 1.600 px · horizontal</span>
+              <span class="phBar"><span class="pill gold" id="photoCount">0 / 6 mínimas</span><button type="button" class="btn ghost" id="phBulk">Subir varias a la vez</button></span>
+              <span class="muted" style="font-size:12.5px;">JPG, PNG o WEBP · mínimo 1.600 px · horizontal · hasta 15 MB</span>
             </div>
             <div class="photoGrid" id="photoGrid">
               <div class="photoSlot" data-photo><span class="order">1</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg><span class="pn">Fachada / exterior</span></div>
               <div class="photoSlot" data-photo><span class="order">2</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 14h18"/></svg><span class="pn">Salón</span></div>
               <div class="photoSlot" data-photo><span class="order">3</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 9v12"/></svg><span class="pn">Cocina</span></div>
-              <div class="photoSlot" data-photo><span class="order">4</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18h18M5 10V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/></svg><span class="pn">Dormitorios</span></div>
+              <div class="photoSlot" data-photo data-dorm="1"><span class="order">4</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18h18M5 10V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/></svg><span class="pn">Dormitorios</span></div>
               <div class="photoSlot" data-photo><span class="order">5</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 12V5a2 2 0 0 1 2-2c1 0 2 .8 2 2"/><path d="M4 12h16v2a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M7 22l1-2M17 22l-1-2"/></svg><span class="pn">Baños</span></div>
               <div class="photoSlot" data-photo><span class="order">6</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 21h18M5 21V8h14v13M9 21v-6h6v6"/></svg><span class="pn">Terraza / exterior</span></div>
-              <div class="photoSlot" data-photo><span class="order">+</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg><span class="pn">Más fotos</span></div>
-              <div class="photoSlot" data-photo><span class="order">+</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg><span class="pn">Más fotos</span></div>
+              <div class="photoSlot" data-add><span class="order">+</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg><span class="pn">Más fotos</span></div>
             </div>
+            <input type="file" id="phInput" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple hidden />
+            <div id="phErr" class="hide"></div>
+            <p class="fieldHint" style="margin-top:10px;">Arrastra una foto sobre otra para cambiar el orden. La primera es la principal del anuncio.</p>
             <div class="wzFoot">
               <span class="hint">Evita marcas de agua, collages o fotos de portales. <a href="pro-soporte.html" style="color:var(--granate);">Ver estándar fotográfico</a>.</span>
-              <div class="btns"><button type="button" class="btn ghost" data-go="3">Volver</button><button type="button" class="btn primary" data-go="5">Continuar</button></div>
-            </div>
-          </section>
-
-          <!-- STEP 5 -->
-          <section class="wzPanel card" data-panel="5">
-            <p class="cardLabel">Paso 5 · Certificación energética</p>
-            <h2 class="cardTitle">Certificado energético</h2>
-            <p class="muted" style="margin:0 0 20px; font-size:14px; line-height:1.55;">Es obligatorio por ley para anunciar una vivienda. Sube el certificado o, si está en trámite, márcalo dentro de la ventana temporal permitida.</p>
-            <div class="formGrid" style="margin-bottom:18px;">
-              <div class="field"><label class="fieldLabel">Letra de consumo <span class="req">obligatorio</span></label><select class="input"><option value="">—</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>En trámite</option></select></div>
-              <div class="field"><label class="fieldLabel">Letra de emisiones <span class="req">obligatorio</span></label><select class="input"><option value="">—</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option><option>En trámite</option></select></div>
-            </div>
-            <div class="dropzone" id="dzCert">
-              <div class="dzIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 14l2 2 4-4"/></svg></div>
-              <h4>Sube el certificado energético</h4>
-              <p>PDF emitido por el técnico certificador</p>
-            </div>
-            <label class="checkRow" id="enTramite" style="margin-top:18px; padding:14px 16px; border:1px solid var(--line); border-radius:var(--rad); background:var(--bg);">
-              <input type="checkbox" id="tramiteCheck" /> <span><strong>El certificado está en trámite.</strong> Dispones de <strong>15 días</strong> desde la publicación para aportarlo. Pasado ese plazo, la vivienda se despublica automáticamente.</span>
-            </label>
-            <div class="wzFoot">
-              <span class="hint">Homyo solo permite "en trámite" durante una ventana temporal limitada.</span>
               <div class="btns"><button type="button" class="btn ghost" data-go="4">Volver</button><button type="button" class="btn primary" data-go="6">Continuar</button></div>
             </div>
           </section>
 
-          <!-- STEP 6 -->
+          <!-- STEP 5 -->
           <section class="wzPanel card" data-panel="6">
-            <p class="cardLabel">Paso 6 · Descripción</p>
+            <p class="cardLabel">Paso 6 · Certificación energética</p>
+            <h2 class="cardTitle">Certificado energético</h2>
+            <p class="muted" style="margin:0 0 20px; font-size:14px; line-height:1.55;">La ley exige mostrar la calificación energética en todo anuncio. Sin las dos letras, la vivienda no se publica.</p>
+            <div class="formGrid" style="margin-bottom:18px;">
+              <div class="field"><label class="fieldLabel">Letra de consumo <span class="req">obligatorio</span></label><select class="input" id="f-eLetra"><option value="">—</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option></select><p class="fieldHint">Energía que gasta la vivienda al año.</p></div>
+              <div class="field"><label class="fieldLabel">Letra de emisiones <span class="req">obligatorio</span></label><select class="input" id="f-cLetra"><option value="">—</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option></select><p class="fieldHint">CO₂ que genera ese consumo.</p></div>
+              <div class="field"><label class="fieldLabel">Consumo de energía primaria <span class="opt">(opcional)</span></label><div class="inputCombo"><span class="prefix">kWh/m²·año</span><input class="input" type="number" min="0" step="0.1" placeholder="142,5" data-k="kwh" /></div></div>
+              <div class="field"><label class="fieldLabel">Emisiones de CO₂ <span class="opt">(opcional)</span></label><div class="inputCombo"><span class="prefix">kg CO₂/m²·año</span><input class="input" type="number" min="0" step="0.1" placeholder="29,8" data-k="co2" /></div></div>
+            </div>
+            <p class="fieldLabel" style="margin:0 0 8px;">Certificado completo <span class="opt">(opcional · recomendado)</span></p>
+            <div class="dropzone" id="dzCert">
+              <div class="dzIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 14l2 2 4-4"/></svg></div>
+              <h4>Sube el certificado energético</h4>
+              <p>PDF emitido por el técnico certificador · hasta 12 MB</p>
+            </div>
+            <input type="file" id="fCert" accept=".pdf,application/pdf" hidden />
+            <div id="certPrev" class="dzPrev hide"></div>
+            <div id="certVal" class="hide"></div>
+            <p class="fieldHint" style="margin-top:10px;">No se publica en el anuncio. Homyo lo usa para verificar que las letras son reales y lo tendrás disponible para compartir con interesados.</p>
+            <div class="wzFoot">
+              <span class="hint">¿Aún no tienes el certificado? Puedes guardar el anuncio como borrador y continuar cuando lo tengas.</span>
+              <div class="btns"><button type="button" class="btn ghost" data-go="5">Volver</button><button type="button" class="btn primary" data-go="7">Continuar</button></div>
+            </div>
+          </section>
+
+          <!-- STEP 6 -->
+          <section class="wzPanel card" data-panel="7">
+            <p class="cardLabel">Paso 7 · Descripción</p>
             <h2 class="cardTitle">Descripción estructurada</h2>
             <p class="muted" style="margin:0 0 22px; font-size:14px; line-height:1.55;">Nada de un texto único. Divide la información en bloques para que el comprador encuentre lo que busca de un vistazo.</p>
             <div class="descBlock"><div class="bh"><span class="bt">Resumen de la vivienda</span><span class="cnt">recomendado · 280 car.</span></div><textarea class="input" placeholder="Piso exterior reformado en Chamberí, muy luminoso, en finca con ascensor…"></textarea></div>
@@ -256,34 +385,35 @@
             <div class="descBlock" style="margin-bottom:0;"><div class="bh"><span class="bt">Información adicional</span><span class="cnt">opcional</span></div><textarea class="input" placeholder="Gastos de comunidad, orientación, plaza de garaje opcional…"></textarea></div>
             <div class="wzFoot">
               <span class="hint">Texto claro y honesto. Sin mayúsculas sostenidas ni datos de contacto en la descripción.</span>
-              <div class="btns"><button type="button" class="btn ghost" data-go="5">Volver</button><button type="button" class="btn primary" data-go="7">Continuar</button></div>
+              <div class="btns"><button type="button" class="btn ghost" data-go="6">Volver</button><button type="button" class="btn primary" data-go="8">Continuar</button></div>
             </div>
           </section>
 
           <!-- STEP 7 -->
-          <section class="wzPanel card" data-panel="7">
-            <p class="cardLabel">Paso 7 · Revisión final</p>
+          <section class="wzPanel card" data-panel="8">
+            <p class="cardLabel">Paso 8 · Revisión final</p>
             <h2 class="cardTitle">Revisión antes de publicar</h2>
             <p class="muted" style="margin:0 0 22px; font-size:14px; line-height:1.55;">Homyo prioriza calidad y claridad. Si falta algún requisito bloqueante, la vivienda no se puede publicar todavía.</p>
             <ul class="ckList">
               <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Precio definido</h5><p>485.000 €</p></div><span class="ckTag">Correcto</span></li>
-              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Superficie útil interior declarada</h5><p>92 m² útiles interiores</p></div><span class="ckTag">Correcto</span></li>
-              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Superficie exterior separada</h5><p>14 m² de terraza, declarados aparte</p></div><span class="ckTag">Correcto</span></li>
+              <li class="ck-ok" data-only="buy rent"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Superficie útil interior declarada</h5><p>92 m² útiles interiores</p></div><span class="ckTag">Correcto</span></li><li class="ck-ok" data-only="buy rent"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Superficie construida</h5><p>108 m² · coincide con Catastro</p></div><span class="ckTag">Correcto</span></li><li class="ck-ok" data-only="room"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Superficies de la habitación</h5><p>14 m² habitación · 46 m² zonas comunes</p></div><span class="ckTag">Correcto</span></li><li class="ck-ok" data-only="buy rent"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Dormitorios, baños y año</h5><p>3 dormitorios · 2 baños · 1978</p></div><span class="ckTag">Correcto</span></li><li class="ck-ok" data-only="buy rent"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Exterior, parking y trastero</h5><p>Terraza orientada al sur · parking opcional · sin trastero</p></div><span class="ckTag">Correcto</span></li><li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Accesibilidad</h5><p>Con ascensor · no adaptada a movilidad reducida</p></div><span class="ckTag">Correcto</span></li><li class="ck-ok" data-only="rent"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Condiciones del alquiler</h5><p>Larga estancia · amueblado · fianza 1 mes · sin aval · admite mascotas</p></div><span class="ckTag">Correcto</span></li><li class="ck-ok" data-only="room"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Habitación y convivencia</h5><p>Cama doble · disponible el 1 nov · piso mixto · 3 compañeros trabajadores</p></div><span class="ckTag">Correcto</span></li>
+              <li class="ck-ok" data-only="buy rent"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Superficie exterior separada</h5><p>14 m² de terraza, declarados aparte</p></div><span class="ckTag">Correcto</span></li>
               <li class="ck-block" id="ckPlano"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg></span><div class="ckBody"><h5>Plano en planta</h5><p>Bloqueante: aún no has subido el plano</p></div><span class="ckTag">Bloqueante</span></li>
-              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Fotografías mínimas</h5><p>6 fotografías en el orden recomendado</p></div><span class="ckTag">Correcto</span></li>
+              <li class="ck-block" id="ckFotos"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg></span><div class="ckBody"><h5>Fotografías mínimas</h5><p>0 de 6 fotografías subidas</p></div><span class="ckTag">Bloqueante</span></li>
               <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Certificado energético</h5><p>Aportado · letra E</p></div><span class="ckTag">Correcto</span></li>
               <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Descripción estructurada</h5><p>Resumen y distribución completos</p></div><span class="ckTag">Correcto</span></li>
-              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Referencia catastral validada</h5><p>9872023VH5797S0001WX · sin duplicados</p></div><span class="ckTag">Correcto</span></li>
+              <li class="ck-ok"><span class="ckBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg></span><div class="ckBody"><h5>Referencia catastral validada</h5><p id="ckRc">9872023VH5797S0001WX · sin duplicados</p></div><span class="ckTag">Correcto</span></li>
             </ul>
+            <p class="autoNote">Se rellenan solos: fecha de publicación, anunciante (tu agencia) y disponibilidad. El estado —disponible, en negociación, vendida o alquilada— lo cambias desde Mis viviendas.</p>
             <label class="checkRow" style="margin-top:18px;"><input type="checkbox" id="dispoCheck" /> Confirmo que la vivienda está <strong>disponible</strong> y que los datos son veraces.</label>
             <div class="callout dangerc" id="blockNote" style="margin-top:18px;">
               <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></span>
-              <div><h4>No se puede publicar todavía</h4><p>Falta 1 requisito bloqueante: el plano en planta. Vuelve al paso 3 para subirlo. (Pulsa "Marcar plano subido" para simular que lo añades.)</p></div>
+              <div><h4>No se puede publicar todavía</h4><p>Falta 1 requisito bloqueante: el plano en planta. Vuelve al paso 4 para subirlo. (Pulsa "Marcar plano subido" para simular que lo añades.)</p></div>
               <button type="button" class="btn ghost sm cAct" id="fakePlano">Marcar plano subido</button>
             </div>
             <div class="wzFoot">
               <span class="hint" id="footHint">1 requisito bloqueante pendiente.</span>
-              <div class="btns"><button type="button" class="btn ghost" data-go="6">Volver</button><button type="button" class="btn primary" id="publishBtn" disabled>Enviar a revisión</button></div>
+              <div class="btns"><button type="button" class="btn ghost" data-go="7">Volver</button><button type="button" class="btn primary" id="publishBtn" disabled>Enviar a revisión</button></div>
             </div>
           </section>
 
@@ -292,9 +422,10 @@
     </div>
 
     <script>
-      window.PRO_PAGE = { active: "subir", title: "Subir vivienda", crumb: "Viviendas · Nueva publicación" };
+      window.PRO_PAGE = { active: "subir", title: "Subir vivienda", crumb: "Viviendas · Nueva publicación", live: true };
     </script>
-    <script src="pro-shell.js"></script>
+    <script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="pro-shell.js"></script>
+    <script src="catastro.js"></script>
     <script>
       var steps = document.querySelectorAll(".wzStep");
       var panels = document.querySelectorAll(".wzPanel");
@@ -305,68 +436,234 @@
           s.classList.toggle("done", sn < n);
         });
         panels.forEach(function (p) { p.classList.toggle("active", +p.getAttribute("data-panel") === n); });
-        document.querySelector(".proMain").scrollIntoView({ block: "start" });
+        var bar = document.getElementById("wzStepper"), act = bar.querySelector(".wzStep.active");
+        if (act) bar.scrollLeft = act.offsetLeft - (bar.clientWidth - act.offsetWidth) / 2;
         window.scrollTo(0, 0);
       }
+      function curStep() { var a = document.querySelector(".wzPanel.active"); return a ? +a.getAttribute("data-panel") : 1; }
+      function tryStep(n) { if (n > curStep() && window.HOMYO_GATE && !window.HOMYO_GATE(curStep(), n)) return; goStep(n); }
       document.querySelectorAll("[data-go]").forEach(function (b) {
-        b.addEventListener("click", function () { goStep(+b.getAttribute("data-go")); });
+        b.addEventListener("click", function () { tryStep(+b.getAttribute("data-go")); });
       });
-      steps.forEach(function (s) { s.addEventListener("click", function () { goStep(+s.getAttribute("data-step")); }); });
+      steps.forEach(function (s) { s.addEventListener("click", function () { tryStep(+s.getAttribute("data-step")); }); });
 
-      // catastral validation
-      document.getElementById("valBtn").addEventListener("click", function () {
-        var r = document.getElementById("valResult");
-        r.classList.remove("hide");
-        r.className = "valBadge"; r.style.marginTop = "10px";
-        r.style.background = "var(--goodSoft)"; r.style.color = "var(--good)";
-        r.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg> Referencia válida · sin duplicados en Homyo';
-        r.style.display = "inline-flex"; r.style.alignItems = "center"; r.style.gap = "7px";
-      });
 
-      // operation cards
+      // operation cards → muestra solo los campos de esa operación
       document.querySelectorAll(".opCard").forEach(function (c) {
         c.addEventListener("click", function () {
           c.parentElement.querySelectorAll(".opCard").forEach(function (x) { x.classList.remove("isOn"); });
           c.classList.add("isOn");
+          var v = c.querySelector("input").value; if (v) document.body.setAttribute("data-op", v);
         });
       });
+      // selector de una opción (Sí/No, Incluido/Opcional…)
+      document.querySelectorAll(".ynSeg").forEach(function (s) {
+        s.addEventListener("click", function (e) {
+          var b = e.target.closest("button"); if (!b) return;
+          s.querySelectorAll("button").forEach(function (x) { x.classList.toggle("isOn", x === b); });
+          var pp = { park: "parkPrice", stor: "storPrice" }[s.dataset.pick];
+          if (s.dataset.pick === "hon") document.getElementById("honWarn").classList.toggle("hide", b.textContent.trim() !== "Sí");
+          if (pp) { var opt = b.textContent.trim() === "Opcional"; document.getElementById(pp).classList.toggle("hide", !opt); document.getElementById(pp + "H").classList.toggle("hide", !opt); }
+        });
+      });
+      // «Sin espacio exterior» excluye el resto
+      var extNone = document.querySelector('input[name="extNone"]');
+      if (extNone) {
+        var oriF = document.getElementById("oriField");
+        var syncOri = function () { oriF.style.opacity = extNone.checked ? ".4" : ""; oriF.style.pointerEvents = extNone.checked ? "none" : ""; };
+        extNone.addEventListener("change", function () { if (extNone.checked) document.querySelectorAll('input[name="ext"],input[name="ori"]').forEach(function (i) { i.checked = false; }); syncOri(); });
+        syncOri();
+        document.querySelectorAll('input[name="ext"]').forEach(function (i) { i.addEventListener("change", function () { if (i.checked) extNone.checked = false; syncOri(); }); });
+      }
 
       // dropzones
-      ["dzPlano", "dzCert"].forEach(function (id) {
-        var dz = document.getElementById(id);
-        dz.addEventListener("click", function () {
-          dz.classList.add("filled");
-          dz.querySelector("h4").textContent = "Archivo subido correctamente";
-          dz.querySelector("p").innerHTML = id === "dzPlano" ? "plano-planta.pdf · validando estándar Homyo…" : "certificado-energetico.pdf";
-          if (id === "dzPlano") {
-            var v = document.getElementById("planoVal");
-            v.classList.remove("hide");
-            v.innerHTML = '<div class="callout okc"><span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 6 9 17l-5-5"/></svg></span><div><h4>Plano validado</h4><p>Cumple el estándar visual de Homyo. Superficies coherentes con las declaradas.</p></div></div>';
-            markPlanoDone();
-          }
-        });
-      });
+      var okIc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 6 9 17l-5-5"/></svg>';
+      function fmtSize(b) { return b < 1048576 ? Math.max(1, Math.round(b / 1024)) + " KB" : (b / 1048576).toFixed(1).replace(".", ",") + " MB"; }
+      function escH(t) { return t.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+      function setupDz(c) {
+        var dz = document.getElementById(c.dz), inp = document.getElementById(c.input), prev = document.getElementById(c.prev), val = document.getElementById(c.val), url = null;
+        dz.addEventListener("click", function () { inp.click(); });
+        inp.addEventListener("change", function () { if (inp.files[0]) handle(inp.files[0]); inp.value = ""; });
+        ["dragenter", "dragover"].forEach(function (ev) { dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add("drag"); }); });
+        ["dragleave", "drop"].forEach(function (ev) { dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove("drag"); }); });
+        dz.addEventListener("drop", function (e) { var f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) handle(f); });
+        function fail(t) { val.className = "dzErr"; val.textContent = t; }
+        function handle(f) {
+          var isPdf = f.type === "application/pdf" || /\.pdf$/i.test(f.name);
+          var isImg = c.images && (/^image\/(png|jpeg)$/.test(f.type) || /\.(png|jpe?g)$/i.test(f.name));
+          if (!isPdf && !isImg) return fail("«" + f.name + "» no es un formato válido. Sube " + (c.images ? "un PDF, PNG o JPG." : "un PDF."));
+          if (f.size > 12 * 1048576) return fail("El archivo pesa " + fmtSize(f.size) + ". El máximo es 12 MB.");
+          var u = URL.createObjectURL(f);
+          if (isImg) {
+            var img = new Image();
+            img.onload = function () { if (img.naturalWidth < 1200) { URL.revokeObjectURL(u); fail("La imagen mide " + img.naturalWidth + " px de ancho. El mínimo es 1.200 px."); } else accept(f, u, "img", img.naturalWidth + " × " + img.naturalHeight + " px"); };
+            img.onerror = function () { URL.revokeObjectURL(u); fail("No se ha podido leer la imagen. Prueba con otro archivo."); };
+            img.src = u;
+          } else accept(f, u, "pdf", "PDF");
+        }
+        function accept(f, u, kind, meta) {
+          if (url) URL.revokeObjectURL(url);
+          url = u;
+          dz.style.display = "none";
+          prev.classList.remove("hide");
+          prev.innerHTML = '<div class="dzPrevBody">' + (kind === "img" ? '<img src="' + u + '" alt="" />' : '<iframe src="' + u + '#toolbar=0&view=FitH" title="Vista previa"></iframe>') + '</div><div class="dzPrevBar"><span class="nm">' + escH(f.name) + '</span><span class="sz">' + meta + " · " + fmtSize(f.size) + '</span><span class="acts"><button type="button" data-a="chg">Cambiar</button><button type="button" data-a="del">Quitar</button></span></div>';
+          prev.querySelector('[data-a="chg"]').onclick = function () { inp.click(); };
+          prev.querySelector('[data-a="del"]').onclick = reset;
+          val.className = c.valClass || "";
+          val.innerHTML = c.okHtml;
+          if (c.onOk) c.onOk(f);
+        }
+        function reset() {
+          if (url) URL.revokeObjectURL(url);
+          url = null;
+          prev.classList.add("hide"); prev.innerHTML = "";
+          dz.style.display = "";
+          val.className = "hide"; val.innerHTML = "";
+          if (c.onReset) c.onReset();
+        }
+      }
+      setupDz({ dz: "dzPlano", input: "fPlano", prev: "planoPrev", val: "planoVal", images: true,
+        okHtml: '<div class="callout okc" style="margin-top:16px;"><span class="cIc">' + okIc + '</span><div><h4>Plano subido</h4><p>Formato, tamaño y resolución correctos. Homyo revisará que siga el estándar visual antes de publicar.</p></div></div>',
+        onOk: function (f) { markPlanoDone(f.name); }, onReset: function () { unmarkPlano(); } });
+      setupDz({ dz: "dzCert", input: "fCert", prev: "certPrev", val: "certVal", images: false,
+        okHtml: '<div class="callout okc" style="margin-top:16px;"><span class="cIc">' + okIc + '</span><div><h4>Certificado subido</h4><p>Comprueba que la letra y el consumo coinciden con los datos de arriba.</p></div></div>' });
 
       // photos
-      var photoCount = 0;
-      document.querySelectorAll("[data-photo]").forEach(function (p) {
-        p.addEventListener("click", function () {
-          if (!p.classList.contains("filled")) { p.classList.add("filled"); photoCount++; }
-          else { p.classList.remove("filled"); photoCount--; }
-          var el = document.getElementById("photoCount");
-          el.textContent = photoCount + " / 6 mínimas";
-          el.className = "pill " + (photoCount >= 6 ? "ok" : "gold");
+      var phGrid = document.getElementById("photoGrid"), phInput = document.getElementById("phInput"), phErr = document.getElementById("phErr"), phAdd = phGrid.querySelector("[data-add]");
+      var phTarget = null, phDragFrom = null, photoCount = 0, phMin = 6;
+      var xIc = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+      var plusIc = '<svg class="ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg>';
+      function slots() { return Array.prototype.slice.call(phGrid.querySelectorAll("[data-photo]")); }
+      slots().forEach(function (s) { s.dataset.label = s.querySelector(".pn").textContent; var ic = s.querySelector("svg"); if (ic) ic.classList.add("ph"); prepSlot(s); });
+      function prepSlot(s) {
+        var rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.title = "Quitar"; rm.innerHTML = xIc; s.appendChild(rm);
+        rm.addEventListener("click", function (e) { e.stopPropagation(); clearSlot(s); });
+        s.addEventListener("click", function () { if (!s.classList.contains("has")) { phTarget = s; phInput.click(); } });
+        s.addEventListener("dragstart", function (e) { if (!s.classList.contains("has")) return e.preventDefault(); phDragFrom = s; s.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "ph"); });
+        s.addEventListener("dragend", function () { s.classList.remove("dragging"); phDragFrom = null; });
+        s.addEventListener("dragover", function (e) { e.preventDefault(); s.classList.add("drag"); });
+        s.addEventListener("dragleave", function () { s.classList.remove("drag"); });
+        s.addEventListener("drop", function (e) {
+          e.preventDefault(); s.classList.remove("drag");
+          if (phDragFrom && phDragFrom !== s) return swapSlots(phDragFrom, s);
+          if (e.dataTransfer.files && e.dataTransfer.files.length) addFiles(e.dataTransfer.files, s);
         });
-      });
+      }
+      phAdd.addEventListener("click", function () { phTarget = null; phInput.click(); });
+      ["dragover", "dragenter"].forEach(function (ev) { phAdd.addEventListener(ev, function (e) { e.preventDefault(); phAdd.classList.add("drag"); }); });
+      phAdd.addEventListener("dragleave", function () { phAdd.classList.remove("drag"); });
+      phAdd.addEventListener("drop", function (e) { e.preventDefault(); phAdd.classList.remove("drag"); if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files, null); });
+      document.getElementById("phBulk").addEventListener("click", function () { phTarget = null; phInput.click(); });
+      phInput.addEventListener("change", function () { if (phInput.files.length) addFiles(phInput.files, phTarget); phInput.value = ""; phTarget = null; });
+      function newExtraSlot() {
+        var s = document.createElement("div"); s.className = "photoSlot"; s.setAttribute("data-photo", ""); s.dataset.label = "Foto adicional"; s.dataset.extra = "1";
+        s.innerHTML = '<span class="order">+</span>' + plusIc + '<span class="pn">Foto adicional</span>';
+        phGrid.insertBefore(s, phAdd); prepSlot(s); return s;
+      }
+      function checkImg(f) {
+        return new Promise(function (res) {
+          if (!/^image\/(jpeg|png|webp)$/.test(f.type) && !/\.(jpe?g|png|webp)$/i.test(f.name)) return res({ err: "formato no válido (usa JPG, PNG o WEBP)" });
+          if (f.size > 15 * 1048576) return res({ err: "pesa " + (f.size / 1048576).toFixed(1).replace(".", ",") + " MB (máx. 15 MB)" });
+          var u = URL.createObjectURL(f), img = new Image();
+          img.onload = function () {
+            var w = img.naturalWidth, hh = img.naturalHeight;
+            if (w < 1600) { URL.revokeObjectURL(u); return res({ err: "mide " + w + " px de ancho (mín. 1.600 px)" }); }
+            if (w <= hh) { URL.revokeObjectURL(u); return res({ err: "es vertical; usa fotos horizontales" }); }
+            res({ url: u });
+          };
+          img.onerror = function () { URL.revokeObjectURL(u); res({ err: "no se ha podido leer" }); };
+          img.src = u;
+        });
+      }
+      function addFiles(list, start) {
+        var files = Array.prototype.slice.call(list);
+        Promise.all(files.map(checkImg)).then(function (rs) {
+          var errs = [];
+          rs.forEach(function (r, i) {
+            if (r.err) return errs.push("<li><strong>" + escH(files[i].name) + "</strong>: " + r.err + "</li>");
+            var s = (start && !start.classList.contains("has")) ? start : slots().filter(function (x) { return !x.classList.contains("has"); })[0];
+            start = null;
+            if (!s) s = newExtraSlot();
+            fillSlot(s, r.url, files[i].name);
+          });
+          if (errs.length) { phErr.className = "phErr"; phErr.innerHTML = (errs.length === 1 ? "Esta foto no se ha subido:" : "Estas " + errs.length + " fotos no se han subido:") + "<ul>" + errs.join("") + "</ul>"; }
+          else { phErr.className = "hide"; phErr.innerHTML = ""; }
+          refreshPhotos();
+        });
+      }
+      function fillSlot(s, url, name) {
+        var old = s.querySelector("img"); if (old) { URL.revokeObjectURL(old.src); old.remove(); }
+        var img = document.createElement("img"); img.src = url; img.alt = name; s.insertBefore(img, s.firstChild);
+        s.classList.add("has"); s.draggable = true; s.title = name;
+      }
+      function clearSlot(s) {
+        var img = s.querySelector("img"); if (img) { URL.revokeObjectURL(img.src); img.remove(); }
+        s.classList.remove("has"); s.draggable = false; s.title = "";
+        if (s.dataset.extra) s.remove();
+        refreshPhotos();
+      }
+      function swapSlots(a, b) {
+        var ia = a.querySelector("img"), ib = b.querySelector("img");
+        if (ia) ia.remove(); if (ib) ib.remove();
+        [[a, ib], [b, ia]].forEach(function (p) { var s = p[0], img = p[1]; if (img) { s.insertBefore(img, s.firstChild); s.classList.add("has"); s.draggable = true; s.title = img.alt; } else { s.classList.remove("has"); s.draggable = false; s.title = ""; if (s.dataset.extra) s.remove(); } });
+        refreshPhotos();
+      }
+      var dormTpl = phGrid.querySelector("[data-dorm]");
+      function photoMin() { return 5 + dormCount(); }
+      function dormCount() {
+        if (document.body.dataset.op === "room") return 1;
+        var v = parseInt(document.getElementById("f-dorm").value, 10);
+        return isNaN(v) || v < 1 ? 1 : Math.min(v, 12);
+      }
+      function syncDorms() {
+        var n = dormCount(), ds = Array.prototype.slice.call(phGrid.querySelectorAll("[data-dorm]"));
+        while (ds.length < n) {
+          var s = document.createElement("div"); s.className = "photoSlot"; s.setAttribute("data-photo", ""); s.setAttribute("data-dorm", ds.length + 1);
+          s.innerHTML = '<span class="order"></span>' + dormTpl.querySelector("svg.ph").outerHTML + '<span class="pn"></span>';
+          ds[ds.length - 1].after(s); prepSlot(s); ds.push(s);
+        }
+        while (ds.length > n) {
+          var x = ds.pop();
+          if (x.classList.contains("has")) { x.removeAttribute("data-dorm"); x.dataset.extra = "1"; x.dataset.label = "Foto adicional"; x.querySelector(".pn").textContent = "Foto adicional"; phGrid.insertBefore(x, phAdd); }
+          else x.remove();
+        }
+        ds.forEach(function (s, i) { var l = n === 1 ? "Dormitorio" : "Dormitorio " + (i + 1); s.dataset.label = l; s.querySelector(".pn").textContent = l; });
+        refreshPhotos();
+      }
+      document.getElementById("f-dorm").addEventListener("input", syncDorms);
+      function refreshPhotos() {
+        var all = slots(), n = 0;
+        all.forEach(function (s, i) { if (s.classList.contains("has")) n++; s.classList.toggle("cover", i === 0 && s.classList.contains("has")); s.querySelector(".order").textContent = i + 1; });
+        photoCount = n;
+        var min = photoMin(), d = dormCount();
+        phMin = min;
+        document.getElementById("phMinTxt").textContent = min + " fotografías";
+        var el = document.getElementById("photoCount");
+        el.textContent = n + " / " + min + " mínimas" + (document.body.dataset.op !== "room" ? " · " + d + (d === 1 ? " dormitorio" : " dormitorios") : ""); el.className = "pill " + (n >= min ? "ok" : "gold");
+        var li = document.getElementById("ckFotos");
+        li.className = n >= min ? "ck-ok" : "ck-block";
+        li.querySelector(".ckBox").innerHTML = n >= min ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>' : xIc;
+        li.querySelector("p").textContent = n >= min ? n + " fotografías subidas" : n + " de " + min + " fotografías subidas";
+        li.querySelector(".ckTag").textContent = n >= min ? "Correcto" : "Bloqueante";
+        if (typeof refreshPublish === "function") refreshPublish();
+      }
 
       // step 7 checklist gating
       var planoDone = false;
-      function markPlanoDone() {
+      var ckPlanoInit = document.getElementById("ckPlano").innerHTML;
+      function unmarkPlano() {
+        planoDone = false;
+        var li = document.getElementById("ckPlano");
+        li.className = "ck-block"; li.innerHTML = ckPlanoInit;
+        document.getElementById("blockNote").classList.remove("hide");
+        refreshPublish();
+      }
+      function markPlanoDone(name) {
         planoDone = true;
         var li = document.getElementById("ckPlano");
         li.className = "ck-ok";
         li.querySelector(".ckBox").innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>';
-        li.querySelector("p").textContent = "plano-planta.pdf · validado";
+        li.querySelector("p").textContent = (typeof name === "string" ? name : "plano-planta.pdf") + " · subido";
         li.querySelector(".ckTag").textContent = "Correcto";
         document.getElementById("blockNote").classList.add("hide");
         refreshPublish();
@@ -374,14 +671,24 @@
       document.getElementById("fakePlano").addEventListener("click", markPlanoDone);
       var dispo = document.getElementById("dispoCheck");
       function refreshPublish() {
-        var ok = planoDone && dispo.checked;
+        var miss = [];
+        if (!planoDone) miss.push("el plano en planta (paso 4)");
+        if (photoCount < phMin) miss.push("al menos " + phMin + " fotografías (paso 5)");
+        var ok = !miss.length && dispo.checked;
         document.getElementById("publishBtn").disabled = !ok;
-        document.getElementById("footHint").textContent = ok ? "Todo listo. Se enviará a revisión de Homyo." : (!planoDone ? "1 requisito bloqueante pendiente." : "Confirma la disponibilidad para continuar.");
+        var bn = document.getElementById("blockNote");
+        bn.classList.toggle("hide", !miss.length);
+        if (miss.length) bn.querySelector("p").textContent = (miss.length === 1 ? "Falta 1 requisito bloqueante: " : "Faltan " + miss.length + " requisitos bloqueantes: ") + miss.join(" y ") + ".";
+        document.getElementById("footHint").textContent = ok ? "Todo listo. Se enviará a revisión de Homyo." : (miss.length ? miss.length + (miss.length === 1 ? " requisito bloqueante pendiente." : " requisitos bloqueantes pendientes.") : "Confirma la disponibilidad para continuar.");
       }
       dispo.addEventListener("change", refreshPublish);
+      syncDorms();
+      new MutationObserver(syncDorms).observe(document.body, { attributes: true, attributeFilter: ["data-op"] });
       document.getElementById("publishBtn").addEventListener("click", function () {
+        if (window.HOMYO && HOMYO.mode === "real") return;
         window.location.href = "pro-viviendas.html";
       });
     </script>
+    <script src="pro-subir-real.js"></script>
   </body>
 </html>

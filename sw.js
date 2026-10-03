@@ -1,13 +1,9 @@
-/* Homyo — Service Worker mínimo.
-   Su única razón de ser es que Chrome/Android reconozca el sitio como una
-   PWA instalable, para que el acceso directo de la pantalla de inicio use el
-   icono del manifest (icons/homyo-icon-*.png) en lugar del icono genérico.
+/* Homyo — Service Worker.
+   - HTML: network-first (contenido fresco) con fallback offline.
+   - Recursos versionados (?v=…) y librerías de unpkg (versión fija):
+     cache-first → cargas repetidas de map.html casi instantáneas. */
 
-   Es deliberadamente ligero: NO cachea HTML de forma agresiva para evitar
-   servir contenido obsoleto en una demo que se actualiza a menudo. Solo
-   añade un fallback offline básico. */
-
-const CACHE = "homyo-shell-v1";
+const CACHE = "homyo-shell-v2";
 const SHELL = [
   "./index.html",
   "./site.webmanifest",
@@ -20,7 +16,6 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE).then((cache) =>
-      // No fallamos la instalación si algún recurso no está disponible.
       Promise.allSettled(SHELL.map((url) => cache.add(url)))
     )
   );
@@ -37,12 +32,31 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Network-first: siempre intentamos red primero (contenido fresco); si falla
-// (offline) recurrimos a la caché del shell. Esto satisface el requisito de
-// instalabilidad de tener un handler de fetch sin arriesgar contenido obsoleto.
+function isImmutableAsset(url) {
+  if (url.hostname === "unpkg.com" && /@\d/.test(url.pathname)) return true;
+  if (url.origin === self.location.origin && url.searchParams.has("v") && /\.(js|css|png|svg|webp)$/.test(url.pathname)) return true;
+  return false;
+}
+
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
+  const url = new URL(req.url);
+
+  if (isImmutableAsset(url)) {
+    event.respondWith(
+      caches.open(CACHE).then((cache) =>
+        cache.match(req).then((hit) =>
+          hit ||
+          fetch(req).then((res) => {
+            if (res && (res.ok || res.type === "opaque")) cache.put(req, res.clone());
+            return res;
+          })
+        )
+      )
+    );
+    return;
+  }
 
   event.respondWith(
     fetch(req).catch(() =>

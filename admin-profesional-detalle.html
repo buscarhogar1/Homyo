@@ -17,6 +17,7 @@
     <title>Áurea Inmobiliaria · Homyo Admin</title>
     <link rel="stylesheet" href="pro.css" />
     <link rel="stylesheet" href="admin.css" />
+    <link rel="stylesheet" href="bonus.css" />
   <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body class="adminTheme">
     <div class="proLayout">
@@ -35,14 +36,15 @@
               <div style="min-width:0;flex:1 1 auto;">
                 <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;">
                   <h1 style="margin:0;font-family:'Raleway';font-weight:300;font-size:28px;color:var(--granate);letter-spacing:-.4px;">Áurea Inmobiliaria</h1>
-                  <span class="pill ok"><span class="dot"></span>Verificada</span>
+                  <span class="pill ok" id="acctSt"><span class="dot"></span>Verificada</span>
                   <span class="pill gold">Agencia fundadora</span>
                 </div>
-                <p style="margin:6px 0 0;font-size:13.5px;color:var(--muted);">Áurea Gestión Inmobiliaria, S.L. · CIF B-12345678 · Madrid · Alta el 18 mar 2026</p>
+                <p style="margin:6px 0 0;font-size:13.5px;color:var(--muted);">Áurea Gestión Inmobiliaria, S.L. · CIF B-12345678 · Madrid · Alta el <span data-founder="start"></span></p>
               </div>
               <div class="pageHeadActions">
-                <button class="btn ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Mensaje</button>
-                <button class="btn danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M4.9 4.9l14.2 14.2"/></svg>Suspender</button>
+                <a class="btn ghost" href="pro-panel.html?ver_como=1" target="_blank" rel="noopener" id="impBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>Ver como esta inmobiliaria</a>
+                <a class="btn ghost" href="admin-mensajes.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Mensaje</a>
+                <button class="btn danger" type="button" id="suspBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M4.9 4.9l14.2 14.2"/></svg><span>Suspender</span></button>
               </div>
             </div>
           </div>
@@ -52,12 +54,18 @@
             <div class="kpi"><p class="kpiLabel">Anuncios activos</p><p class="kpiValue">18</p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>16 cumplen estándar</span></div>
             <div class="kpi"><p class="kpiLabel">Contactos (30 d)</p><p class="kpiValue">47</p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+12 %</span></div>
             <div class="kpi"><p class="kpiLabel">Visualizaciones (30 d)</p><p class="kpiValue">1,2<span class="u">K</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+8 %</span></div>
-            <div class="kpi biz"><p class="kpiLabel">Facturación / mes</p><p class="kpiValue">0,00<span class="u">€</span></p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>Fundadora hasta 18 jun · luego 125,82 €</span></div>
+            <div class="kpi biz"><p class="kpiLabel">Facturación / mes</p><p class="kpiValue">0,00<span class="u">€</span></p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg><span>Gratis hasta el <span data-founder="end" data-fmt="dm"></span> · luego 72,70 €</span></span></div>
           </section>
 
           <div class="twoColWide">
             <!-- Columna principal -->
             <div class="stack-sm" style="gap:22px;">
+              <div class="card" id="bonCard">
+                <div class="spread" style="margin-bottom:4px;flex-wrap:wrap;"><p class="cardLabel mt0">Bonificaciones</p><button class="btn primary sm" id="bonAdd" type="button">+ Añadir bonificación</button></div>
+                <p class="fieldHint" style="margin:0 0 14px;">Se suman entre sí y la agencia las ve en su Facturación. Orden de aplicación: periodo gratis → anuncios gratis → descuento.</p>
+                <ul class="bonList" id="bonList"></ul>
+                <div class="bonCalc" id="bonCalc"></div>
+              </div>
               <div class="card">
                 <p class="cardLabel">Anuncios de la agencia</p>
                 <div class="tableWrap" style="margin-top:6px;">
@@ -78,10 +86,11 @@
                 <p class="cardLabel">Historial de la cuenta</p>
                 <ul class="timeline" style="margin-top:8px;">
                   <li class="now"><span class="tdot"></span><h5>Anuncio rechazado en moderación</h5><p>Dúplex en Calle Goya 41 · falta plano en planta · hace 3 h</p></li>
-                  <li class="done"><span class="tdot"></span><h5>Factura de junio bonificada</h5><p>0,00 € · 18 viviendas · periodo fundadora · 1 jun 2026</p></li>
+                  <li class="done"><span class="tdot"></span><h5>Bonificaciones añadidas</h5><p>5 anuncios gratis al mes y 20 % de descuento desde el <span data-founder="end" data-fmt="dm"></span> · Dirección Homyo · hace 2 días</p></li>
+                  <li class="done"><span class="tdot"></span><h5>Factura de <span data-month="0">este mes</span> bonificada</h5><p>0,00 € · 18 viviendas · periodo fundadora · 1 <span data-month="0" data-fmt="short"></span></p></li>
                   <li class="done"><span class="tdot"></span><h5>Cambios aprobados y publicados</h5><p>Piso reformado en Calle Velázquez 80 · hace 5 h</p></li>
-                  <li class="done"><span class="tdot"></span><h5>Cuenta verificada</h5><p>Documentación y CIF validados por dirección · 18 mar 2026</p></li>
-                  <li class="done"><span class="tdot"></span><h5>Solicitud de alta recibida</h5><p>17 mar 2026</p></li>
+                  <li class="done"><span class="tdot"></span><h5>Cuenta verificada</h5><p>Documentación y CIF validados por dirección · <span data-founder="start"></span></p></li>
+                  <li class="done"><span class="tdot"></span><h5>Solicitud de alta recibida</h5><p>1 día antes de la verificación</p></li>
                 </ul>
               </div>
             </div>
@@ -93,7 +102,8 @@
                 <dl class="kv">
                   <dt>Razón social</dt><dd>Áurea Gestión Inmobiliaria, S.L.</dd>
                   <dt>CIF</dt><dd>B-12345678</dd>
-                  <dt>Plan</dt><dd>Fundadora</dd>
+                  <dt>Plan</dt><dd>Por vivienda · 6,99 €</dd>
+                  <dt>Método de pago</dt><dd>Pendiente</dd>
                   <dt>Agentes</dt><dd>3 activos · 1 invitado</dd>
                   <dt>Ciudad</dt><dd>Madrid</dd>
                   <dt>Zonas</dt><dd>Centro · Chamberí · Salamanca · Moncloa · Chamartín · Tetuán · Pozuelo</dd>
@@ -110,7 +120,7 @@
               </div>
               <div class="callout okc">
                 <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 6 9 17l-5-5"/></svg></span>
-                <div><h4>Sin incidencias abiertas</h4><p>Cuenta al día. Periodo fundadora hasta el 18 de junio; primer cargo el 1 de julio.</p></div>
+                <div><h4>Sin incidencias abiertas</h4><p>Cuenta al día. Periodo fundadora hasta el <span data-founder="end" data-fmt="dmlong"></span>; primer cargo el <span data-founder="charge" data-fmt="dmlong"></span>.</p></div>
               </div>
             </div>
           </div>
@@ -119,9 +129,91 @@
       </div>
     </div>
 
+    <div class="bModal hide" id="bModal">
+      <div class="bBox" role="dialog" aria-labelledby="bTitle">
+        <div class="bHead"><div><h3 id="bTitle">Nueva bonificación</h3><p>Para Áurea Inmobiliaria · 18 viviendas activas</p></div><button class="iconBtn" type="button" data-close aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+        <div class="bBody">
+          <div class="field"><span class="fieldLabel">Tipo</span>
+            <div class="bTypes" id="bTypes">
+              <button class="bType isOn" type="button" data-t="periodo"><b>Periodo gratis</b><span>Todos sus anuncios gratis durante un tiempo.</span></button>
+              <button class="bType" type="button" data-t="cupo"><b>Anuncios gratis</b><span>Un número de anuncios gratis cada mes. La agencia elige cuáles.</span></button>
+              <button class="bType" type="button" data-t="desc"><b>Descuento %</b><span>Rebaja sobre lo que se factura durante X meses.</span></button>
+            </div>
+          </div>
+          <div class="formGrid">
+            <div class="field hide" id="fCupo"><label class="fieldLabel" for="bN">Anuncios gratis al mes</label><input class="input" id="bN" type="number" min="1" value="5" /></div>
+            <div class="field hide" id="fDesc"><label class="fieldLabel" for="bPct">Descuento</label><div class="inputCombo"><span class="prefix">%</span><input class="input" id="bPct" type="number" min="1" max="100" value="20" /></div></div>
+            <div class="field"><label class="fieldLabel" for="bStart">Empieza</label><input class="input" id="bStart" type="date" value="" /></div>
+            <div class="field"><label class="fieldLabel" for="bDur">Duración</label><select class="input" id="bDur"><option value="1">1 mes</option><option value="2">2 meses</option><option value="3" selected>3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option><option value="0">Sin fecha de fin</option></select></div>
+            <div class="field full"><label class="fieldLabel" for="bMsg">Mensaje para la agencia <span class="opt">opcional · lo verá en Facturación</span></label><input class="input" id="bMsg" placeholder="p. ej. Acuerdo de lanzamiento en Madrid" /></div>
+            <div class="field full"><label class="fieldLabel" for="bNote">Motivo interno <span class="opt">solo equipo Homyo</span></label><textarea class="input" id="bNote" rows="2" style="min-height:64px;" placeholder="Por qué se concede, quién lo aprobó…"></textarea></div>
+            <label class="checkRow full"><input type="checkbox" id="bNotify" checked /> Avisar a la agencia por email y en sus notificaciones</label>
+          </div>
+          <div class="bPreview"><span class="k">Así lo verá la agencia</span><span class="t" id="pvT"></span><span class="s" id="pvS"></span></div>
+        </div>
+        <div class="bFoot"><span class="bCost" id="bCost"></span><div class="acts"><button class="btn ghost" type="button" data-close>Cancelar</button><button class="btn primary" type="button" id="bSave">Crear bonificación</button></div></div>
+      </div>
+    </div>
+
     <script>
-      window.ADMIN_PAGE = { active: "profesionales", title: "Áurea Inmobiliaria", crumb: "Profesionales · Ficha de la agencia" };
+      window.ADMIN_PAGE = { active: "profesionales", title: "Áurea Inmobiliaria", crumb: "Profesionales · Ficha de la agencia", live: true };
     </script>
-    <script src="admin-shell.js"></script>
+    <script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="admin-shell.js"></script><script src="admin-cuentas-real.js"></script>
+    <script>
+    (function(){
+      var $=function(i){return document.getElementById(i)};
+      var PRICE=6.99, ACT=18, MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      var IC={periodo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',cupo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg>',desc:'%'};
+      var FD=window.homyoFounder;function iso(x){return x.getFullYear()+'-'+('0'+(x.getMonth()+1)).slice(-2)+'-'+('0'+x.getDate()).slice(-2)}
+      var ST={activa:['ok','Activa'],programada:['infop','Programada'],finalizada:['neutral','Finalizada']};
+      var B=[
+        {t:'periodo',from:iso(FD.start),m:3,st:'activa',msg:'Agencia fundadora',auto:true},
+        {t:'cupo',n:5,from:iso(FD.end),m:6,st:'programada',msg:'Acuerdo de lanzamiento en Madrid',used:5},
+        {t:'desc',pct:20,from:iso(FD.end),m:3,st:'programada',msg:''}
+      ];
+      function d(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+      function fmt(dt){return dt.getDate()+' '+MES[dt.getMonth()]+' '+dt.getFullYear()}
+      function end(b){if(!+b.m)return null;var x=d(b.from);x.setMonth(x.getMonth()+ +b.m);return x}
+      function eur(v){return v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' €'}
+      function title(b){return b.t==='periodo'?'Periodo gratis · todos los anuncios':b.t==='cupo'?b.n+' anuncio'+(b.n==1?'':'s')+' gratis al mes':b.pct+' % de descuento'}
+      function sub(b){return b.t==='periodo'?'Todas las viviendas publicadas se bonifican al 100 %.':b.t==='cupo'?'La agencia elige qué viviendas publicadas entran en el cupo.':'Sobre las viviendas que se facturan tras el cupo.'}
+      function range(b){var e=end(b);return fmt(d(b.from))+' → '+(e?fmt(e):'sin fecha de fin')+(+b.m?' · '+b.m+(b.m==1?' mes':' meses'):'')}
+      function cost(b){return b.t==='periodo'?ACT*PRICE:b.t==='cupo'?Math.min(b.n,ACT)*PRICE:Math.max(ACT-B.filter(function(x){return x.t==='cupo'&&x.st!=='finalizada'}).reduce(function(a,x){return a+x.n},0),0)*PRICE*b.pct/100}
+      function render(){
+        $('bonList').innerHTML=B.map(function(b,i){var s=ST[b.st],off=b.st==='finalizada';
+          var extra=b.t==='cupo'&&!off?' · '+(b.used||0)+' de '+b.n+' elegidas':'';
+          return '<li class="bonItem'+(off?' isOff':'')+'"><span class="bonIc'+(b.t==='desc'?' pct':'')+'">'+IC[b.t]+'</span><div><div class="bonT">'+title(b)+'<span class="pill '+s[0]+'"><span class="dot"></span>'+s[1]+'</span>'+(b.auto?'<span class="pill gold">Automática</span>':'')+'</div><div class="bonS">'+sub(b)+extra+'</div><div class="bonD">'+range(b)+' · ≈ '+eur(cost(b))+'/mes sin facturar</div>'+(b.msg?'<div class="bonMsg">“'+b.msg+'”</div>':'')+'</div><div class="bonAct">'+(off?'':'<button class="btnLink" type="button" data-end="'+i+'">'+(b.st==='programada'?'Cancelar':'Finalizar ya')+'</button>')+'</div></li>'}).join('');
+        var on=B.filter(function(b){return b.st!=='finalizada'});
+        var cupo=on.filter(function(b){return b.t==='cupo'}).reduce(function(a,b){return a+b.n},0);
+        var pct=on.filter(function(b){return b.t==='desc'}).reduce(function(a,b){return a+b.pct},0);pct=Math.min(pct,100);
+        var fact=Math.max(ACT-cupo,0),base=fact*PRICE,tot=base*(1-pct/100);
+        var periodo=on.some(function(b){return b.t==='periodo'&&b.st==='activa'});
+        $('bonCalc').innerHTML=(periodo?'<b>Ahora: 0,00 €/mes</b> (periodo gratis). Después: ':'Cuota con bonificaciones: ')+ACT+' activas'+(cupo?' − <b>'+Math.min(cupo,ACT)+'</b> gratis':'')+' = '+fact+' × 6,99 € = '+eur(base)+(pct?' − <b>'+pct+' %</b>':'')+' = <b>'+eur(tot)+'/mes</b>';
+        document.querySelectorAll('[data-end]').forEach(function(x){x.onclick=function(){var b=B[+x.dataset.end];b.st='finalizada';render();toast('Bonificación finalizada. La agencia ha sido avisada.')}});
+      }
+      var cur='periodo';
+      function setType(t){cur=t;document.querySelectorAll('.bType').forEach(function(x){x.classList.toggle('isOn',x.dataset.t===t)});$('fCupo').classList.toggle('hide',t!=='cupo');$('fDesc').classList.toggle('hide',t!=='desc');upd()}
+      function draft(){return {t:cur,n:Math.max(1,+$('bN').value||1),pct:Math.min(100,Math.max(1,+$('bPct').value||1)),from:$('bStart').value||iso(FD.end),m:$('bDur').value,msg:$('bMsg').value.trim()}}
+      function upd(){var b=draft(),e=end(b);$('pvT').textContent=title(b)+(e?' hasta el '+fmt(e):'');$('pvS').textContent=(b.msg?'“'+b.msg+'” · ':'')+sub(b);$('bCost').innerHTML='Homyo deja de facturar ≈ <b>'+eur(cost(b))+'/mes</b>'}
+      document.querySelectorAll('.bType').forEach(function(x){x.onclick=function(){setType(x.dataset.t)}});
+      ['bN','bPct','bStart','bDur','bMsg'].forEach(function(i){$(i).addEventListener('input',upd)});
+      function open(){$('bStart').value=iso(FD.end);setType('periodo');$('bMsg').value='';$('bNote').value='';$('bModal').classList.remove('hide')}
+      function close(){$('bModal').classList.add('hide')}
+      $('bonAdd').onclick=open;
+      $('impBtn').addEventListener('click',function(){if(window.homyoAudit)homyoAudit('Acceso','Abrió la cuenta en modo lectura','Áurea Inmobiliaria')});
+      var susp=false;
+      $('suspBtn').onclick=function(){
+        if(susp){window.homyoConfirm({title:'¿Reactivar Áurea Inmobiliaria?',body:'Sus 18 viviendas volverán a mostrarse en el buscador y el equipo podrá entrar de nuevo.',ok:'Reactivar'}).then(function(ok){if(!ok)return;susp=false;setSusp();if(window.homyoAudit)homyoAudit('Cuentas','Reactivó una cuenta','Áurea Inmobiliaria');window.homyoToast&&homyoToast('Cuenta reactivada · la agencia ha sido avisada')});return;}
+        window.homyoConfirm({title:'¿Suspender Áurea Inmobiliaria?',body:'Sus 18 viviendas dejarán de mostrarse y el equipo no podrá entrar hasta que la reactives. La agencia recibirá un aviso con el motivo.',ok:'Suspender cuenta',danger:true,field:{label:'Motivo',options:['Impago','Incumplimiento del estándar de calidad','Anuncios duplicados o fraudulentos','Petición de la propia agencia','Otro motivo']}}).then(function(r){if(!r)return;susp=true;setSusp();if(window.homyoAudit)homyoAudit('Cuentas','Suspendió una cuenta','Áurea Inmobiliaria · '+r);window.homyoToast&&homyoToast('Cuenta suspendida · motivo: '+r.toLowerCase(),function(){susp=false;setSusp()})});
+      };
+      function setSusp(){var p=$('acctSt');p.className='pill '+(susp?'dangerp':'ok');p.innerHTML='<span class="dot"></span>'+(susp?'Suspendida':'Verificada');$('suspBtn').className='btn '+(susp?'primary':'danger');$('suspBtn').querySelector('span').textContent=susp?'Reactivar':'Suspender'}
+      document.querySelectorAll('[data-close]').forEach(function(x){x.onclick=close});
+      $('bModal').addEventListener('click',function(e){if(e.target===this)close()});
+      document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+      $('bSave').onclick=function(){var b=draft();b.st=d(b.from)<=FD.today?'activa':'programada';if(window.homyoAudit)homyoAudit('Facturación','Creó una bonificación','Áurea Inmobiliaria · '+title(b));b.used=0;B.push(b);close();render();toast('Bonificación creada'+($('bNotify').checked?' · Áurea Inmobiliaria ha sido avisada':''))};
+      function toast(t){if(t&&window.homyoToast)homyoToast(t)}
+      render();
+    })();
+    </script>
   </body>
 </html>

@@ -496,7 +496,7 @@
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
       import { getSession, openLoginModalOrAlert } from "./bh-user-data.js";
-      import { getConversation, appendMessage, deleteConversation } from "./bh-conversations.js?v=1";
+      import { getConversation, appendMessage, deleteConversation, syncFromServer, markRead } from "./bh-conversations.js?v=3";
 
       initLayout({ showMiniSearch: false });
       initAuth();
@@ -607,6 +607,7 @@
           return;
         }
         if (!listingId){ showError(); return; }
+        await syncFromServer(session.user.id);
         conv = getConversation(session.user.id, listingId);
         if (!conv){ showError(); return; }
 
@@ -618,6 +619,15 @@
         $("crumbCurrent").textContent = snap.address || "Conversación";
 
         renderThread(conv);
+        markRead(session.user.id, listingId);
+        // Respuestas nuevas de la inmobiliaria
+        setInterval(async () => {
+          if (document.hidden) return;
+          const before = (conv.messages || []).length;
+          if (!(await syncFromServer(session.user.id))) return;
+          const fresh = getConversation(session.user.id, listingId);
+          if (fresh && (fresh.messages || []).length !== before) { conv = fresh; renderThread(conv); markRead(session.user.id, listingId); }
+        }, 20000);
       })().catch(err => { console.error(err); showError(); });
 
       // ----- composer -----

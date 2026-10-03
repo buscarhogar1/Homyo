@@ -2513,8 +2513,13 @@ body{
   background: #fff !important;
   transition: border-color .15s ease, box-shadow .15s ease !important;
 }
+.fInp{
+  font-size: 13.5px !important;
+  font-variant-numeric: tabular-nums;
+}
 .fInp::placeholder{
   color: #b9b1a6 !important;
+  font-size: 12px;
 }
 .fInp:hover,
 .fSel:hover{

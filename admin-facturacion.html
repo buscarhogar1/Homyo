@@ -17,6 +17,30 @@
     <title>Facturación e ingresos · Homyo Admin</title>
     <link rel="stylesheet" href="pro.css" />
     <link rel="stylesheet" href="admin.css" />
+  <style>
+      .barChart .cl{text-transform:capitalize}
+      .kv .sep{border-top:1px solid var(--line);padding-top:10px}
+      .kv .strongK{color:var(--ink);font-weight:600}
+      .kv dt small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+      .bridge{display:flex;flex-direction:column}
+      .brRow{display:grid;grid-template-columns:minmax(0,210px) minmax(0,1fr) 112px;gap:16px;align-items:center;padding:10px 0;border-top:1px solid var(--lineSoft)}
+      .brRow:first-child{border-top:0;padding-top:0}
+      .brRow.total{border-top:1px solid var(--line);margin-top:2px}
+      .brL{font-size:13.5px;color:var(--ink)}
+      .brL b{font-weight:600}
+      .brL small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+      .brT{position:relative;height:22px;background:repeating-linear-gradient(90deg,transparent 0 calc(25% - 1px),var(--lineSoft) calc(25% - 1px) 25%)}
+      .brB{position:absolute;top:0;bottom:0;border-radius:3px;min-width:3px}
+      .brB.base{background:var(--granateSoft);opacity:.55}
+      .brB.up{background:var(--good)}
+      .brB.down{background:var(--danger)}
+      .brB.total{background:var(--granate)}
+      .brV{text-align:right;font-family:'Raleway',sans-serif;font-weight:600;font-size:13.5px;color:var(--ink);white-space:nowrap}
+      .brV.up{color:var(--good)}
+      .brV.down{color:var(--danger)}
+      .brNote{font-size:12px;color:var(--muted);margin:12px 0 0;line-height:1.5}
+      @media (max-width:640px){.brRow{grid-template-columns:minmax(0,1fr) auto;row-gap:8px}.brT{grid-column:1/-1;grid-row:2}}
+    </style>
   <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
   <body class="adminTheme">
     <div class="proLayout">
@@ -44,7 +68,7 @@
 
           <!-- KPIs DE INGRESOS -->
           <section class="grid c4" style="margin-bottom:8px;">
-            <div class="kpi biz"><p class="kpiLabel">Ingresos recurrentes (MRR)</p><p class="kpiValue">27.708<span class="u">€</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+9,9 % vs. mayo</span></div>
+            <div class="kpi biz"><p class="kpiLabel">Ingresos recurrentes (MRR)</p><p class="kpiValue">27.708<span class="u">€</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg><span>+9,9 % vs. <span data-month="-1">mes anterior</span></span></span></div>
             <div class="kpi biz"><p class="kpiLabel">Facturado este mes</p><p class="kpiValue">26.366<span class="u">€</span></p><span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>124 facturas emitidas</span></div>
             <div class="kpi"><p class="kpiLabel">Viviendas facturables</p><p class="kpiValue">3.964</p><span class="kpiFoot flat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>× 6,99 € / mes</span></div>
             <div class="kpi"><p class="kpiLabel">Impagos a reintentar</p><p class="kpiValue" style="color:var(--danger)">97,86<span class="u">€</span></p><span class="kpiFoot down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>3 cobros fallidos</span></div>
@@ -55,23 +79,25 @@
             <div class="card">
               <div class="spread" style="margin-bottom:18px;"><p class="cardLabel mt0">Evolución de ingresos recurrentes</p><span class="pill gold">Últimos 8 meses</span></div>
               <div class="barChart" id="mrrChart">
-                <div class="col"><span class="cv">14,1K</span><div class="bar" style="height:48%"></div><span class="cl">Oct</span></div>
-                <div class="col"><span class="cv">16,3K</span><div class="bar" style="height:56%"></div><span class="cl">Nov</span></div>
-                <div class="col"><span class="cv">18,0K</span><div class="bar" style="height:62%"></div><span class="cl">Dic</span></div>
-                <div class="col"><span class="cv">19,7K</span><div class="bar" style="height:68%"></div><span class="cl">Ene</span></div>
-                <div class="col"><span class="cv">21,9K</span><div class="bar" style="height:75%"></div><span class="cl">Feb</span></div>
-                <div class="col"><span class="cv">23,8K</span><div class="bar" style="height:82%"></div><span class="cl">Mar</span></div>
-                <div class="col"><span class="cv">25,2K</span><div class="bar" style="height:88%"></div><span class="cl">Abr</span></div>
-                <div class="col"><span class="cv">27,7K</span><div class="bar alt" style="height:97%"></div><span class="cl">May</span></div>
+                <div class="col"><span class="cv">14,1K</span><div class="bar" style="height:48%"></div><span class="cl" data-month="-7" data-fmt="short"></span></div>
+                <div class="col"><span class="cv">16,3K</span><div class="bar" style="height:56%"></div><span class="cl" data-month="-6" data-fmt="short"></span></div>
+                <div class="col"><span class="cv">18,0K</span><div class="bar" style="height:62%"></div><span class="cl" data-month="-5" data-fmt="short"></span></div>
+                <div class="col"><span class="cv">19,7K</span><div class="bar" style="height:68%"></div><span class="cl" data-month="-4" data-fmt="short"></span></div>
+                <div class="col"><span class="cv">21,9K</span><div class="bar" style="height:75%"></div><span class="cl" data-month="-3" data-fmt="short"></span></div>
+                <div class="col"><span class="cv">23,8K</span><div class="bar" style="height:82%"></div><span class="cl" data-month="-2" data-fmt="short"></span></div>
+                <div class="col"><span class="cv">25,2K</span><div class="bar" style="height:88%"></div><span class="cl" data-month="-1" data-fmt="short"></span></div>
+                <div class="col"><span class="cv">27,7K</span><div class="bar alt" style="height:97%"></div><span class="cl" data-month="0" data-fmt="short"></span></div>
               </div>
             </div>
             <div class="stack-sm" style="gap:16px;">
               <div class="card">
-                <p class="cardLabel">Desglose del mes</p>
+                <p class="cardLabel">Del MRR a lo cobrado · <span data-month="0"></span></p>
                 <dl class="kv" style="margin-top:4px;">
-                  <dt>Suscripciones de vivienda (3.964 × 6,99 €)</dt><dd>27.708 €</dd>
-              <dt>Bonificación fundadoras (192 viviendas)</dt><dd class="amount neg">−1.342 €</dd>
-                  <dt style="border-top:1px solid var(--line);padding-top:10px;">Total neto</dt><dd style="border-top:1px solid var(--line);padding-top:10px;" class="amount">26.366 €</dd>
+                  <dt>MRR bruto (3.964 × 6,99 €)</dt><dd>27.708,36 €</dd>
+                  <dt>Bonificaciones activas</dt><dd class="amount neg">−1.342,00 €</dd>
+                  <dt class="sep">Facturado</dt><dd class="sep amount">26.366,36 €</dd>
+                  <dt>Cobros fallidos</dt><dd class="amount neg">−97,86 €</dd>
+                  <dt class="sep strongK">Cobrado</dt><dd class="sep amount strongK">26.268,50 €</dd>
                 </dl>
               </div>
               <div class="card warm">
@@ -81,6 +107,47 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- MOVIMIENTO DEL MRR -->
+          <div class="sectionHead"><h2>Movimiento del MRR</h2><span class="pill ok">+2.495,43 € netos este mes</span></div>
+          <div class="twoColWide">
+            <div class="card">
+              <div class="bridge">
+                <div class="brRow"><span class="brL">MRR de <span data-month="-1"></span><small>3.607 viviendas</small></span><div class="brT"><span class="brB base" style="left:0;width:27.57%"></span></div><span class="brV">25.212,93 €</span></div>
+                <div class="brRow"><span class="brL">Viviendas nuevas<small>+302 de agencias existentes</small></span><div class="brT"><span class="brB up" style="left:27.57%;width:47.97%"></span></div><span class="brV up">+2.110,98 €</span></div>
+                <div class="brRow"><span class="brL">Agencias nuevas<small>6 altas · 126 viviendas</small></span><div class="brT"><span class="brB up" style="left:75.54%;width:20.02%"></span></div><span class="brV up">+880,74 €</span></div>
+                <div class="brRow"><span class="brL">Viviendas retiradas<small>59 vendidas, alquiladas o retiradas</small></span><div class="brT"><span class="brB down" style="left:86.19%;width:9.37%"></span></div><span class="brV down">−412,41 €</span></div>
+                <div class="brRow"><span class="brL">Bajas de agencias<small>2 agencias · 12 viviendas</small></span><div class="brT"><span class="brB down" style="left:84.28%;width:1.91%"></span></div><span class="brV down">−83,88 €</span></div>
+                <div class="brRow total"><span class="brL"><b>MRR de <span data-month="0"></span></b><small>3.964 viviendas</small></span><div class="brT"><span class="brB total" style="left:0;width:84.28%"></span></div><span class="brV">27.708,36 €</span></div>
+              </div>
+              <p class="brNote">Escala desde 24.000 € para que se aprecien los movimientos.</p>
+            </div>
+            <div class="card">
+              <p class="cardLabel">Ingresos por activar</p>
+              <p class="brNote" style="margin:0 0 14px;">Bonificaciones que terminan y empezarán a facturarse.</p>
+              <dl class="kv">
+                <dt>Próximos 30 días<small>Áurea Inmobiliaria</small></dt><dd class="amount">+125,82 €</dd>
+                <dt>Entre 30 y 60 días<small>Nido Urbano, Casa Norte Gestión</small></dt><dd class="amount">+118,83 €</dd>
+                <dt>Entre 60 y 90 días<small>Llaves del Faro</small></dt><dd class="amount">+3,15 €</dd>
+                <dt class="sep strongK">Total en 90 días</dt><dd class="sep amount strongK">+247,80 €/mes</dd>
+              </dl>
+              <p class="brNote" style="margin-top:14px;">Las otras 8 agencias bonificadas tienen cupos sin fecha de fin (1.094,20 €/mes).</p>
+            </div>
+          </div>
+
+          <!-- BONIFICACIONES -->
+          <div class="sectionHead"><h2>Bonificaciones activas</h2><span class="pill gold">12 agencias · −1.342 €/mes</span></div>
+          <div class="tableWrap">
+            <table class="proTable stack">
+              <thead><tr><th>Inmobiliaria</th><th>Bonificación</th><th>Vigencia</th><th class="right">Sin facturar / mes</th><th></th></tr></thead>
+              <tbody>
+                <tr><td data-th="Inmobiliaria"><div class="tName"><span class="avatar sm">ÁI</span><span><span class="tn1">Áurea Inmobiliaria</span><span class="tn2">+2 programadas · cupo 5 y −20 %</span></span></div></td><td data-th="Bonificación">Periodo gratis · fundadora</td><td data-th="Vigencia"><span class="pill warnp">Termina en <span data-founder="left"></span> días</span></td><td data-th="Sin facturar" class="right amount neg">125,82 €</td><td class="noLabel"><div class="rowActions"><a class="btn ghost sm" href="admin-profesional-detalle.html">Gestionar</a></div></td></tr>
+                <tr><td data-th="Inmobiliaria"><div class="tName"><span class="avatar sm">NU</span><span class="tn1">Nido Urbano</span></div></td><td data-th="Bonificación">Periodo gratis · fundadora</td><td data-th="Vigencia">hasta el 2 <span data-month="2" data-fmt="short"></span></td><td data-th="Sin facturar" class="right amount neg">97,86 €</td><td class="noLabel"><div class="rowActions"><a class="btn ghost sm" href="admin-profesional-detalle.html">Gestionar</a></div></td></tr>
+                <tr><td data-th="Inmobiliaria"><div class="tName"><span class="avatar sm">CN</span><span class="tn1">Casa Norte Gestión</span></div></td><td data-th="Bonificación">3 anuncios gratis al mes</td><td data-th="Vigencia">hasta el 30 <span data-month="1" data-fmt="short"></span></td><td data-th="Sin facturar" class="right amount neg">20,97 €</td><td class="noLabel"><div class="rowActions"><a class="btn ghost sm" href="admin-profesional-detalle.html">Gestionar</a></div></td></tr>
+                <tr><td data-th="Inmobiliaria"><div class="tName"><span class="avatar sm">LF</span><span class="tn1">Llaves del Faro</span></div></td><td data-th="Bonificación">15 % de descuento</td><td data-th="Vigencia">hasta el 31 <span data-month="2" data-fmt="short"></span></td><td data-th="Sin facturar" class="right amount neg">3,15 €</td><td class="noLabel"><div class="rowActions"><a class="btn ghost sm" href="admin-profesional-detalle.html">Gestionar</a></div></td></tr>
+              </tbody>
+            </table>
           </div>
 
           <!-- IMPAGOS -->
@@ -102,12 +169,12 @@
             <table class="proTable stack">
               <thead><tr><th>Factura</th><th>Inmobiliaria</th><th>Fecha</th><th class="right">Viviendas</th><th class="right">Importe</th><th>Estado</th></tr></thead>
               <tbody>
-                <tr><td data-th="Factura" class="strong">HOM-2026-0412</td><td data-th="Inmobiliaria">Domus Capital</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">41</td><td data-th="Importe" class="right amount">286,59 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
-                <tr><td data-th="Factura" class="strong">HOM-2026-0411</td><td data-th="Inmobiliaria">Ribera Homes</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">34</td><td data-th="Importe" class="right amount">237,66 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
-                <tr><td data-th="Factura" class="strong">HOM-2026-0410</td><td data-th="Inmobiliaria">Hogar y Terrazas</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">27</td><td data-th="Importe" class="right amount">188,73 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
-                <tr><td data-th="Factura" class="strong">HOM-2026-0409</td><td data-th="Inmobiliaria">Casa Norte Gestión</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">21</td><td data-th="Importe" class="right amount">146,79 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
-                <tr><td data-th="Factura" class="strong">HOM-2026-0408</td><td data-th="Inmobiliaria">Áurea Inmobiliaria</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">18</td><td data-th="Importe" class="right amount">0,00 €</td><td data-th="Estado"><span class="pill gold">Bonificada</span></td></tr>
-                <tr><td data-th="Factura" class="strong">HOM-2026-0407</td><td data-th="Inmobiliaria">Pisos Marina</td><td data-th="Fecha">1 jun 2026</td><td data-th="Viviendas" class="right num">9</td><td data-th="Importe" class="right amount neg">62,91 €</td><td data-th="Estado"><span class="pill dangerp">Impagada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0412</td><td data-th="Inmobiliaria">Domus Capital</td><td data-th="Fecha">1 <span data-month="0" data-fmt="short"></span></td><td data-th="Viviendas" class="right num">41</td><td data-th="Importe" class="right amount">286,59 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0411</td><td data-th="Inmobiliaria">Ribera Homes</td><td data-th="Fecha">1 <span data-month="0" data-fmt="short"></span></td><td data-th="Viviendas" class="right num">34</td><td data-th="Importe" class="right amount">237,66 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0410</td><td data-th="Inmobiliaria">Hogar y Terrazas</td><td data-th="Fecha">1 <span data-month="0" data-fmt="short"></span></td><td data-th="Viviendas" class="right num">27</td><td data-th="Importe" class="right amount">188,73 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0409</td><td data-th="Inmobiliaria">Casa Norte Gestión</td><td data-th="Fecha">1 <span data-month="0" data-fmt="short"></span></td><td data-th="Viviendas" class="right num">21</td><td data-th="Importe" class="right amount">146,79 €</td><td data-th="Estado"><span class="pill ok">Pagada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0408</td><td data-th="Inmobiliaria">Áurea Inmobiliaria</td><td data-th="Fecha">1 <span data-month="0" data-fmt="short"></span></td><td data-th="Viviendas" class="right num">18</td><td data-th="Importe" class="right amount">0,00 €</td><td data-th="Estado"><span class="pill gold">Bonificada</span></td></tr>
+                <tr><td data-th="Factura" class="strong">HOM-2026-0407</td><td data-th="Inmobiliaria">Pisos Marina</td><td data-th="Fecha">1 <span data-month="0" data-fmt="short"></span></td><td data-th="Viviendas" class="right num">9</td><td data-th="Importe" class="right amount neg">62,91 €</td><td data-th="Estado"><span class="pill dangerp">Impagada</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -119,7 +186,7 @@
     <script>
       window.ADMIN_PAGE = { active: "facturacion", title: "Facturación e ingresos", crumb: "Negocio · Cobros y facturas" };
     </script>
-    <script src="admin-shell.js"></script>
+    <script src="homyo-mode.js"></script><script src="admin-shell.js"></script>
     <script>
       // Segmento de periodo (solo cambia el rótulo del gráfico, demo)
       (function () {

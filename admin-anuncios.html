@@ -1,142 +1,387 @@
 <!doctype html>
 <html lang="es">
-  <head>
-  <!-- Icono de acceso directo (pantalla de inicio) -->
-  <link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png?v=10" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png?v=10" />
-  <link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png?v=10" />
-  <link rel="manifest" href="./site.webmanifest" />
-  <meta name="theme-color" content="#8C1F2D" />
-  <meta name="apple-mobile-web-app-title" content="Homyo" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
+<head>
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png?v=10" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png?v=10" />
+<link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png?v=10" />
+<link rel="manifest" href="./site.webmanifest" />
+<meta name="theme-color" content="#8C1F2D" />
+<meta name="apple-mobile-web-app-title" content="Homyo" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Moderación de anuncios · Homyo Admin</title>
+<link rel="stylesheet" href="pro.css" />
+<link rel="stylesheet" href="admin.css" />
+<style>
+.modStats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media (max-width:760px){.modStats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.modStat{background:#fff;border:1px solid var(--line);border-radius:var(--rad);padding:14px 16px}
+.modStat .n{font-family:'Raleway',sans-serif;font-size:24px;font-weight:500;color:var(--ink);line-height:1}
+.modStat .n.bad{color:var(--danger)}
+.modStat .n small{font-size:13px;color:var(--muted);font-weight:500;margin-left:3px}
+.modStat .l{font-size:11.5px;color:var(--muted);margin-top:7px}
+.modLayout{display:grid;grid-template-columns:minmax(0,350px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:980px){.modLayout{grid-template-columns:1fr}}
+.qList{background:#fff;border:1px solid var(--line);border-radius:var(--rad);overflow:hidden}
+.qTabs{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.qItem{appearance:none;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;align-items:center;width:100%;padding:13px 16px;border:0;border-top:1px solid var(--lineSoft);background:#fff;text-align:left;font:inherit;color:inherit;cursor:pointer;transition:background .14s ease}
+.qItem:first-child{border-top:0}
+.qItem:hover{background:var(--bg)}
+.qItem.isSel{background:var(--cardWarm)}
+.qItem.isSel h4{color:var(--granate)}
+.qItem h4{margin:0;font-family:'Raleway',sans-serif;font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qItem .qm{font-size:12px;color:var(--muted);grid-column:1}
+.qItem .qf{font-size:11.5px;grid-column:1;display:flex;gap:6px;align-items:center;color:var(--danger)}
+.qItem .qf.warn{color:var(--warn)}
+.qItem .qf svg{width:12px;height:12px;flex:0 0 auto}
+.qItem .qw{grid-column:2;grid-row:1/4}
+.qEmpty{padding:28px 18px;text-align:center;font-size:13px;color:var(--muted)}
+.mdCard{background:#fff;border:1px solid var(--line);border-radius:var(--rad);overflow:hidden}
+.mdGallery{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:118px 118px;gap:3px}
+.mdGallery .ph{background:repeating-linear-gradient(135deg,#efe7d8 0 10px,#eadfcc 10px 20px);display:grid;place-items:center}
+.mdGallery .ph:first-child{grid-row:1/3}
+.mdGallery .ph span{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--ink2);background:rgba(255,255,255,.75);padding:3px 7px;border-radius:3px}
+.mdBody{padding:22px 24px;display:flex;flex-direction:column;gap:18px}
+.mdTop{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.mdTop h2{margin:0 0 5px;font-family:'Raleway',sans-serif;font-size:22px;font-weight:500;color:var(--ink);letter-spacing:-.3px}
+.mdTop .meta{font-size:13px;color:var(--ink2)}
+.mdTop .meta a{color:var(--granate);font-weight:600;text-decoration:none}
+.mdTop .meta a:hover{text-decoration:underline}
+.mdFacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--rad);overflow:hidden}
+@media (max-width:620px){.mdFacts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mdFacts div{background:#fff;padding:11px 13px}
+.mdFacts .k{font-size:11px;color:var(--muted);letter-spacing:.04em}
+.mdFacts .v{font-family:'Raleway',sans-serif;font-size:14.5px;font-weight:600;color:var(--ink);margin-top:3px}
+.mdSub{font-family:'Raleway',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.checkGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:620px){.checkGrid{grid-template-columns:1fr}}
+.ck{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border:1px solid var(--line);border-radius:var(--rad);font-size:13px;line-height:1.4}
+.ck svg{width:16px;height:16px;flex:0 0 auto;margin-top:1px}
+.ck b{display:block;font-weight:600;color:var(--ink)}
+.ck span{color:var(--ink2);font-size:12px}
+.ck.ok svg{color:var(--good)}
+.ck.bad{border-color:rgba(176,50,71,.25);background:var(--dangerSoft)}
+.ck.bad svg,.ck.bad b{color:var(--danger)}
+.ck.warn{border-color:rgba(168,116,27,.28);background:var(--warnSoft)}
+.ck.warn svg,.ck.warn b{color:var(--warn)}
+.mdActions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:14px 24px;border-top:1px solid var(--line);background:var(--bg)}
+.mdActions .grow{flex:1 1 auto}
+.mdActions .navBtns{display:flex;gap:6px}
+.rjPanel{display:none;border-top:1px solid var(--line);padding:20px 24px 22px;background:#fff}
+.rjPanel.isOn{display:block}
+.rjReasons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
+@media (max-width:620px){.rjReasons{grid-template-columns:1fr}}
+.rjReason{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:var(--rad);cursor:pointer;font-size:13px;color:var(--ink2);transition:all .14s ease}
+.rjReason:hover{border-color:rgba(140,31,45,.3)}
+.rjReason input{accent-color:var(--granate);width:15px;height:15px;margin:0;flex:0 0 auto}
+.rjReason.isOn{border-color:var(--granate);background:var(--cardWarm);color:var(--ink)}
+.rjReason kbd{margin-left:auto}
+.rjMsg{width:100%;box-sizing:border-box;min-height:170px;border:1px solid var(--line);border-radius:var(--rad);padding:12px 14px;font:inherit;font-size:13px;line-height:1.55;color:var(--ink);resize:vertical;background:var(--bg)}
+.rjMsg:focus{outline:none;border-color:var(--granate);background:#fff}
+.rjFoot{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+.rjFoot .hint{margin-right:auto;font-size:12px;color:var(--muted)}
+.kbdHint{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:12px;align-items:center}
+.kbdHint span{display:inline-flex;gap:5px;align-items:center}
+.decided{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+a{color:var(--granate)}
+a:hover{color:var(--granateDark)}
+</style>
+<style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style>
+</head>
+<body class="adminTheme">
+<div class="proLayout">
+<aside class="proSidebar" id="proSidebar"></aside>
+<div class="sbScrim" id="sbScrim"></div>
+<div class="proContent">
+<header class="proTopbar" id="proTopbar"></header>
+<main class="proMain" data-screen-label="Moderación">
+<div class="pageHead">
+<div class="pageHeadMain">
+<p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>Operación · Calidad</p>
+<h1 class="pageTitle">Moderación de <strong>anuncios</strong></h1>
+<p class="pageLede">Cola de revisión de calidad, de más antiguo a más reciente. Cada vivienda debe cumplir el estándar de Homyo —plano, fotos, certificado y datos verificables— antes de publicarse.</p>
+</div>
+<div class="pageHeadActions"><span class="pill warnp" id="slaPill" style="align-self:center;"><span class="dot"></span><span id="slaTxt"></span></span></div>
+</div>
+<div class="modStats">
+<div class="modStat"><div class="n" id="stQueue">9</div><div class="l">En cola</div></div>
+<div class="modStat"><div class="n" id="stOldest">14<small>h</small></div><div class="l">Más antiguo · objetivo &lt; 24 h</div></div>
+<div class="modStat"><div class="n" id="stAvg">6,4<small>h</small></div><div class="l">Espera media</div></div>
+<div class="modStat"><div class="n" id="stDone">14</div><div class="l">Revisados hoy</div></div>
+</div>
+<div class="modLayout">
+<div>
+<div class="qList">
+<div class="qTabs"><button class="fchip isOn" data-tab="cola" type="button">En cola <span class="c" id="cQueue">9</span></button><button class="fchip" data-tab="hechos" type="button">Revisados en esta sesión <span class="c" id="cDone">0</span></button></div>
+<div id="qItems"></div>
+</div>
+<div class="kbdHint"><span><kbd>J</kbd><kbd>K</kbd> siguiente / anterior</span><span><kbd>A</kbd> aprobar</span><span><kbd>R</kbd> rechazar</span><span><kbd>Esc</kbd> cerrar</span></div>
+</div>
+<div class="mdCard" id="mdCard"></div>
+</div>
+</main>
+</div>
+</div>
+<script>
+window.ADMIN_PAGE = { active: "anuncios", title: "Moderación de anuncios", crumb: "Operación · Cola de calidad", live: true };
+</script>
+<script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="admin-shell.js"></script>
+<script>
+(function () {
+  var REALM = !!(window.HOMYO && HOMYO.mode === "real"), LOADING = REALM, LOAD_ERR = "";
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  var Q = [
+    { id:"colon8", t:"Piso en Calle Colón 8", ag:"Ribera Homes", city:"Valencia", op:"Venta", m2:96, price:"289.000 €", ppm:"3.010 €/m²", ref:"RH-2291", wait:840, plano:true, fotos:14, cert:"ok", certL:"D", datos:true },
+    { id:"getxo", t:"Casa adosada en Getxo", ag:"Casa Norte Gestión", city:"Bilbao", op:"Venta", m2:160, price:"520.000 €", ppm:"3.250 €/m²", ref:"CN-0418", wait:780, plano:false, fotos:9, cert:"ok", certL:"C", datos:true },
+    { id:"sagasta", t:"Piso en Calle Sagasta 20", ag:"Hogar y Terrazas", city:"Madrid", op:"Venta", m2:112, price:"615.000 €", ppm:"5.491 €/m²", ref:"HT-1180", wait:540, plano:true, fotos:11, cert:"ok", certL:"E", datos:true, dup:true },
+    { id:"fuencarral", t:"Estudio en Calle Fuencarral 120", ag:"Áurea Inmobiliaria", city:"Madrid", op:"Alquiler", m2:38, price:"1.150 €/mes", ppm:"30,3 €/m²", ref:"AI-0207", wait:360, plano:true, fotos:7, cert:"ok", certL:"E", datos:true, ficha:["fianza","tipo de alquiler"] },
+    { id:"aravaca", t:"Chalet con jardín, Aravaca", ag:"Domus Capital", city:"Madrid", op:"Venta", m2:240, price:"980.000 €", ppm:"4.083 €/m²", ref:"DC-3302", wait:240, plano:true, fotos:22, cert:"tramite", datos:true },
+    { id:"russafa", t:"Habitación en Calle Sueca 14", ag:"Alquiler Claro", city:"Valencia", op:"Habitación", m2:14, price:"420 €/mes", ppm:"30,0 €/m²", ref:"AC-0091", wait:180, plano:true, fotos:5, cert:"ok", certL:"F", datos:true, ficha:["perfil de los compañeros","normas de convivencia"] },
+    { id:"real40", t:"Piso en Calle Real 40", ag:"Llaves del Faro", city:"A Coruña", op:"Venta", m2:85, price:"198.000 €", ppm:"2.329 €/m²", ref:"LF-0520", wait:120, plano:true, fotos:12, cert:"ok", certL:"D", datos:true },
+    { id:"santantoni", t:"Bajo con patio en Carrer de Sant Antoni", ag:"Costa Brava Homes", city:"Girona", op:"Venta", m2:70, price:"235.000 €", ppm:"3.357 €/m²", ref:"CB-0133", wait:60, plano:true, fotos:10, cert:"ok", certL:"E", datos:false },
+    { id:"ercilla", t:"Loft en Calle Ercilla 30", ag:"Casa Norte Gestión", city:"Bilbao", op:"Venta", m2:64, price:"245.000 €", ppm:"3.828 €/m²", ref:"CN-0431", wait:25, plano:true, fotos:8, cert:"ok", certL:"D", datos:true, ficha:["parking","trastero","orientación del exterior"] }
+  ];
+  var REASONS = [
+    { id:"plano", l:"Falta plano en planta", m:"Falta el plano en planta de la vivienda." },
+    { id:"fotos", l:"Fotografías insuficientes", m:"Necesitamos al menos 6 fotografías nítidas de las estancias principales." },
+    { id:"cert", l:"Falta certificado energético", m:"Falta el certificado de eficiencia energética o el justificante de que está en trámite." },
+    { id:"ficha", l:"Ficha mínima incompleta", m:"Faltan datos obligatorios de la ficha, que el buscador usa como filtros:" },
+    { id:"datos", l:"Dirección o catastro no verificables", m:"No hemos podido verificar la dirección ni la referencia catastral. Revisa ambos datos." },
+    { id:"dup", l:"Posible duplicado", m:"Parece duplicar un anuncio ya publicado por otra agencia. Si tienes el encargo en exclusiva, adjunta la nota de encargo." },
+    { id:"precio", l:"Precio o superficie incoherentes", m:"El precio o la superficie no parecen coherentes con los datos catastrales." }
+  ];
+  var BASE_DONE = 14, KEY = "homyo_admin_mod_state";
+  var state = {};
+  if (REALM) { Q = []; BASE_DONE = 0; }
+  else try { state = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+  function save() { if (REALM) return; try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+  var tab = "cola", selId = null, rejOpen = false, rejSel = [], msgDirty = false, msgText = "";
 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="robots" content="noindex,nofollow" />
-    <title>Moderación de anuncios · Homyo Admin</title>
-    <link rel="stylesheet" href="pro.css" />
-    <link rel="stylesheet" href="admin.css" />
-    <style>
-      .modGrid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
-      @media (max-width:860px){ .modGrid{ grid-template-columns:1fr; } }
-      .modCard{ border:1px solid var(--line); border-radius:var(--rad); background:#fff; overflow:hidden; display:flex; flex-direction:column; }
-      .modThumb{ height:150px; background:linear-gradient(135deg,#efe7d8,#e4d8c2); position:relative; display:grid; place-items:center; color:var(--granate); }
-      .modThumb svg{ width:38px; height:38px; opacity:.4; }
-      .modThumb .tag{ position:absolute; top:12px; left:12px; }
-      .modBody{ padding:18px 20px; display:flex; flex-direction:column; gap:12px; flex:1 1 auto; }
-      .modBody h3{ margin:0; font-family:'Raleway'; font-size:17px; font-weight:600; color:var(--ink); }
-      .modBody .meta{ font-size:12.5px; color:var(--muted); }
-      .checkList{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px; }
-      .checkList li{ display:flex; align-items:center; gap:9px; font-size:13px; color:var(--ink2); }
-      .checkList li svg{ width:15px; height:15px; flex:0 0 auto; }
-      .checkList li.ok svg{ color:var(--good); }
-      .checkList li.bad{ color:var(--danger); }
-      .checkList li.bad svg{ color:var(--danger); }
-      .modActions{ display:flex; gap:8px; margin-top:auto; padding-top:4px; }
-      .modActions .btn{ flex:1 1 auto; }
-    </style>
-  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
-  <body class="adminTheme">
-    <div class="proLayout">
-      <aside class="proSidebar" id="proSidebar"></aside>
-      <div class="sbScrim" id="sbScrim"></div>
-      <div class="proContent">
-        <header class="proTopbar" id="proTopbar"></header>
-        <main class="proMain" data-screen-label="Moderación">
+  function svg(p, w) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 2) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>'; }
+  var I_OK = '<path d="M20 6 9 17l-5-5"/>', I_X = '<path d="M18 6 6 18"/><path d="M6 6l12 12"/>', I_W = '<path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>';
+  function fmtWait(m) { return m >= 60 ? Math.floor(m / 60) + " h" : m + " min"; }
+  function waitTone(m) { return m >= 720 ? "dangerp" : m >= 360 ? "warnp" : "neutral"; }
+  function fails(it) {
+    var f = [], RU = (window.HOMYO && HOMYO.RULES) || {};
+    if (RU.require_plan !== false && !it.plano) f.push("plano");
+    if (it.fotos < (RU.min_photos || 6)) f.push("fotos");
+    if (RU.require_cert !== false && it.cert === "no") f.push("cert");
+    if (it.ficha && it.ficha.length) f.push("ficha");
+    if (!it.datos) f.push("datos");
+    return f;
+  }
+  function queue() { return Q.filter(function (it) { return !state[it.id]; }).sort(function (a, b) { return b.wait - a.wait; }); }
+  function reviewed() { return Q.filter(function (it) { return state[it.id]; }).sort(function (a, b) { return state[b.id].at - state[a.id].at; }); }
+  function visible() { return tab === "cola" ? queue() : reviewed(); }
+  function byId(id) { for (var i = 0; i < Q.length; i++) if (Q[i].id === id) return Q[i]; return null; }
 
-          <div class="pageHead">
-            <div class="pageHeadMain">
-              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Operación · Calidad</p>
-              <h1 class="pageTitle">Moderación de <strong>anuncios</strong></h1>
-              <p class="pageLede">Cola de revisión de calidad. Cada vivienda debe cumplir el estándar de Homyo —plano, fotos, certificado y datos verificables— antes de publicarse.</p>
-            </div>
-            <div class="pageHeadActions">
-              <span class="pill warnp" style="align-self:center;"><span class="dot"></span>2 superan las 12 h</span>
-            </div>
-          </div>
+  function renderStats() {
+    var q = queue(), n = q.length, done = reviewed();
+    document.getElementById("stQueue").textContent = n;
+    document.getElementById("cQueue").textContent = n;
+    document.getElementById("cDone").textContent = done.length;
+    document.getElementById("stDone").textContent = BASE_DONE + done.length;
+    var old = n ? q[0].wait : 0, el = document.getElementById("stOldest");
+    el.innerHTML = n ? (old >= 60 ? Math.floor(old / 60) + "<small>h</small>" : old + "<small>min</small>") : "—";
+    el.classList.toggle("bad", old >= 720);
+    var avg = n ? q.reduce(function (s, it) { return s + it.wait; }, 0) / n / 60 : 0;
+    document.getElementById("stAvg").innerHTML = n ? avg.toFixed(1).replace(".", ",") + "<small>h</small>" : "—";
+    var over = q.filter(function (it) { return it.wait >= 720; }).length, pill = document.getElementById("slaPill");
+    document.getElementById("slaTxt").textContent = over ? (over === 1 ? "1 supera las 12 h" : over + " superan las 12 h") : "Cola dentro del objetivo";
+    pill.className = "pill " + (over ? "warnp" : "ok");
+    var badge = document.querySelector(".sbItem.isActive .sbBadge");
+    if (badge) { badge.textContent = n; badge.style.display = n ? "" : "none"; }
+  }
 
-          <div class="tableTop" style="border-radius:var(--rad);border-bottom:1px solid var(--line);margin-bottom:20px;">
-            <div class="filterChips">
-              <button class="fchip isOn">En cola <span class="c">9</span></button>
-              <button class="fchip">Aprobados hoy <span class="c">14</span></button>
-              <button class="fchip">Rechazados <span class="c">3</span></button>
-            </div>
-            <span class="grow"></span>
-            <span class="muted" style="font-size:12.5px;">Orden: más antiguos primero</span>
-          </div>
+  function renderList() {
+    var items = visible(), box = document.getElementById("qItems");
+    if (LOADING || LOAD_ERR) { box.innerHTML = '<div class="qEmpty">' + (LOADING ? "Cargando anuncios…" : esc(LOAD_ERR)) + '</div>'; return; }
+    if (!items.length) {
+      box.innerHTML = '<div class="qEmpty">' + (tab === "cola" ? "Cola vacía. Buen trabajo." : "Aún no has revisado anuncios en esta sesión.") + '</div>';
+      return;
+    }
+    box.innerHTML = items.map(function (it) {
+      var f = fails(it), flag = "", st = state[it.id];
+      if (f.length) flag = '<span class="qf">' + svg(I_X, 2.4) + (f.length === 1 ? REASONS.filter(function (r) { return r.id === f[0]; })[0].l : f.length + " requisitos sin cumplir") + '</span>';
+      else if (it.dup) flag = '<span class="qf warn">' + svg(I_W, 2.2) + 'Posible duplicado</span>';
+      else if (it.cert === "tramite") flag = '<span class="qf warn">' + svg(I_W, 2.2) + 'Certificado en trámite</span>';
+      var right = st ? '<span class="pill ' + (st.d === "rej" ? "dangerp" : "ok") + ' qw">' + (st.d === "rej" ? "Rechazado" : "Aprobado") + '</span>' : '<span class="pill ' + waitTone(it.wait) + ' qw">' + fmtWait(it.wait) + '</span>';
+      return '<button class="qItem' + (it.id === selId ? " isSel" : "") + '" type="button" data-id="' + it.id + '"><h4>' + esc(it.t) + '</h4><span class="qm">' + esc(it.ag) + ' · ' + esc(it.city) + '</span>' + flag + right + '</button>';
+    }).join("");
+  }
 
-          <div class="modGrid">
-            <!-- Anuncio 1 -->
-            <div class="modCard">
-              <div class="modThumb"><span class="tag pill dangerp">14 h en cola</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
-              <div class="modBody">
-                <h3>Piso en Calle Colón 8</h3>
-                <p class="meta">Ribera Homes · Valencia · 96 m² · 289.000 €</p>
-                <ul class="checkList">
-                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Plano en planta</li>
-                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>14 fotografías</li>
-                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Certificado energético</li>
-                </ul>
-                <div class="modActions"><button class="btn primary sm">Aprobar</button><button class="btn danger sm">Rechazar</button></div>
-              </div>
-            </div>
+  function checkCard(cls, title, sub) { return '<div class="ck ' + cls + '">' + svg(cls === "ok" ? I_OK : cls === "bad" ? I_X : I_W, 2.3) + '<div><b>' + title + '</b><span>' + sub + '</span></div></div>'; }
 
-            <!-- Anuncio 2 -->
-            <div class="modCard">
-              <div class="modThumb"><span class="tag pill dangerp">13 h en cola</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
-              <div class="modBody">
-                <h3>Casa adosada en Getxo</h3>
-                <p class="meta">Casa Norte Gestión · Bilbao · 160 m² · 520.000 €</p>
-                <ul class="checkList">
-                  <li class="bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>Falta plano en planta</li>
-                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>9 fotografías</li>
-                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Certificado energético</li>
-                </ul>
-                <div class="modActions"><button class="btn ghost sm" disabled>Aprobar</button><button class="btn danger sm">Rechazar (falta plano)</button></div>
-              </div>
-            </div>
+  function buildMsg(it) {
+    var lines = rejSel.map(function (id) { var m = REASONS.filter(function (r) { return r.id === id; })[0].m; return "• " + m + (id === "ficha" && it.ficha ? " " + it.ficha.join(", ") + "." : ""); });
+    return "Hola, " + it.ag + ":\n\nHemos revisado «" + it.t + "» (ref. " + it.ref + ") y todavía no podemos publicarlo:\n\n" + (lines.length ? lines.join("\n") : "• …") + "\n\nCorrígelo desde tu panel y volverá a la cola de revisión automáticamente. Si tienes dudas, responde a este mensaje.\n\nEquipo de calidad de Homyo";
+  }
 
-            <!-- Anuncio 3 -->
-            <div class="modCard">
-              <div class="modThumb"><span class="tag pill warnp">6 h en cola</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
-              <div class="modBody">
-                <h3>Estudio en Calle Fuencarral 120</h3>
-                <p class="meta">Áurea Inmobiliaria · Madrid · alquiler · 38 m² · 1.150 €/mes</p>
-                <ul class="checkList">
-                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Plano en planta</li>
-                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>7 fotografías</li>
-                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Certificado energético</li>
-                </ul>
-                <div class="modActions"><button class="btn primary sm">Aprobar</button><button class="btn danger sm">Rechazar</button></div>
-              </div>
-            </div>
+  function renderDetail() {
+    var card = document.getElementById("mdCard"), it = byId(selId);
+    if (!it) {
+      card.innerHTML = '<div class="mdBody"><div class="qEmpty" style="padding:60px 10px;">' + (LOADING ? "Cargando…" : tab === "cola" ? "No quedan anuncios en cola." : "Selecciona un anuncio revisado para ver la decisión.") + '</div></div>';
+      return;
+    }
+    var f = fails(it), st = state[it.id], hard = f.length > 0;
+    var certCk = it.cert === "ok" ? checkCard("ok", "Certificado energético", "Calificación " + it.certL + " · vigente") : it.cert === "tramite" ? checkCard("warn", "Certificado en trámite", "Se puede publicar con aviso al usuario") : checkCard("bad", "Falta certificado energético", "Obligatorio para publicar");
+    function ph(url, label) { return url ? '<div class="ph" style="background:url(\'' + String(url).replace(/'/g, "%27") + '\') center/cover"></div>' : '<div class="ph"><span>' + label + '</span></div>'; }
+    var gal = REALM
+      ? '<div class="mdGallery">' + ph(it.photos[0], "sin fotos") + ph(it.photos[1], "—") + ph(it.photos[2], "—") + ph(it.photos[3], "—") + ph(it.plans[0], "sin plano") + '</div>'
+      : '<div class="mdGallery"><div class="ph"><span>foto principal · ' + it.fotos + ' en total</span></div><div class="ph"><span>salón</span></div><div class="ph"><span>cocina</span></div><div class="ph"><span>dormitorio</span></div><div class="ph"><span>' + (it.plano ? "plano" : "sin plano") + '</span></div></div>';
+    var html = '' + gal +
+      '<div class="mdBody">' +
+        '<div class="mdTop"><div><h2>' + esc(it.t) + '</h2><div class="meta"><a href="admin-profesional-detalle.html' + (it.agency_id ? "?id=" + it.agency_id : "") + '">' + esc(it.ag) + '</a> · ' + esc(it.city) + ' · ref. ' + esc(it.ref) + '</div></div>' +
+        (st ? '<span class="pill ' + (st.d === "rej" ? "dangerp" : "ok") + '">' + (st.d === "rej" ? "Rechazado" : st.d === "warn" ? "Aprobado con aviso" : "Aprobado") + '</span>' : '<span class="pill ' + waitTone(it.wait) + '"><span class="dot"></span>' + fmtWait(it.wait) + ' en cola</span>') + '</div>' +
+        '<div class="mdFacts"><div><div class="k">Operación</div><div class="v">' + it.op + '</div></div><div><div class="k">Precio</div><div class="v">' + it.price + '</div></div><div><div class="k">Superficie</div><div class="v">' + it.m2 + ' m²</div></div><div><div class="k">Precio / m²</div><div class="v">' + it.ppm + '</div></div></div>' +
+        (it.dup ? '<div class="callout warnc"><span class="cIc">' + svg(I_W, 1.9) + '</span><div><h4>Posible duplicado</h4><p>' + (REALM ? "Hay otro anuncio publicado con la misma referencia catastral." : "Misma referencia catastral que un anuncio publicado por Domus Capital. Un usuario lo ha reportado.") + '</p></div>' + (REALM ? '' : '<a class="btn ghost sm cAct" href="admin-incidencia-detalle.html">Ver incidencia</a>') + '</div>' : '') +
+        '<div><p class="mdSub">Estándar de calidad</p><div class="checkGrid">' +
+          (it.plano ? checkCard("ok", "Plano en planta", "Adjunto y legible") : checkCard("bad", "Falta plano en planta", "Obligatorio para publicar")) +
+          (it.fotos >= 6 ? checkCard("ok", it.fotos + " fotografías", "Mínimo 6") : checkCard("bad", "Solo " + it.fotos + " fotografías", "Mínimo 6")) +
+          certCk +
+          (it.ficha && it.ficha.length ? checkCard("bad", "Ficha mínima incompleta", "Falta: " + it.ficha.join(", ")) : checkCard("ok", "Ficha mínima completa", "Todos los datos que usa el buscador")) +
+          (it.datos ? checkCard("ok", REALM ? "Referencia catastral" : "Dirección verificada", REALM ? "Indicada en la ficha" : "Coincide con Catastro") : checkCard("bad", REALM ? "Sin referencia catastral" : "Dirección no verificable", REALM ? "No se puede verificar la dirección" : "La referencia catastral no coincide")) +
+        '</div></div>' +
+      '</div>';
+    if (st) {
+      html += '<div class="mdActions"><div class="decided"><span style="font-size:13px;color:var(--ink2);">' + (st.d === "rej" ? "Rechazado · " + (REALM ? "vuelve a borrador y " + esc(it.ag) + " ve el motivo" : "mensaje enviado a " + it.ag) : "Aprobado · " + esc(it.ag)) + '</span></div><span class="grow"></span>' + (REALM ? '' : '<button class="btn ghost sm" type="button" data-act="undo">Deshacer decisión</button>') + '</div>';
+    } else {
+      var apLabel = it.cert === "tramite" ? "Aprobar con aviso" : "Aprobar";
+      html += '<div class="mdActions">' +
+        '<button class="btn primary sm" type="button" data-act="approve"' + (hard ? ' disabled title="No cumple el estándar de calidad"' : '') + '>' + apLabel + ' <kbd>A</kbd></button>' +
+        '<button class="btn danger sm" type="button" data-act="reject">Rechazar <kbd>R</kbd></button>' +
+        '<a class="btnLink" href="listing.html' + (REALM ? "?id=" + it.id : "") + '" target="_blank" rel="noopener">Vista previa</a>' +
+        '<span class="grow"></span>' +
+        '<div class="navBtns"><button class="btn ghost sm" type="button" data-act="prev" aria-label="Anterior">↑ <kbd>K</kbd></button><button class="btn ghost sm" type="button" data-act="next" aria-label="Siguiente">↓ <kbd>J</kbd></button></div>' +
+        '</div>' +
+        '<div class="rjPanel' + (rejOpen ? " isOn" : "") + '" id="rjPanel"><p class="mdSub">Motivos del rechazo</p><div class="rjReasons">' +
+          REASONS.map(function (r, i) { var on = rejSel.indexOf(r.id) > -1; return '<label class="rjReason' + (on ? " isOn" : "") + '"><input type="checkbox" data-reason="' + r.id + '"' + (on ? " checked" : "") + ' />' + r.l + '<kbd>' + (i + 1) + '</kbd></label>'; }).join("") +
+        '</div><p class="mdSub">Mensaje a la agencia</p><textarea class="rjMsg" id="rjMsg"></textarea>' +
+        '<div class="rjFoot"><span class="hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> para enviar</span><button class="btn ghost sm" type="button" data-act="cancel">Cancelar</button><button class="btn danger sm" type="button" data-act="send">Rechazar y enviar</button></div></div>';
+    }
+    card.innerHTML = html;
+    var ta = document.getElementById("rjMsg");
+    if (ta) {
+      ta.value = msgDirty ? msgText : buildMsg(it);
+      ta.addEventListener("input", function () { msgDirty = true; msgText = ta.value; });
+    }
+  }
 
-            <!-- Anuncio 4 -->
-            <div class="modCard">
-              <div class="modThumb"><span class="tag pill warnp">4 h en cola</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></div>
-              <div class="modBody">
-                <h3>Chalet con jardín, Aravaca</h3>
-                <p class="meta">Domus Capital · Madrid · 240 m² · 980.000 €</p>
-                <ul class="checkList">
-                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>Plano en planta</li>
-                  <li class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>22 fotografías</li>
-                  <li class="bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>Certificado: en trámite</li>
-                </ul>
-                <div class="modActions"><button class="btn ghost sm">Aprobar con aviso</button><button class="btn danger sm">Rechazar</button></div>
-              </div>
-            </div>
-          </div>
+  function render() {
+    var items = visible();
+    if (!items.some(function (it) { return it.id === selId; })) selId = items.length ? items[0].id : null;
+    renderStats(); renderList(); renderDetail();
+  }
 
-          <p class="muted" style="margin-top:16px;font-size:13px;">5 anuncios más en cola · <a href="#" style="color:var(--granate);font-weight:600;text-decoration:none;">cargar más</a></p>
+  function select(id, scroll) {
+    if (id !== selId) { rejOpen = false; rejSel = []; msgDirty = false; }
+    selId = id; render();
+    if (scroll && window.innerWidth < 980) {
+      var r = document.getElementById("mdCard").getBoundingClientRect();
+      window.scrollBy({ top: r.top - 80, behavior: "smooth" });
+    }
+  }
+  function move(dir) {
+    var items = visible(); if (!items.length) return;
+    var i = items.map(function (x) { return x.id; }).indexOf(selId);
+    i = Math.max(0, Math.min(items.length - 1, i + dir));
+    select(items[i].id);
+  }
+  function decide(d, reasons) {
+    var it = byId(selId); if (!it || state[it.id]) return;
+    if (REALM) {
+      var ta = document.getElementById("rjMsg");
+      var dec = d === "rej" ? "rejected" : d === "warn" ? "approved_warning" : "approved";
+      document.querySelectorAll("#mdCard [data-act]").forEach(function (b) { b.disabled = true; });
+      HOMYO.adminReview(it.id, dec, reasons || [], d === "rej" && ta ? ta.value : null).then(function () { commit(it, d, reasons); })
+        .catch(function (e) { renderDetail(); window.homyoToast && homyoToast("No se ha podido guardar: " + (e.message || "error")); });
+      return;
+    }
+    commit(it, d, reasons);
+  }
+  function commit(it, d, reasons) {
+    var items = visible(), i = items.map(function (x) { return x.id; }).indexOf(it.id);
+    state[it.id] = { d: d, reasons: reasons || [], at: Date.now() };
+    save();
+    if (window.homyoAudit) homyoAudit("Moderación", d === "rej" ? "Rechazó un anuncio" : d === "warn" ? "Aprobó con aviso" : "Aprobó un anuncio", it.t + " · " + it.ag + (d === "rej" ? " · " + (reasons || []).map(function (r) { return REASONS.filter(function (x) { return x.id === r; })[0].l.toLowerCase(); }).join(", ") : ""));
+    rejOpen = false; rejSel = []; msgDirty = false;
+    var rest = queue();
+    selId = rest.length ? rest[Math.min(i, rest.length - 1)].id : null;
+    render();
+    var id = it.id;
+    if (REALM) { window.homyoToast && homyoToast((d === "rej" ? "Rechazado · " : "Aprobado · ") + it.t); return; }
+    if (window.homyoToast) window.homyoToast((d === "rej" ? "Rechazado · " : "Aprobado · ") + it.t, function () { delete state[id]; save(); tab = "cola"; syncTabs(); selId = id; render(); });
+  }
+  function approve() {
+    var it = byId(selId); if (!it || state[it.id] || fails(it).length) return;
+    decide(it.cert === "tramite" ? "warn" : "ok");
+  }
+  function openReject() {
+    var it = byId(selId); if (!it || state[it.id]) return;
+    rejOpen = true;
+    if (!rejSel.length) { rejSel = fails(it); if (it.dup) rejSel.push("dup"); }
+    msgDirty = false; renderDetail();
+  }
+  function toggleReason(id) {
+    var i = rejSel.indexOf(id); if (i > -1) rejSel.splice(i, 1); else rejSel.push(id);
+    renderDetail();
+  }
+  function sendReject() {
+    if (!rejSel.length) { if (window.homyoToast) window.homyoToast("Elige al menos un motivo"); return; }
+    decide("rej", rejSel.slice());
+  }
+  function syncTabs() { document.querySelectorAll(".qTabs .fchip").forEach(function (b) { b.classList.toggle("isOn", b.getAttribute("data-tab") === tab); }); }
 
-        </main>
-      </div>
-    </div>
-
-    <script>
-      window.ADMIN_PAGE = { active: "anuncios", title: "Moderación de anuncios", crumb: "Operación · Cola de calidad" };
-    </script>
-    <script src="admin-shell.js"></script>
-  </body>
+  document.querySelector(".qTabs").addEventListener("click", function (e) {
+    var b = e.target.closest(".fchip"); if (!b) return;
+    tab = b.getAttribute("data-tab"); syncTabs(); selId = null; rejOpen = false; rejSel = []; render();
+  });
+  document.getElementById("qItems").addEventListener("click", function (e) {
+    var b = e.target.closest(".qItem"); if (b) select(b.getAttribute("data-id"), true);
+  });
+  document.getElementById("mdCard").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-act]"); if (!b) return;
+    var a = b.getAttribute("data-act");
+    if (a === "approve") approve();
+    else if (a === "reject") openReject();
+    else if (a === "cancel") { rejOpen = false; renderDetail(); }
+    else if (a === "send") sendReject();
+    else if (a === "next") move(1);
+    else if (a === "prev") move(-1);
+    else if (a === "undo") { var id = selId; delete state[id]; save(); tab = "cola"; syncTabs(); selId = id; render(); }
+  });
+  document.getElementById("mdCard").addEventListener("change", function (e) {
+    var r = e.target.getAttribute && e.target.getAttribute("data-reason"); if (r) toggleReason(r);
+  });
+  document.addEventListener("keydown", function (e) {
+    var tag = (e.target.tagName || "").toLowerCase(), typing = tag === "textarea" || tag === "input" || tag === "select";
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && rejOpen) { e.preventDefault(); sendReject(); return; }
+    if (e.key === "Escape" && rejOpen) { rejOpen = false; renderDetail(); return; }
+    if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
+    var k = e.key.toLowerCase();
+    if (k === "j" || e.key === "ArrowDown") { e.preventDefault(); move(1); }
+    else if (k === "k" || e.key === "ArrowUp") { e.preventDefault(); move(-1); }
+    else if (tab === "cola" && k === "a" && !rejOpen) approve();
+    else if (tab === "cola" && k === "r") { e.preventDefault(); openReject(); }
+    else if (rejOpen && /^[1-7]$/.test(e.key)) toggleReason(REASONS[+e.key - 1].id);
+  });
+  render();
+  if (REALM) {
+    document.querySelector(".pageLede").textContent = "Anuncios publicados que aún no ha revisado el equipo, de más antiguo a más reciente. Si rechazas uno, vuelve a borrador y la agencia ve el motivo.";
+    document.querySelector('#stOldest + .l').textContent = "Más antiguo sin revisar";
+    document.querySelector('.qTabs [data-tab="hechos"]').firstChild.textContent = "Revisados ahora ";
+    HOMYO.adminModeration().then(function (r) {
+      Q = r.items; BASE_DONE = r.doneToday; LOADING = false; render();
+    }).catch(function (e) {
+      LOADING = false;
+      LOAD_ERR = /listing_reviews/.test((e && e.message) || "") ? "Falta ejecutar supabase/03-moderacion.sql en Supabase." : "No se han podido cargar los anuncios (" + ((e && e.message) || "error") + ").";
+      render();
+    });
+  }
+})();
+</script>
+</body>
 </html>

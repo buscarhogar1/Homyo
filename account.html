@@ -504,7 +504,7 @@
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
       import { listFavorites, listSavedSearches } from "./bh-user-data.js";
-      import { countConversations } from "./bh-conversations.js?v=1";
+      import { countConversations, syncFromServer } from "./bh-conversations.js?v=3";
 
       initLayout({ showMiniSearch: false });
       initAuth();
@@ -527,6 +527,7 @@
         }
 
         try {
+          await syncFromServer(session.user.id);
           const contactedCount = countConversations(session.user.id);
           if (contactedMetaEl){
             contactedMetaEl.textContent =

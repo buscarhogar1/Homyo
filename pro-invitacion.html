@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Aceptar invitación · Homyo Pro</title>
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png?v=10" />
+<meta name="theme-color" content="#8C1F2D" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap');
+:root{--bg:#FFFDFA;--granate:#8C1F2D;--granateDark:#701724;--dorado:#C4962A;--ink:#1d1a17;--ink2:#4a4640;--muted:#8a857d;--line:#ece6db;--danger:#9f1d2f}
+*{box-sizing:border-box}
+html,body{min-height:100%;margin:0;background:radial-gradient(circle at 16% 22%,rgba(226,184,76,.15),transparent 30%),radial-gradient(circle at 84% 78%,rgba(140,31,45,.08),transparent 32%),var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+body{min-height:100vh;display:grid;place-items:center;padding:24px}
+a{color:var(--granate)}a:hover{color:var(--granateDark)}
+.ivCard{width:min(480px,100%);background:#fff;border:1px solid rgba(196,150,42,.28);border-radius:8px;padding:36px 34px;box-shadow:0 18px 50px rgba(29,26,23,.08)}
+.ivBrand{font-family:'Raleway',sans-serif;font-weight:600;letter-spacing:.28em;font-size:13px;color:var(--granate);margin:0 0 26px}
+.ivCard h1{font-family:'Raleway',sans-serif;font-weight:300;font-size:28px;line-height:1.15;color:var(--granate);margin:0 0 10px}
+.ivCard h1 strong{font-weight:600}
+.ivLede{margin:0 0 24px;font-size:14.5px;line-height:1.55;color:var(--ink2);text-wrap:pretty}
+.ivForm{display:flex;flex-direction:column;gap:14px}
+.ivF{display:flex;flex-direction:column;gap:6px}
+.ivF span{font-size:12.5px;font-weight:600;color:var(--ink2)}
+.ivF input{font:inherit;font-size:15px;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
+.ivF input:focus{outline:none;border-color:var(--granate)}
+.ivHint{font-size:12px;color:var(--muted);margin:-6px 0 0}
+.ivBtn{appearance:none;border:0;cursor:pointer;background:var(--granate);color:#fff;font:600 15px/1 system-ui,sans-serif;padding:15px 22px;border-radius:999px;margin-top:6px}
+.ivBtn:hover{background:var(--granateDark)}
+.ivBtn[disabled]{opacity:.6;cursor:wait}
+.ivErr{display:none;font-size:13px;color:var(--danger);background:#fbeaed;border:1px solid rgba(159,29,47,.22);border-radius:6px;padding:10px 13px}
+.ivErr.show{display:block}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<main class="ivCard" data-screen-label="Aceptar invitación">
+<p class="ivBrand">HOMYO PRO</p>
+<div id="ivLoading"><h1>Comprobando tu invitación…</h1></div>
+<div id="ivForm" class="hide">
+<h1>Únete a <strong id="ivAgency">tu inmobiliaria</strong></h1>
+<p class="ivLede">Crea tu contraseña para entrar en la cuenta profesional. Usarás <b id="ivEmail"></b> para iniciar sesión.</p>
+<form class="ivForm" id="ivF" novalidate="novalidate">
+<label class="ivF"><span>Tu nombre y apellidos</span><input id="ivName" autocomplete="name" placeholder="Carlos Ríos" /></label>
+<label class="ivF"><span>Contraseña</span><input id="ivPw" type="password" autocomplete="new-password" /></label>
+<p class="ivHint">Mínimo 8 caracteres.</p>
+<label class="ivF"><span>Repite la contraseña</span><input id="ivPw2" type="password" autocomplete="new-password" /></label>
+<div class="ivErr" id="ivErr" role="alert"></div>
+<button class="ivBtn" id="ivBtn" type="submit">Entrar en Homyo Pro</button>
+</form>
+</div>
+<div id="ivBad" class="hide">
+<h1>El enlace no es válido</h1>
+<p class="ivLede">Puede que haya caducado o que ya lo hayas usado. Pide a tu administrador que te invite de nuevo, o entra con tu email si ya creaste la contraseña.</p>
+<a class="ivBtn" href="cuenta-inmobiliaria.html" style="display:inline-block;text-decoration:none">Ir al acceso profesional</a>
+</div>
+</main>
+<script src="homyo-mode.js"></script>
+<script>
+(async function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function show(id) { ["ivLoading", "ivForm", "ivBad"].forEach(function (x) { $(x).classList.toggle("hide", x !== id); }); }
+  var c;
+  try {
+    c = await HOMYO.client();
+    var s = (await c.auth.getSession()).data.session;
+    if (!s) { await new Promise(function (r) { setTimeout(r, 800); }); s = (await c.auth.getSession()).data.session; }
+    if (!s) return show("ivBad");
+    var u = s.user, md = u.user_metadata || {};
+    $("ivEmail").textContent = u.email;
+    if (md.invited_agency_name) $("ivAgency").textContent = md.invited_agency_name;
+    if (md.full_name) $("ivName").value = md.full_name;
+    show("ivForm");
+  } catch (e) { return show("ivBad"); }
+  $("ivF").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var err = $("ivErr"), btn = $("ivBtn"), name = $("ivName").value.trim(), pw = $("ivPw").value;
+    function fail(t) { err.textContent = t; err.classList.add("show"); }
+    err.classList.remove("show");
+    if (!name) return fail("Escribe tu nombre.");
+    if (pw.length < 8) return fail("La contraseña debe tener al menos 8 caracteres.");
+    if (pw !== $("ivPw2").value) return fail("Las contraseñas no coinciden.");
+    btn.disabled = true; btn.textContent = "Entrando…";
+    var r = await c.auth.updateUser({ password: pw, data: { full_name: name } });
+    if (r.error) { btn.disabled = false; btn.textContent = "Entrar en Homyo Pro"; return fail(r.error.message); }
+    await c.rpc("accept_my_invite");
+    await c.from("profiles").update({ full_name: name }).eq("id", r.data.user.id);
+    HOMYO.enterReal("pro");
+    location.replace("pro-panel.html");
+  });
+})();
+</script>
+</body>
+</html>

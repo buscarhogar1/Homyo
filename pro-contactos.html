@@ -1,171 +1,282 @@
 <!doctype html>
 <html lang="es">
-  <head>
-  <!-- Icono de acceso directo (pantalla de inicio) -->
-  <link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png?v=10" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png?v=10" />
-  <link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png?v=10" />
-  <link rel="manifest" href="./site.webmanifest" />
-  <meta name="theme-color" content="#8C1F2D" />
-  <meta name="apple-mobile-web-app-title" content="Homyo" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
+<head>
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png?v=10" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png?v=10" />
+<link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png?v=10" />
+<link rel="manifest" href="./site.webmanifest" />
+<meta name="theme-color" content="#8C1F2D" />
+<meta name="apple-mobile-web-app-title" content="Homyo" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Contactos · Homyo Pro</title>
+<link rel="stylesheet" href="pro.css" />
+<style>
+a{color:var(--granate)}a:hover{color:var(--granateDark)}
+.ctMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media (max-width:720px){.ctMetrics{grid-template-columns:1fr}}
+.ctMetric{background:#fff;border:1px solid var(--line);border-radius:var(--rad);padding:15px 18px}
+.ctMetric .n{font-family:'Raleway',sans-serif;font-size:25px;font-weight:500;color:var(--ink);line-height:1}
+.ctMetric .n.alert{color:var(--granate)}
+.ctMetric .n small{font-size:13px;color:var(--muted);font-weight:500;margin-left:2px}
+.ctMetric .l{font-size:12px;color:var(--ink2);margin-top:8px}
+.ctMetric .s{font-size:11.5px;color:var(--muted);margin-top:2px}
+.ctBar{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.ctBar .grow{flex:1 1 auto}
+.inbox{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:980px){.inbox{grid-template-columns:1fr}}
+.leadList{border:1px solid var(--line);border-radius:var(--rad);background:#fff;overflow:hidden}
+.leadFilter{display:flex;gap:6px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.lf{appearance:none;cursor:pointer;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;color:var(--ink2);font-family:inherit;display:inline-flex;gap:6px;align-items:center}
+.lf .c{font-size:10.5px;font-weight:700;color:var(--muted)}
+.lf.isOn{border-color:var(--granate);background:var(--cardWarm);color:var(--granate);font-weight:600}
+.lf.isOn .c{color:var(--granate)}
+.lead{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;padding:15px 16px;border-bottom:1px solid var(--lineSoft);cursor:pointer;transition:background .14s ease;align-items:start}
+.lead:last-child{border-bottom:none}
+.lead:hover{background:var(--bg)}
+.lead.isOn{background:var(--cardWarm)}
+.lead.isOn .leadName{color:var(--granate)}
+.lead.unread .leadName{font-weight:700}
+.leadAv{width:40px;height:40px;border-radius:50%;background:var(--cardWarm);border:1px solid rgba(196,150,42,.3);color:var(--granate);display:grid;place-items:center;font-family:'Raleway',sans-serif;font-weight:600;font-size:14px;flex:0 0 auto}
+.leadName{font-family:'Raleway',sans-serif;font-size:14px;font-weight:600;color:var(--ink);display:block}
+.leadFor{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.35;display:block}
+.leadPills{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.leadWhen{font-size:11px;color:var(--muted);white-space:nowrap}
+.leadDot{width:8px;height:8px;border-radius:50%;background:var(--granate);margin:6px 0 0 auto}
+.leadEmpty{padding:28px 16px;text-align:center;font-size:13px;color:var(--muted)}
+.detail{border:1px solid var(--line);border-radius:var(--rad);background:#fff;position:sticky;top:24px}
+.dHead{padding:24px 28px;border-bottom:1px solid var(--line)}
+.dPerson{display:flex;align-items:center;gap:14px}
+.dPerson .av{width:54px;height:54px;border-radius:50%;background:var(--cardWarm);border:1px solid rgba(196,150,42,.3);color:var(--granate);display:grid;place-items:center;font-family:'Raleway',sans-serif;font-weight:600;font-size:19px;flex:0 0 auto}
+.dPerson h2{margin:0;font-family:'Raleway',sans-serif;font-size:22px;font-weight:500;color:var(--ink)}
+.dPerson .sub{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.dContacts{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.dContacts a{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink2);text-decoration:none;padding:8px 14px;border:1px solid var(--line);border-radius:999px;transition:all .15s ease}
+.dContacts a:hover{border-color:var(--granate);color:var(--granate)}
+.dContacts svg{width:15px;height:15px}
+.dBody{padding:24px 28px}
+.dProp{display:grid;grid-template-columns:64px 1fr;gap:14px;padding:14px 16px;background:var(--bg);border:1px solid var(--line);border-radius:var(--rad);margin-bottom:22px;align-items:center}
+.dProp .th{width:64px;height:48px;border-radius:4px;background:repeating-linear-gradient(45deg,#f3ece0,#f3ece0 7px,#ece3d4 7px,#ece3d4 14px)}
+.dProp h4{margin:0 0 2px;font-family:'Raleway',sans-serif;font-size:14px;font-weight:600;color:var(--ink)}
+.dProp p{margin:0;font-size:12.5px;color:var(--muted)}
+.dLabel{font-family:'Raleway',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.dMsg{font-size:14.5px;line-height:1.65;color:var(--ink2);background:var(--bg);border:1px solid var(--line);border-radius:var(--rad);padding:16px 18px;text-wrap:pretty}
+.stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:22px}
+.step{appearance:none;cursor:pointer;font:inherit;display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:var(--rad);background:#fff;color:var(--ink2);font-size:12.5px;text-align:left;transition:all .14s ease}
+.step:hover{border-color:rgba(140,31,45,.3)}
+.step .bar{width:100%;height:3px;border-radius:2px;background:var(--lineSoft)}
+.step.isPast .bar{background:var(--granateSoft);opacity:.45}
+.step.isOn{border-color:var(--granate);background:var(--cardWarm);color:var(--granate);font-weight:600}
+.step.isOn .bar{background:var(--granate)}
+@media (max-width:520px){.stepper{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.dActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;padding-top:22px;border-top:1px solid var(--lineSoft)}
+.directNote{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:18px}
+.directNote svg{width:16px;height:16px;color:var(--good);flex:0 0 auto;margin-top:1px}
+.pipe{display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.pCol{background:var(--bg);border:1px solid var(--line);border-radius:var(--rad);min-height:320px;display:flex;flex-direction:column;transition:border-color .14s ease,background .14s ease}
+.pCol.isOver{border-color:var(--granate);background:var(--cardWarm)}
+.pHead{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+.pHead h3{margin:0;font-family:'Raleway',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--ink)}
+.pHead .c{font-family:'Raleway',sans-serif;font-size:11px;font-weight:700;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.pBody{display:flex;flex-direction:column;gap:8px;padding:10px;flex:1 1 auto}
+.pCard{background:#fff;border:1px solid var(--line);border-radius:var(--rad);padding:12px 13px;cursor:grab;display:flex;flex-direction:column;gap:6px;transition:box-shadow .14s ease,border-color .14s ease}
+.pCard:hover{border-color:rgba(140,31,45,.25);box-shadow:var(--shadowCard)}
+.pCard.isDrag{opacity:.4}
+.pCard .nm{font-family:'Raleway',sans-serif;font-size:14px;font-weight:600;color:var(--ink)}
+.pCard .pr{font-size:12px;color:var(--muted);line-height:1.35}
+.pCard .ft{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:2px}
+.pCard .wh{font-size:11px;color:var(--muted)}
+.pEmpty{font-size:12px;color:var(--muted);text-align:center;padding:22px 8px;border:1px dashed var(--line);border-radius:var(--rad)}
+.pipeHint{font-size:12px;color:var(--muted);margin-top:10px}
+</style>
+<style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style>
+</head>
+<body>
+<div class="proLayout">
+<aside class="proSidebar" id="proSidebar"></aside>
+<div class="sbScrim" id="sbScrim"></div>
+<div class="proContent">
+<header class="proTopbar" id="proTopbar"></header>
+<main class="proMain" data-screen-label="Contactos">
+<div class="pageHead">
+<div class="pageHeadMain">
+<p class="kicker">Bandeja directa</p>
+<h1 class="pageTitle"><strong>Contactos</strong> recibidos</h1>
+<p class="pageLede">Los contactos llegan directos a tu inmobiliaria. Homyo no revende leads ni oculta los datos del interesado.</p>
+</div>
+<div class="pageHeadActions"><span class="pill gold" id="hdMonth">47 este mes</span><span class="pill solid" id="hdNew">5 sin responder</span></div>
+</div>
+<div id="viewLeads">
+<div class="ctMetrics">
+<div class="ctMetric"><div class="n alert" id="mNew">5</div><div class="l">Sin responder</div><div class="s" id="mOld">El más antiguo espera desde hace 19 h</div></div>
+<div class="ctMetric"><div class="n" id="mAvg">2<small>h</small> 40<small>min</small></div><div class="l">Tiempo medio de primera respuesta</div><div class="s">Últimos 30 días · objetivo &lt; 24 h</div></div>
+<div class="ctMetric"><div class="n" id="mPct">94<small>%</small></div><div class="l">Respondidos en menos de 24 h</div><div class="s">Responder rápido mejora tu tasa de contacto</div></div>
+</div>
+<div class="ctBar"><div class="seg" id="viewSeg"><button class="isOn" data-v="inbox" type="button">Bandeja</button><button data-v="pipe" type="button">Pipeline</button></div><span class="grow"></span></div>
+<div id="inboxView" class="inbox">
+<div class="leadList"><div class="leadFilter" id="leadFilter"></div><div id="leadItems"></div></div>
+<div class="detail" id="detail"></div>
+</div>
+<div id="pipeView" class="hide">
+<div class="pipe" id="pipe"></div>
+<p class="pipeHint">Arrastra una tarjeta para cambiar su estado · haz clic para abrir el contacto.</p>
+</div>
+</div>
+<div id="viewEmpty" class="hide">
+<div class="emptyState">
+<span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></span>
+<h3>Aún no has recibido contactos</h3>
+<p>Cuando un comprador o inquilino esté interesado en una de tus viviendas, su solicitud aparecerá aquí con sus datos de contacto directos. Responder rápido mejora tu tasa de contacto.</p>
+<div class="actions"><a class="btn primary" href="pro-viviendas.html">Revisar mis viviendas</a><a class="btn ghost" href="pro-analisis.html">Ver análisis</a></div>
+</div>
+</div>
+</main>
+</div>
+</div>
+<script>
+window.PRO_PAGE = {
+  active: "contactos", title: "Contactos", crumb: "Áurea Inmobiliaria · Bandeja de contactos", live: true,
+  states: [{ id: "leads", label: "Con contactos" }, { id: "empty", label: "Sin contactos (vacío)" }],
+  onState: function (id) {
+    document.getElementById("viewLeads").classList.toggle("hide", id === "empty");
+    document.getElementById("viewEmpty").classList.toggle("hide", id !== "empty");
+  }
+};
+</script>
+<script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="pro-shell.js"></script><script src="pro-contactos-real.js"></script>
+<script>
+(function () {
+  var LEADS = [
+    { id:1, name:"Lucía Bravo", init:"LB", email:"lucia.bravo@gmail.com", tel:"+34 655 102 938", prop:"Ático · Calle Ferraz 12", zone:"Moncloa · 620.000 €", h:1, st:"new", msg:"Hola, me interesa mucho el ático. ¿Sería posible visitarlo esta semana, preferiblemente jueves o viernes por la tarde? Tengo la financiación ya preaprobada. Gracias." },
+    { id:2, name:"Daniel Ortega", init:"DO", email:"d.ortega@outlook.es", tel:"+34 600 451 220", prop:"Chalet · Av. de Europa 9", zone:"Pozuelo · 890.000 €", h:4, st:"new", msg:"Buenos días, estamos buscando una vivienda con jardín para la familia. ¿El chalet tiene piscina propia o comunitaria? ¿Cuántas plazas de garaje incluye?" },
+    { id:6, name:"Pablo Ruiz", init:"PR", email:"pablo.ruiz.m@gmail.com", tel:"+34 622 908 117", prop:"Habitación exterior · Calle Toledo 60", zone:"La Latina · 520 €/mes", h:9, st:"new", msg:"Hola, ¿la habitación sigue libre? Me incorporaría el mes que viene. ¿Se admiten estancias de un año con contrato?" },
+    { id:7, name:"Elena Marín", init:"EM", email:"elena.marin@icloud.com", tel:"+34 644 230 781", prop:"Piso amueblado · Calle Príncipe de Vergara 150", zone:"Chamartín · 2.100 €/mes", h:14, st:"new", msg:"Buenas tardes, somos una pareja con un perro pequeño. ¿Se admiten mascotas? Podríamos visitarlo cualquier día a partir de las 18:00." },
+    { id:8, name:"Andrés Vidal", init:"AV", email:"avidal@proton.me", tel:"+34 691 554 006", prop:"Piso exterior · Calle Bravo Murillo 200", zone:"Tetuán · 298.000 €", h:19, st:"new", msg:"Hola, ¿el piso tiene ascensor y trastero? Busco algo para entrar a vivir en los próximos tres meses." },
+    { id:3, name:"María Fernández", init:"MF", email:"maria.fz@gmail.com", tel:"+34 678 339 014", prop:"Piso reformado · Calle Velázquez 80", zone:"Salamanca · 485.000 €", h:26, st:"replied", msg:"Hola, ¿el precio es negociable? Me encaja todo salvo que esperaba algo por debajo de 460.000. ¿Podríamos hablarlo?" },
+    { id:4, name:"Jorge Alonso", init:"JA", email:"jorge.alonso@empresa.com", tel:"+34 611 778 002", prop:"Piso exterior · Calle Bravo Murillo 200", zone:"Tetuán · 298.000 €", h:50, st:"visit", visit:"Jueves, 18:30", msg:"¿Está disponible para entrar a vivir? ¿Qué gastos de comunidad tiene al mes?" },
+    { id:5, name:"Sara Giménez", init:"SG", email:"sara.gimenez@gmail.com", tel:"+34 699 010 553", prop:"Piso amueblado · Calle Príncipe de Vergara 150", zone:"Chamartín · 2.100 €/mes", h:120, st:"closed", msg:"Gracias por enseñarme el piso. Finalmente nos hemos decidido por otra opción, pero todo perfecto en el trato." }
+  ];
+  var REALM = !!(window.HOMYO && HOMYO.mode === "real"), LOADING = REALM;
+  function pid(v) { return REALM ? String(v || "") || null : +v || null; }
+  if (REALM) LEADS = [];
+  var STAGES = [
+    { id:"new", t:"Nuevo", cls:"ok", plural:"Nuevos" },
+    { id:"replied", t:"Respondido", cls:"infop", plural:"Respondidos" },
+    { id:"visit", t:"Visita", cls:"gold", plural:"Visita" },
+    { id:"closed", t:"Cerrado", cls:"neutral", plural:"Cerrados" }
+  ];
+  var ST = {}; STAGES.forEach(function (s, i) { s.i = i; ST[s.id] = s; });
+  var KEY = "homyo_pro_leads", VKEY = "homyo_pro_leads_view";
+  try { var saved = JSON.parse(localStorage.getItem(KEY) || "{}"); LEADS.forEach(function (l) { if (saved[l.id]) l.st = saved[l.id]; }); } catch (e) {}
+  function save() { if (REALM) return; var o = {}; LEADS.forEach(function (l) { o[l.id] = l.st; }); try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} }
 
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Contactos · Homyo Pro</title>
-    <link rel="stylesheet" href="pro.css" />
-    <style>
-      .inbox{ display:grid; grid-template-columns:380px 1fr; gap:16px; align-items:start; }
-      @media (max-width:980px){ .inbox{ grid-template-columns:1fr; } }
-      .leadList{ border:1px solid var(--line); border-radius:var(--rad); background:#fff; overflow:hidden; }
-      .leadFilter{ display:flex; gap:6px; padding:12px 14px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
-      .lf{ appearance:none; cursor:pointer; background:var(--bg); border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-size:12px; color:var(--ink2); font-family:inherit; }
-      .lf.isOn{ border-color:var(--granate); background:var(--cardWarm); color:var(--granate); font-weight:600; }
-      .lead{ display:grid; grid-template-columns:40px 1fr auto; gap:12px; padding:15px 16px; border-bottom:1px solid var(--lineSoft); cursor:pointer; transition:background .14s ease; align-items:start; }
-      .lead:last-child{ border-bottom:none; }
-      .lead:hover{ background:var(--bg); }
-      .lead.isOn{ background:var(--cardWarm); box-shadow:inset 3px 0 0 var(--granate); }
-      .lead.unread .leadName{ font-weight:700; }
-      .leadAv{ width:40px; height:40px; border-radius:50%; background:var(--cardWarm); border:1px solid rgba(196,150,42,.3); color:var(--granate); display:grid; place-items:center; font-family:'Raleway',sans-serif; font-weight:600; font-size:14px; flex:0 0 auto; }
-      .leadName{ font-family:'Raleway',sans-serif; font-size:14px; font-weight:600; color:var(--ink); }
-      .leadFor{ font-size:12px; color:var(--muted); margin-top:2px; line-height:1.35; }
-      .leadWhen{ font-size:11px; color:var(--muted); white-space:nowrap; }
-      .leadDot{ width:8px; height:8px; border-radius:50%; background:var(--granate); margin:6px 0 0 auto; }
-      /* detail */
-      .detail{ border:1px solid var(--line); border-radius:var(--rad); background:#fff; padding:0; position:sticky; top:24px; }
-      .dHead{ padding:24px 28px; border-bottom:1px solid var(--line); }
-      .dPerson{ display:flex; align-items:center; gap:14px; }
-      .dPerson .av{ width:54px; height:54px; border-radius:50%; background:var(--cardWarm); border:1px solid rgba(196,150,42,.3); color:var(--granate); display:grid; place-items:center; font-family:'Raleway',sans-serif; font-weight:600; font-size:19px; }
-      .dPerson h2{ margin:0; font-family:'Raleway',sans-serif; font-size:22px; font-weight:500; color:var(--ink); }
-      .dContacts{ display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
-      .dContacts a{ display:inline-flex; align-items:center; gap:8px; font-size:13.5px; color:var(--ink2); text-decoration:none; padding:8px 14px; border:1px solid var(--line); border-radius:999px; transition:all .15s ease; }
-      .dContacts a:hover{ border-color:var(--granate); color:var(--granate); }
-      .dContacts svg{ width:15px; height:15px; }
-      .dBody{ padding:24px 28px; }
-      .dProp{ display:grid; grid-template-columns:64px 1fr; gap:14px; padding:14px 16px; background:var(--bg); border:1px solid var(--line); border-radius:var(--rad); margin-bottom:22px; align-items:center; }
-      .dProp .th{ width:64px; height:48px; border-radius:4px; background:repeating-linear-gradient(45deg,#f3ece0,#f3ece0 7px,#ece3d4 7px,#ece3d4 14px); }
-      .dProp h4{ margin:0 0 2px; font-family:'Raleway',sans-serif; font-size:14px; font-weight:600; color:var(--ink); }
-      .dProp p{ margin:0; font-size:12.5px; color:var(--muted); }
-      .dMsgLabel{ font-family:'Raleway',sans-serif; font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
-      .dMsg{ font-size:14.5px; line-height:1.65; color:var(--ink2); background:var(--bg); border:1px solid var(--line); border-left:3px solid var(--dorado); border-radius:0 var(--rad) var(--rad) 0; padding:16px 18px; }
-      .dActions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:24px; padding-top:22px; border-top:1px solid var(--lineSoft); }
-      .directNote{ display:flex; gap:10px; align-items:flex-start; font-size:12.5px; color:var(--muted); line-height:1.5; margin-top:18px; }
-      .directNote svg{ width:16px; height:16px; color:var(--good); flex:0 0 auto; margin-top:1px; }
-    </style>
-  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
-  <body>
-    <div class="proLayout">
-      <aside class="proSidebar" id="proSidebar"></aside>
-      <div class="sbScrim" id="sbScrim"></div>
-      <div class="proContent">
-        <header class="proTopbar" id="proTopbar"></header>
-        <main class="proMain">
+  var params = new URLSearchParams(location.search);
+  var filter = ST[params.get("f")] ? params.get("f") : "all";
+  var selId = pid(params.get("lead"));
+  var view = "inbox"; try { view = localStorage.getItem(VKEY) || "inbox"; } catch (e) {}
+  if (params.get("lead") || params.get("f")) view = "inbox";
 
-          <div class="pageHead">
-            <div class="pageHeadMain">
-              <p class="kicker">Bandeja directa</p>
-              <h1 class="pageTitle"><strong>Contactos</strong> recibidos</h1>
-              <p class="pageLede">Los contactos llegan directos a tu inmobiliaria. Homyo no revende leads ni oculta los datos del interesado.</p>
-            </div>
-            <div class="pageHeadActions">
-              <span class="pill gold">47 este mes</span>
-              <span class="pill solid" style="background:var(--granate);color:#fff;">5 sin gestionar</span>
-            </div>
-          </div>
+  function byId(id) { for (var i = 0; i < LEADS.length; i++) if (LEADS[i].id === id) return LEADS[i]; return null; }
+  function when(h) { return h < 24 ? "Hace " + h + " h" : h < 48 ? "Ayer" : "Hace " + Math.floor(h / 24) + " días"; }
+  function waitPill(l) { return l.st === "new" ? '<span class="pill ' + (l.h >= 12 ? "warnp" : "neutral") + '">Sin responder · ' + l.h + ' h</span>' : ""; }
+  function stPill(l) { var s = ST[l.st]; return '<span class="pill ' + s.cls + '"><span class="dot"></span>' + s.t + '</span>'; }
+  function ic(p) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; }
+  var I_TEL = '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>';
+  var I_MAIL = '<path d="M22 6 12 13 2 6"/><rect x="2" y="5" width="20" height="14" rx="2"/>';
+  var I_SEND = '<path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/>';
 
-          <!-- WITH LEADS -->
-          <div id="viewLeads" class="inbox">
-            <div class="leadList">
-              <div class="leadFilter">
-                <button class="lf isOn">Todos</button><button class="lf">Nuevos</button><button class="lf">En curso</button><button class="lf">Gestionados</button>
-              </div>
-              <div id="leadItems"></div>
-            </div>
-            <div class="detail" id="detail"></div>
-          </div>
+  function renderHeader() {
+    var nw = LEADS.filter(function (l) { return l.st === "new"; });
+    document.getElementById("hdNew").textContent = nw.length + " sin responder";
+    document.getElementById("hdNew").style.display = nw.length ? "" : "none";
+    document.getElementById("mNew").textContent = nw.length;
+    document.getElementById("mNew").classList.toggle("alert", nw.length > 0);
+    var old = nw.reduce(function (m, l) { return Math.max(m, l.h); }, 0);
+    document.getElementById("mOld").textContent = nw.length ? "El más antiguo espera desde hace " + old + " h" : "Todo respondido";
+    var b = document.querySelector('.sbItem[href="pro-contactos.html"] .sbBadge');
+    if (b) { b.textContent = nw.length; b.style.display = nw.length ? "" : "none"; }
+  }
+  function renderFilter() {
+    var html = '<button class="lf' + (filter === "all" ? " isOn" : "") + '" data-f="all" type="button">Todos <span class="c">' + LEADS.length + '</span></button>';
+    STAGES.forEach(function (s) { var n = LEADS.filter(function (l) { return l.st === s.id; }).length; html += '<button class="lf' + (filter === s.id ? " isOn" : "") + '" data-f="' + s.id + '" type="button">' + s.plural + ' <span class="c">' + n + '</span></button>'; });
+    document.getElementById("leadFilter").innerHTML = html;
+  }
+  function visible() { return LEADS.filter(function (l) { return filter === "all" || l.st === filter; }).sort(function (a, b) { return a.h - b.h; }); }
+  function renderList() {
+    var rows = visible(), box = document.getElementById("leadItems");
+    if (!rows.length) { box.innerHTML = '<div class="leadEmpty">' + (LOADING ? "Cargando contactos…" : "No hay contactos en este estado.") + '</div>'; return; }
+    box.innerHTML = rows.map(function (l) {
+      return '<div class="lead' + (l.st === "new" ? " unread" : "") + (l.id === selId ? " isOn" : "") + '" data-id="' + l.id + '">' +
+        '<span class="leadAv">' + l.init + '</span>' +
+        '<span><span class="leadName">' + l.name + '</span><span class="leadFor">' + l.prop + '</span><span class="leadPills">' + stPill(l) + waitPill(l) + '</span></span>' +
+        '<span style="text-align:right;"><span class="leadWhen">' + when(l.h) + '</span>' + (l.st === "new" ? '<span class="leadDot"></span>' : "") + '</span></div>';
+    }).join("");
+  }
+  function renderDetail() {
+    if (REALM) return window.HM_CT.detail(byId(selId), document.getElementById("detail"));
+    var l = byId(selId), box = document.getElementById("detail");
+    if (!l) { box.innerHTML = '<div class="leadEmpty" style="padding:60px 20px;">Selecciona un contacto.</div>'; return; }
+    var tel = l.tel.replace(/\s/g, ""), cur = ST[l.st].i;
+    box.innerHTML =
+      '<div class="dHead"><div class="dPerson"><span class="av">' + l.init + '</span><div><h2>' + l.name + '</h2><div class="sub">' + stPill(l) + waitPill(l) + (l.st === "visit" && l.visit ? '<span class="pill neutral">Visita · ' + l.visit + '</span>' : '') + '</div></div></div>' +
+      '<div class="dContacts"><a href="tel:' + tel + '" data-reply="1">' + ic(I_TEL) + l.tel + '</a><a href="mailto:' + l.email + '" data-reply="1">' + ic(I_MAIL) + l.email + '</a></div></div>' +
+      '<div class="dBody"><div class="dProp"><span class="th"></span><div><h4>' + l.prop + '</h4><p>' + l.zone + ' · solicitado ' + when(l.h).toLowerCase() + '</p></div></div>' +
+      '<p class="dLabel">Mensaje del interesado</p><div class="dMsg">' + l.msg + '</div>' +
+      '<div class="stepper" role="group" aria-label="Estado del contacto">' + STAGES.map(function (s) { return '<button class="step' + (s.i === cur ? " isOn" : s.i < cur ? " isPast" : "") + '" type="button" data-stage="' + s.id + '"><span class="bar"></span>' + s.t + '</button>'; }).join("") + '</div>' +
+      '<div class="dActions"><a class="btn primary" href="mailto:' + l.email + '" data-reply="1">' + ic(I_SEND) + 'Responder</a><a class="btn ghost" href="tel:' + tel + '" data-reply="1">' + ic(I_TEL) + 'Llamar</a></div>' +
+      '<div class="directNote">' + ic('<path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/>') + '<span>Contacto directo con el interesado. Homyo no intermedia ni revende este dato.</span></div></div>';
+  }
+  function renderPipe() {
+    document.getElementById("pipe").innerHTML = STAGES.map(function (s) {
+      var rows = LEADS.filter(function (l) { return l.st === s.id; }).sort(function (a, b) { return a.h - b.h; });
+      return '<div class="pCol" data-col="' + s.id + '"><div class="pHead"><h3>' + s.t + '</h3><span class="c">' + rows.length + '</span></div><div class="pBody">' +
+        (rows.length ? rows.map(function (l) {
+          return '<div class="pCard" draggable="true" data-id="' + l.id + '"><span class="nm">' + l.name + '</span><span class="pr">' + l.prop + '</span><span class="ft">' + (l.st === "new" ? waitPill(l) : l.st === "visit" && l.visit ? '<span class="pill neutral">' + l.visit + '</span>' : '<span></span>') + '<span class="wh">' + when(l.h) + '</span></span></div>';
+        }).join("") : '<div class="pEmpty">Arrastra aquí</div>') + '</div></div>';
+    }).join("");
+  }
+  function renderAll() {
+    var v = visible();
+    if (view === "inbox" && !v.some(function (l) { return l.id === selId; })) selId = v.length ? v[0].id : null;
+    renderHeader(); renderFilter(); renderList(); renderDetail(); renderPipe();
+    document.getElementById("inboxView").classList.toggle("hide", view !== "inbox");
+    document.getElementById("pipeView").classList.toggle("hide", view !== "pipe");
+    document.querySelectorAll("#viewSeg button").forEach(function (b) { b.classList.toggle("isOn", b.getAttribute("data-v") === view); });
+  }
+  function setStage(id, st, quiet) {
+    var l = byId(id); if (!l || l.st === st) return;
+    if (REALM) { window.HM_CT.setStage(l, st, renderAll); return; }
+    var prev = l.st; l.st = st; save(); renderAll();
+    if (!quiet && window.homyoToast) window.homyoToast(l.name + " · " + ST[st].t, function () { l.st = prev; save(); renderAll(); });
+  }
 
-          <!-- EMPTY -->
-          <div id="viewEmpty" class="hide">
-            <div class="emptyState">
-              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-              <h3>Aún no has recibido contactos</h3>
-              <p>Cuando un comprador o inquilino esté interesado en una de tus viviendas, su solicitud aparecerá aquí con sus datos de contacto directos. Responder rápido mejora tu tasa de contacto.</p>
-              <div class="actions"><a class="btn primary" href="pro-viviendas.html">Revisar mis viviendas</a><a class="btn ghost" href="pro-analisis.html">Ver análisis</a></div>
-            </div>
-          </div>
-
-        </main>
-      </div>
-    </div>
-
-    <script>
-      window.PRO_PAGE = {
-        active: "contactos", title: "Contactos", crumb: "Áurea Inmobiliaria · Bandeja de contactos",
-        states: [{ id: "leads", label: "Con contactos" }, { id: "empty", label: "Sin contactos (vacío)" }],
-        onState: function (id) {
-          document.getElementById("viewLeads").classList.toggle("hide", id === "empty");
-          document.getElementById("viewEmpty").classList.toggle("hide", id !== "empty");
-        }
-      };
-    </script>
-    <script src="pro-shell.js"></script>
-    <script>
-      var LEADS = [
-        { id: 1, name: "Lucía Bravo", init: "LB", email: "lucia.bravo@gmail.com", tel: "+34 655 102 938", prop: "Ático · Calle Ferraz 12", zone: "Moncloa · 620.000 €", when: "Hace 1 h", st: "new", msg: "Hola, me interesa mucho el ático. ¿Sería posible visitarlo esta semana, preferiblemente jueves o viernes por la tarde? Tengo la financiación ya preaprobada. Gracias." },
-        { id: 2, name: "Daniel Ortega", init: "DO", email: "d.ortega@outlook.es", tel: "+34 600 451 220", prop: "Chalet · Av. de Europa 9", zone: "Pozuelo · 890.000 €", when: "Hace 4 h", st: "new", msg: "Buenos días, estamos buscando una vivienda con jardín para la familia. ¿El chalet tiene piscina propia o comunitaria? ¿Cuántas plazas de garaje incluye?" },
-        { id: 3, name: "María Fdez.", init: "MF", email: "maria.fz@gmail.com", tel: "+34 678 339 014", prop: "Piso · Calle Velázquez 80", zone: "Salamanca · 485.000 €", when: "Ayer", st: "progress", msg: "Hola, ¿el precio es negociable? Me encaja todo salvo que esperaba algo por debajo de 460.000. ¿Podríamos hablarlo?" },
-        { id: 4, name: "Jorge Alonso", init: "JA", email: "jorge.alonso@empresa.com", tel: "+34 611 778 002", prop: "Piso · Bravo Murillo 200", zone: "Tetuán · 298.000 €", when: "Hace 2 días", st: "progress", msg: "¿Está disponible para entrar a vivir? ¿Qué gastos de comunidad tiene al mes?" },
-        { id: 5, name: "Sara Giménez", init: "SG", email: "sara.gimenez@gmail.com", tel: "+34 699 010 553", prop: "Piso · Príncipe de Vergara 150", zone: "Chamartín · 2.100 €/mes", when: "Hace 5 días", st: "done", msg: "Gracias por enseñarme el piso. Finalmente nos hemos decidido por otra opción, pero todo perfecto en el trato." }
-      ];
-      var STMAP = { new: { t: "Nuevo", cls: "ok" }, progress: { t: "En curso", cls: "infop" }, done: { t: "Gestionado", cls: "neutral" } };
-      var items = document.getElementById("leadItems");
-      items.innerHTML = LEADS.map(function (l) {
-        return '<div class="lead' + (l.st === "new" ? " unread" : "") + '" data-id="' + l.id + '">' +
-          '<span class="leadAv">' + l.init + '</span>' +
-          '<span><span class="leadName">' + l.name + '</span><span class="leadFor">' + l.prop + '</span>' +
-          '<span class="pill ' + STMAP[l.st].cls + '" style="margin-top:7px;"><span class="dot"></span>' + STMAP[l.st].t + '</span></span>' +
-          '<span style="text-align:right;"><span class="leadWhen">' + l.when + '</span>' + (l.st === "new" ? '<span class="leadDot"></span>' : "") + '</span>' +
-          '</div>';
-      }).join("");
-
-      function showDetail(l) {
-        document.getElementById("detail").innerHTML =
-          '<div class="dHead"><div class="dPerson"><span class="av">' + l.init + '</span>' +
-          '<div><h2>' + l.name + '</h2><span class="pill ' + STMAP[l.st].cls + '" style="margin-top:6px;"><span class="dot"></span>' + STMAP[l.st].t + '</span></div></div>' +
-          '<div class="dContacts">' +
-          '<a href="tel:' + l.tel.replace(/\s/g, "") + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>' + l.tel + '</a>' +
-          '<a href="mailto:' + l.email + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M22 6 12 13 2 6"/><rect x="2" y="5" width="20" height="14" rx="2"/></svg>' + l.email + '</a>' +
-          '</div></div>' +
-          '<div class="dBody"><div class="dProp"><span class="th"></span><div><h4>' + l.prop + '</h4><p>' + l.zone + ' · solicitado ' + l.when.toLowerCase() + '</p></div></div>' +
-          '<p class="dMsgLabel">Mensaje del interesado</p><div class="dMsg">' + l.msg + '</div>' +
-          '<div class="dActions">' +
-          '<a class="btn primary" href="mailto:' + l.email + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>Responder</a>' +
-          '<a class="btn ghost" href="tel:' + l.tel.replace(/\s/g, "") + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>Llamar</a>' +
-          '<button class="btn ghost markBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Marcar como gestionado</button>' +
-          '</div>' +
-          '<div class="directNote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg><span>Contacto directo con el interesado. Homyo no intermedia ni revende este dato.</span></div>' +
-          '</div>';
-        document.querySelector(".markBtn").addEventListener("click", function () {
-          this.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Gestionado';
-          this.disabled = true;
-        });
-      }
-      function select(id) {
-        var l = LEADS.find(function (x) { return x.id === id; });
-        document.querySelectorAll(".lead").forEach(function (n) { n.classList.toggle("isOn", +n.getAttribute("data-id") === id); });
-        showDetail(l);
-      }
-      items.querySelectorAll(".lead").forEach(function (n) {
-        n.addEventListener("click", function () { select(+n.getAttribute("data-id")); });
-      });
-      document.querySelectorAll(".leadFilter .lf").forEach(function (b) {
-        b.addEventListener("click", function () {
-          document.querySelectorAll(".leadFilter .lf").forEach(function (x) { x.classList.remove("isOn"); });
-          b.classList.add("isOn");
-        });
-      });
-      select(1);
-    </script>
-  </body>
+  document.getElementById("viewSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    view = b.getAttribute("data-v"); try { localStorage.setItem(VKEY, view); } catch (er) {} renderAll();
+  });
+  document.getElementById("leadFilter").addEventListener("click", function (e) {
+    var b = e.target.closest(".lf"); if (!b) return; filter = b.getAttribute("data-f"); selId = null; renderAll();
+  });
+  document.getElementById("leadItems").addEventListener("click", function (e) {
+    var n = e.target.closest(".lead"); if (!n) return; selId = pid(n.getAttribute("data-id")); renderList(); renderDetail();
+    if (window.innerWidth < 980) { var r = document.getElementById("detail").getBoundingClientRect(); window.scrollBy({ top: r.top - 80, behavior: "smooth" }); }
+  });
+  document.getElementById("detail").addEventListener("click", function (e) {
+    var s = e.target.closest("[data-stage]"); if (s) { setStage(selId, s.getAttribute("data-stage")); return; }
+    if (REALM) return;
+    var r = e.target.closest("[data-reply]"); if (r) { var l = byId(selId); if (l && l.st === "new") setTimeout(function () { setStage(l.id, "replied"); }, 0); }
+  });
+  var pipe = document.getElementById("pipe"), dragId = null, moved = false;
+  pipe.addEventListener("dragstart", function (e) { var c = e.target.closest(".pCard"); if (!c) return; dragId = pid(c.getAttribute("data-id")); moved = true; c.classList.add("isDrag"); e.dataTransfer.effectAllowed = "move"; try { e.dataTransfer.setData("text/plain", String(dragId)); } catch (er) {} });
+  pipe.addEventListener("dragend", function () { dragId = null; pipe.querySelectorAll(".isDrag,.isOver").forEach(function (n) { n.classList.remove("isDrag", "isOver"); }); setTimeout(function () { moved = false; }, 0); });
+  pipe.addEventListener("dragover", function (e) { var col = e.target.closest(".pCol"); if (!col || dragId == null) return; e.preventDefault(); pipe.querySelectorAll(".pCol").forEach(function (c) { c.classList.toggle("isOver", c === col); }); });
+  pipe.addEventListener("drop", function (e) { var col = e.target.closest(".pCol"); if (!col || dragId == null) return; e.preventDefault(); setStage(dragId, col.getAttribute("data-col")); });
+  pipe.addEventListener("click", function (e) { var c = e.target.closest(".pCard"); if (!c || moved) return; selId = pid(c.getAttribute("data-id")); filter = "all"; view = "inbox"; try { localStorage.setItem(VKEY, view); } catch (er) {} renderAll(); });
+  renderAll();
+  if (REALM) window.HM_CT.init({ set: function (rows) { LEADS = rows; LOADING = false; }, render: renderAll, byId: byId, getSel: function () { return selId; }, setSel: function (v) { selId = v; } });
+})();
+</script>
+</body>
 </html>

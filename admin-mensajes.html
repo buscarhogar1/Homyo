@@ -1,119 +1,175 @@
 <!doctype html>
 <html lang="es">
-  <head>
-  <!-- Icono de acceso directo (pantalla de inicio) -->
-  <link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png?v=10" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png?v=10" />
-  <link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png?v=10" />
-  <link rel="manifest" href="./site.webmanifest" />
-  <meta name="theme-color" content="#8C1F2D" />
-  <meta name="apple-mobile-web-app-title" content="Homyo" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="mobile-web-app-capable" content="yes" />
-
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="robots" content="noindex,nofollow" />
-    <title>Mensajes y soporte · Homyo Admin</title>
-    <link rel="stylesheet" href="pro.css" />
-    <link rel="stylesheet" href="admin.css" />
-    <style>
-      .composer{ display:flex; gap:10px; align-items:flex-end; border-top:1px solid var(--line); padding:16px; }
-      .composer textarea{ flex:1 1 auto; min-height:46px; max-height:120px; resize:none; }
-    </style>
-  <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
-  <body class="adminTheme">
-    <div class="proLayout">
-      <aside class="proSidebar" id="proSidebar"></aside>
-      <div class="sbScrim" id="sbScrim"></div>
-      <div class="proContent">
-        <header class="proTopbar" id="proTopbar"></header>
-        <main class="proMain" data-screen-label="Mensajes">
-
-          <div class="pageHead">
-            <div class="pageHeadMain">
-              <p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Operación · Soporte</p>
-              <h1 class="pageTitle">Mensajes y <strong>soporte</strong></h1>
-              <p class="pageLede">Bandeja de comunicaciones con inmobiliarias y usuarios. Dudas sobre el estándar, facturación, incidencias y peticiones de cuenta.</p>
-            </div>
-          </div>
-
-          <div class="splitView">
-            <!-- LISTA -->
-            <div class="listPane">
-              <div class="lpHead"><h3>Bandeja · 6 sin leer</h3><span class="pill solid">Soporte</span></div>
-              <a class="lpItem isOn unread" data-sel="vega">
-                <span class="avatar sm">VG</span>
-                <span><span class="li1">Inmobiliaria Vega</span><span class="li2">¿El certificado energético es obligatorio para todos los anuncios?</span></span>
-                <span class="liWhen">1 h</span>
-              </a>
-              <a class="lpItem unread" data-sel="marina">
-                <span class="avatar sm" style="background:var(--dangerSoft);border-color:rgba(176,50,71,.25);color:var(--danger)">PM</span>
-                <span><span class="li1">Pisos Marina</span><span class="li2">Mi cuenta está suspendida, ¿cómo actualizo la tarjeta?</span></span>
-                <span class="liWhen">3 h</span>
-              </a>
-              <a class="lpItem unread" data-sel="lucia">
-                <span class="avatar user sm">LB</span>
-                <span><span class="li1">Lucía Bravo (usuaria)</span><span class="li2">No me llega la respuesta de una inmobiliaria a la que escribí.</span></span>
-                <span class="liWhen">5 h</span>
-              </a>
-              <a class="lpItem" data-sel="ribera">
-                <span class="avatar sm">RH</span>
-                <span><span class="li1">Ribera Homes</span><span class="li2">¿Puedo importar mis anuncios desde otro portal?</span></span>
-                <span class="liWhen">Ayer</span>
-              </a>
-              <a class="lpItem" data-sel="domus">
-                <span class="avatar sm">DC</span>
-                <span><span class="li1">Domus Capital</span><span class="li2">Solicitamos factura con datos fiscales actualizados.</span></span>
-                <span class="liWhen">2 días</span>
-              </a>
-            </div>
-
-            <!-- HILO -->
-            <div class="card" style="padding:0;display:flex;flex-direction:column;min-height:520px;">
-              <div style="display:flex;align-items:center;gap:13px;padding:16px 20px;border-bottom:1px solid var(--line);">
-                <span class="avatar sm">VG</span>
-                <div style="flex:1 1 auto;min-width:0;"><div style="font-family:'Raleway';font-weight:600;font-size:15px;color:var(--ink);" id="thName">Inmobiliaria Vega</div><div style="font-size:12px;color:var(--muted);">Valencia · Plan estándar · cuenta verificada</div></div>
-                <span class="pill warnp">Sin responder</span>
-              </div>
-
-              <div style="flex:1 1 auto;padding:22px 20px;overflow-y:auto;">
-                <div class="thread">
-                  <div class="msg them"><div class="mwho">Inmobiliaria Vega</div>Hola, estamos preparando nuevos anuncios. ¿El certificado energético es obligatorio para todos o solo para venta?<div class="mtime">Hoy, 10:14</div></div>
-                  <div class="msg them"><div class="mwho">Inmobiliaria Vega</div>Y si está en trámite, ¿podemos publicar mientras tanto?<div class="mtime">Hoy, 10:15</div></div>
-                  <div class="msg me"><div class="mwho">Dirección Homyo</div>¡Hola! El certificado es obligatorio tanto en venta como en alquiler. Si está en trámite, podéis publicar marcando "en trámite", pero tenéis 30 días para subirlo o el anuncio se despublica.<div class="mtime">Hoy, 10:22</div></div>
-                </div>
-              </div>
-
-              <div class="composer">
-                <textarea class="input" placeholder="Escribe una respuesta…"></textarea>
-                <button class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>Enviar</button>
-              </div>
-            </div>
-          </div>
-
-        </main>
-      </div>
-    </div>
-
-    <script>
-      window.ADMIN_PAGE = { active: "mensajes", title: "Mensajes y soporte", crumb: "Operación · Bandeja de entrada" };
-    </script>
-    <script src="admin-shell.js"></script>
-    <script>
-      (function () {
-        var NAMES = { vega:"Inmobiliaria Vega", marina:"Pisos Marina", lucia:"Lucía Bravo (usuaria)", ribera:"Ribera Homes", domus:"Domus Capital" };
-        var items = document.querySelectorAll(".lpItem");
-        var thName = document.getElementById("thName");
-        items.forEach(function (it) {
-          it.addEventListener("click", function (e) {
-            e.preventDefault();
-            items.forEach(function (x) { x.classList.remove("isOn"); });
-            it.classList.add("isOn"); it.classList.remove("unread");
-            thName.textContent = NAMES[it.getAttribute("data-sel")] || "";
-          });
-        });
-      })();
-    </script>
-  </body>
+<head>
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png?v=10" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png?v=10" />
+<link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png?v=10" />
+<link rel="manifest" href="./site.webmanifest" />
+<meta name="theme-color" content="#8C1F2D" />
+<meta name="apple-mobile-web-app-title" content="Homyo" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Mensajes y soporte · Homyo Admin</title>
+<link rel="stylesheet" href="pro.css" />
+<link rel="stylesheet" href="admin.css" />
+<style>
+a{color:var(--granate)}a:hover{color:var(--granateDark)}
+.thCard{padding:0;display:flex;flex-direction:column;min-height:540px}
+.thHead{display:flex;align-items:center;gap:13px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.thHead .nm{font-family:'Raleway',sans-serif;font-weight:600;font-size:15px;color:var(--ink)}
+.thHead .mt{font-size:12px;color:var(--muted)}
+.thBody{flex:1 1 auto;padding:22px 20px;overflow-y:auto}
+.composer{border-top:1px solid var(--line);padding:14px 16px 16px;position:relative}
+.cmpTools{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.cmpTools .hint{font-size:12px;color:var(--muted);margin-left:auto}
+.cmpRow{display:flex;gap:10px;align-items:flex-end}
+.cmpRow textarea{flex:1 1 auto;min-height:72px;max-height:220px;resize:vertical}
+.srBtn{appearance:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 13px;font:inherit;font-size:12.5px;color:var(--ink2);transition:all .14s ease}
+.srBtn:hover,.srBtn.isOn{border-color:var(--granate);color:var(--granate)}
+.srBtn svg{width:14px;height:14px}
+.srPop{position:absolute;left:16px;right:16px;bottom:calc(100% - 6px);background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadowPop);display:none;flex-direction:column;max-height:360px;z-index:20}
+.srPop.isOn{display:flex}
+.srSearch{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line)}
+.srSearch svg{width:15px;height:15px;color:var(--muted)}
+.srSearch input{flex:1 1 auto;border:0;outline:0;font:inherit;font-size:14px;background:transparent;min-width:0}
+.srList{overflow-y:auto;padding:4px 0}
+.srItem{appearance:none;display:block;width:100%;text-align:left;background:none;border:0;padding:10px 14px;cursor:pointer;font:inherit}
+.srItem.isSel,.srItem:hover{background:var(--cardWarm)}
+.srItem b{display:flex;align-items:center;gap:8px;font-family:'Raleway',sans-serif;font-size:13.5px;font-weight:600;color:var(--ink)}
+.srItem b .tag{font-family:inherit;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.srItem span{display:block;font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srEmpty{padding:20px 14px;font-size:13px;color:var(--muted);text-align:center}
+.thEmpty{flex:1 1 auto;display:grid;place-items:center;padding:40px 20px;text-align:center;color:var(--muted);font-size:13.5px}
+</style>
+<style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style>
+</head>
+<body class="adminTheme">
+<div class="proLayout">
+<aside class="proSidebar" id="proSidebar"></aside>
+<div class="sbScrim" id="sbScrim"></div>
+<div class="proContent">
+<header class="proTopbar" id="proTopbar"></header>
+<main class="proMain" data-screen-label="Mensajes">
+<div class="pageHead">
+<div class="pageHeadMain">
+<p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>Operación · Soporte</p>
+<h1 class="pageTitle">Mensajes y <strong>soporte</strong></h1>
+<p class="pageLede">Bandeja de comunicaciones con inmobiliarias y usuarios. Dudas sobre el estándar, facturación, incidencias y peticiones de cuenta.</p>
+</div>
+</div>
+<div class="splitView">
+<div class="listPane"><div class="lpHead"><h3 id="lpTitle">Bandeja</h3><span class="pill solid">Soporte</span></div><div id="lpItems"></div></div>
+<div class="card thCard" id="thread"></div>
+</div>
+</main>
+</div>
+</div>
+<script>
+window.ADMIN_PAGE = { active: "mensajes", title: "Mensajes y soporte", crumb: "Operación · Bandeja de entrada", live: true };
+</script>
+<script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="admin-shell.js"></script>
+<script>
+(function () {
+  var C = [
+    { id:"vega", name:"Inmobiliaria Vega", first:"Inmobiliaria Vega", init:"VG", meta:"Valencia · 12 viviendas · cuenta verificada", when:"1 h", unread:true, msgs:[
+      ["them","Hola, estamos preparando nuevos anuncios. ¿El certificado energético es obligatorio para todos o solo para venta?","Hoy, 10:14"],
+      ["them","Y si está en trámite, ¿podemos publicar mientras tanto?","Hoy, 10:15"] ] },
+    { id:"marina", name:"Pisos Marina", first:"Pisos Marina", init:"PM", danger:true, meta:"Alicante · 9 viviendas · suspendida por impago", when:"3 h", unread:true, msgs:[
+      ["them","Buenos días, nos aparece la cuenta suspendida. Creo que la tarjeta ha caducado, ¿cómo la actualizo? Necesitamos los anuncios activos cuanto antes.","Hoy, 08:02"] ] },
+    { id:"lucia", name:"Lucía Bravo (usuaria)", first:"Lucía", init:"LB", user:true, meta:"Usuaria registrada · Madrid", when:"5 h", unread:true, msgs:[
+      ["them","Hola, escribí a una inmobiliaria por un ático en Calle Ferraz y no me han contestado. ¿Podéis ayudarme?","Hoy, 06:40"] ] },
+    { id:"ribera", name:"Ribera Homes", first:"Ribera Homes", init:"RH", meta:"Valencia · 34 viviendas · cuenta verificada", when:"Ayer", unread:false, msgs:[
+      ["them","¿Podemos importar nuestros anuncios desde otro portal o hay que subirlos uno a uno?","Ayer, 17:30"],
+      ["me","Hola, de momento la subida es manual para poder revisar plano, fotos y certificado de cada vivienda. Estamos preparando la importación por fichero y os avisaremos en cuanto esté lista.","Ayer, 18:05"] ] },
+    { id:"domus", name:"Domus Capital", first:"Domus Capital", init:"DC", meta:"Madrid · 41 viviendas · cuenta verificada", when:"2 días", unread:false, msgs:[
+      ["them","Solicitamos que las próximas facturas salgan con la nueva dirección fiscal: Calle Orense 20, 28020 Madrid.","Hace 2 días"] ] }
+  ];
+  var SR = [
+    { id:"cert", tag:"Estándar", t:"Certificado energético", b:"Hola, {nombre}:\n\nEl certificado de eficiencia energética es obligatorio tanto en venta como en alquiler. Si está en trámite, podéis publicar marcando «en trámite»; tenéis 30 días para subirlo o el anuncio dejará de mostrarse.\n\nUn saludo,\nEquipo Homyo" },
+    { id:"plano", tag:"Estándar", t:"Plano en planta obligatorio", b:"Hola, {nombre}:\n\nTodas las viviendas necesitan un plano en planta legible (vale un croquis acotado). Podéis subirlo desde Viviendas › Editar › Plano y el anuncio volverá a revisión automáticamente.\n\nUn saludo,\nEquipo Homyo" },
+    { id:"pago", tag:"Facturación", t:"Actualizar método de pago", b:"Hola, {nombre}:\n\nPodéis actualizar la tarjeta o la domiciliación desde Facturación › Método de pago › Cambiar. En cuanto el cobro se complete, la cuenta se reactiva sola y los anuncios vuelven a mostrarse en unos minutos.\n\nUn saludo,\nEquipo Homyo" },
+    { id:"fiscal", tag:"Facturación", t:"Cambio de datos fiscales", b:"Hola, {nombre}:\n\nHemos actualizado vuestros datos fiscales. Las próximas facturas saldrán ya con la nueva dirección. Si necesitáis rectificar alguna factura anterior, indicadnos el número.\n\nUn saludo,\nEquipo Homyo" },
+    { id:"import", tag:"Cuenta", t:"Importar anuncios de otro portal", b:"Hola, {nombre}:\n\nDe momento la subida es manual para poder revisar plano, fotos y certificado de cada vivienda. Estamos preparando la importación por fichero y os avisaremos en cuanto esté disponible.\n\nUn saludo,\nEquipo Homyo" },
+    { id:"sinresp", tag:"Usuarios", t:"Usuario sin respuesta de una agencia", b:"Hola, {nombre}:\n\nGracias por avisarnos. Hemos recordado a la inmobiliaria que tiene tu solicitud pendiente. Las agencias de Homyo suelen responder en menos de 24 horas; si mañana sigues sin noticias, escríbenos y lo revisamos.\n\nUn saludo,\nEquipo Homyo" }
+  ];
+  var KEY = "homyo_admin_msgs_state", st = {};
+  try { st = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+  C.forEach(function (c) { var s = st[c.id]; if (s) { if (s.read) c.unread = false; (s.sent || []).forEach(function (m) { c.msgs.push(["me", m.t, m.when]); }); } });
+  function persist(c, sentText) { var s = st[c.id] || (st[c.id] = { read: false, sent: [] }); s.read = !c.unread; if (sentText) s.sent.push({ t: sentText, when: "Hoy, " + hm() }); try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+  function hm() { var d = new Date(); return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]; }); }
+  function norm(s) { return (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+  function needsReply(c) { return c.msgs[c.msgs.length - 1][0] === "them"; }
+  var sel = C[0].id, srOpen = false, srSel = 0, srRes = SR;
+  function cur() { return C.filter(function (c) { return c.id === sel; })[0]; }
+  function avatar(c) { return '<span class="avatar sm' + (c.user ? " user" : "") + '"' + (c.danger ? ' style="background:var(--dangerSoft);border-color:rgba(176,50,71,.25);color:var(--danger)"' : '') + '>' + c.init + '</span>'; }
+  function renderList() {
+    var n = C.filter(function (c) { return c.unread; }).length;
+    document.getElementById("lpTitle").textContent = n ? "Bandeja · " + n + " sin leer" : "Bandeja · al día";
+    document.getElementById("lpItems").innerHTML = C.map(function (c) {
+      var last = c.msgs[c.msgs.length - 1];
+      return '<a class="lpItem' + (c.id === sel ? " isOn" : "") + (c.unread ? " unread" : "") + '" href="#" data-sel="' + c.id + '">' + avatar(c) + '<span><span class="li1">' + esc(c.name) + '</span><span class="li2">' + (last[0] === "me" ? "Tú: " : "") + esc(last[1]) + '</span></span><span class="liWhen">' + c.when + '</span></a>';
+    }).join("");
+    var b = document.querySelector('.sbItem[href="admin-mensajes.html"] .sbBadge'); if (b) { b.textContent = n; b.style.display = n ? "" : "none"; }
+  }
+  function renderThread() {
+    var c = cur(), box = document.getElementById("thread");
+    if (!c) { box.innerHTML = '<div class="thEmpty">Selecciona una conversación.</div>'; return; }
+    var nr = needsReply(c);
+    box.innerHTML = '<div class="thHead">' + avatar(c) + '<div style="flex:1 1 auto;min-width:0;"><div class="nm">' + esc(c.name) + '</div><div class="mt">' + esc(c.meta) + '</div></div><span class="pill ' + (nr ? "warnp" : "ok") + '">' + (nr ? "Sin responder" : "Respondido") + '</span></div>' +
+      '<div class="thBody" id="thBody"><div class="thread">' + c.msgs.map(function (m) { return '<div class="msg ' + m[0] + '"><div class="mwho">' + (m[0] === "me" ? "Equipo Homyo" : esc(c.name)) + '</div>' + esc(m[1]).replace(/\n/g, "<br>") + '<div class="mtime">' + esc(m[2]) + '</div></div>'; }).join("") + '</div></div>' +
+      '<div class="composer"><div class="srPop" id="srPop"><div class="srSearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg><input type="text" id="srQ" placeholder="Buscar respuesta guardada…" autocomplete="off" /></div><div class="srList" id="srList"></div></div>' +
+      '<div class="cmpTools"><button class="srBtn" type="button" id="srBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"></path><path d="M4 12h10"></path><path d="M4 18h7"></path></svg>Respuestas guardadas</button><span class="hint">Escribe <kbd>/</kbd> al empezar para buscar · <kbd>Ctrl</kbd> + <kbd>Enter</kbd> envía</span></div>' +
+      '<div class="cmpRow"><textarea class="input" id="cmpTa" placeholder="Escribe una respuesta…"></textarea><button class="btn primary" type="button" id="cmpSend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M22 2 11 13"></path><path d="M22 2 15 22l-4-9-9-4 20-7z"></path></svg>Enviar</button></div></div>';
+    var tb = document.getElementById("thBody"); tb.scrollTop = tb.scrollHeight;
+    bindComposer();
+  }
+  function renderSR() {
+    var q = norm((document.getElementById("srQ") || {}).value || "");
+    srRes = SR.filter(function (r) { return !q || norm(r.t + " " + r.tag + " " + r.b).indexOf(q) > -1; });
+    srSel = Math.min(srSel, Math.max(0, srRes.length - 1));
+    document.getElementById("srList").innerHTML = srRes.length ? srRes.map(function (r, i) { return '<button class="srItem' + (i === srSel ? " isSel" : "") + '" type="button" data-i="' + i + '"><b>' + esc(r.t) + ' <span class="tag">' + esc(r.tag) + '</span></b><span>' + esc(r.b.split("\n\n")[1] || "") + '</span></button>'; }).join("") : '<div class="srEmpty">Ninguna respuesta coincide.</div>';
+  }
+  function openSR() { srOpen = true; srSel = 0; document.getElementById("srPop").classList.add("isOn"); document.getElementById("srBtn").classList.add("isOn"); document.getElementById("srQ").value = ""; renderSR(); setTimeout(function () { document.getElementById("srQ").focus(); }, 0); }
+  function closeSR(focusTa) { srOpen = false; var p = document.getElementById("srPop"); if (p) p.classList.remove("isOn"); var b = document.getElementById("srBtn"); if (b) b.classList.remove("isOn"); if (focusTa) document.getElementById("cmpTa").focus(); }
+  function useSR(r) { if (!r) return; var ta = document.getElementById("cmpTa"); ta.value = r.b.replace(/\{nombre\}/g, cur().first); closeSR(true); ta.setSelectionRange(ta.value.length, ta.value.length); }
+  function send() {
+    var ta = document.getElementById("cmpTa"), t = ta.value.trim(); if (!t) return;
+    var c = cur(); c.msgs.push(["me", t, "Hoy, " + hm()]); c.unread = false; c.when = "Ahora"; persist(c, t);
+    if (window.homyoAudit) homyoAudit("Soporte", "Respondió un mensaje", c.name);
+    renderList(); renderThread();
+    if (window.homyoToast) window.homyoToast("Respuesta enviada a " + c.name);
+  }
+  function bindComposer() {
+    var ta = document.getElementById("cmpTa");
+    document.getElementById("srBtn").onclick = function () { srOpen ? closeSR(true) : openSR(); };
+    document.getElementById("cmpSend").onclick = send;
+    ta.addEventListener("input", function () { if (ta.value === "/") { ta.value = ""; openSR(); } });
+    ta.addEventListener("keydown", function (e) { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); send(); } });
+    var q = document.getElementById("srQ");
+    q.addEventListener("input", function () { srSel = 0; renderSR(); });
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown") { e.preventDefault(); srSel = Math.min(srRes.length - 1, srSel + 1); renderSR(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); srSel = Math.max(0, srSel - 1); renderSR(); }
+      else if (e.key === "Enter") { e.preventDefault(); useSR(srRes[srSel]); }
+      else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closeSR(true); }
+    });
+    document.getElementById("srList").addEventListener("click", function (e) { var b = e.target.closest(".srItem"); if (b) useSR(srRes[+b.getAttribute("data-i")]); });
+  }
+  document.addEventListener("mousedown", function (e) { if (srOpen && !e.target.closest("#srPop") && !e.target.closest("#srBtn")) closeSR(false); });
+  document.getElementById("lpItems").addEventListener("click", function (e) {
+    var a = e.target.closest(".lpItem"); if (!a) return; e.preventDefault();
+    sel = a.getAttribute("data-sel"); var c = cur(); if (c.unread) { c.unread = false; persist(c); }
+    srOpen = false; renderList(); renderThread();
+    if (window.innerWidth < 980) { var r = document.getElementById("thread").getBoundingClientRect(); window.scrollBy({ top: r.top - 80, behavior: "smooth" }); }
+  });
+  var first = cur(); if (first.unread) { first.unread = false; persist(first); }
+  renderList(); renderThread();
+})();
+</script>
+<script src="admin-mensajes-real.js"></script>
+</body>
 </html>

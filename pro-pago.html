@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="es">
+<head>
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png?v=10" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png?v=10" />
+<link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png?v=10" />
+<link rel="manifest" href="./site.webmanifest" />
+<meta name="theme-color" content="#8C1F2D" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Activar pago · Homyo Pro</title>
+<link rel="stylesheet" href="pro.css" />
+<style>
+a{color:var(--granate)}a:hover{color:var(--granateDark)}
+.payGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,460px);gap:22px;align-items:start}
+@media (max-width:1020px){.payGrid{grid-template-columns:minmax(0,1fr)}}
+.back{display:inline-flex;align-items:center;gap:7px;font-family:'Raleway',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);text-decoration:none;margin-bottom:18px}
+.back svg{width:15px;height:15px}.back:hover{color:var(--granate)}
+.line{display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:11px 0;font-size:14px;color:var(--ink2)}
+.line + .line{border-top:1px solid var(--lineSoft)}
+.line b{font-family:'Raleway',sans-serif;font-weight:600;color:var(--ink);white-space:nowrap}
+.line .sub{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.totalRow{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:6px;padding-top:16px}
+.totalRow .tl{font-family:'Raleway',sans-serif;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.totalRow .tv{font-family:'Raleway',sans-serif;font-size:34px;font-weight:500;color:var(--granate);letter-spacing:-.7px;line-height:1}
+.totalRow .tv small{font-size:14px;color:var(--muted);font-weight:500;letter-spacing:0}
+.today{margin-top:14px;padding:13px 15px;border-radius:6px;background:var(--cardWarm);font-size:13px;color:var(--ink2);line-height:1.5}
+.today b{color:var(--ink)}
+.fiscal{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px 18px;font-size:13.5px}
+.fiscal dt{color:var(--muted)}.fiscal dd{margin:0;color:var(--ink);font-weight:500}
+.vies{display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-size:11.5px;font-weight:600;color:var(--good)}
+.vies.bad{color:var(--warn)}
+.vies svg{width:14px;height:14px}
+.steps{display:grid;gap:12px;margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:12px;font-size:13px;color:var(--ink2);line-height:1.5;counter-increment:s}
+.steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:#fff;display:grid;place-items:center;font-family:'Raleway',sans-serif;font-size:12px;font-weight:600;color:var(--granate)}
+/* embedded checkout mock */
+.embedWrap{position:sticky;top:calc(var(--topbarH) + 20px)}
+.embedTag{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-family:'Raleway',sans-serif;font-size:10.5px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.embedTag svg{width:13px;height:13px}
+.sx{background:#fff;border:1px solid var(--line);border-radius:var(--rad);padding:26px 26px 20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:#30313d;box-shadow:0 10px 30px rgba(60,40,20,.06)}
+.sx h3{margin:0 0 4px;font-size:15px;font-weight:600}
+.sx .sxSub{margin:0 0 20px;font-size:13px;color:#6b6d7a}
+.sxWallet{display:flex;align-items:center;justify-content:center;height:44px;border-radius:6px;background:#1a1a1a;color:#fff;font-size:14px;font-weight:600;border:none;width:100%;cursor:pointer}
+.sxOr{display:flex;align-items:center;gap:12px;margin:18px 0;font-size:12px;color:#8a8c97}
+.sxOr::before,.sxOr::after{content:"";flex:1;height:1px;background:#e6e6ea}
+.sxLbl{display:block;font-size:13px;font-weight:500;margin:0 0 6px;color:#30313d}
+.sxIn{width:100%;height:42px;border:1px solid #dcdce2;border-radius:6px;padding:0 12px;font:inherit;font-size:14px;color:#30313d;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.03)}
+.sxIn:focus{outline:none;border-color:var(--granate);box-shadow:0 0 0 3px rgba(140,31,45,.12)}
+.sxIn.err{border-color:#df1b41}
+.sxRow{margin-bottom:14px}
+.sxGroup{border:1px solid #dcdce2;border-radius:6px;overflow:hidden}
+.sxGroup .sxIn{border:none;border-radius:0;box-shadow:none}
+.sxGroup .split{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #dcdce2}
+.sxGroup .split .sxIn + .sxIn{border-left:1px solid #dcdce2}
+.sxGroup.err{border-color:#df1b41}
+.sxErr{font-size:13px;color:#df1b41;margin-top:6px;display:none}
+.sxErr.on{display:block}
+.sxTabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.sxTab{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:11px 12px;border:1px solid #dcdce2;border-radius:6px;background:#fff;cursor:pointer;font:inherit;font-size:13px;font-weight:500;color:#6b6d7a;text-align:left}
+.sxTab svg{width:18px;height:18px}
+.sxTab.on{border-color:var(--granate);color:var(--granate);box-shadow:0 0 0 1px var(--granate)}
+.sxChk{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#30313d;margin:4px 0 14px;cursor:pointer}
+.sxChk input{margin-top:2px;accent-color:var(--granate)}
+.sxBtn{width:100%;height:46px;border:none;border-radius:6px;background:var(--granate);color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px}
+.sxBtn:hover{background:var(--granateDark)}
+.sxBtn:disabled{opacity:.75;cursor:default}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.sxLegal{font-size:11.5px;color:#8a8c97;line-height:1.5;margin:12px 0 0}
+.sxFoot{display:flex;justify-content:center;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid #efeff2;font-size:11.5px;color:#8a8c97}
+.sxFoot a{color:#8a8c97;text-decoration:none}
+.sxDone{text-align:center;padding:18px 6px 8px}
+.sxDone .ok{width:54px;height:54px;border-radius:50%;background:var(--goodSoft);color:var(--good);display:grid;place-items:center;margin:0 auto 16px}
+.sxDone .ok svg{width:26px;height:26px}
+.sxDone h3{font-size:18px;margin-bottom:6px}
+.sxDone p{font-size:13.5px;color:#6b6d7a;line-height:1.55;margin:0 0 20px}
+.hide{display:none!important}
+</style>
+<style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style>
+</head>
+<body>
+<div class="proLayout">
+<aside class="proSidebar" id="proSidebar"></aside>
+<div class="sbScrim" id="sbScrim"></div>
+<div class="proContent">
+<header class="proTopbar" id="proTopbar"></header>
+<main class="proMain">
+<a class="back" href="pro-facturacion.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M15 18l-6-6 6-6"></path></svg>Facturación</a>
+<div class="pageHead"><div class="pageHeadMain">
+<p class="kicker">Suscripción</p>
+<h1 class="pageTitle"><strong id="pgTitle">Activar pago</strong></h1>
+<p class="pageLede" id="pgLede">Añade tu método de pago para seguir publicando cuando termine tu periodo de fundadora. Hoy no se cobra nada.</p>
+</div></div>
+<div class="payGrid">
+<div class="stack-sm">
+<div class="card">
+<p class="cardLabel">Resumen</p>
+<div class="line"><span>Plan por vivienda publicada<span class="sub">Precio de lanzamiento · sin permanencia</span></span><b>6,99 € / vivienda</b></div>
+<div class="line"><span>Viviendas activas ahora<span class="sub">Se ajusta solo cada mes según lo que publiques</span></span><b>18 × 6,99 € = 125,82 €</b></div>
+<div class="line"><span>Cupo gratis · 5 viviendas elegidas por ti<span class="sub">Bonificación de Homyo hasta el 18 dic 2026</span></span><b style="color:var(--good)">−34,95 €</b></div>
+<div class="line"><span>Descuento 20 %<span class="sub">Sobre las 13 viviendas facturables · hasta el 18 sep 2026</span></span><b style="color:var(--good)">−18,17 €</b></div>
+<div class="line"><span>Base imponible</span><b>72,70 €</b></div>
+<div class="line" id="vatLine"><span id="vatLbl">IVA · inversión del sujeto pasivo<span class="sub">Lo declara tu empresa en España (autorrepercusión)</span></span><b id="vatVal">0,00 €</b></div>
+<div class="totalRow"><span class="tl">Total mensual</span><span class="tv" id="totalVal">72,70 <small>€/mes</small></span></div>
+<div class="today">Hoy pagas <b>0,00 €</b>. Primer cargo el <b>1 jul 2026</b>, prorrateado desde el 18 de junio (fin del periodo gratis).</div>
+</div>
+<div class="card">
+<div class="spread" style="margin-bottom:14px;"><p class="cardLabel mt0">Datos de facturación</p><a class="btnLink" href="pro-perfil.html">Editar</a></div>
+<dl class="fiscal" style="margin:0;">
+<dt>Razón social</dt><dd>Áurea Inmobiliaria S.L.</dd>
+<dt>NIF-IVA</dt><dd>ESB87654321<span class="vies" id="viesOk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"></path></svg>Válido en VIES</span><span class="vies bad hide" id="viesBad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg>No registrado en ROI</span></dd>
+<dt>Dirección</dt><dd>C/ Serrano 41, 28001 Madrid</dd>
+<dt>Email facturas</dt><dd>facturas@aurea.es</dd>
+</dl>
+<div class="callout warnc hide" id="roiNote" style="margin-top:16px;"><span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16h.01"></path></svg></span><div><h4>Se aplicará IVA del 21 %</h4><p>Tu NIF no figura como operador intracomunitario. Si te das de alta en el ROI (modelo 036), las facturas pasarán a emitirse sin IVA.</p></div></div>
+</div>
+<div class="card warm">
+<p class="cardLabel">Cómo funciona el cobro</p>
+<ol class="steps">
+<li>El día 1 de cada mes se cobra según las viviendas que tuviste publicadas.</li>
+<li>La factura en PDF llega a tu email y aparece en Facturación.</li>
+<li>Puedes cambiar la tarjeta o cancelar cuando quieras desde tu panel.</li>
+</ol>
+</div>
+</div>
+<div class="embedWrap">
+<p class="embedTag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Pago seguro · procesado por Stripe</p>
+<div class="sx" id="sx">
+<div id="sxForm">
+<h3 id="sxTitle">Método de pago</h3>
+<p class="sxSub" id="sxSub">Se guarda para los cobros mensuales de Homyo.</p>
+<div class="payCard hide" id="curCard" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #e6e6ea;border-radius:6px;margin-bottom:18px;font-size:13px"><span style="width:40px;height:28px;border-radius:4px;background:#1a1a1a;color:#fff;display:grid;place-items:center;font-weight:700;font-size:11px">VISA</span><div><div style="font-weight:600">Actual · ···· 4421</div><div style="color:#6b6d7a;font-size:12px">Se sustituirá por la nueva</div></div></div>
+<button class="sxWallet" type="button">Pagar con Apple Pay</button>
+<div class="sxOr">o</div>
+<div class="sxRow"><label class="sxLbl" for="sxEmail">Email</label><input class="sxIn" id="sxEmail" value="marta@aurea.es"></div>
+<div class="sxTabs">
+<button class="sxTab on" type="button" data-m="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg>Tarjeta</button>
+<button class="sxTab" type="button" data-m="sepa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10 12 4l9 6"></path><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"></path></svg>Domiciliación SEPA</button>
+</div>
+<div id="mCard">
+<div class="sxRow"><label class="sxLbl">Datos de la tarjeta</label>
+<div class="sxGroup" id="cardGroup"><input class="sxIn" id="cardNum" placeholder="1234 1234 1234 1234"><div class="split"><input class="sxIn" placeholder="MM / AA"><input class="sxIn" placeholder="CVC"></div></div>
+<div class="sxErr" id="cardErr">Tu tarjeta ha sido rechazada. Prueba con otra o usa domiciliación SEPA.</div></div>
+<div class="sxRow"><label class="sxLbl" for="sxName">Titular</label><input class="sxIn" id="sxName" value="Marta Sanz"></div>
+</div>
+<div id="mSepa" class="hide">
+<div class="sxRow"><label class="sxLbl" for="sxIban">IBAN</label><input class="sxIn" id="sxIban" placeholder="ES00 0000 0000 0000 0000 0000"></div>
+<div class="sxRow"><label class="sxLbl" for="sxHolder">Titular de la cuenta</label><input class="sxIn" id="sxHolder" value="Áurea Inmobiliaria S.L."></div>
+<p class="sxLegal" style="margin:0 0 14px;">Al continuar autorizas a Homyo y a Stripe a cargar en esta cuenta los importes mensuales mediante adeudo directo SEPA.</p>
+</div>
+<div class="sxRow"><label class="sxLbl" for="sxCountry">País</label><select class="sxIn" id="sxCountry"><option>España</option><option>Portugal</option></select></div>
+<label class="sxChk"><input type="checkbox" checked>Compro como empresa · NIF-IVA ESB87654321</label>
+<button class="sxBtn" id="sxBtn" type="button"><span id="sxBtnTxt">Activar suscripción</span></button>
+<p class="sxLegal">No se cobra nada hoy. A partir del 1 jul 2026 se cargará el importe mensual según tus viviendas activas, hasta que canceles. <a href="terminos.html">Condiciones</a>.</p>
+</div>
+<div id="sxDone" class="sxDone hide">
+<span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6 9 17l-5-5"></path></svg></span>
+<h3>Método de pago guardado</h3>
+<p id="doneTxt">Tu suscripción está activa. El primer cargo será el 1 jul 2026. Te hemos enviado la confirmación a marta@aurea.es.</p>
+<a class="btn primary block" href="pro-facturacion.html">Volver a Facturación</a>
+</div>
+<div class="sxFoot"><span>Powered by Stripe</span><a href="terminos.html">Condiciones</a><a href="privacidad.html">Privacidad</a></div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+var failNext=false;
+var CHANGE=/modo=cambiar/.test(location.search);
+if(CHANGE){
+document.title='Cambiar método de pago · Homyo Pro';
+$('pgTitle').textContent='Cambiar método de pago';
+$('pgLede').textContent='Sustituye la tarjeta o cuenta con la que se cobran tus viviendas publicadas. El cambio se aplica desde el próximo cargo.';
+$('sxTitle').textContent='Nuevo método de pago';
+$('sxSub').textContent='Reemplazará al actual en los próximos cobros.';
+$('curCard').classList.remove('hide');
+$('sxBtnTxt').textContent='Guardar nuevo método';
+$('doneTxt').textContent='A partir del próximo cargo usaremos el nuevo método. Te hemos enviado la confirmación a marta@aurea.es.';
+}
+function setMethod(m){document.querySelectorAll('.sxTab').forEach(function(t){t.classList.toggle('on',t.dataset.m===m)});$('mCard').classList.toggle('hide',m!=='card');$('mSepa').classList.toggle('hide',m!=='sepa')}
+document.querySelectorAll('.sxTab').forEach(function(t){t.addEventListener('click',function(){setMethod(t.dataset.m)})});
+function setErr(on){$('cardGroup').classList.toggle('err',on);$('cardErr').classList.toggle('on',on)}
+function setVat(valid){
+$('viesOk').classList.toggle('hide',!valid);$('viesBad').classList.toggle('hide',valid);$('roiNote').classList.toggle('hide',valid);
+$('vatLbl').innerHTML=valid?'IVA · inversión del sujeto pasivo<span class="sub">Lo declara tu empresa en España (autorrepercusión)</span>':'IVA 21 %<span class="sub">NIF sin alta como operador intracomunitario</span>';
+$('vatVal').textContent=valid?'0,00 €':'15,27 €';
+$('totalVal').innerHTML=(valid?'72,70':'87,97')+' <small>€/mes</small>';
+}
+function show(state){
+$('sxForm').classList.toggle('hide',state==='done');$('sxDone').classList.toggle('hide',state!=='done');
+var b=$('sxBtn');b.disabled=state==='processing';
+$('sxBtnTxt').textContent=state==='processing'?'Procesando…':(CHANGE?'Guardar nuevo método':'Activar suscripción');
+var sp=b.querySelector('.spin');if(state==='processing'&&!sp){sp=document.createElement('span');sp.className='spin';b.prepend(sp)}else if(state!=='processing'&&sp){sp.remove()}
+setErr(state==='error');
+}
+$('sxBtn').addEventListener('click',function(){setErr(false);show('processing');setTimeout(function(){show(failNext?'error':'done')},1400)});
+window.PRO_PAGE={
+active:"facturacion",title:CHANGE?"Cambiar método de pago":"Activar pago",crumb:"Áurea Inmobiliaria · Facturación",
+states:[{id:"form",label:"Formulario"},{id:"processing",label:"Procesando"},{id:"error",label:"Tarjeta rechazada"},{id:"done",label:"Pago guardado"},{id:"noroi",label:"NIF sin ROI (IVA 21 %)"}],
+onState:function(id){setVat(id!=='noroi');failNext=id==='error';setMethod('card');show(id==='noroi'?'form':id)}
+};
+})();
+</script>
+<script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="pro-shell.js"></script>
+</body>
+</html>

@@ -14,6 +14,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Buscar Hogar – Mapa</title>
+    <link rel="preconnect" href="https://dpusnylssfjnksbieimj.supabase.co" crossorigin="" />
+    <link rel="preconnect" href="https://a.basemaps.cartocdn.com" />
+    <link rel="preconnect" href="https://b.basemaps.cartocdn.com" />
+    <link rel="preconnect" href="https://c.basemaps.cartocdn.com" />
+    <link rel="preconnect" href="https://nominatim.openstreetmap.org" crossorigin="" />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin="" />
 
     <link rel="stylesheet" href="./bh-shared.css?v=20260504" />
     <link rel="stylesheet" href="./bh-header-overrides.css?v=20260528_minisearch_mobile_fix" />
@@ -25,7 +31,7 @@
       crossorigin=""
     />
 
-    <link rel="stylesheet" href="./bh-map.css?v=20260929_navA2" />
+    <link rel="stylesheet" href="./bh-map.css?v=20261002_inpfmt" />
 
     <style>
       @media (max-width: 720px){
@@ -458,12 +464,13 @@
     ></script>
 
     <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+    <script src="./bh-geo-suggest.js?v=20260602"></script>
 
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260507_fix_layout_export";
       import { initAuth } from "./bh-auth.js?v=20260504";
-      import { initFiltersBar, clearAllFilters } from "./bh-map-filters.js?v=20260602_modefilters";
-      import { initMap } from "./bh-map-core.js?v=20260929_hood";
+      import { initFiltersBar, clearAllFilters } from "./bh-map-filters.js?v=20261002_inpfmt";
+      import { initMap } from "./bh-map-core.js?v=20260929_speed";
       import { getSession, saveCurrentSearch } from "./bh-user-data.js?v=20260512_saved_searches_real_v3";
 
       // Header / auth

@@ -687,6 +687,7 @@
       </div>
     </main>
 
+    <script src="homyo-mode.js"></script>
     <script type="module">
       import { initLayout } from "./bh-layout.js?v=20260515";
       import { initAuth } from "./bh-auth.js?v=20260515";
@@ -852,8 +853,7 @@
           btn.disabled = true;
           btn.textContent = "Enviando…";
 
-          // Simulación de envío. Conectar aquí con backend cuando exista.
-          setTimeout(() => {
+          const showOk = () => {
             $("formSection").style.display = "none";
             const okBody = state.tipo === "inmobiliaria"
               ? "Gracias por escribirnos. Una persona del equipo profesional de Homyo te contactará en cuanto pueda."
@@ -863,7 +863,24 @@
             window.scrollTo({ top: 0, behavior: "smooth" });
             btn.disabled = false;
             btn.textContent = "Enviar mensaje";
-          }, 700);
+          };
+          const fail = (msg) => {
+            btn.disabled = false;
+            btn.textContent = "Enviar mensaje";
+            let box = $("contactErr");
+            if (!box) { btn.insertAdjacentHTML("beforebegin", '<div id="contactErr" role="alert" style="margin:0 0 12px;font-size:13.5px;color:#9f1d2f;background:#fbeaed;border:1px solid rgba(159,29,47,.22);border-radius:6px;padding:10px 13px"></div>'); box = $("contactErr"); }
+            box.textContent = msg;
+          };
+          if (!window.HOMYO) { setTimeout(showOk, 500); return; }
+          HOMYO.client().then(c => c.rpc("submit_contact", {
+            p_kind: state.tipo, p_topic: state.topic || "", p_name: $("fName").value.trim(), p_email: $("fEmail").value.trim(),
+            p_phone: $("fPhone").value.trim(), p_agency: $("fAgency").value.trim(), p_city: $("fCity").value.trim(),
+            p_message: $("fMessage").value.trim(), p_listing_id: /^[0-9a-f-]{36}$/i.test(params.get("id") || "") ? params.get("id") : null
+          })).then(r => {
+            if (r.error) return fail(/Demasiados/.test(r.error.message) ? r.error.message : "No hemos podido enviar tu mensaje. Inténtalo de nuevo en unos minutos.");
+            const e = $("contactErr"); if (e) e.remove();
+            showOk();
+          }).catch(() => fail("No hay conexión. Inténtalo de nuevo en unos minutos."));
         });
 
         $("sendAnotherBtn").addEventListener("click", () => {

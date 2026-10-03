@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png?v=10" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png?v=10" />
+<link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png?v=10" />
+<link rel="manifest" href="./site.webmanifest" />
+<meta name="theme-color" content="#8C1F2D" />
+<meta name="apple-mobile-web-app-title" content="Homyo" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Incidencia · Homyo Admin</title>
+<link rel="stylesheet" href="pro.css" />
+<link rel="stylesheet" href="admin.css" />
+<style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style>
+<style>
+a{color:var(--granate)}a:hover{color:var(--granateDark)}
+.incHead{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;padding:26px 28px}
+.incHead h1{margin:0;font-family:'Raleway';font-weight:300;font-size:28px;color:var(--granate);letter-spacing:-.4px;text-wrap:pretty}
+.incMeta{margin:6px 0 0;font-size:13.5px;color:var(--muted)}
+.incId{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--ink2);background:var(--lineSoft);padding:3px 7px;border-radius:4px}
+.quote{margin:8px 0 0;padding:16px 18px;background:var(--cardWarm);border-radius:var(--rad);font-size:14.5px;line-height:1.55;color:var(--ink);text-wrap:pretty}
+.quoteBy{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--muted)}
+.cmpGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:8px}
+.cmpCol{border:1px solid var(--line);border-radius:var(--rad);overflow:hidden}
+.cmpCol h6{margin:0;padding:10px 14px;font-size:12px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);background:var(--lineSoft);font-weight:600}
+.cmpCol .kv{padding:12px 14px;margin:0}
+.ph{aspect-ratio:4/3;background:repeating-linear-gradient(135deg,var(--lineSoft) 0 8px,#fff 8px 16px);display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);text-align:center;padding:10px}
+.match{color:var(--danger);font-weight:600}
+.bars{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.bars .row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.bars .row b{font-family:'Raleway';font-weight:600}
+.log{margin:8px 0 0;padding:14px 16px;background:#1d1a17;color:#e9e3d8;border-radius:var(--rad);font:12px/1.6 ui-monospace,Menlo,monospace;white-space:pre-wrap;overflow-x:auto}
+.hl{background:var(--dangerSoft);color:var(--danger);padding:1px 3px;border-radius:3px;font-weight:600}
+.outcomes{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.outcome{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:var(--rad);background:#fff;cursor:pointer;font:inherit;color:inherit;transition:border-color .15s,background .15s}
+.outcome:hover{border-color:var(--granateSoft)}
+.outcome.isOn{border-color:var(--granate);background:var(--cardWarm)}
+.outcome .r{flex:none;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--muted);margin-top:2px}
+.outcome.isOn .r{border-color:var(--granate);box-shadow:inset 0 0 0 3.5px #fff;background:var(--granate)}
+.outcome strong{display:block;font-size:14px;font-weight:600}
+.outcome span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.noteRow{display:flex;gap:10px;margin-top:14px;align-items:flex-end}
+.noteRow textarea{flex:1;min-height:64px}
+.track.bad>span{background:var(--danger)}
+.incToast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:#fff;padding:12px 18px;border-radius:var(--rad);font-size:14px;box-shadow:var(--shadowPop);transition:.25s;pointer-events:none;z-index:50}
+.incToast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:640px){.cmpGrid{grid-template-columns:minmax(0,1fr)}.incHead{padding:20px}}
+</style>
+</head>
+<body class="adminTheme">
+<div class="proLayout">
+<aside class="proSidebar" id="proSidebar"></aside>
+<div class="sbScrim" id="sbScrim"></div>
+<div class="proContent">
+<header class="proTopbar" id="proTopbar"></header>
+<main class="proMain" data-screen-label="Detalle incidencia" id="incMain"></main>
+</div>
+</div>
+<div class="incToast" id="incToast"></div>
+<script>window.ADMIN_PAGE={active:"incidencias",title:"Incidencia",crumb:"Operación · Incidencias · Detalle",live:true};</script>
+<script src="homyo-mode.js"></script><script src="homyo-api.js"></script>
+<script src="incidencias-data.js"></script>
+<script>
+(function(){
+if(window.HOMYO&&HOMYO.mode==="real")return;
+const id=new URLSearchParams(location.search).get('id')||'INC-2041';
+const inc=window.INCIDENCIAS.find(x=>x.id===id)||window.INCIDENCIAS[0];
+const st=window.incState(inc.id);
+window.ADMIN_PAGE={active:"incidencias",title:inc.id,crumb:"Operación · Incidencias · Detalle",live:true};
+document.title=inc.title+' · Homyo Admin';
+const ic={
+back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform:scaleX(-1)"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>',
+msg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 6 9 17l-5-5"/></svg>',
+warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/></svg>',
+info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>'
+};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const kv=o=>'<dl class="kv">'+Object.entries(o).map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('')+'</dl>';
+const prioCls={Alta:'dangerp',Media:'warnp',Baja:'neutral'};
+
+function evidence(){
+const e=inc.evidence;
+if(e.kind==='compare'){
+return `<div class="cmpGrid">${e.cols.map(c=>`<div class="cmpCol"><h6>${c.head}</h6>${kv(c.rows)}</div>`).join('')}</div><p class="muted" style="font-size:12.5px;margin:12px 0 0;">${e.note}</p>`;}
+if(e.kind==='photos'){
+return `<div class="cmpGrid"><div class="cmpCol"><h6>Foto del anuncio</h6><div class="ph">foto principal del anuncio<br>loft_portada.jpg</div></div><div class="cmpCol"><h6>Coincidencia encontrada</h6><div class="ph">misma imagen en<br>banco de fotos / otro portal</div></div></div><p class="muted" style="font-size:12.5px;margin:12px 0 0;">${e.note}</p>`;}
+if(e.kind==='price'){
+return `<div class="bars">${e.bars.map(b=>`<div><div class="row"><span style="color:var(--ink2)">${b.l}</span><b>${b.v}</b></div><div class="track ${b.c||''}"><span style="width:${b.w}%"></span></div></div>`).join('')}</div><p class="muted" style="font-size:12.5px;margin:14px 0 0;">${e.note}</p>`;}
+if(e.kind==='log'){return `<pre class="log">${esc(e.text)}</pre><p class="muted" style="font-size:12.5px;margin:12px 0 0;">${e.note}</p>`;}
+if(e.kind==='text'){return `<div class="quote" style="background:#fff;border:1px solid var(--line);">${e.html}</div><p class="muted" style="font-size:12.5px;margin:12px 0 0;">${e.note}</p>`;}
+return '';
+}
+
+function statusPill(s){const m={Abierta:'warnp','En curso':'infop',Resuelta:'ok',Descartada:'neutral'};return `<span class="pill ${m[s]}"><span class="dot"></span>${s}</span>`;}
+
+function render(){
+const closed=st.status==='Resuelta'||st.status==='Descartada';
+const outcomeSel=st.outcome||inc.outcomes[0].id;
+const tl=[...st.log,...inc.history];
+document.getElementById('incMain').innerHTML=`
+<a class="btnLink" href="admin-incidencias.html" style="margin-bottom:18px;">${ic.back}Volver a incidencias</a>
+<div class="card" style="padding:0;overflow:hidden;margin-bottom:22px;">
+<div class="incHead">
+<div style="min-width:0;flex:1 1 320px;">
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;"><span class="incId">${inc.id}</span><span class="pill neutral">${inc.type}</span><span class="pill ${prioCls[inc.prio]}">Prioridad ${inc.prio.toLowerCase()}</span>${statusPill(st.status)}</div>
+<h1>${inc.title}</h1>
+<p class="incMeta">${inc.origin} · abierta ${inc.opened} · asignada a ${st.assignee}</p>
+</div>
+<div class="pageHeadActions">
+${inc.agency.href?`<a class="btn ghost" href="${inc.agency.href}">Ver agencia</a>`:''}
+<button class="btn ghost" data-act="contact">${ic.msg}Contactar agencia</button>
+${closed?`<button class="btn ghost" data-act="reopen">Reabrir</button>`:(st.status==='Abierta'?`<button class="btn primary" data-act="take">Asumir investigación</button>`:'')}
+</div>
+</div>
+</div>
+${closed?`<div class="callout okc" style="margin-bottom:22px;"><span class="cIc">${ic.check}</span><div><h4>Incidencia ${st.status.toLowerCase()}</h4><p>${st.resolution||inc.resolvedNote||'Cerrada por el equipo de moderación.'}</p></div></div>`:''}
+<div class="twoColWide">
+<div class="stack-sm" style="gap:22px;">
+<div class="card">
+<p class="cardLabel">${inc.origin==='Detección automática'?'Qué ha detectado el sistema':'Qué se ha reportado'}</p>
+<div class="quote">${inc.report.text}</div>
+<div class="quoteBy"><span class="avatar" style="width:28px;height:28px;font-size:11px;">${inc.report.initials}</span>${inc.report.by}</div>
+</div>
+<div class="card">
+<p class="cardLabel">${inc.evidence.title}</p>
+${evidence()}
+</div>
+<div class="card">
+<p class="cardLabel">Historial y notas internas</p>
+<ul class="timeline" style="margin-top:8px;">${tl.map((h,i)=>`<li class="${i===0&&!closed?'now':'done'}"><span class="tdot"></span><h5>${h.t}</h5><p>${h.d}</p></li>`).join('')}</ul>
+<div class="noteRow"><textarea class="input" id="incNote" placeholder="Añadir nota interna (solo visible para el equipo)"></textarea><button class="btn ghost" data-act="note">Añadir</button></div>
+</div>
+</div>
+<div class="stack-sm" style="gap:22px;">
+<div class="card">
+<p class="cardLabel">Resolución</p>
+${closed?`<p style="font-size:14px;color:var(--ink2);margin:6px 0 0;">Decisión tomada: <strong>${(inc.outcomes.find(o=>o.id===st.outcome)||{}).label||st.status}</strong>.</p>`:`
+<div class="outcomes">${inc.outcomes.map(o=>`<button class="outcome${o.id===outcomeSel?' isOn':''}" data-outcome="${o.id}"><span class="r"></span><div><strong>${o.label}</strong><span>${o.desc}</span></div></button>`).join('')}</div>
+<label class="checkRow" style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink2);margin:14px 0;"><input type="checkbox" id="incNotify" checked>Notificar a la agencia y al usuario que reportó</label>
+<button class="btn primary block" data-act="resolve">Aplicar decisión</button>`}
+</div>
+<div class="card">
+<p class="cardLabel">Anuncio afectado</p>
+<div class="ph" style="border-radius:var(--rad);margin:6px 0 12px;aspect-ratio:16/9;">foto del anuncio</div>
+${kv(inc.listing)}
+</div>
+<div class="card">
+<p class="cardLabel">Agencia</p>
+${kv(inc.agency.rows)}
+</div>
+<div class="card">
+<p class="cardLabel">Asignación</p>
+<select class="input" id="incAssign" ${closed?'disabled':''}>${['Sin asignar','Lucía Martín','Diego Ortega','Equipo técnico'].map(n=>`<option${n===st.assignee?' selected':''}>${n}</option>`).join('')}</select>
+</div>
+</div>
+</div>`;
+}
+
+function toast(t){const el=document.getElementById('incToast');el.textContent=t;el.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('show'),2400);}
+function log(t,d){st.log.unshift({t,d:d||'Tú · ahora'});}
+function save(){window.saveIncState(inc.id,st);render();}
+
+document.addEventListener('click',e=>{
+const o=e.target.closest('[data-outcome]');if(o){st.outcome=o.dataset.outcome;render();return;}
+const b=e.target.closest('[data-act]');if(!b)return;
+const a=b.dataset.act;
+if(a==='take'){st.status='En curso';st.assignee='Lucía Martín';log('Investigación asumida','Lucía Martín · ahora');save();toast('Incidencia en curso · asignada a ti');}
+if(a==='contact'){log('Mensaje enviado a la agencia',inc.agency.name+' · Tú · ahora');save();toast('Mensaje enviado a '+inc.agency.name);}
+if(a==='note'){const v=document.getElementById('incNote').value.trim();if(!v)return;log('Nota interna',esc(v)+' · Tú · ahora');save();toast('Nota añadida');}
+if(a==='resolve'){const oc=inc.outcomes.find(x=>x.id===(st.outcome||inc.outcomes[0].id));st.outcome=oc.id;st.status=oc.status;st.resolution=oc.result;log(oc.label,(document.getElementById('incNotify').checked?'Agencia y usuario notificados · ':'')+'Tú · ahora');save();toast(oc.status==='Descartada'?'Reporte descartado':'Incidencia resuelta');window.scrollTo({top:0,behavior:'smooth'});}
+if(a==='reopen'){st.status='En curso';st.resolution='';log('Incidencia reabierta');save();toast('Incidencia reabierta');}
+});
+document.addEventListener('change',e=>{if(e.target.id==='incAssign'){st.assignee=e.target.value;log('Reasignada a '+st.assignee);save();toast('Asignada a '+st.assignee);}});
+render();
+})();
+</script>
+<script src="admin-incidencia-real.js"></script><script src="admin-shell.js"></script>
+</body>
+</html>

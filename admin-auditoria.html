@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/homyo-icon-512.png?v=10" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/homyo-icon-192.png?v=10" />
+<link rel="apple-touch-icon" href="./icons/homyo-apple-touch.png?v=10" />
+<link rel="manifest" href="./site.webmanifest" />
+<meta name="theme-color" content="#8C1F2D" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>Registro de actividad · Homyo Admin</title>
+<link rel="stylesheet" href="pro.css" />
+<link rel="stylesheet" href="admin.css" />
+<style>
+a{color:var(--granate)}a:hover{color:var(--granateDark)}
+.auTop{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 16px;border:1px solid var(--line);border-bottom:none;border-radius:var(--rad) var(--rad) 0 0;background:#fff}
+.auTop .grow{flex:1 1 auto}
+.auTop select.input{width:auto;min-width:190px;padding-top:9px;padding-bottom:9px;font-size:13px}
+.auWrap{border:1px solid var(--line);border-radius:0 0 var(--rad) var(--rad);background:#fff;overflow:hidden}
+.auDay{font-family:'Raleway',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:14px 18px 8px;background:var(--bg);border-top:1px solid var(--line)}
+.auDay:first-child{border-top:0}
+.auRow{display:grid;grid-template-columns:58px minmax(0,190px) minmax(0,1fr) auto;gap:16px;align-items:center;padding:13px 18px;border-top:1px solid var(--lineSoft)}
+.auDay + .auRow{border-top:0}
+.auRow .tm{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.auRow .who{display:flex;align-items:center;gap:10px;min-width:0;font-size:13px;color:var(--ink);font-weight:600}
+.auRow .who span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.auRow .what{font-size:13.5px;color:var(--ink);min-width:0}
+.auRow .what small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.auRow.isNew{background:rgba(196,150,42,.05)}
+.auSys{background:var(--lineSoft)!important;border-color:var(--line)!important;color:var(--ink2)!important}
+@media (max-width:760px){.auRow{grid-template-columns:52px minmax(0,1fr);row-gap:6px}.auRow .what{grid-column:2}.auRow .pill{grid-column:2;justify-self:start}}
+.auEmpty{padding:48px 20px;text-align:center}
+.auEmpty h4{margin:0 0 6px;font-family:'Raleway',sans-serif;font-size:16px;font-weight:600;color:var(--ink)}
+.auEmpty p{margin:0;font-size:13px;color:var(--muted)}
+.auNote{font-size:12.5px;color:var(--muted);margin-top:14px}
+</style>
+<style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style>
+</head>
+<body class="adminTheme">
+<div class="proLayout">
+<aside class="proSidebar" id="proSidebar"></aside>
+<div class="sbScrim" id="sbScrim"></div>
+<div class="proContent">
+<header class="proTopbar" id="proTopbar"></header>
+<main class="proMain" data-screen-label="Registro de actividad">
+<div class="pageHead">
+<div class="pageHeadMain">
+<p class="adminLede"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l3 2"></path></svg>Plataforma · Auditoría</p>
+<h1 class="pageTitle">Registro de <strong>actividad</strong></h1>
+<p class="pageLede">Cada acción del equipo Homyo sobre cuentas, anuncios y cobros queda registrada: quién, qué y cuándo. No se puede editar ni borrar.</p>
+</div>
+<div class="pageHeadActions"><button class="btn primary" type="button" id="auExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg>Exportar CSV</button></div>
+</div>
+<div class="auTop">
+<label class="searchMini"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg><input type="text" placeholder="Buscar acción, cuenta, anuncio…" id="auQ" /></label>
+<select class="input" id="auWho" aria-label="Persona"></select>
+<span class="grow"></span>
+<div class="filterChips" id="auCats"></div>
+</div>
+<div class="auWrap" id="auList"></div>
+<p class="auNote" id="auCount"></p>
+</main>
+</div>
+</div>
+<script>
+window.ADMIN_PAGE = { active: "auditoria", title: "Registro de actividad", crumb: "Plataforma · Auditoría", live: true };
+</script>
+<script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="admin-shell.js"></script><script src="admin-ops-real.js"></script>
+<script>
+(function () {
+  var M = 60000, now = Date.now();
+  var SEED = [
+    [40, "Marcos Tena", "Soporte", "Respondió un mensaje", "Inmobiliaria Vega · certificado energético"],
+    [95, "Carla López", "Moderación", "Marcó como posible duplicado", "Piso en Calle Sagasta 20 · Hogar y Terrazas"],
+    [180, "Carla López", "Moderación", "Rechazó un anuncio", "Dúplex en Calle Goya 41 · Áurea Inmobiliaria · falta plano en planta"],
+    [300, "Carla López", "Moderación", "Aprobó cambios", "Piso reformado en Calle Velázquez 80 · Áurea Inmobiliaria"],
+    [420, "Sistema", "Facturación", "Ejecutó el cobro mensual", "124 facturas emitidas · 3 cobros fallidos"],
+    [1300, "Nuria Bel", "Facturación", "Reintentó un cobro", "Pisos Marina · 62,91 € · rechazado (tarjeta caducada)"],
+    [1500, "Dirección Homyo", "Cuentas", "Suspendió una cuenta", "Pisos Marina · impago tras 3 intentos"],
+    [2900, "Dirección Homyo", "Facturación", "Creó bonificaciones", "Áurea Inmobiliaria · 5 anuncios gratis al mes y −20 %"],
+    [4300, "Marcos Tena", "Usuarios", "Restableció el acceso", "lucia.bravo@gmail.com"],
+    [5800, "Dirección Homyo", "Equipo", "Cambió un rol", "Marcos Tena · Soporte"],
+    [8600, "Carla López", "Moderación", "Aprobó un anuncio", "Chalet en Av. de Europa 9 · Áurea Inmobiliaria"],
+    [10100, "Dirección Homyo", "Cuentas", "Verificó una cuenta", "Casa Norte Gestión · CIF B-55512388"],
+    [12000, "Nuria Bel", "Facturación", "Exportó facturas", "CSV del mes anterior · 121 facturas"],
+    [14500, "Dirección Homyo", "Ajustes", "Cambió un ajuste", "Plazo para certificado en trámite: 30 días"]
+  ].map(function (r) { return { at: now - r[0] * M, who: r[1], cat: r[2], act: r[3], target: r[4] }; });
+  var CAT_CLS = { "Moderación":"gold", "Cuentas":"infop", "Facturación":"ok", "Soporte":"neutral", "Usuarios":"neutral", "Equipo":"neutral", "Ajustes":"neutral", "Acceso":"warnp" };
+  var INIT = { "Dirección Homyo":"DH", "Carla López":"CL", "Marcos Tena":"MT", "Nuria Bel":"NB", "Sistema":"—" };
+  var own = []; try { own = JSON.parse(localStorage.getItem("homyo_admin_audit") || "[]"); } catch (e) {}
+  own.forEach(function (o) { o.isNew = true; });
+  var ALL = own.concat(SEED).sort(function (a, b) { return b.at - a.at; });
+  var who = "all", cat = "all", q = "";
+  var DIAS = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"], MES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  function dayKey(t) { var d = new Date(t); return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); }
+  function dayLabel(t) {
+    var d = new Date(t), today = new Date(), y = new Date(); y.setDate(y.getDate() - 1);
+    if (dayKey(t) === dayKey(today.getTime())) return "Hoy";
+    if (dayKey(t) === dayKey(y.getTime())) return "Ayer";
+    return DIAS[d.getDay()] + ", " + d.getDate() + " " + MES[d.getMonth()];
+  }
+  function hm(t) { var d = new Date(t); return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]; }); }
+  function norm(s) { return (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+  var people = []; ALL.forEach(function (r) { if (people.indexOf(r.who) < 0) people.push(r.who); });
+  document.getElementById("auWho").innerHTML = '<option value="all">Todo el equipo</option>' + people.map(function (p) { return '<option>' + esc(p) + '</option>'; }).join("");
+  var cats = []; ALL.forEach(function (r) { if (cats.indexOf(r.cat) < 0) cats.push(r.cat); });
+  function filtered() { var nq = norm(q); return ALL.filter(function (r) { return (who === "all" || r.who === who) && (cat === "all" || r.cat === cat) && (!nq || norm(r.act + " " + r.target + " " + r.who).indexOf(nq) > -1); }); }
+  function renderCats() {
+    document.getElementById("auCats").innerHTML = '<button class="fchip' + (cat === "all" ? " isOn" : "") + '" data-c="all" type="button">Todo</button>' + cats.map(function (c) { return '<button class="fchip' + (cat === c ? " isOn" : "") + '" data-c="' + esc(c) + '" type="button">' + esc(c) + '</button>'; }).join("");
+  }
+  function render() {
+    renderCats();
+    var rows = filtered(), box = document.getElementById("auList");
+    if (!rows.length) {
+      box.innerHTML = '<div class="auEmpty"><h4>Sin actividad con estos filtros</h4><p>Prueba con otra persona o categoría, o borra la búsqueda.</p></div>';
+    } else {
+      var html = "", last = null;
+      rows.forEach(function (r) {
+        var k = dayKey(r.at);
+        if (k !== last) { last = k; html += '<div class="auDay">' + dayLabel(r.at) + '</div>'; }
+        var ini = INIT[r.who] || r.who.split(" ").map(function (w) { return w[0]; }).join("").slice(0, 2);
+        html += '<div class="auRow' + (r.isNew ? " isNew" : "") + '"><span class="tm">' + hm(r.at) + '</span><span class="who"><span class="avatar round sm' + (r.who === "Sistema" ? " auSys" : "") + '">' + esc(ini) + '</span><span>' + esc(r.who) + '</span></span><span class="what">' + esc(r.act) + '<small>' + esc(r.target) + '</small></span><span class="pill ' + (CAT_CLS[r.cat] || "neutral") + '">' + esc(r.cat) + '</span></div>';
+      });
+      box.innerHTML = html;
+    }
+    document.getElementById("auCount").textContent = rows.length + (rows.length === 1 ? " acción" : " acciones") + (own.length ? " · " + own.length + " de esta sesión resaltadas" : "") + " · se conservan 24 meses.";
+  }
+  document.getElementById("auCats").addEventListener("click", function (e) { var b = e.target.closest(".fchip"); if (b) { cat = b.getAttribute("data-c"); render(); } });
+  document.getElementById("auWho").addEventListener("change", function () { who = this.value; render(); });
+  document.getElementById("auQ").addEventListener("input", function () { q = this.value; render(); });
+  document.getElementById("auExport").addEventListener("click", function () {
+    var rows = filtered(), csv = "Fecha;Hora;Persona;Categoría;Acción;Objeto\n" + rows.map(function (r) { var d = new Date(r.at); return [d.toLocaleDateString("es-ES"), hm(r.at), r.who, r.cat, r.act, r.target].map(function (x) { return '"' + String(x).replace(/"/g, '""') + '"'; }).join(";"); }).join("\n");
+    var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "homyo-registro-actividad.csv"; document.body.appendChild(a); a.click(); a.remove();
+    if (window.homyoToast) window.homyoToast(rows.length + " acciones exportadas");
+  });
+  render();
+})();
+</script>
+</body>
+</html>

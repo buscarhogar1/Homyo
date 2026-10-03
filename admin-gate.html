@@ -18,8 +18,6 @@
     <link rel="stylesheet" href="pro.css" />
     <link rel="stylesheet" href="admin.css" />
     <style>
-      .gateAside{ background:linear-gradient(165deg, #1d1814 0%, #2a2018 60%, var(--granateDark) 130%); }
-      .gateAside::after{ background:radial-gradient(circle, rgba(226,184,76,.3) 0%, transparent 68%); }
       .gateLock{
         width:64px; height:64px; border-radius:16px;
         background:rgba(226,184,76,.12); border:1px solid rgba(226,184,76,.32);
@@ -47,13 +45,16 @@
         margin-top:26px; padding-top:22px; border-top:1px solid var(--line);
         font-size:12.5px; color:var(--muted); line-height:1.6;
       }
+      .gateHint{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
+      .gateHint #gateDemo{ white-space:nowrap; text-transform:none; letter-spacing:0; padding:0; font-size:13px; }
       .gateHint b{ color:var(--ink2); }
       .gateHint code{
         background:var(--lineSoft); border:1px solid var(--line); border-radius:4px;
         padding:1px 7px; font-size:12px; color:var(--granate); font-family:ui-monospace,Menlo,monospace;
       }
-      .gateBack{ position:absolute; top:22px; left:24px; font-size:12.5px; color:var(--muted); text-decoration:none; display:inline-flex; align-items:center; gap:7px; }
-      .gateBack:hover{ color:var(--granate); }
+      .authMain{ position:relative; }
+      .gateBack{ position:absolute; top:24px; left:28px; z-index:2; font-size:12.5px; font-weight:600; color:var(--granate); background:#fff; border:1px solid var(--line); border-radius:999px; padding:7px 14px; white-space:nowrap; text-decoration:none; display:inline-flex; align-items:center; gap:7px; transition:border-color .15s ease,background .15s ease; }
+      .gateBack:hover,.gateBack:focus-visible,.gateBack:active{ color:var(--granateDark); background:var(--cardWarm,#fff); border-color:var(--granate); outline:none; }
       .gateBack svg{ width:15px; height:15px; }
     </style>
   <style id="lining-nums">*{font-variant-numeric:lining-nums tabular-nums}</style></head>
@@ -69,7 +70,7 @@
           <p>Zona privada de la dirección de Homyo. El acceso queda registrado. Si has llegado aquí por error, vuelve a la web pública.</p>
           <ul class="authAsidePoints">
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>Acceso oculto: no enlazado en ninguna parte de la web.</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Protegido con contraseña de dirección.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Solo cuentas con permiso de administración.</li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>La sesión caduca al cerrar el navegador.</li>
           </ul>
         </div>
@@ -80,13 +81,17 @@
         <div class="authCard">
           <p class="authCardKicker">Acceso restringido</p>
           <h1 class="authCardTitle">Homyo <strong>Admin</strong></h1>
-          <p class="authCardSub">Introduce la contraseña de dirección para entrar al entorno interno de gestión.</p>
+          <p class="authCardSub">Entra con tu cuenta de administración de Homyo.</p>
 
           <form class="authForm" id="gateForm" autocomplete="off">
             <div class="field">
-              <label class="fieldLabel" for="gatePw">Contraseña de dirección</label>
+              <label class="fieldLabel" for="gateEmail">Email</label>
+              <input class="input" id="gateEmail" type="email" placeholder="nombre@homyo.es" autocomplete="username" autofocus />
+            </div>
+            <div class="field">
+              <label class="fieldLabel" for="gatePw">Contraseña</label>
               <div class="gateField">
-                <input class="input" id="gatePw" type="password" placeholder="••••••••••" autocomplete="off" autofocus />
+                <input class="input" id="gatePw" type="password" placeholder="••••••••••" autocomplete="current-password" />
                 <button type="button" class="toggle" id="gateToggle" aria-label="Mostrar contraseña">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
@@ -100,25 +105,20 @@
 
             <button class="btn primary block" type="submit" id="gateBtn">Entrar al panel</button>
           </form>
-
+          <div class="gateHint">¿Solo quieres revisar el prototipo con datos de ejemplo? <button type="button" class="btnLink" id="gateDemo">Entrar en modo demo</button></div>
         </div>
       </main>
     </div>
 
+    <script src="homyo-mode.js"></script>
     <script>
-      // Esta página NO carga el shell; solo valida la contraseña.
-      var DEMO_PASSWORD = "homyo2026";
-      var SESSION_KEY = "homyo_admin_session";
-
-      // Si ya hay sesión, entra directo.
-      try {
-        if (sessionStorage.getItem(SESSION_KEY) === "ok") {
-          window.location.replace("admin-panel.html");
-        }
-      } catch (e) {}
+      // Demo: demo@homyo.es / homyo2026 (o el botón). Real: cuenta de Supabase con permiso de admin.
+      if (HOMYO.getMode("admin")) window.location.replace("admin-panel.html");
 
       var form = document.getElementById("gateForm");
+      var email = document.getElementById("gateEmail");
       var pw = document.getElementById("gatePw");
+      var btn = document.getElementById("gateBtn");
       var msg = document.getElementById("gateMsg");
       var msgText = document.getElementById("gateMsgText");
       var toggle = document.getElementById("gateToggle");
@@ -130,18 +130,23 @@
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
-        if ((pw.value || "") === DEMO_PASSWORD) {
-          try { sessionStorage.setItem(SESSION_KEY, "ok"); } catch (err) {}
+        btn.disabled = true; btn.textContent = "Comprobando…";
+        HOMYO.login("admin", email.value, pw.value).then(function () {
           window.location.href = "admin-panel.html";
-        } else {
+        }).catch(function (err) {
+          btn.disabled = false; btn.textContent = "Entrar al panel";
           msg.classList.add("show");
-          msgText.textContent = pw.value ? "Contraseña incorrecta. Inténtalo de nuevo." : "Escribe la contraseña de dirección.";
-          pw.focus();
-          pw.select();
-        }
+          msgText.textContent = err.message;
+          pw.focus(); pw.select();
+        });
       });
 
-      pw.addEventListener("input", function () { msg.classList.remove("show"); });
+      document.getElementById("gateDemo").addEventListener("click", function () {
+        HOMYO.enterDemo("admin");
+        window.location.href = "admin-panel.html";
+      });
+
+      [email, pw].forEach(function (el) { el.addEventListener("input", function () { msg.classList.remove("show"); }); });
     </script>
   </body>
 </html>

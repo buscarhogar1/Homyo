@@ -99,6 +99,41 @@
       .track{ height:7px; border-radius:999px; background:var(--lineSoft); overflow:hidden; }
       .track > span{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--dorado),var(--granateSoft)); }
 
+      .tkProg{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted)}
+      .tkProgBar{width:90px;height:6px;border-radius:999px;background:var(--lineSoft);overflow:hidden}
+      .tkProgBar span{display:block;height:100%;width:0;background:var(--good);border-radius:999px;transition:width .3s ease}
+      .tkCard{padding:4px 24px}
+      .tkList{list-style:none;margin:0;padding:0}
+      .task{display:grid;grid-template-columns:26px 38px minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:16px 0;border-top:1px solid var(--lineSoft);transition:opacity .2s ease}
+      .task:first-child{border-top:0}
+      .tkCheck{appearance:none;width:24px;height:24px;border-radius:50%;border:1.5px solid #d9d1c3;background:#fff;display:grid;place-items:center;cursor:pointer;color:transparent;padding:0;transition:all .16s ease}
+      .tkCheck:hover{border-color:var(--good);color:var(--good)}
+      .tkCheck svg{width:13px;height:13px}
+      .task.isDone .tkCheck{background:var(--good);border-color:var(--good);color:#fff}
+      .tkIc{width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
+      .tkIc svg{width:17px;height:17px}
+      .tkBody h5{margin:0 0 3px;font-family:'Raleway',sans-serif;font-size:14.5px;font-weight:600;color:var(--ink)}
+      .tkBody p{margin:0;font-size:12.5px;color:var(--ink2);line-height:1.45;text-wrap:pretty}
+      .tkBody p b{color:var(--granate);font-weight:600}
+      .tkAct{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+      .task.isDone{opacity:.5}
+      .task.isDone h5{text-decoration:line-through}
+      .task.isDone .pill,.task.isDone .tkAct{display:none}
+      .tkEmpty{display:none;gap:14px;align-items:center;padding:18px 0;border-bottom:1px solid var(--lineSoft)}
+      .tkCard.allDone .tkEmpty{display:flex}
+      .tkEmptyIc{width:38px;height:38px;border-radius:50%;background:var(--goodSoft);color:var(--good);display:grid;place-items:center;flex:0 0 auto}
+      .tkEmptyIc svg{width:18px;height:18px}
+      .tkEmpty h4{margin:0 0 2px;font-family:'Raleway',sans-serif;font-size:15px;font-weight:600;color:var(--ink)}
+      .tkEmpty p{margin:0;font-size:12.5px;color:var(--ink2)}
+      @media (max-width:720px){.task{grid-template-columns:26px minmax(0,1fr);row-gap:10px}.tkIc{display:none}.task .pill{grid-column:2;justify-self:start}.tkAct{grid-column:2;justify-content:flex-start}}
+
+      .ncTop{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+      .ncV{font-family:'Raleway',sans-serif;font-size:30px;font-weight:500;color:var(--granate);letter-spacing:-.5px;line-height:1}
+      .ncV small{font-size:15px;color:var(--muted)}
+      .ncD{font-size:13px;color:var(--ink2)}
+      .ncCalc{margin:8px 0 0;font-size:12.5px;color:var(--muted);line-height:1.45}
+      .ncPay{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--lineSoft)}
+
       .modelNote{ display:flex; gap:13px; align-items:flex-start; font-size:13px; color:var(--ink2); line-height:1.55; }
       .modelNote svg{ width:20px; height:20px; color:var(--good); flex:0 0 auto; margin-top:1px; }
     </style>
@@ -117,13 +152,12 @@
             <div class="heroBody">
               <h1>Hola, <strong>Áurea Inmobiliaria</strong></h1>
               <div class="heroPills">
-                <span class="pill ok"><span class="dot"></span>Cuenta aprobada</span>
                 <span class="pill gold">Agencia fundadora · 3 meses gratis</span>
                 <span class="pill neutral">Madrid · Centro, Chamberí, Salamanca y 4 zonas más</span>
               </div>
             </div>
             <div class="heroDate">
-              <span class="big">Miércoles, 3 de junio</span>
+              <span class="big" data-date="today">Hoy</span>
               Última conexión: hoy, 09:14
             </div>
           </section>
@@ -138,7 +172,7 @@
             <div class="kpi">
               <p class="kpiLabel">Contactos este mes</p>
               <p class="kpiValue">47</p>
-              <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg>+12 % vs. abril</span>
+              <span class="kpiFoot up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 14 6-6 6 6"/></svg><span>+12 % vs. <span data-month="-1">mes anterior</span></span></span>
             </div>
             <div class="kpi">
               <p class="kpiLabel">Visualizaciones · 30 días</p>
@@ -152,24 +186,11 @@
             </div>
           </section>
 
-          <!-- AVISOS IMPORTANTES -->
-          <div class="sectionHead"><h2>Avisos importantes</h2><a class="btnLink" href="pro-notificaciones.html">Ver todo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a></div>
-          <div class="stack-sm">
-            <div class="callout dangerc">
-              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></span>
-              <div><h4>1 anuncio rechazado por no cumplir el estándar</h4><p>El dúplex en Calle Goya 41 fue rechazado por falta de plano en planta. Corrígelo para volver a enviarlo a revisión.</p></div>
-              <a class="btn ghost sm cAct" href="pro-revision-calidad.html">Revisar</a>
-            </div>
-            <div class="callout warnc">
-              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 1.5"/></svg></span>
-              <div><h4>3 viviendas necesitan confirmar disponibilidad</h4><p>Llevan más de 60 días sin actualizar. Confirma que siguen disponibles para mantenerlas publicadas.</p></div>
-              <a class="btn ghost sm cAct" href="pro-viviendas.html">Confirmar</a>
-            </div>
-            <div class="callout warnc">
-              <span class="cIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span>
-              <div><h4>4 viviendas pendientes de completar</h4><p>Tienes borradores sin terminar. Añade plano, fotografías y certificado energético para poder publicarlas.</p></div>
-              <a class="btn ghost sm cAct" href="pro-viviendas.html">Continuar</a>
-            </div>
+          <!-- TAREAS DE HOY -->
+          <div class="sectionHead"><h2>Tareas de hoy</h2><div class="tkProg"><span id="tkProgTxt"></span><span class="tkProgBar"><span id="tkProgFill"></span></span></div></div>
+          <div class="card tkCard">
+            <div class="tkEmpty" id="tkEmpty"><span class="tkEmptyIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><h4>Todo al día</h4><p>No tienes tareas pendientes. Te avisaremos cuando llegue algo nuevo.</p></div></div>
+            <ul class="tkList" id="tkList"></ul>
           </div>
 
           <!-- ESTADO DEL INVENTARIO -->
@@ -182,29 +203,6 @@
             <a class="statMini alert" href="pro-viviendas.html"><div class="n" data-k="rej">1</div><div class="l">Rechazadas</div></a>
             <a class="statMini" href="pro-viviendas.html"><div class="n" data-k="upd">3</div><div class="l">Necesitan actualización</div></a>
             <a class="statMini" href="pro-viviendas.html"><div class="n" data-k="off">2</div><div class="l">Retiradas</div></a>
-          </div>
-
-          <!-- ACCESOS RÁPIDOS -->
-          <div class="sectionHead"><h2>Accesos rápidos</h2></div>
-          <div class="quickGrid">
-            <a class="quick" href="pro-subir-vivienda.html">
-              <span class="quickIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span>
-              <h3>Subir vivienda</h3>
-              <p>Asistente guiado por pasos: identificación, datos, plano, fotos, certificado y descripción.</p>
-              <span class="go">Empezar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
-            </a>
-            <a class="quick" href="pro-viviendas.html">
-              <span class="quickIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-              <h3>Revisar viviendas</h3>
-              <p>Gestiona tu inventario, edita anuncios y comprueba qué cumple el estándar de calidad.</p>
-              <span class="go">Abrir inventario <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
-            </a>
-            <a class="quick" href="pro-analisis.html">
-              <span class="quickIc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></span>
-              <h3>Ver análisis</h3>
-              <p>Visualizaciones, contactos y rendimiento real de cada anuncio. Sin posicionamiento de pago.</p>
-              <span class="go">Abrir análisis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
-            </a>
           </div>
 
           <!-- ACTIVIDAD + RENDIMIENTO -->
@@ -221,19 +219,19 @@
                   <span class="actWhen">Hace 1 h</span>
                 </li>
                 <li>
-                  <span class="actIc" style="background:var(--goodSoft);color:var(--good)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-                  <div class="actBody"><h5>Cambios aprobados y publicados</h5><p>Piso reformado en Calle Velázquez 80 · la nueva versión ya está visible</p></div>
-                  <span class="actWhen">Hace 5 h</span>
-                </li>
-                <li>
                   <span class="actIc" style="background:var(--dangerSoft);color:var(--danger)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></span>
                   <div class="actBody"><h5>Anuncio rechazado en revisión</h5><p>Dúplex en Calle Goya 41 · motivo: <b>falta plano en planta</b></p></div>
                   <span class="actWhen">Hace 3 h</span>
                 </li>
                 <li>
+                  <span class="actIc" style="background:var(--goodSoft);color:var(--good)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+                  <div class="actBody"><h5>Cambios aprobados y publicados</h5><p>Piso reformado en Calle Velázquez 80 · la nueva versión ya está visible</p></div>
+                  <span class="actWhen">Hace 5 h</span>
+                </li>
+                <li>
                   <span class="actIc" style="background:var(--cardWarm);color:var(--granate)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
-                  <div class="actBody"><h5>Factura de junio disponible</h5><p>0,00 € · bonificada (periodo fundadora hasta el 18 jun) · primer cargo el 1 jul</p></div>
-                  <span class="actWhen">1 jun</span>
+                  <div class="actBody"><h5>Factura de <span data-month="0">este mes</span> disponible</h5><p>0,00 € · bonificada (periodo fundadora hasta el 18 <span data-month="0" data-fmt="short"></span>) · primer cargo el 1 <span data-month="1" data-fmt="short"></span></p></div>
+                  <span class="actWhen">1 <span data-month="0" data-fmt="short"></span></span>
                 </li>
               </ul>
             </div>
@@ -256,6 +254,13 @@
                   </div>
                 </div>
               </div>
+              <div class="card" id="ncCard">
+                <div class="spread" style="margin-bottom:12px;"><p class="cardLabel mt0">Próximo cargo</p><a class="btnLink" href="pro-facturacion.html">Facturación</a></div>
+                <div class="ncTop"><span class="ncV">72,70 <small>€</small></span><span class="ncD">el <span id="ncDate">1 del mes que viene</span></span></div>
+                <p class="ncCalc">13 facturables × 6,99 € − 20 % · 5 viviendas en tu cupo gratis</p>
+                <div class="perfRow" style="margin-top:14px;"><div class="pl"><span class="k">Periodo gratis</span><span class="v" id="ncLeft">—</span></div><div class="track"><span id="ncTrack" style="width:80%"></span></div></div>
+                <div class="ncPay"><span class="pill warnp"><span class="dot"></span>Sin método de pago</span><a class="btn ghost sm" href="pro-pago.html">Añadir</a></div>
+              </div>
               <div class="card warm">
                 <div class="modelNote">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
@@ -270,12 +275,12 @@
     </div>
 
     <script>
-      window.PRO_PAGE = { active: "panel", title: "Panel", crumb: "Áurea Inmobiliaria · Cuenta aprobada" };
+      window.PRO_PAGE = { active: "panel", title: "Panel", crumb: "Áurea Inmobiliaria · Madrid", live: true };
     </script>
-    <script src="pro-shell.js"></script>
+    <script src="homyo-mode.js"></script><script src="homyo-api.js"></script><script src="pro-shell.js"></script>
   <script>
       (function(){
-        var OP_COUNTS = {
+        var OP_COUNTS = window.PANEL_OP = {
         all:        { total:30, pub:18, draft:4, review:2, rej:1, upd:3, off:2 },
         venta:      { total:22, pub:13, draft:3, review:1, rej:1, upd:3, off:1 },
         alquiler:   { total:6,  pub:3,  draft:1, review:1, rej:0, upd:0, off:1 },
@@ -292,5 +297,85 @@
         });
       })();
     </script>
+  <script>
+    (function () {
+      if (window.HOMYO && HOMYO.mode === "real") return;
+      var IC = {
+        chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+        warn: '<path d="M12 9v4"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><circle cx="12" cy="17" r=".6" fill="currentColor"/>',
+        clock: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 1.5"/>',
+        doc: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/>',
+        plus: '<path d="M12 5v14"/><path d="M5 12h14"/>'
+      };
+      var TONE = { ok:["var(--goodSoft)","var(--good)"], warnp:["var(--warnSoft)","var(--warn)"], dangerp:["var(--dangerSoft)","var(--danger)"], infop:["var(--infoSoft)","var(--info)"], neutral:["var(--lineSoft)","var(--ink2)"] };
+      var TASKS = [
+        { id:"contactos", tone:"ok", ic:"chat", t:"Responder a 5 contactos nuevos", d:"<b>Lucía Bravo</b> (Ático en Calle Ferraz 12) y 4 más · el más antiguo espera desde hace 19 h.", pill:["warnp","Responde en menos de 24 h"], act:{ label:"Responder", href:"pro-contactos.html?f=new" } },
+        { id:"goya", tone:"dangerp", ic:"warn", t:"Corregir el dúplex de Calle Goya 41", d:"Rechazado en revisión por <b>falta de plano en planta</b>. Al subirlo vuelve a la cola automáticamente.", pill:["dangerp","Rechazado"], act:{ label:"Corregir", href:"pro-revision-calidad.html" } },
+        { id:"disp", tone:"warnp", ic:"clock", t:"Confirmar disponibilidad de 3 viviendas", d:"Av. de Europa 9 (Pozuelo), Calle Princesa 31 y Calle Ibiza 12 · más de 60 días sin actualizar.", pill:["warnp","Se ocultan en 7 días"], act:{ label:"Confirmar las 3", inline:true }, alt:{ label:"Revisar", href:"pro-viviendas.html?f=upd" } },
+        { id:"cert", tone:"infop", ic:"doc", t:"Aportar certificado energético", d:"Habitación en Calle Argumosa 22 · obligatorio para seguir publicada.", pill:["infop","Vence en 9 días"], act:{ label:"Subir certificado", href:"pro-viviendas.html" } },
+        { id:"borr", tone:"neutral", ic:"plus", t:"Terminar 4 borradores", d:"Calle Hortaleza 88 y 3 más · faltan fotografías, plano o certificado.", act:{ label:"Continuar", href:"pro-viviendas.html" } }
+      ];
+      var KEY = "homyo_pro_tasks_done", done = [], AV_KEY = "homyo_pro_avail_confirmed";
+      var UPD_REFS = ["5512903VK2851S0001AB", "9765104VK3796N0018FS", "1347809VK4714N0022HD"];
+      function avail() { try { return JSON.parse(localStorage.getItem(AV_KEY) || "[]"); } catch (e) { return []; } }
+      function applyAvail() {
+        var n = UPD_REFS.filter(function (r) { return avail().indexOf(r) > -1; }).length, P = window.PANEL_OP;
+        if (!P) return;
+        if (P._base == null) P._base = { all: [P.all.upd, P.all.pub], venta: [P.venta.upd, P.venta.pub] };
+        ["all", "venta"].forEach(function (k) { P[k].upd = P._base[k][0] - n; P[k].pub = P._base[k][1] + n; });
+        var on = document.querySelector("#panelOpSeg .isOn"); if (on) on.click();
+      }
+      try { done = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) {}
+      function save() { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {} }
+      function isDone(id) { return done.indexOf(id) > -1; }
+      function setDone(id, v) {
+        done = done.filter(function (x) { return x !== id; }); if (v) done.push(id); save();
+        if (id === "disp") { try { localStorage.setItem(AV_KEY, JSON.stringify(v ? UPD_REFS : [])); } catch (e) {} applyAvail(); }
+        render();
+      }
+      function svg(p, w) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 1.9) + '" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; }
+      var list = document.getElementById("tkList");
+      function render() {
+        var rows = TASKS.slice().sort(function (a, b) { return isDone(a.id) - isDone(b.id); });
+        list.innerHTML = rows.map(function (k) {
+          var c = TONE[k.tone], d = isDone(k.id);
+          var act = k.act.inline ? '<button class="btn primary sm" type="button" data-inline="' + k.id + '">' + k.act.label + '</button>' : '<a class="btn ghost sm" href="' + k.act.href + '">' + k.act.label + '</a>';
+          if (k.alt) act = '<a class="btnLink" href="' + k.alt.href + '">' + k.alt.label + '</a>' + act;
+          return '<li class="task' + (d ? ' isDone' : '') + '" data-id="' + k.id + '">' +
+            '<button class="tkCheck" type="button" aria-label="' + (d ? 'Marcar como pendiente' : 'Marcar como hecha') + '">' + svg('<path d="M20 6 9 17l-5-5"/>', 2.6) + '</button>' +
+            '<span class="tkIc" style="background:' + c[0] + ';color:' + c[1] + '">' + svg(IC[k.ic]) + '</span>' +
+            '<div class="tkBody"><h5>' + k.t + '</h5><p>' + k.d + '</p></div>' +
+            (k.pill ? '<span class="pill ' + k.pill[0] + '">' + k.pill[1] + '</span>' : '<span></span>') +
+            '<div class="tkAct">' + act + '</div></li>';
+        }).join("");
+        var n = done.filter(function (id) { return TASKS.some(function (k) { return k.id === id; }); }).length;
+        document.getElementById("tkProgTxt").textContent = n + " de " + TASKS.length + " hechas";
+        document.getElementById("tkProgFill").style.width = (n / TASKS.length * 100) + "%";
+        document.querySelector(".tkCard").classList.toggle("allDone", n === TASKS.length);
+      }
+      list.addEventListener("click", function (e) {
+        var li = e.target.closest(".task"); if (!li) return;
+        var id = li.getAttribute("data-id");
+        if (e.target.closest(".tkCheck")) { setDone(id, !isDone(id)); return; }
+        if (e.target.closest("[data-inline]")) {
+          setDone(id, true);
+          if (window.homyoToast) window.homyoToast("3 viviendas confirmadas · siguen publicadas", function () { setDone(id, false); });
+        }
+      });
+      render();
+      applyAvail();
+      (function () {
+        var M = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+        var now = new Date(), end = new Date(now.getFullYear(), now.getMonth(), 18);
+        if (now.getDate() > 18) end = new Date(now.getFullYear(), now.getMonth() + 1, 18);
+        var charge = new Date(end.getFullYear(), end.getMonth() + 1, 1);
+        var left = Math.max(0, Math.ceil((end - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5));
+        document.getElementById("ncDate").textContent = "1 de " + M[charge.getMonth()];
+        document.getElementById("ncLeft").textContent = left === 1 ? "Termina mañana" : "Termina en " + left + " días · " + end.getDate() + " " + M[end.getMonth()].slice(0, 3);
+        document.getElementById("ncTrack").style.width = Math.min(100, Math.max(4, (1 - left / 92) * 100)) + "%";
+      })();
+    })();
+  </script>
+  <script src="pro-panel-real.js"></script>
   </body>
 </html>
